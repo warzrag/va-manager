@@ -18823,7 +18823,27 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // Initialize warmup data structure
         function initializeWarmupData() {
             if (!data.warmupProgress) {
-                data.warmupProgress = {};
+                // Charger les données de warmup depuis localStorage
+                const savedWarmup = localStorage.getItem('warmupProgress');
+                if (savedWarmup) {
+                    try {
+                        data.warmupProgress = JSON.parse(savedWarmup);
+                        console.log('✅ Données de warmup chargées:', data.warmupProgress);
+                    } catch (e) {
+                        console.error('Erreur lors du chargement des données warmup:', e);
+                        data.warmupProgress = {};
+                    }
+                } else {
+                    data.warmupProgress = {};
+                }
+            }
+        }
+
+        // Sauvegarder les données de warmup
+        function saveWarmupData() {
+            if (data.warmupProgress) {
+                localStorage.setItem('warmupProgress', JSON.stringify(data.warmupProgress));
+                console.log('💾 Warmup progress sauvegardé');
             }
         }
 
@@ -18831,6 +18851,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
         function updateWarmupDisplay() {
             const container = document.getElementById('warmup-accounts-list');
             if (!container) return;
+
+            // Toujours initialiser les données de warmup au début
+            initializeWarmupData();
 
             const isDarkMode = document.body.classList.contains('dark-mode');
 
@@ -19083,7 +19106,13 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             <div style="flex: 1;">
                                 <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600;">
                                     <i class="fab fa-instagram" style="color: #e4405f;"></i>
-                                    ${account.username.startsWith('@') ? account.username : '@' + username}
+                                    <a href="https://instagram.com/${username}"
+                                       target="_blank"
+                                       style="color: inherit; text-decoration: none; transition: color 0.2s;"
+                                       onmouseover="this.style.color='#e4405f'"
+                                       onmouseout="this.style.color='inherit'">
+                                        ${account.username.startsWith('@') ? account.username : '@' + username}
+                                    </a>
                                 </h3>
                                 ${account.vaName ? `
                                     <div style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 1rem;">
@@ -19229,7 +19258,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 completed: false
             };
 
-            saveData();
+            saveWarmupData(); // Sauvegarder les données de warmup
             updateWarmupDisplay();
             showSuccess(`Warm-up démarré pour @${username} - Jour 1`);
             showWarmupTasks(1, username);
@@ -19249,7 +19278,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 showSuccess(`🎉 Warm-up terminé pour @${username} !`);
             }
 
-            saveData();
+            saveWarmupData(); // Sauvegarder les données de warmup
             updateWarmupDisplay();
         }
 
@@ -19258,7 +19287,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (confirm(`Êtes-vous sûr de vouloir réinitialiser le warm-up pour @${username} ?`)) {
                 if (data.warmupProgress[username]) {
                     delete data.warmupProgress[username];
-                    saveData();
+                    saveWarmupData(); // Sauvegarder les données de warmup
                     updateWarmupDisplay();
                     showSuccess(`Warm-up réinitialisé pour @${username}`);
                 }
@@ -19269,7 +19298,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
         function resetAllWarmups() {
             if (confirm('Êtes-vous sûr de vouloir réinitialiser TOUS les warm-ups ?')) {
                 data.warmupProgress = {};
-                saveData();
+                saveWarmupData(); // Sauvegarder les données de warmup
                 updateWarmupDisplay();
                 showSuccess('Tous les warm-ups ont été réinitialisés');
             }
