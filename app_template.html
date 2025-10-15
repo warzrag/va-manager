@@ -1,0 +1,3590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VA Manager Pro - Gestion Créatrices</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a1a;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Dark mode - Modern design */
+        body.dark-mode {
+            background: #0a0b0d;
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.1);
+        }
+        
+        body.dark-mode .nav {
+            background: #13151a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        body.dark-mode .nav-btn {
+            color: #9ca3af;
+            border: 1px solid transparent;
+        }
+        
+        body.dark-mode .nav-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #e1e8ef;
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        body.dark-mode .nav-btn.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        body.dark-mode .card {
+            background: #16181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-mode .modal-content {
+            background: #1a1d23;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        body.dark-mode .form-control {
+            background: #0d0f13;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode .form-control:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        body.dark-mode .subs-table {
+            background: #16181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .subs-table th {
+            background: #1e2028;
+            color: #9ca3af;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        body.dark-mode .subs-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode .subs-table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        body.dark-mode .leaderboard-item {
+            background: linear-gradient(135deg, #1a1d23 0%, #1e2128 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        body.dark-mode .leaderboard-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        body.dark-mode .period-tab {
+            background: #1a1d23;
+            color: #9ca3af;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .period-tab:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #e1e8ef;
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        body.dark-mode .period-tab.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+        
+        body.dark-mode .modal {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+        }
+        
+        body.dark-mode .competition-header {
+            background: linear-gradient(135deg, #92400e 0%, #b45309 100%) !important;
+        }
+        
+        body.dark-mode .submit-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        body.dark-mode .submit-btn:hover {
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        body.dark-mode .cancel-btn {
+            background: #374151;
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode .cancel-btn:hover {
+            background: #4b5563;
+        }
+        
+        body.dark-mode .btn-icon {
+            background: rgba(99, 102, 241, 0.1);
+            color: #9ca3af;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        body.dark-mode .btn-icon:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: #e1e8ef;
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+        
+        body.dark-mode .stat-box {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        body.dark-mode .stat-value {
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode .stat-label {
+            color: #9ca3af;
+        }
+        
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+            color: #f3f4f6;
+        }
+        
+        body.dark-mode .rank-badge {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-mode .rank-1 { 
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); 
+            color: #1a1d23;
+        }
+        
+        body.dark-mode .rank-2 { 
+            background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%); 
+            color: #1a1d23;
+        }
+        
+        body.dark-mode .rank-3 { 
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
+            color: white;
+        }
+        
+        body.dark-mode .activity-item {
+            background: rgba(99, 102, 241, 0.05);
+            border-left: 3px solid #6366f1;
+        }
+        
+        body.dark-mode select option {
+            background: #1a1d23;
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
+        body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+        
+        body.dark-mode .badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        body.dark-mode ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #0d0f13;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 6px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        
+        /* Dark mode - Specific color adjustments */
+        body.dark-mode .text-green-500,
+        body.dark-mode [style*="color: #22c55e"] {
+            color: #4ade80 !important;
+        }
+        
+        body.dark-mode .text-red-500,
+        body.dark-mode [style*="color: #ef4444"] {
+            color: #f87171 !important;
+        }
+        
+        body.dark-mode .text-blue-500,
+        body.dark-mode [style*="color: #3b82f6"] {
+            color: #60a5fa !important;
+        }
+        
+        body.dark-mode .text-orange-500,
+        body.dark-mode [style*="color: #f59e0b"] {
+            color: #fbbf24 !important;
+        }
+        
+        body.dark-mode [style*="background: #f8fafc"] {
+            background: #1a1d23 !important;
+        }
+        
+        body.dark-mode [style*="background: white"] {
+            background: #16181d !important;
+        }
+        
+        body.dark-mode [style*="background: #fff"],
+        body.dark-mode [style*="background:white"],
+        body.dark-mode [style*="background:#fff"],
+        body.dark-mode [style*="background:#ffffff"] {
+            background: #16181d !important;
+        }
+        
+        body.dark-mode [style*="border-left: 4px solid #f59e0b"] {
+            border-left-color: #fbbf24 !important;
+        }
+        
+        body.dark-mode [style*="background: #fef3c7"] {
+            background: rgba(251, 191, 36, 0.1) !important;
+            color: #fbbf24 !important;
+        }
+        
+        body.dark-mode [style*="color: #64748b"] {
+            color: #94a3b8 !important;
+        }
+        
+        body.dark-mode [style*="color: #94a3b8"] {
+            color: #cbd5e1 !important;
+        }
+        
+        body.dark-mode [style*="background: #e2e8f0"] {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        body.dark-mode .va-card,
+        body.dark-mode .creator-card {
+            background: linear-gradient(135deg, #16181d 0%, #1a1d23 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .creators-stats-overview {
+            background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%) !important;
+        }
+        
+        body.dark-mode .creatrice-item {
+            background: rgba(30, 41, 59, 0.5) !important;
+            color: #e2e8f0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        body.dark-mode .creatrice-item:hover {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.2) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        body.dark-mode .twitter-accounts {
+            background: rgba(29, 161, 242, 0.03) !important;
+            border-color: rgba(29, 161, 242, 0.1) !important;
+        }
+        
+        body.dark-mode .twitter-badge {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0C85D0 100%) !important;
+            box-shadow: 0 2px 4px rgba(29, 161, 242, 0.2) !important;
+            border-color: rgba(29, 161, 242, 0.3) !important;
+        }
+        
+        body.dark-mode .twitter-badge:hover {
+            box-shadow: 0 3px 8px rgba(29, 161, 242, 0.4) !important;
+            border-color: rgba(29, 161, 242, 0.5) !important;
+        }
+
+        body.dark-mode .instagram-accounts {
+            background: linear-gradient(45deg, rgba(131, 58, 180, 0.03), rgba(253, 29, 29, 0.03), rgba(252, 176, 69, 0.03)) !important;
+            border-color: rgba(193, 53, 132, 0.1) !important;
+        }
+
+        body.dark-mode .instagram-badge {
+            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%) !important;
+            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.2) !important;
+            border: 2px solid transparent !important;
+        }
+
+        body.dark-mode .instagram-badge:hover {
+            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.4) !important;
+            border-color: rgba(193, 53, 132, 0.5) !important;
+        }
+        
+        body.dark-mode .creatrice-name {
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode .progress-bar {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        body.dark-mode .progress-fill {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+        
+        body.dark-mode .performance-card {
+            background: #1a1d23;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Dark mode - SVG and chart adjustments */
+        body.dark-mode svg circle[stroke="#e2e8f0"] {
+            stroke: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        body.dark-mode .fa-check-circle {
+            color: #4ade80 !important;
+        }
+        
+        body.dark-mode .fa-clock {
+            color: #fbbf24 !important;
+        }
+        
+        body.dark-mode .fa-trash {
+            color: #f87171 !important;
+        }
+        
+        /* Ensure no black on black or white on white */
+        body.dark-mode p,
+        body.dark-mode span,
+        body.dark-mode div {
+            color: inherit;
+        }
+        
+        /* Dark mode - Form labels and text */
+        body.dark-mode label,
+        body.dark-mode .form-group label {
+            color: #94a3b8 !important;
+            font-weight: 500;
+        }
+        
+        body.dark-mode h2 {
+            color: #e1e8ef !important;
+        }
+        
+        body.dark-mode small {
+            color: #64748b !important;
+        }
+        
+        body.dark-mode .modal h2 {
+            color: #f3f4f6 !important;
+        }
+        
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #4b5563 !important;
+        }
+        
+        body.dark-mode .form-label {
+            color: #94a3b8 !important;
+        }
+        
+        /* Dark mode - Specific form sections */
+        body.dark-mode .form-section {
+            background: rgba(99, 102, 241, 0.03);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        body.dark-mode .form-section h3 {
+            color: #a5b4fc !important;
+            margin-bottom: 1rem;
+        }
+        
+        /* Special adjustments for specific inline styles */
+        body.dark-mode [style*="color: #dc2626"] {
+            color: #ef4444 !important;
+        }
+        
+        body.dark-mode [style*="color: #059669"] {
+            color: #10b981 !important;
+        }
+        
+        body.dark-mode [style*="color: #0891b2"] {
+            color: #06b6d4 !important;
+        }
+        
+        /* Period selector specific */
+        body.dark-mode .period-selector {
+            background: #13151a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Dark mode - Additional adjustments for better readability */
+        body.dark-mode .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        body.dark-mode .modal-actions {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        body.dark-mode select {
+            background-color: #0d0f13;
+            color: #e1e8ef;
+        }
+        
+        body.dark-mode textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        body.dark-mode .help-text {
+            color: #64748b !important;
+            font-size: 0.875rem;
+        }
+        
+        /* Focus states in dark mode */
+        body.dark-mode input:focus,
+        body.dark-mode select:focus,
+        body.dark-mode textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Dark mode info boxes */
+        body.dark-mode .info-box {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        /* Force all white backgrounds to be dark */
+        body.dark-mode .page > div[style*="background"],
+        body.dark-mode .leaderboard,
+        body.dark-mode .performance-charts,
+        body.dark-mode .activity-feed,
+        body.dark-mode .commission-summary,
+        body.dark-mode .payment-history {
+            background: #16181d !important;
+            color: #e1e8ef !important;
+        }
+        
+        /* Specific page sections */
+        body.dark-mode div[style*="border-radius: 1rem"][style*="padding: 2rem"] {
+            background: #16181d !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        body.dark-mode .leaderboard-content,
+        body.dark-mode .chart-grid,
+        body.dark-mode .activity-content {
+            background: transparent !important;
+        }
+        
+        /* Remove any remaining white from stats pages */
+        body.dark-mode .revenue-stats,
+        body.dark-mode .subs-stats,
+        body.dark-mode .financial-stats {
+            background: #16181d !important;
+        }
+        
+        /* Dark scrollbar for all elements */
+        body.dark-mode * {
+            scrollbar-color: #374151 #0d0f13;
+        }
+        
+        /* ULTIMATE FORCE - Convert ALL white backgrounds */
+        body.dark-mode div[style*="background: white"],
+        body.dark-mode div[style*="background:#fff"],
+        body.dark-mode div[style*="background: #fff"],
+        body.dark-mode div[style*="background:white"] {
+            background: #16181d !important;
+        }
+        
+        /* Ensure text remains visible on dark backgrounds */
+        body.dark-mode div[style*="background: white"] *,
+        body.dark-mode div[style*="background:#fff"] *,
+        body.dark-mode div[style*="background: #fff"] * {
+            color: #e1e8ef !important;
+        }
+        
+        /* Competition pages specific dark styling */
+        body.dark-mode .leaderboard[style*="background: white"] {
+            background: linear-gradient(135deg, #16181d 0%, #1a1d23 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        /* Charts and graphs containers */
+        body.dark-mode .chart-container[style*="background"],
+        body.dark-mode .graph-container[style*="background"] {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        /* Activity items in dark mode */
+        body.dark-mode .activity-item[style*="background"] {
+            background: rgba(99, 102, 241, 0.05) !important;
+            border-left: 3px solid #6366f1 !important;
+        }
+        
+        /* Specific sections with classes */
+        body.dark-mode .stats-section,
+        body.dark-mode .charts-section {
+            background: #16181d !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        /* Clean approach - Target specific white backgrounds */
+        body.dark-mode .page > div[style*="background: white"],
+        body.dark-mode .page > div[style*="background:#fff"] {
+            background: #16181d !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        /* All main content divs */
+        body.dark-mode .leaderboard[style*="background"],
+        body.dark-mode div[style*="border-radius: 1rem"][style*="background: white"] {
+            background: #16181d !important;
+        }
+        
+        /* Ensure readability */
+        body.dark-mode .page div[style*="background"] h2,
+        body.dark-mode .page div[style*="background"] h3,
+        body.dark-mode .page div[style*="background"] p,
+        body.dark-mode .page div[style*="background"] span {
+            color: #e1e8ef !important;
+        }
+        
+        /* FINAL SOLUTION - Override with specificity */
+        body.dark-mode .dark-background,
+        body.dark-mode [style*="background: white"],
+        body.dark-mode [style*="background:#ffffff"],
+        body.dark-mode [style*="background: #ffffff"],
+        body.dark-mode [style*="background:white"],
+        body.dark-mode [style*="background :white"],
+        body.dark-mode [style*="background : white"],
+        body.dark-mode [style*="background: #f8fafc"] {
+            background: #1e293b !important;
+            background-color: #1e293b !important;
+        }
+        
+        /* Last resort - target by structure */
+        body.dark-mode .page > div > div {
+            background-color: inherit !important;
+        }
+        
+        /* Specific styles for unassigned Gmail accounts */
+        body.dark-mode .unassigned-section {
+            background: rgba(239, 68, 68, 0.05) !important;
+            border-color: #ef4444 !important;
+        }
+        
+        body.dark-mode .existing-creators-list div {
+            background: rgba(0,0,0,0.2) !important;
+            border-color: rgba(255,255,255,0.1) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        body.dark-mode .existing-creators-list small {
+            color: #94a3b8 !important;
+        }
+        
+        body.dark-mode .unassigned-account-item {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #e1e8ef !important;
+        }
+        
+        body.dark-mode .unassigned-account-item strong {
+            color: #f3f4f6 !important;
+        }
+        
+        body.dark-mode .unassigned-account-item p {
+            color: #94a3b8 !important;
+        }
+        
+        body.dark-mode #assign-gmail-modal .modal-content {
+            background: #1a1d23 !important;
+            color: #e1e8ef !important;
+        }
+        
+        body.dark-mode #assign-gmail-modal div[style*="background: #f8fafc"] {
+            background: rgba(99, 102, 241, 0.1) !important;
+            color: #e1e8ef !important;
+        }
+        
+        /* Twitter unassigned page dark mode */
+        body.dark-mode #twitter-unassigned-page div[style*="background: #fef3c7"] {
+            background: rgba(249, 158, 11, 0.1) !important;
+            color: #fbbf24 !important;
+        }
+        
+        body.dark-mode #twitter-unassigned-page p[style*="color: #92400e"] {
+            color: #fbbf24 !important;
+        }
+        
+        body.dark-mode #assign-gmail-twitter-modal .modal-content {
+            background: #1a1d23 !important;
+            color: #e1e8ef !important;
+        }
+        
+        body.dark-mode #assign-gmail-twitter-modal div[style*="background: #e0f2fe"] {
+            background: rgba(14, 165, 233, 0.1) !important;
+            color: #38bdf8 !important;
+        }
+        
+        body.dark-mode .page > div {
+            background: #16181d !important;
+        }
+        
+        /* Commission summary card */
+        .commission-summary-card {
+            background: #f8fafc;
+        }
+        
+        body.dark-mode .commission-summary-card {
+            background: #16181d !important;
+            color: #e1e8ef !important;
+        }
+        
+        /* Stats and charts sections */
+        .stats-section, .charts-section, .leaderboard {
+            background: white;
+        }
+        
+        body.dark-mode .stats-section,
+        body.dark-mode .charts-section {
+            background: #16181d !important;
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        body.dark-mode .theme-toggle {
+            background: rgba(147, 51, 234, 0.2);
+            border-color: rgba(147, 51, 234, 0.3);
+        }
+        
+        body.dark-mode .theme-toggle:hover {
+            background: rgba(147, 51, 234, 0.3);
+            border-color: rgba(147, 51, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+        }
+        
+        /* Backup button specific dark mode */
+        body.dark-mode .theme-toggle[onclick*="showBackupModal"] {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        body.dark-mode .theme-toggle[onclick*="showBackupModal"]:hover {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stats-header {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 2rem;
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            background: #f1f5f9;
+            color: #1a1a1a;
+        }
+
+        .nav-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Cards */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* VA Cards Grid */
+        .va-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .va-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .va-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .va-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-radius: 1rem 1rem 0 0;
+        }
+        
+        .va-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+            color: white;
+            border-color: rgba(239, 68, 68, 0.5);
+            transform: scale(1.05);
+        }
+
+        .va-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .va-stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .creatrice-section {
+            padding: 1.25rem;
+        }
+        
+        .va-stats {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.25rem;
+        }
+        
+        .va-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .creatrice-item {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .creatrice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .creatrice-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .twitter-accounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .twitter-badge {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0C85D0 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(29, 161, 242, 0.15);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            cursor: pointer;
+            max-width: calc(100% - 1rem);
+            margin: 0.25rem;
+            border: 1px solid rgba(29, 161, 242, 0.2);
+        }
+        
+        a.twitter-badge {
+            color: white;
+            text-decoration: none;
+        }
+        
+        a.twitter-badge:visited {
+            color: white;
+        }
+        
+        .twitter-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(29, 161, 242, 0.25);
+            border-color: rgba(29, 161, 242, 0.4);
+        }
+        
+        .twitter-badge button {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 0.75rem !important;
+        }
+        
+        .twitter-badge button:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: scale(1.1);
+        }
+        
+        /* Twitter accounts container - ULTRATHINK design */
+        .twitter-accounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: rgba(29, 161, 242, 0.02);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(29, 161, 242, 0.08);
+            margin-top: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(29, 161, 242, 0.2) transparent;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-thumb {
+            background: rgba(29, 161, 242, 0.2);
+            border-radius: 3px;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-thumb:hover {
+            background: rgba(29, 161, 242, 0.3);
+        }
+
+        /* Instagram accounts container */
+        .instagram-accounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: linear-gradient(45deg, rgba(131, 58, 180, 0.05), rgba(253, 29, 29, 0.05), rgba(252, 176, 69, 0.05));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(193, 53, 132, 0.15);
+            margin-top: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(193, 53, 132, 0.2) transparent;
+        }
+
+        .instagram-accounts::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-thumb {
+            background: rgba(193, 53, 132, 0.2);
+            border-radius: 3px;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-thumb:hover {
+            background: rgba(193, 53, 132, 0.3);
+        }
+
+        .instagram-badge {
+            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%);
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.15);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        a.instagram-badge {
+            color: white;
+            text-decoration: none;
+        }
+
+        a.instagram-badge:visited {
+            color: white;
+        }
+
+        .instagram-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.25);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .instagram-badge button {
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
+        }
+
+        .instagram-badge button:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: scale(1.1);
+        }
+        
+        /* Adjust creatrice-item spacing */
+        .creatrice-item {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .creatrice-item:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(229, 231, 235, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+
+        /* Forms */
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cancel-btn {
+            padding: 1rem;
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cancel-btn:hover {
+            background: #d1d5db;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Import Section */
+        .import-area {
+            background: white;
+            border: 2px dashed #cbd5e1;
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .import-area:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .import-area.dragover {
+            border-color: #667eea;
+            background: #ede9fe;
+        }
+
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            font-weight: 500;
+            max-width: 500px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Error Message */
+        .error-message {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background-color: #dc2626;
+            color: white;
+            border-radius: 0.5rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+            animation: slideInDown 0.3s ease-out;
+        }
+        
+        .error-message.show {
+            display: flex;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.75rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Search */
+        .search-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .search-results {
+            margin-top: 2rem;
+        }
+
+        .no-creator {
+            color: #94a3b8;
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* Subs Competition Styles */
+        .competition-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .competition-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .competition-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .competition-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* Leaderboard */
+        .leaderboard-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .leaderboard-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .leaderboard-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .leaderboard-item:hover {
+            background: #f8fafc;
+            transform: translateX(5px);
+        }
+
+        .rank-badge {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            border-radius: 50%;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #808080); color: white; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #8B4513); color: white; }
+        .rank-other { background: #e2e8f0; color: #64748b; }
+
+        .va-info {
+            flex: 1;
+        }
+
+        .va-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .va-stats-mini {
+            font-size: 0.875rem;
+            color: #64748b;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .va-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quick-action-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .add-subs-quick {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .add-subs-quick:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .view-details-btn {
+            background: #f1f5f9;
+            color: #1a1a1a;
+        }
+
+        .view-details-btn:hover {
+            background: #e2e8f0;
+        }
+
+        /* Performance Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Period Tabs */
+        .period-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .period-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .period-tab.active {
+            background: white;
+            color: #1a1a1a;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin-bottom: 1rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Recent Activity */
+        .activity-feed {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        /* ========== MOBILE RESPONSIVE DESIGN ========== */
+        
+        /* Menu burger pour mobile */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        body.dark-mode .mobile-menu-toggle {
+            background: #8b5cf6;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .mobile-nav-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Tablettes et petits écrans */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                padding: 1rem;
+            }
+            
+            .stats-header {
+                gap: 1rem;
+            }
+            
+            .va-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            /* Header mobile */
+            .header {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0.75rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.875rem;
+            }
+            
+            .stats-header {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .stat-item {
+                flex: 1;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            /* Navigation mobile */
+            .nav {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                background: white;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+                z-index: 998;
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .nav.mobile-active {
+                display: block;
+                transform: translateY(0);
+            }
+            
+            .nav-content {
+                flex-direction: column;
+                padding: 1rem;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+                justify-content: flex-start;
+                border-radius: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            body.dark-mode .nav {
+                background: #1e1e1e;
+            }
+            
+            /* Bouton menu mobile */
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Boutons du header mobile */
+            .header-content > div:last-child {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .header-content .theme-toggle {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .header-content .theme-toggle span {
+                display: none;
+            }
+            
+            #save-status {
+                font-size: 0.625rem !important;
+                padding: 0.125rem 0.5rem !important;
+            }
+            
+            #save-status-text {
+                display: none;
+            }
+            
+            /* Container principal */
+            .container {
+                padding: 0.75rem;
+                margin-bottom: 80px; /* Pour le menu flottant */
+            }
+            
+            /* Statistiques créatrices mobile */
+            .creators-stats-overview {
+                padding: 1rem !important;
+            }
+            
+            .creators-stats-overview h3 {
+                font-size: 1.1rem !important;
+            }
+            
+            #creators-comparison > div {
+                font-size: 0.875rem;
+            }
+            
+            #creators-comparison > div > div:first-child {
+                flex: 0 0 100px !important;
+                font-size: 0.75rem;
+            }
+            
+            /* Grilles mobile */
+            .va-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .va-card {
+                padding: 1rem;
+            }
+            
+            /* Formulaires mobile */
+            .form-container {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .form-title {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            
+            .form-group label {
+                font-size: 0.875rem;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* Éviter le zoom sur iOS */
+            }
+            
+            /* Pages avec deux colonnes */
+            #add-account-page > div,
+            #gmail-accounts-page > div,
+            #add-creator-page > div {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            #add-account-page .form-container,
+            #gmail-accounts-page .form-container,
+            #add-creator-page .form-container {
+                max-height: none !important;
+                flex: none;
+                width: 100%;
+            }
+            
+            /* Modals mobile */
+            .modal-content {
+                width: 100%;
+                height: 100%;
+                max-width: 100%;
+                max-height: 100%;
+                margin: 0;
+                border-radius: 0;
+                overflow-y: auto;
+                padding: 1rem;
+            }
+            
+            .modal-content h2 {
+                font-size: 1.5rem;
+                position: sticky;
+                top: -1rem;
+                background: white;
+                padding: 1rem 0;
+                z-index: 10;
+            }
+            
+            body.dark-mode .modal-content h2 {
+                background: #2a2a2a;
+            }
+            
+            /* Tables mobile */
+            .subs-table,
+            .associations-table {
+                font-size: 0.875rem;
+            }
+            
+            .subs-table th,
+            .subs-table td,
+            .associations-table th,
+            .associations-table td {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            /* Cartes et listes mobile */
+            .twitter-account-card,
+            .gmail-account-card {
+                padding: 0.75rem;
+            }
+            
+            /* Swipe to delete/edit sur mobile */
+            .va-card,
+            .creator-item,
+            .account-item {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            /* Amélioration des sélecteurs sur mobile */
+            select {
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 0.7rem center;
+                background-size: 1.2em;
+                padding-right: 2.5rem;
+            }
+            
+            .activity-feed {
+                padding: 1rem;
+            }
+            
+            .activity-item {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Boutons action mobile */
+            .action-btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .submit-btn,
+            .cancel-btn {
+                width: 100%;
+                padding: 0.875rem;
+                font-size: 1rem;
+            }
+            
+            /* Stats cards mobile */
+            .stats-section {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .stat-card {
+                padding: 0.75rem;
+            }
+            
+            /* Tables responsives - scroll horizontal */
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+            
+            /* Amélioration des inputs sur mobile */
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="date"],
+            select,
+            textarea {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            
+            /* Empêcher le zoom sur focus iOS */
+            @supports (-webkit-touch-callout: none) {
+                input,
+                select,
+                textarea {
+                    font-size: 16px !important;
+                }
+            }
+            
+            /* Messages mobile */
+            .success-message,
+            .error-message {
+                left: 1rem;
+                right: 1rem;
+                bottom: 90px; /* Au-dessus du menu flottant */
+                transform: translateX(0);
+                font-size: 0.875rem;
+                padding: 0.75rem 1rem;
+            }
+        }
+        
+        /* Très petits écrans */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .stat-number {
+                font-size: 1.25rem;
+            }
+            
+            .stat-label {
+                font-size: 0.625rem;
+            }
+            
+            .form-container {
+                padding: 0.75rem;
+            }
+            
+            /* Masquer certains éléments non essentiels */
+            .activity-time {
+                display: none;
+            }
+            
+            .creator-count,
+            .account-count {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Amélioration pour le tactile */
+        @media (hover: none) and (pointer: coarse) {
+            .action-btn,
+            .nav-btn,
+            .submit-btn,
+            button {
+                min-height: 44px; /* Taille minimale recommandée pour le tactile */
+            }
+            
+            .va-card:active {
+                transform: scale(0.98);
+            }
+            
+            /* Désactiver le hover sur mobile */
+            .va-card:hover,
+            .action-btn:hover,
+            .nav-btn:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+        
+        /* Ultra Table Styles */
+        .ultra-table tr {
+            transition: all 0.15s ease;
+        }
+        
+        .ultra-table tbody tr {
+            border-bottom: 1px solid #f8fafc;
+        }
+        
+        .dark-mode .ultra-table tbody tr {
+            border-bottom: 1px solid #1e293b;
+        }
+        
+        .ultra-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .dark-mode .ultra-table tbody tr:hover {
+            background: #1e293b;
+        }
+        
+        .ultra-table td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #334155;
+        }
+        
+        .dark-mode .ultra-table td {
+            color: #e2e8f0;
+        }
+        
+        .twitter-handle {
+            font-weight: 600;
+            color: #1DA1F2;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .model-name {
+            font-weight: 500;
+            color: #6366f1;
+        }
+        
+        .dark-mode .model-name {
+            color: #a78bfa;
+        }
+        
+        .va-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .dark-mode .va-badge {
+            background: #4338ca;
+            color: #e0e7ff;
+        }
+        
+        .gmail-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+        
+        .gmail-status.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .dark-mode .gmail-status.active {
+            background: #059669;
+            color: #d1fae5;
+        }
+        
+        .gmail-status.inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .dark-mode .gmail-status.inactive {
+            background: #dc2626;
+            color: #fee2e2;
+        }
+        
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        .score-badge.high {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+        
+        .dark-mode .score-badge.high {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .score-badge.medium {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+        
+        .dark-mode .score-badge.medium {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        
+        .score-badge.low {
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: white;
+        }
+        
+        .dark-mode .score-badge.low {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        
+        .rank-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        
+        .rank-number.gold {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+        
+        .rank-number.silver {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            color: white;
+        }
+        
+        .rank-number.bronze {
+            background: linear-gradient(135deg, #f87171, #dc2626);
+            color: white;
+        }
+        
+        .rank-number.default {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .ultra-table {
+                font-size: 0.75rem;
+            }
+            
+            .ultra-table td, .ultra-table th {
+                padding: 0.5rem;
+            }
+        }
+        
+        /* Ultra Table Container Styles */
+        .ultra-table-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dark-mode .ultra-table-container {
+            background: #0f172a;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .ultra-table-title {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .dark-mode .ultra-table-title {
+            color: #f1f5f9;
+        }
+        
+        .ultra-table thead tr {
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .dark-mode .ultra-table thead tr {
+            border-bottom: 1px solid #334155;
+        }
+        
+        .ultra-table th {
+            color: #64748b;
+        }
+        
+        .dark-mode .ultra-table th {
+            color: #94a3b8;
+        }
+        
+        /* VA Warning Styles */
+        .va-warning {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 0.5rem;
+            color: #92400e;
+            font-size: 0.875rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .dark-mode .va-warning {
+            background: #451a03;
+            border-color: #f59e0b;
+            color: #fbbf24;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>📊 VA Manager Pro</h1>
+                <p>Gestion des Virtual Assistants et Créatrices</p>
+            </div>
+            <div class="stats-header">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-vas">0</div>
+                    <div class="stat-label">VAs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-creators">0</div>
+                    <div class="stat-label">Créatrices</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-accounts">0</div>
+                    <div class="stat-label">Comptes</div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div id="save-status" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; 
+                                                 background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); 
+                                                 border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-shield-alt" style="color: #22c55e;"></i>
+                        <span id="save-status-text" style="color: #22c55e;">Protégé</span>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon" id="theme-icon"></i>
+                        <span id="theme-text">Mode Nuit</span>
+                    </button>
+                    <button class="theme-toggle" onclick="showBackupModal()" 
+                            style="background: linear-gradient(135deg, #22c55e, #16a34a); 
+                                   color: white; font-weight: 600; position: relative; overflow: hidden;">
+                        <i class="fas fa-save"></i>
+                        <span>Sauvegarder</span>
+                        <div id="save-pulse" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; 
+                                                   background: rgba(255,255,255,0.3); border-radius: 50%; 
+                                                   transform: translate(-50%, -50%) scale(0); opacity: 0;"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <button class="nav-btn active" data-page="dashboard">
+                <i class="fas fa-home"></i> Dashboard
+            </button>
+            <button class="nav-btn" data-page="add-va">
+                <i class="fas fa-user-plus"></i> Ajouter VA
+            </button>
+            <button class="nav-btn" data-page="gmail-accounts">
+                <i class="fas fa-envelope"></i> Comptes Gmail
+            </button>
+            <button class="nav-btn" data-page="add-account">
+                <i class="fab fa-twitter"></i> Ajouter Compte
+            </button>
+            <button class="nav-btn" data-page="add-creator">
+                <i class="fas fa-users"></i> Créatrices
+            </button>
+            <button class="nav-btn" data-page="import">
+                <i class="fas fa-file-import"></i> Import CSV
+            </button>
+            <button class="nav-btn" data-page="search">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+            <button class="nav-btn" data-page="subs-tracking">
+                <i class="fas fa-euro-sign"></i> Suivi Subs
+            </button>
+            <button class="nav-btn" data-page="revenue-tracking">
+                <i class="fas fa-chart-line"></i> Revenus & Commissions
+            </button>
+            <button class="nav-btn" data-page="financial-overview">
+                <i class="fas fa-coins"></i> Vue Financière Globale
+            </button>
+            <button class="nav-btn" data-page="twitter-analytics">
+                <i class="fas fa-chart-line"></i> Analyse Twitter
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Security Warning -->
+        <div id="security-warning" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 1rem; margin: 1rem; border-radius: 0.5rem; display: none;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.5rem;"></i>
+                <div>
+                    <strong style="color: #92400e;">Avertissement de sécurité</strong>
+                    <p style="margin: 0.5rem 0 0 0; color: #92400e; font-size: 0.875rem;">
+                        Les mots de passe sont stockés localement avec une protection basique. 
+                        Pour une sécurité optimale, utilisez des mots de passe uniques et considérez l'utilisation d'un gestionnaire de mots de passe professionnel.
+                    </p>
+                    <button onclick="document.getElementById('security-warning').style.display='none'; localStorage.setItem('securityWarningDismissed', 'true')" 
+                            style="margin-top: 0.5rem; padding: 0.25rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">
+                        J'ai compris
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <!-- Statistiques principales -->
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Revenus du mois</p>
+                            <p style="margin: 0; font-size: 2rem; font-weight: 700;" id="month-revenue">0€</p>
+                        </div>
+                        <i class="fas fa-euro-sign" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Récapitulatif Créatrices - Design Épuré -->
+            <div style="margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0; font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-users" style="color: #8b5cf6;"></i>
+                        Récapitulatif des Créatrices
+                    </h3>
+                    <span id="creators-count-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 600; font-size: 0.875rem;">
+                        0 créatrice
+                    </span>
+                </div>
+                <div id="creators-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+                    <!-- Les cartes seront générées dynamiquement -->
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <button onclick="exportData()" class="btn" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;">
+                    <i class="fas fa-download"></i> Exporter données
+                </button>
+                <button onclick="createAutoBackup()" class="btn" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;">
+                    <i class="fas fa-save"></i> Créer sauvegarde
+                </button>
+            </div>
+            
+            <div class="va-grid" id="va-grid">
+                <!-- VA cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Add VA Page -->
+        <div id="add-va-page" class="page">
+            <div class="form-container">
+                <h2 class="form-title">Ajouter un Virtual Assistant</h2>
+                <form id="add-va-form">
+                    <div class="form-group">
+                        <label for="va-name">Prénom du VA</label>
+                        <input type="text" id="va-name" required placeholder="Ex: Hugo">
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus"></i> Ajouter VA
+                    </button>
+                </form>
+            </div>
+
+            <!-- Liste des VAs existants -->
+            <div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-color);">
+                        <i class="fas fa-users" style="color: #667eea; margin-right: 0.5rem;"></i>
+                        Virtual Assistants
+                    </h2>
+                    <span id="va-list-count" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 600; font-size: 0.875rem;">
+                        0 VA
+                    </span>
+                </div>
+                <div id="va-list-display" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                    <!-- VAs will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Gmail Accounts Page -->
+        <div id="gmail-accounts-page" class="page">
+            <div style="display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- Formulaire simplifié à gauche -->
+                <div class="form-container" style="flex: 0.8;">
+                    <h2 class="form-title">Ajouter un Compte Gmail</h2>
+                    <div style="margin-bottom: 1rem;">
+                        <button type="button" onclick="showAllGmailPasswords()" class="btn" style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer;">
+                            <i class="fas fa-key"></i> Voir tous les mots de passe
+                        </button>
+                    </div>
+                    <form id="add-gmail-form">
+                        <div class="form-group">
+                            <label for="gmail-email">Email Gmail</label>
+                            <input type="email" id="gmail-email" required placeholder="exemple@gmail.com" autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="gmail-password">Mot de passe</label>
+                            <div style="position: relative;">
+                                <input type="password" id="gmail-password" required placeholder="••••••••" style="padding-right: 40px;">
+                                <button type="button" onclick="togglePasswordVisibility('gmail-password')" 
+                                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
+                                               background: none; border: none; cursor: pointer; color: #667eea;"
+                                        title="Afficher/Masquer le mot de passe">
+                                    <i class="fas fa-eye" id="gmail-password-toggle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-plus"></i> Ajouter Gmail
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Liste des comptes Gmail à droite -->
+                <div class="form-container" style="flex: 1.5; max-height: 600px; overflow-y: auto;">
+                    <h2 class="form-title">
+                        <i class="fas fa-envelope" style="color: #ea4335;"></i> Comptes Gmail
+                    </h2>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.875rem;">
+                        <div id="gmail-stats" style="display: flex; gap: 1rem;">
+                            <!-- Stats will be displayed here -->
+                        </div>
+                        <button type="button" onclick="showAllGmailPasswords()" style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-key"></i> Voir tous les mots de passe
+                        </button>
+                    </div>
+                    <div id="gmail-accounts-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Gmail accounts will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twitter Unassigned Page -->
+        <div id="twitter-unassigned-page" class="page">
+            <div class="form-container" style="margin-bottom: 2rem;">
+                <h2 class="form-title">Comptes Twitter sans Gmail</h2>
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0; color: #92400e;">
+                        <i class="fas fa-info-circle"></i> Ces comptes Twitter n'ont pas de Gmail assigné. 
+                        Assignez un Gmail pour faciliter la gestion.
+                    </p>
+                </div>
+            </div>
+            
+            <div id="twitter-unassigned-list" style="display: grid; gap: 1rem;">
+                <!-- Twitter accounts without Gmail will be displayed here -->
+            </div>
+        </div>
+        
+        <!-- Add Creator Page -->
+        <div id="add-creator-page" class="page">
+            <div style="display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- Formulaire à gauche -->
+                <div class="form-container" style="flex: 1;">
+                    <h2 class="form-title">Ajouter une Créatrice</h2>
+                    <form id="add-creator-form">
+                        <div class="form-group">
+                            <label for="creator-name">Nom de la créatrice</label>
+                            <input type="text" id="creator-name" required placeholder="Ex: Justine" autofocus>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-plus"></i> Ajouter Créatrice
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Tableau des créatrices à droite -->
+                <div class="form-container" style="flex: 2; max-height: 600px; overflow-y: auto;">
+                    <h2 class="form-title">
+                        <i class="fas fa-users"></i> Toutes les Créatrices
+                    </h2>
+                    <div style="margin-bottom: 1rem; font-size: 0.875rem; display: flex; align-items: center; justify-content: space-between;">
+                        <span id="total-creators-count" style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px;">
+                            <!-- Total sera affiché ici -->
+                        </span>
+                    </div>
+                    <div id="all-creators-table">
+                        <!-- Le tableau sera généré ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Account Page -->
+        <div id="add-account-page" class="page">
+            <div style="display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- Formulaire à gauche -->
+                <div class="form-container" style="flex: 1;">
+                    <h2 class="form-title">Ajouter un Compte Social</h2>
+
+                    <!-- Sélecteur de type de compte -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <button type="button" class="platform-btn active" data-platform="twitter" onclick="switchPlatform('twitter')" style="flex: 1; padding: 0.75rem; background: #1DA1F2; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button type="button" class="platform-btn" data-platform="instagram" onclick="switchPlatform('instagram')" style="flex: 1; padding: 0.75rem; background: #E4E7EB; color: #4B5563; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                            <i class="fab fa-instagram"></i> Instagram
+                        </button>
+                    </div>
+
+                    <form id="add-account-form">
+                        <!-- Twitter Fields -->
+                        <div id="twitter-fields" class="platform-fields">
+                            <div class="form-group">
+                                <label for="twitter-username">Username Twitter</label>
+                                <input type="text" id="twitter-username" placeholder="@username" autofocus>
+                            </div>
+                            <div class="form-group">
+                                <label for="twitter-password">Mot de passe Twitter</label>
+                                <div style="position: relative;">
+                                    <input type="password" id="twitter-password" placeholder="••••••••" style="padding-right: 40px;">
+                                    <button type="button" onclick="togglePasswordVisibility('twitter-password')"
+                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+                                                   background: none; border: none; cursor: pointer; color: #667eea;"
+                                            title="Afficher/Masquer le mot de passe">
+                                        <i class="fas fa-eye" id="twitter-password-toggle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instagram Fields -->
+                        <div id="instagram-fields" class="platform-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="instagram-username">Username Instagram</label>
+                                <input type="text" id="instagram-username" placeholder="@username">
+                            </div>
+                            <div class="form-group">
+                                <label for="instagram-password">Mot de passe Instagram</label>
+                                <div style="position: relative;">
+                                    <input type="password" id="instagram-password" placeholder="••••••••" style="padding-right: 40px;">
+                                    <button type="button" onclick="togglePasswordVisibility('instagram-password')"
+                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+                                                   background: none; border: none; cursor: pointer; color: #667eea;"
+                                            title="Afficher/Masquer le mot de passe">
+                                        <i class="fas fa-eye" id="instagram-password-toggle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common Fields -->
+                        <div class="form-group">
+                            <label for="account-creator">Créatrice</label>
+                            <select id="account-creator" class="form-control" required onchange="onCreatorChange()">
+                                <option value="">Sélectionner une créatrice</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-gmail">Compte Gmail</label>
+                            <select id="account-gmail" class="form-control" required>
+                                <option value="">Sélectionner un compte Gmail</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-va">Virtual Assistant</label>
+                            <select id="account-va" class="form-control" required>
+                                <option value="">Sélectionner un VA</option>
+                            </select>
+                            <div id="va-warning" class="va-warning" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>ATTENTION:</strong> Cette créatrice est sur plusieurs VAs. Vous DEVEZ choisir le VA pour ce compte.
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn" id="add-account-btn">
+                            <i class="fas fa-plus"></i> Ajouter Compte Twitter
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Liste des comptes sociaux à droite -->
+                <div class="form-container" style="flex: 1.5; max-height: 600px; overflow-y: auto;">
+                    <h2 class="form-title" id="accounts-list-title">
+                        <i class="fab fa-twitter" style="color: #1da1f2;"></i> Comptes Twitter Existants
+                    </h2>
+                    <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" id="show-twitter-passwords-btn" onclick="showAllTwitterPasswords()" style="background: #1da1f2; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-key"></i> Voir tous les mots de passe Twitter
+                        </button>
+                        <button type="button" id="show-instagram-passwords-btn" onclick="showAllInstagramPasswords()" style="display: none; background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045); color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-key"></i> Voir tous les mots de passe Instagram
+                        </button>
+                    </div>
+                    <div id="twitter-accounts-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- La liste Twitter sera générée dynamiquement ici -->
+                    </div>
+                    <div id="instagram-accounts-list" style="display: none; flex-direction: column; gap: 0.75rem;">
+                        <!-- La liste Instagram sera générée dynamiquement ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Page -->
+        <div id="import-page" class="page">
+            <div class="form-container">
+                <h2 class="form-title">Import CSV</h2>
+                <div class="import-area" id="import-area">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                    <p>Glissez votre fichier CSV ici ou</p>
+                    <input type="file" id="csv-file" accept=".csv" style="display: none;" onchange="handleFileSelect(event)">
+                    <button onclick="document.getElementById('csv-file').click()" class="submit-btn" style="width: auto; padding: 0.75rem 2rem;">
+                        <i class="fas fa-folder-open"></i> Choisir un fichier
+                    </button>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <h3>Format requis :</h3>
+                    <code style="background: #f1f5f9; padding: 1rem; display: block; border-radius: 0.5rem; margin-top: 0.5rem;">
+                        Prénom VA, Créatrice, @Twitter, Email, Mot de passe
+                    </code>
+                    <p style="margin-top: 1rem; color: #64748b;">Exemple :</p>
+                    <code style="background: #f1f5f9; padding: 1rem; display: block; border-radius: 0.5rem; margin-top: 0.5rem;">
+                        Hugo, Justine, @justine_pro, justine@email.com, pass123<br>
+                        Hugo, Justine, @justine_backup, justine2@email.com, pass456<br>
+                        Hugo, Laura, @laura_main, laura@email.com, pass789
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Page -->
+        <div id="search-page" class="page">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Rechercher par nom, créatrice, @username...">
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+
+        <!-- Subs Tracking Page -->
+        <div id="subs-tracking-page" class="page">
+            <!-- Competition Header -->
+            <div class="competition-header">
+                <h1 class="competition-title">🏆 Compétition des VAs</h1>
+                <div class="competition-stats">
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-subs-today">0</span>
+                        <span class="stat-label">Subs Aujourd'hui</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-payment">0€</span>
+                        <span class="stat-label">Total Généré</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-paid" style="color: #22c55e;">0€</span>
+                        <span class="stat-label">Déjà Payé</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-remaining" style="color: #ef4444;">0€</span>
+                        <span class="stat-label">Reste à Payer</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="best-va-name">-</span>
+                        <span class="stat-label">Meilleur VA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Period Tabs -->
+            <div class="period-tabs" style="margin-bottom: 2rem;">
+                <button class="period-tab active" data-period="today">Aujourd'hui</button>
+                <button class="period-tab" data-period="week">Cette semaine</button>
+                <button class="period-tab" data-period="month">Ce mois</button>
+                <button class="period-tab" data-period="all">Tout</button>
+            </div>
+
+            <!-- Leaderboard and Quick Actions -->
+            <div class="leaderboard-container">
+                <div class="leaderboard">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-title">
+                            <i class="fas fa-trophy"></i>
+                            Classement des VAs
+                        </div>
+                        <div class="period-display" id="period-display">Cette semaine</div>
+                    </div>
+                    <div id="leaderboard-content">
+                        <!-- Leaderboard items will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3 style="margin-bottom: 1rem;">Actions rapides</h3>
+                    <div class="action-grid">
+                        <button onclick="openAddSubsModal()" class="quick-action-btn add-subs-quick">
+                            <i class="fas fa-plus-circle"></i>
+                            Ajouter des subs
+                        </button>
+                        <button onclick="showDetailedView()" class="quick-action-btn view-details-btn">
+                            <i class="fas fa-chart-line"></i>
+                            Vue détaillée
+                        </button>
+                        <button onclick="exportSubsData()" class="quick-action-btn view-details-btn">
+                            <i class="fas fa-download"></i>
+                            Exporter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Performance par VA</h3>
+                    </div>
+                    <div id="va-performance-chart">
+                        <!-- Chart will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Évolution des subs</h3>
+                    </div>
+                    <div id="subs-evolution-chart">
+                        <!-- Chart will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-feed">
+                <h3 style="margin-bottom: 1.5rem;">Activité récente</h3>
+                <div id="activity-list">
+                    <!-- Activity items will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Tracking Page -->
+        <div id="revenue-tracking-page" class="page">
+            <!-- Revenue Competition Header -->
+            <div class="competition-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <h1 class="competition-title">💰 Battle des Revenus</h1>
+                <div class="competition-stats">
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-revenue-generated">0€</span>
+                        <span class="stat-label">Revenus Générés</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-commissions-due">0€</span>
+                        <span class="stat-label">Commissions Dues</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="total-commissions-paid">0€</span>
+                        <span class="stat-label">Déjà Payé</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="commissions-to-pay">0€</span>
+                        <span class="stat-label">Reste à Payer</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Tabs -->
+            <div class="period-tabs" style="margin-bottom: 2rem;">
+                <button class="period-tab active" data-revenue-period="current-week">Cette semaine</button>
+                <button class="period-tab" data-revenue-period="last-week">Semaine dernière</button>
+                <button class="period-tab" data-revenue-period="current-month">Ce mois</button>
+                <button class="period-tab" data-revenue-period="all-time">Tout</button>
+            </div>
+
+            <!-- Revenue Leaderboard -->
+            <div class="leaderboard-container">
+                <div class="leaderboard">
+                    <div class="leaderboard-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <div class="leaderboard-title">
+                            <i class="fas fa-money-bill-wave"></i>
+                            TOP Générateurs de Revenus
+                        </div>
+                        <div id="revenue-period-display">Cette semaine</div>
+                    </div>
+                    <div id="revenue-leaderboard-content">
+                        <!-- Revenue leaderboard items will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3 style="margin-bottom: 1rem;">Gestion des Commissions</h3>
+                    <div class="action-grid">
+                        <button onclick="openAddRevenueModal()" class="quick-action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                            <i class="fas fa-plus-circle"></i>
+                            Ajouter Revenus
+                        </button>
+                        <button onclick="openPayCommissionModal()" class="quick-action-btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            Payer Commission
+                        </button>
+                        <button onclick="viewAllRevenues()" class="quick-action-btn view-details-btn">
+                            <i class="fas fa-list"></i>
+                            Tous les revenus
+                        </button>
+                        <button onclick="viewPaymentHistory()" class="quick-action-btn view-details-btn">
+                            <i class="fas fa-history"></i>
+                            Historique paiements
+                        </button>
+                        <button onclick="exportFinancialData()" class="quick-action-btn view-details-btn">
+                            <i class="fas fa-file-excel"></i>
+                            Export Excel
+                        </button>
+                    </div>
+
+                    <!-- Commission Summary -->
+                    <div class="commission-summary-card" style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h4 style="margin-bottom: 1rem;">Résumé par VA</h4>
+                        <div id="commission-summary">
+                            <!-- Commission summary will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Évolution des Revenus</h3>
+                    </div>
+                    <div id="revenue-evolution-chart">
+                        <!-- Revenue chart will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Commissions par VA</h3>
+                    </div>
+                    <div id="commission-distribution-chart">
+                        <!-- Commission chart will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="activity-feed" id="payment-history-section" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3>Historique des Paiements</h3>
+                    <button onclick="hidePaymentHistory()" class="action-btn view-btn">
+                        <i class="fas fa-times"></i> Fermer
+                    </button>
+                </div>
+                <div id="payment-history-list">
+                    <!-- Payment history will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Revenue Management Section -->
+            <div class="activity-feed" id="revenue-management-section" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 id="revenue-management-title">Gestion des Revenus</h3>
+                    <button onclick="hideRevenueManagement()" class="action-btn view-btn">
+                        <i class="fas fa-times"></i> Fermer
+                    </button>
+                </div>
+                <div class="table-wrapper" style="overflow-x: auto;">
+                    <table class="subs-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Montant USD</th>
+                                <th>Taux</th>
+                                <th>Montant EUR</th>
+                                <th>Commission</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenue-management-tbody">
+                            <!-- Revenue entries will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Overview Page -->
+        <div id="financial-overview-page" class="page">
+            <!-- Nouveau header minimaliste -->
+            <div style="text-align: center; padding: 3rem 0 2rem;">
+                <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Vue Financière Globale
+                </h1>
+                <p style="margin-top: 0.5rem; color: #64748b; font-size: 1.1rem;" id="financial-period-description">Aperçu de vos finances cette semaine</p>
+            </div>
+            
+            <!-- Quick Financial Snapshot - Plus visuel -->
+            <div id="financial-snapshot" style="margin-bottom: 3rem;">
+                <!-- Will be dynamically generated -->
+            </div>
+
+            <!-- Financial Period Selector -->
+            <div class="period-tabs" style="margin-bottom: 2rem;">
+                <button class="period-tab active" data-financial-period="current-week">Cette semaine</button>
+                <button class="period-tab" data-financial-period="current-month">Ce mois</button>
+                <button class="period-tab" data-financial-period="last-month">Mois dernier</button>
+                <button class="period-tab" data-financial-period="all">Tout</button>
+            </div>
+
+            <!-- VA Performance Overview -->
+            <div class="stats-section" style="border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem;">
+                <h2 style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700;">💎 Performance Financière par VA</h2>
+                <div id="va-financial-grid" style="display: grid; gap: 1.5rem;">
+                    <!-- VA financial cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Revenue Breakdown Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Répartition des Revenus</h3>
+                    </div>
+                    <div id="revenue-breakdown-chart" style="text-align: center; padding: 2rem;">
+                        <!-- Pie chart representation will be here -->
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Évolution Globale</h3>
+                    </div>
+                    <div id="global-evolution-chart">
+                        <!-- Evolution chart will be here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="charts-section" style="border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
+                <h3 style="margin-bottom: 1.5rem;">📊 Résumé Détaillé</h3>
+                <div id="financial-summary-table">
+                    <!-- Summary table will be inserted here -->
+                </div>
+                
+                <h3 style="margin: 2rem 0 1.5rem;">💳 Historique des Paiements</h3>
+                <div id="payment-history-table">
+                    <!-- Payment history will be inserted here -->
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <button onclick="showPaymentModal()" class="submit-btn" style="width: auto; background: #22c55e;">
+                        <i class="fas fa-money-check-alt"></i> Enregistrer un Paiement
+                    </button>
+                    <button onclick="exportCompleteFinancialReport()" class="submit-btn" style="width: auto;">
+                        <i class="fas fa-file-excel"></i> Exporter Rapport Financier
+                    </button>
+                    <button onclick="migrateToFileSystem()" class="submit-btn" style="width: auto; background: #7c3aed;">
+                        <i class="fas fa-database"></i> Migrer vers Fichiers
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Twitter Analytics Page -->
+        <div id="twitter-analytics-page" class="page">
+            <div style="text-align: center; padding: 3rem 0 2rem;">
+                <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, #1DA1F2, #0C85D0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Analyse des Followers Twitter
+                </h1>
+                <p style="margin-top: 0.5rem; color: #64748b; font-size: 1.1rem;">Suivi hebdomadaire de vos comptes Twitter</p>
+            </div>
+            
+            <!-- Stats globales -->
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #1DA1F2, #0C85D0); color: white;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Total Followers</p>
+                            <p style="margin: 0; font-size: 2rem; font-weight: 700;" id="total-followers">0</p>
+                        </div>
+                        <i class="fas fa-users" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Croissance Hebdo</p>
+                            <p style="margin: 0; font-size: 2rem; font-weight: 700;" id="weekly-growth">+0</p>
+                        </div>
+                        <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Meilleur Compte</p>
+                            <p style="margin: 0; font-size: 1.25rem; font-weight: 700;" id="best-account">-</p>
+                        </div>
+                        <i class="fas fa-trophy" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Dernière MAJ</p>
+                            <p style="margin: 0; font-size: 1.25rem; font-weight: 700;" id="last-update">-</p>
+                        </div>
+                        <i class="fas fa-calendar" style="font-size: 2rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analyse par VA -->
+            <div id="twitter-analytics-by-va" style="display: grid; gap: 2rem;">
+                <!-- Le contenu sera généré dynamiquement -->
+            </div>
+            
+            <!-- Message si aucune donnée -->
+            <div id="no-twitter-data" style="display: none; text-align: center; padding: 4rem;">
+                <i class="fas fa-chart-line" style="font-size: 4rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+                <h3 style="color: #64748b; margin-bottom: 0.5rem;">Aucune donnée de followers</h3>
+                <p style="color: #94a3b8;">Commencez à suivre vos comptes Twitter en cliquant sur le bouton <i class="fas fa-users"></i> à côté de chaque compte.</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Edit Twitter Account Modal -->
+    <div id="edit-account-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier le compte Twitter</h2>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <form id="edit-account-form" onsubmit="updateAccount(event)">
+                <input type="hidden" id="edit-account-va-id">
+                <input type="hidden" id="edit-account-creator-id">
+                <input type="hidden" id="edit-account-index">
+                
+                <div class="form-group">
+                    <label for="edit-gmail-select">Compte Gmail associé (optionnel)</label>
+                    <select id="edit-gmail-select">
+                        <option value="">-- Aucun compte Gmail --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-username">Username Twitter</label>
+                    <input type="text" id="edit-username" class="form-control" required placeholder="@username">
+                </div>
+                
+                <div class="form-group" id="edit-manual-email-group" style="display: none;">
+                    <label for="edit-email">Email (si pas de Gmail sélectionné)</label>
+                    <input type="email" id="edit-email" class="form-control" placeholder="email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-password">Mot de passe</label>
+                    <div style="position: relative;">
+                        <input type="password" id="edit-password" class="form-control" placeholder="••••••••" style="padding-right: 40px;">
+                        <button type="button" onclick="togglePasswordVisibility('edit-password')" 
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
+                                       background: none; border: none; cursor: pointer; color: #667eea;"
+                                title="Afficher/Masquer le mot de passe">
+                            <i class="fas fa-eye" id="edit-password-toggle"></i>
+                        </button>
+                    </div>
+                    <small style="color: #718096;">Laissez vide pour conserver le mot de passe actuel</small>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="success-message" class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span id="success-text"></span>
+    </div>
+    
+    <!-- Error Message -->
+    <div id="error-message" class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="error-text"></span>
+    </div>
+    
+    <!-- Assign Gmail Modal -->
+    <div id="assign-gmail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assigner le compte Gmail</h2>
+                <button class="close-btn" onclick="closeAssignGmailModal()">×</button>
+            </div>
+            <form id="assign-gmail-form" onsubmit="assignGmailToVA(event)">
+                <input type="hidden" id="assign-gmail-id">
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem;">
+                    <p style="margin: 0;">Compte Gmail : <strong id="assign-gmail-email"></strong></p>
+                </div>
+                <div class="form-group">
+                    <label for="assign-gmail-va-select">Choisir le VA</label>
+                    <select id="assign-gmail-va-select" class="form-control" required>
+                        <option value="">-- Choisir un VA --</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check"></i> Assigner
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeAssignGmailModal()">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Assign Gmail to Twitter Modal -->
+    <div id="assign-gmail-twitter-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assigner un Gmail au compte Twitter</h2>
+                <button class="close-btn" onclick="closeAssignGmailTwitterModal()">×</button>
+            </div>
+            <form id="assign-gmail-twitter-form" onsubmit="assignGmailToTwitter(event)">
+                <input type="hidden" id="assign-twitter-va-id">
+                <input type="hidden" id="assign-twitter-creator-id">
+                <input type="hidden" id="assign-twitter-username">
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #e0f2fe; border-radius: 0.5rem;">
+                    <p style="margin: 0;">Compte Twitter : <strong id="assign-twitter-display"></strong></p>
+                </div>
+                <div class="form-group">
+                    <label for="assign-twitter-gmail-select">Choisir un compte Gmail disponible</label>
+                    <select id="assign-twitter-gmail-select" class="form-control" required>
+                        <option value="">-- Choisir un Gmail --</option>
+                    </select>
+                    <small style="color: #718096; display: block; margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Le Gmail sera automatiquement assigné au même VA que le compte Twitter.
+                    </small>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check"></i> Assigner
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeAssignGmailTwitterModal()">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Update Followers Modal -->
+    <div id="update-followers-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Mettre à jour les Followers</h2>
+                <button class="close-btn" onclick="closeUpdateFollowersModal()">×</button>
+            </div>
+            <form id="update-followers-form" onsubmit="saveFollowersUpdate(event)">
+                <input type="hidden" id="followers-username">
+                
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h3 id="followers-account-display" style="color: #1DA1F2; margin: 0;">
+                        <i class="fab fa-twitter"></i> @username
+                    </h3>
+                    <div id="followers-history" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                        <!-- L'historique sera affiché ici -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="followers-count">Nombre de Followers</label>
+                    <input type="number" id="followers-count" class="form-control" required 
+                           placeholder="Ex: 25000" min="0" step="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="followers-date">Date de la mise à jour</label>
+                    <input type="date" id="followers-date" class="form-control" required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn cancel-btn" onclick="closeUpdateFollowersModal()">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn submit-btn">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Graphique d'évolution -->
+            <div id="followers-chart-container" style="margin-top: 2rem; display: none;">
+                <h4 style="margin-bottom: 1rem;">Évolution des Followers</h4>
+                <canvas id="followers-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Gmail Account Modal -->
+    <div id="edit-gmail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier le compte Gmail</h2>
+                <button class="close-btn" onclick="closeEditGmailModal()">×</button>
+            </div>
+            <form id="edit-gmail-form" onsubmit="saveEditedGmail(event)">
+                <input type="hidden" id="edit-gmail-id">
+                
+                <div class="form-group">
+                    <label for="edit-gmail-email">Email Gmail</label>
+                    <input type="email" id="edit-gmail-email" class="form-control" required placeholder="example@gmail.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-gmail-password">Mot de passe</label>
+                    <div style="position: relative;">
+                        <input type="password" id="edit-gmail-password" class="form-control" required style="padding-right: 2.5rem;">
+                        <button type="button" onclick="toggleEditPasswordVisibility()" 
+                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); 
+                                       background: none; border: none; cursor: pointer; color: #6b7280; 
+                                       padding: 0.5rem; font-size: 1rem; transition: color 0.2s ease;"
+                                onmouseover="this.style.color='#3b82f6'"
+                                onmouseout="this.style.color='#6b7280'">
+                            <i id="edit-password-toggle-icon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn cancel-btn" onclick="closeEditGmailModal()">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn submit-btn">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reassign Twitter Account Modal -->
+    <div id="reassign-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Réassigner le compte Twitter</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <form id="reassign-form" onsubmit="reassignTwitterAccount(event)">
+                <input type="hidden" id="reassign-account-id">
+                
+                <div class="form-group">
+                    <label>Compte Twitter</label>
+                    <input type="text" id="reassign-username" class="form-control" readonly style="background: #f3f4f6;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="reassign-creator">Créatrice</label>
+                    <select id="reassign-creator" class="form-control" required>
+                        <option value="">Sélectionner une créatrice</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reassign-gmail">Compte Gmail</label>
+                    <select id="reassign-gmail" class="form-control" required>
+                        <option value="">Sélectionner un compte Gmail</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reassign-va">Virtual Assistant</label>
+                    <select id="reassign-va" class="form-control" required>
+                        <option value="">Sélectionner un VA</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check"></i> Réassigner
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3>Détails du compte</h3>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Add Subs Modal -->
+    <div id="add-subs-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddSubsModal()">&times;</span>
+            <h3>Ajouter des subs</h3>
+            <form id="add-subs-form">
+                <div class="form-group">
+                    <label for="subs-va-select">Sélectionner le VA</label>
+                    <select id="subs-va-select" required>
+                        <option value="">-- Choisir un VA --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subs-date">Date</label>
+                    <input type="date" id="subs-date" required value="">
+                </div>
+                <div class="form-group">
+                    <label for="subs-count">Nombre de subs</label>
+                    <input type="number" id="subs-count" min="1" required placeholder="Ex: 10">
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Revenue Modal -->
+    <div id="add-revenue-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddRevenueModal()">&times;</span>
+            <h3>Ajouter des Revenus</h3>
+            <form id="add-revenue-form">
+                <div class="form-group">
+                    <label for="revenue-va-select">Sélectionner le VA</label>
+                    <select id="revenue-va-select" required>
+                        <option value="">-- Choisir un VA --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="revenue-date">Date</label>
+                    <input type="date" id="revenue-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="revenue-amount">Montant des ventes ($)</label>
+                    <input type="number" id="revenue-amount" min="0" step="0.01" required placeholder="Ex: 150.00">
+                </div>
+                <div class="form-group">
+                    <label>Taux de change en temps réel</label>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span id="exchange-rate-display" style="font-size: 1.25rem; font-weight: 600; color: #667eea;">1$ = 0.92€</span>
+                        <button type="button" onclick="updateExchangeRate()" class="action-btn view-btn" style="padding: 0.5rem 1rem;">
+                            <i class="fas fa-sync"></i> Actualiser
+                        </button>
+                    </div>
+                    <small id="rate-update-time" style="color: #64748b;">Chargement...</small>
+                    <input type="hidden" id="exchange-rate" value="0.92">
+                </div>
+                <div class="form-group">
+                    <label for="tracking-link">Lien de tracking (optionnel)</label>
+                    <input type="text" id="tracking-link" placeholder="Ex: track123">
+                </div>
+                <div class="form-group">
+                    <label for="revenue-description">Description</label>
+                    <input type="text" id="revenue-description" placeholder="Ex: Ventes OnlyFans semaine 1">
+                </div>
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+                    <p><strong>Montant en EUR:</strong> <span id="amount-in-eur">0.00€</span></p>
+                    <p><strong>Commission calculée:</strong> <span id="calculated-commission">0.00€</span> (5%)</p>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pay Commission Modal -->
+    <div id="pay-commission-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePayCommissionModal()">&times;</span>
+            <h3>Payer une Commission</h3>
+            <form id="pay-commission-form">
+                <div class="form-group">
+                    <label for="payment-va-select">Sélectionner le VA</label>
+                    <select id="payment-va-select" required>
+                        <option value="">-- Choisir un VA --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="payment-date">Date du paiement</label>
+                    <input type="date" id="payment-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment-amount">Montant payé (€)</label>
+                    <input type="number" id="payment-amount" min="0" step="0.01" required placeholder="Ex: 50.00">
+                </div>
+                <div class="form-group">
+                    <label for="payment-period">Période couverte</label>
+                    <input type="text" id="payment-period" required placeholder="Ex: Semaine 1-7 Janvier">
+                </div>
+                <div id="va-outstanding-info" style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; display: none;">
+                    <p><strong>Commissions dues pour ce VA:</strong> <span id="outstanding-amount">0.00€</span></p>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check-circle"></i> Confirmer le paiement
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler
+        window.addEventListener('error', function(e) {
