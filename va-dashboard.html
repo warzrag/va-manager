@@ -1128,10 +1128,11 @@
                         sessionData.instagramAccounts = parsed.instagramAccounts || [];
                         sessionData.twitterAccounts = parsed.twitterAccounts || [];
 
-                        // Mettre à jour warmup progress
-                        if (warmupData) {
-                            sessionData.warmupProgress = JSON.parse(warmupData);
-                        }
+                        // Mettre à jour warmup progress - DÉSACTIVÉ, on utilise Supabase
+                        // if (warmupData) {
+                        //     sessionData.warmupProgress = JSON.parse(warmupData);
+                        // }
+                        console.log('⚠️ Warmup localStorage ignoré - utilise Supabase uniquement');
 
                         // Rafraîchir l'affichage si l'utilisateur est connecté
                         if (currentVA && document.getElementById('dashboard-screen').style.display === 'block') {
@@ -1953,8 +1954,8 @@
                     console.log(`✅ Warmup advanced to day ${newDay}/6`);
                 }
 
-                // Update localStorage for local sync
-                localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
+                // Update localStorage for local sync - DÉSACTIVÉ, Supabase est la source de vérité
+                // localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
 
                 // Send notification via BroadcastChannel for local tabs
                 if (syncChannel) {
@@ -2021,8 +2022,8 @@
                     console.log(`✅ Warmup completed for ${username}`);
                 }
 
-                // Update localStorage for local sync
-                localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
+                // Update localStorage for local sync - DÉSACTIVÉ, Supabase est la source de vérité
+                // localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
 
                 // Send notification via BroadcastChannel for local tabs
                 if (syncChannel) {
