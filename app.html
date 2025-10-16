@@ -5303,6 +5303,20 @@
                     created: stat.created_at
                 }));
 
+                // Load warmup progress from Supabase
+                data.warmupProgress = {};
+                (allData.warmupProgress || []).forEach(w => {
+                    data.warmupProgress[w.username] = {
+                        currentDay: w.current_day,
+                        completed: w.completed,
+                        startDate: w.start_date,
+                        completedDate: w.completed_date,
+                        lastUpdate: w.last_update
+                    };
+                });
+
+                console.log('✅ Warmup progress loaded from Supabase:', Object.keys(data.warmupProgress).length, 'accounts');
+
                 // Populate Twitter accounts into creators' accounts arrays
                 console.log('🔄 Populating creator.accounts from data.twitterAccounts...');
                 console.log('   📊 AVANT - data.twitterAccounts.length:', data.twitterAccounts.length);
@@ -19082,28 +19096,17 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // Initialize warmup data structure
         function initializeWarmupData() {
             if (!data.warmupProgress) {
-                // Charger les données de warmup depuis localStorage
-                const savedWarmup = localStorage.getItem('warmupProgress');
-                if (savedWarmup) {
-                    try {
-                        data.warmupProgress = JSON.parse(savedWarmup);
-                        console.log('✅ Données de warmup chargées:', data.warmupProgress);
-                    } catch (e) {
-                        console.error('Erreur lors du chargement des données warmup:', e);
-                        data.warmupProgress = {};
-                    }
-                } else {
-                    data.warmupProgress = {};
-                }
+                // Initialize empty if not loaded from Supabase yet
+                data.warmupProgress = {};
+                console.log('⚠️ Warmup data not loaded from Supabase, initializing empty object');
             }
         }
 
-        // Sauvegarder les données de warmup
-        function saveWarmupData() {
-            if (data.warmupProgress) {
-                localStorage.setItem('warmupProgress', JSON.stringify(data.warmupProgress));
-                console.log('💾 Warmup progress sauvegardé');
-            }
+        // Sauvegarder les données de warmup dans Supabase
+        async function saveWarmupData() {
+            // This function is deprecated - warmup is now saved directly via upsertWarmupProgress
+            // Keeping for compatibility but it does nothing
+            console.log('⚠️ saveWarmupData() called but warmup is now saved directly to Supabase');
         }
 
         // Update warmup display
@@ -19508,45 +19511,104 @@ Tapez "SUPPRIMER" pour confirmer :`;
         }
 
         // Start warmup for an account
-        function startWarmup(username) {
+        async function startWarmup(username) {
             initializeWarmupData();
 
+            const timestamp = new Date().toISOString();
             data.warmupProgress[username] = {
                 currentDay: 1,
-                startDate: new Date().toISOString(),
-                completed: false
+                startDate: timestamp,
+                completed: false,
+                lastUpdate: timestamp
             };
 
-            saveWarmupData(); // Sauvegarder les données de warmup
+            // Save to Supabase
+            try {
+                await upsertWarmupProgress({
+                    username: username,
+                    current_day: 1,
+                    completed: false,
+                    start_date: timestamp
+                });
+                console.log('✅ Warmup démarré dans Supabase pour', username);
+            } catch (error) {
+                console.error('❌ Erreur lors du démarrage du warmup:', error);
+                showError('Erreur lors du démarrage du warmup');
+                return;
+            }
+
             updateWarmupDisplay();
             showSuccess(`Warm-up démarré pour @${username} - Jour 1`);
             showWarmupTasks(1, username);
         }
 
         // Complete current day
-        function completeDay(username) {
+        async function completeDay(username) {
             if (!data.warmupProgress[username]) return;
 
             const currentDay = data.warmupProgress[username].currentDay;
+            const timestamp = new Date().toISOString();
 
             if (currentDay < 6) {
+                // Advance to next day
                 data.warmupProgress[username].currentDay++;
+                data.warmupProgress[username].lastUpdate = timestamp;
+
+                try {
+                    await upsertWarmupProgress({
+                        username: username,
+                        current_day: data.warmupProgress[username].currentDay,
+                        completed: false,
+                        start_date: data.warmupProgress[username].startDate
+                    });
+                    console.log('✅ Warmup avancé au jour', data.warmupProgress[username].currentDay);
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'avancement du warmup:', error);
+                    showError('Erreur lors de l\'avancement du warmup');
+                    return;
+                }
+
                 showSuccess(`Jour ${currentDay} terminé ! Passage au jour ${currentDay + 1}`);
             } else {
+                // Complete warmup
                 data.warmupProgress[username].completed = true;
+                data.warmupProgress[username].completedDate = timestamp;
+                data.warmupProgress[username].lastUpdate = timestamp;
+
+                try {
+                    await upsertWarmupProgress({
+                        username: username,
+                        current_day: 6,
+                        completed: true,
+                        start_date: data.warmupProgress[username].startDate,
+                        completed_date: timestamp
+                    });
+                    console.log('✅ Warmup terminé dans Supabase');
+                } catch (error) {
+                    console.error('❌ Erreur lors de la finalisation du warmup:', error);
+                    showError('Erreur lors de la finalisation du warmup');
+                    return;
+                }
+
                 showSuccess(`🎉 Warm-up terminé pour @${username} !`);
             }
 
-            saveWarmupData(); // Sauvegarder les données de warmup
             updateWarmupDisplay();
         }
 
         // Reset warmup for an account
-        function resetWarmup(username) {
+        async function resetWarmup(username) {
             if (confirm(`Êtes-vous sûr de vouloir réinitialiser le warm-up pour @${username} ?`)) {
                 if (data.warmupProgress[username]) {
-                    delete data.warmupProgress[username];
-                    saveWarmupData(); // Sauvegarder les données de warmup
+                    try {
+                        await deleteWarmupProgress(username);
+                        delete data.warmupProgress[username];
+                        console.log('✅ Warmup supprimé de Supabase pour', username);
+                    } catch (error) {
+                        console.error('❌ Erreur lors de la suppression du warmup:', error);
+                        showError('Erreur lors de la suppression du warmup');
+                        return;
+                    }
                     updateWarmupDisplay();
                     showSuccess(`Warm-up réinitialisé pour @${username}`);
                 }
@@ -19554,10 +19616,21 @@ Tapez "SUPPRIMER" pour confirmer :`;
         }
 
         // Reset all warmups
-        function resetAllWarmups() {
+        async function resetAllWarmups() {
             if (confirm('Êtes-vous sûr de vouloir réinitialiser TOUS les warm-ups ?')) {
-                data.warmupProgress = {};
-                saveWarmupData(); // Sauvegarder les données de warmup
+                // Delete all warmup entries from Supabase
+                const usernames = Object.keys(data.warmupProgress);
+                try {
+                    for (const username of usernames) {
+                        await deleteWarmupProgress(username);
+                    }
+                    data.warmupProgress = {};
+                    console.log('✅ Tous les warmups supprimés de Supabase');
+                } catch (error) {
+                    console.error('❌ Erreur lors de la suppression des warmups:', error);
+                    showError('Erreur lors de la suppression des warmups');
+                    return;
+                }
                 updateWarmupDisplay();
                 showSuccess('Tous les warm-ups ont été réinitialisés');
             }

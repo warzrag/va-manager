@@ -2313,6 +2313,95 @@ async function deleteInstagramStat(statId) {
 }
 
 // ============================================================================
+// WARMUP PROGRESS FUNCTIONS
+// ============================================================================
+
+/**
+ * Get all warmup progress entries
+ * @returns {Promise<Array>}
+ */
+async function getWarmupProgress() {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const { data, error } = await supabase
+      .from('warmup_progress')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    console.log(`✅ Retrieved ${data.length} warmup progress entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting warmup progress:', error);
+    throw error;
+  }
+}
+
+/**
+ * Upsert warmup progress entry
+ * @param {Object} warmupData - { username, current_day, completed, start_date, completed_date }
+ * @returns {Promise<Object>}
+ */
+async function upsertWarmupProgress(warmupData) {
+  try {
+    const organizationId = await getOrganizationId();
+    const timestamp = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('warmup_progress')
+      .upsert({
+        username: warmupData.username.replace('@', ''),
+        organization_id: organizationId,
+        current_day: warmupData.current_day,
+        completed: warmupData.completed || false,
+        start_date: warmupData.start_date || timestamp,
+        completed_date: warmupData.completed_date || null,
+        last_update: timestamp
+      }, {
+        onConflict: 'username,organization_id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✅ Warmup progress upserted:', data.username, `Day ${data.current_day}`);
+    return data;
+  } catch (error) {
+    console.error('❌ Error upserting warmup progress:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete warmup progress entry
+ * @param {string} username
+ * @returns {Promise<boolean>}
+ */
+async function deleteWarmupProgress(username) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const { error } = await supabase
+      .from('warmup_progress')
+      .delete()
+      .eq('username', username.replace('@', ''))
+      .eq('organization_id', organizationId);
+
+    if (error) throw error;
+
+    console.log('✅ Warmup progress deleted:', username);
+    return true;
+  } catch (error) {
+    console.error('❌ Error deleting warmup progress:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
@@ -2402,7 +2491,8 @@ async function getAllUserData() {
       subscriptions,
       revenues,
       payments,
-      twitterStats
+      twitterStats,
+      warmupProgress
     ] = await Promise.all([
       getVAs(),
       getCreators(),
@@ -2412,7 +2502,8 @@ async function getAllUserData() {
       getSubscriptions(),
       getRevenues(),
       getPayments(),
-      getTwitterStats()
+      getTwitterStats(),
+      getWarmupProgress()
     ]);
 
     // Get VA-Creator relationships - IN PARALLEL
@@ -2439,7 +2530,8 @@ async function getAllUserData() {
       subscriptions,
       revenues,
       payments,
-      twitterStats
+      twitterStats,
+      warmupProgress
     };
   } catch (error) {
     console.error('❌ Error getting all user data:', error);
