@@ -1212,36 +1212,63 @@
 
         async function attemptLogin(email, password) {
             try {
-                // Load data from localStorage or Supabase
-                await loadData();
+                console.log('🔐 Attempting login for:', email);
 
-                // Find VA by email
-                const va = sessionData.vas.find(v => v.email && v.email.toLowerCase() === email);
+                if (!supabase) {
+                    showError('Connection error. Please try again.');
+                    return;
+                }
 
-                if (!va) {
+                // Find VA by email directly in Supabase
+                const { data: vas, error: vaError } = await supabase
+                    .from('vas')
+                    .select('*')
+                    .ilike('email', email)
+                    .limit(1);
+
+                if (vaError) {
+                    console.error('VA query error:', vaError);
+                    showError('Connection error. Please try again.');
+                    return;
+                }
+
+                if (!vas || vas.length === 0) {
                     showError('Email not found');
                     return;
                 }
 
-                // For now, simple password check (in production, use proper hashing)
-                // Default password is VA name lowercase
-                const expectedPassword = va.password || va.name.toLowerCase().replace(/\s+/g, '');
+                const va = vas[0];
+                console.log('✅ VA found:', va.name);
+
+                // Check password
+                const expectedPassword = va.password || `${va.name.toLowerCase()}123`;
 
                 if (password !== expectedPassword) {
                     showError('Incorrect password');
                     return;
                 }
 
-                // Successful login
-                currentVA = va;
+                // Successful login - save VA and organization
+                currentVA = {
+                    id: va.id,
+                    name: va.name,
+                    email: va.email,
+                    organizationId: va.organization_id
+                };
+
+                console.log('✅ Login successful, organization:', currentVA.organizationId);
 
                 // Save session
                 localStorage.setItem('va_session', JSON.stringify({
                     vaId: va.id,
                     email: email,
                     name: va.name,
+                    organizationId: va.organization_id,
                     loginTime: new Date().toISOString()
                 }));
+
+                // Load data for this organization
+                await loadData();
 
                 // Show dashboard
                 showDashboard();
@@ -1335,77 +1362,106 @@
         }
 
         async function loadData() {
-            // Try to load from Supabase first
-            if (supabase) {
+            // Load from Supabase using currentVA organization
+            if (supabase && currentVA && currentVA.organizationId) {
                 try {
-                    const orgId = await getActiveOrganizationId();
-                    if (!orgId) {
-                        console.log('No organization found, using localStorage');
-                        throw new Error('No organization');
-                    }
+                    const orgId = currentVA.organizationId;
+                    console.log('📂 Loading data for organization:', orgId);
 
                     // Load all data from Supabase tables
-                    const [vasRes, creatorsRes, revenuesRes, subsRes, instagramRes, twitterRes] = await Promise.all([
+                    const [vasRes, creatorsRes, revenuesRes, subsRes, instagramRes, twitterRes, warmupRes] = await Promise.all([
                         supabase.from('vas').select('*').eq('organization_id', orgId),
                         supabase.from('creators').select('*').eq('organization_id', orgId),
                         supabase.from('revenues').select('*').eq('organization_id', orgId),
                         supabase.from('subscriptions').select('*').eq('organization_id', orgId),
                         supabase.from('instagram_accounts').select('*').eq('organization_id', orgId),
-                        supabase.from('twitter_accounts').select('*').eq('organization_id', orgId)
+                        supabase.from('twitter_accounts').select('*').eq('organization_id', orgId),
+                        supabase.from('warmup_progress').select('*').eq('organization_id', orgId)
                     ]);
-
-                    // Load VA credentials from localStorage if not in Supabase
-                    const vaCredentials = JSON.parse(localStorage.getItem('vaCredentials') || '{}');
 
                     sessionData.vas = (vasRes.data || []).map(va => ({
                         id: va.id,
                         name: va.name,
-                        email: va.email || (vaCredentials[va.id] ? vaCredentials[va.id].email : null),
-                        password: va.password || (vaCredentials[va.id] ? vaCredentials[va.id].password : null),
+                        email: va.email,
+                        password: va.password,
                         created: va.created_at
                     }));
 
-                    sessionData.creators = creatorsRes.data || [];
+                    sessionData.creators = (creatorsRes.data || []).map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        created: c.created_at,
+                        vaIds: c.va_ids || [],
+                        accounts: [],
+                        instagramAccounts: []
+                    }));
+
                     sessionData.revenues = revenuesRes.data || [];
                     sessionData.subs = subsRes.data || [];
-                    sessionData.instagramAccounts = instagramRes.data || [];
-                    sessionData.twitterAccounts = twitterRes.data || [];
-                    sessionData.warmupProgress = JSON.parse(localStorage.getItem('warmupProgress') || '{}');
+
+                    sessionData.instagramAccounts = (instagramRes.data || []).map(acc => ({
+                        id: acc.id,
+                        username: acc.username,
+                        password: acc.password,
+                        creatorId: acc.creator_id,
+                        vaId: acc.va_id,
+                        gmailId: acc.gmail_id,
+                        created: acc.created_at
+                    }));
+
+                    sessionData.twitterAccounts = (twitterRes.data || []).map(acc => ({
+                        id: acc.id,
+                        username: acc.username,
+                        password: acc.password,
+                        creatorId: acc.creator_id,
+                        vaId: acc.va_id,
+                        gmailId: acc.gmail_id,
+                        created: acc.created_at
+                    }));
+
+                    // Build creator.instagramAccounts structure
+                    sessionData.creators.forEach(creator => {
+                        creator.instagramAccounts = sessionData.instagramAccounts.filter(acc =>
+                            acc.creatorId === creator.id
+                        ).map(acc => ({
+                            username: acc.username,
+                            password: acc.password,
+                            gmailId: acc.gmailId,
+                            assignedVaId: acc.vaId
+                        }));
+
+                        creator.accounts = sessionData.twitterAccounts.filter(acc =>
+                            acc.creatorId === creator.id
+                        ).map(acc => ({
+                            username: acc.username,
+                            password: acc.password,
+                            gmailId: acc.gmailId,
+                            assignedVaId: acc.vaId
+                        }));
+                    });
+
+                    // Load warmup progress from Supabase
+                    sessionData.warmupProgress = {};
+                    (warmupRes.data || []).forEach(w => {
+                        sessionData.warmupProgress[w.username] = {
+                            currentDay: w.current_day,
+                            completed: w.completed,
+                            startDate: w.start_date,
+                            completedDate: w.completed_date,
+                            lastUpdate: w.last_update
+                        };
+                    });
 
                     console.log('✅ Data loaded from Supabase');
-                    console.log('📊 VAs loaded:', sessionData.vas);
+                    console.log('📊 Creators:', sessionData.creators.length);
+                    console.log('📊 Instagram accounts:', sessionData.instagramAccounts.length);
+                    console.log('📊 Warmup accounts:', Object.keys(sessionData.warmupProgress).length);
                     return;
                 } catch (e) {
-                    console.log('Supabase load failed, trying localStorage:', e.message);
+                    console.error('❌ Supabase load failed:', e);
+                    showError('Failed to load data. Please try again.');
                 }
             }
-
-            // Fallback to localStorage
-            console.log('💾 Trying to load from localStorage...');
-            const localData = localStorage.getItem('vaManagerData');
-
-            if (localData) {
-                console.log('✅ Found localStorage data');
-                const parsed = JSON.parse(localData);
-                sessionData.vas = parsed.vas || [];
-                sessionData.creators = parsed.creators || [];
-                sessionData.revenues = parsed.revenues || [];
-                sessionData.subs = parsed.subs || [];
-                sessionData.instagramAccounts = parsed.instagramAccounts || [];
-                sessionData.twitterAccounts = parsed.twitterAccounts || [];
-                console.log('📊 VAs loaded from localStorage:', sessionData.vas.length, 'VAs');
-
-                // Initialiser le hash pour la détection de changements
-                const warmupData = localStorage.getItem('warmupProgress');
-                const dataString = localData + (warmupData || '');
-                lastDataHash = simpleHash(dataString);
-                console.log('🔐 Hash initial des données:', lastDataHash);
-            } else {
-                console.error('❌ No data found in localStorage!');
-                console.log('💡 Please run this in app.html console:');
-                console.log('localStorage.setItem("vaManagerData", JSON.stringify({vas: data.vas, creators: data.creators, revenues: data.revenues, subs: data.subs, instagramAccounts: data.instagramAccounts, twitterAccounts: data.twitterAccounts}))');
-            }
-            sessionData.warmupProgress = JSON.parse(localStorage.getItem('warmupProgress') || '{}');
         }
 
         function loadDashboardData() {
@@ -1846,7 +1902,7 @@
         // Advance warmup to next day
         async function advanceWarmupDay(username) {
             try {
-                console.log(`⏭️ Avancement du warmup pour ${username}`);
+                console.log(`⏭️ Advancing warmup for ${username}`);
 
                 // Get current progress
                 const progress = sessionData.warmupProgress[username];
@@ -1857,29 +1913,54 @@
 
                 // Advance to next day
                 const newDay = (progress.currentDay || 1) + 1;
+                const timestamp = new Date().toISOString();
+
                 progress.currentDay = newDay;
-                progress.lastUpdate = new Date().toISOString();
+                progress.lastUpdate = timestamp;
 
-                // Update localStorage
+                // Update Supabase
+                if (supabase && currentVA) {
+                    const cleanUsername = username.replace('@', '');
+                    const { error } = await supabase
+                        .from('warmup_progress')
+                        .upsert({
+                            username: cleanUsername,
+                            organization_id: currentVA.organizationId,
+                            current_day: newDay,
+                            completed: false,
+                            last_update: timestamp,
+                            start_date: progress.startDate || timestamp
+                        }, {
+                            onConflict: 'username,organization_id'
+                        });
+
+                    if (error) {
+                        console.error('❌ Supabase update error:', error);
+                        alert('Error saving progress. Please try again.');
+                        return;
+                    }
+
+                    console.log(`✅ Warmup advanced to day ${newDay}/6`);
+                }
+
+                // Update localStorage for local sync
                 localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
-                console.log(`✅ Warmup avancé au jour ${newDay}/21`);
 
-                // Send notification via BroadcastChannel
+                // Send notification via BroadcastChannel for local tabs
                 if (syncChannel) {
                     syncChannel.postMessage({
                         type: 'warmup_updated',
                         username: username,
                         currentDay: newDay,
                         completed: false,
-                        timestamp: new Date().toISOString()
+                        timestamp: timestamp
                     });
-                    console.log('📡 Notification warmup envoyée à app.html');
                 }
 
                 // Refresh display
                 loadWarmupAccounts();
             } catch (error) {
-                console.error('❌ Erreur lors de l\'avancement:', error);
+                console.error('❌ Error advancing warmup:', error);
                 alert('Error advancing warmup');
             }
         }
@@ -1891,37 +1972,64 @@
             }
 
             try {
-                console.log(`🎉 Fin du warmup pour ${username}`);
+                console.log(`🎉 Completing warmup for ${username}`);
 
                 // Mark as completed
                 const progress = sessionData.warmupProgress[username];
+                const timestamp = new Date().toISOString();
+
                 if (progress) {
                     progress.completed = true;
-                    progress.completedDate = new Date().toISOString();
+                    progress.completedDate = timestamp;
                     progress.currentDay = 6;
+                    progress.lastUpdate = timestamp;
                 }
 
-                // Update localStorage
-                localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
-                console.log(`✅ Warmup terminé pour ${username}`);
+                // Update Supabase
+                if (supabase && currentVA) {
+                    const cleanUsername = username.replace('@', '');
+                    const { error } = await supabase
+                        .from('warmup_progress')
+                        .upsert({
+                            username: cleanUsername,
+                            organization_id: currentVA.organizationId,
+                            current_day: 6,
+                            completed: true,
+                            completed_date: timestamp,
+                            last_update: timestamp,
+                            start_date: progress?.startDate || timestamp
+                        }, {
+                            onConflict: 'username,organization_id'
+                        });
 
-                // Send notification via BroadcastChannel
+                    if (error) {
+                        console.error('❌ Supabase update error:', error);
+                        alert('Error saving completion. Please try again.');
+                        return;
+                    }
+
+                    console.log(`✅ Warmup completed for ${username}`);
+                }
+
+                // Update localStorage for local sync
+                localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
+
+                // Send notification via BroadcastChannel for local tabs
                 if (syncChannel) {
                     syncChannel.postMessage({
                         type: 'warmup_updated',
                         username: username,
                         currentDay: 6,
                         completed: true,
-                        timestamp: new Date().toISOString()
+                        timestamp: timestamp
                     });
-                    console.log('📡 Notification warmup envoyée à app.html');
                 }
 
                 // Refresh display
                 loadWarmupAccounts();
                 alert(`🎉 Warm-up complete for ${username}!`);
             } catch (error) {
-                console.error('❌ Erreur lors de la finalisation:', error);
+                console.error('❌ Error completing warmup:', error);
                 alert('Error completing warmup');
             }
         }

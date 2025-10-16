@@ -11752,8 +11752,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         }
 
                         // Compter les comptes Twitter et Instagram
-                        const twitterAccounts = data.twitterAccounts ? data.twitterAccounts.filter(acc => acc.creator_id === creatorData?.id).length : 0;
-                        const instagramAccounts = data.instagramAccounts ? data.instagramAccounts.filter(acc => acc.creator_id === creatorData?.id).length : 0;
+                        const twitterAccounts = data.twitterAccounts ? data.twitterAccounts.filter(acc => acc.creatorId === creatorData?.id).length : 0;
+                        const instagramAccounts = data.instagramAccounts ? data.instagramAccounts.filter(acc => acc.creatorId === creatorData?.id).length : 0;
 
                         return `
                             <div style="
