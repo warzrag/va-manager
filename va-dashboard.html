@@ -1368,10 +1368,11 @@
                     const orgId = currentVA.organizationId;
                     console.log('📂 Loading data for organization:', orgId);
 
-                    // Load all data from Supabase tables
-                    const [vasRes, creatorsRes, revenuesRes, subsRes, instagramRes, twitterRes, warmupRes] = await Promise.all([
+                    // Load all data from Supabase tables including creator_vas junction table
+                    const [vasRes, creatorsRes, creatorVasRes, revenuesRes, subsRes, instagramRes, twitterRes, warmupRes] = await Promise.all([
                         supabase.from('vas').select('*').eq('organization_id', orgId),
                         supabase.from('creators').select('*').eq('organization_id', orgId),
+                        supabase.from('creator_vas').select('*').eq('organization_id', orgId),
                         supabase.from('revenues').select('*').eq('organization_id', orgId),
                         supabase.from('subscriptions').select('*').eq('organization_id', orgId),
                         supabase.from('instagram_accounts').select('*').eq('organization_id', orgId),
@@ -1387,11 +1388,20 @@
                         created: va.created_at
                     }));
 
+                    // Build vaIds from creator_vas junction table
+                    const creatorVasMap = {};
+                    (creatorVasRes.data || []).forEach(cv => {
+                        if (!creatorVasMap[cv.creator_id]) {
+                            creatorVasMap[cv.creator_id] = [];
+                        }
+                        creatorVasMap[cv.creator_id].push(cv.va_id);
+                    });
+
                     sessionData.creators = (creatorsRes.data || []).map(c => ({
                         id: c.id,
                         name: c.name,
                         created: c.created_at,
-                        vaIds: c.va_ids || [],
+                        vaIds: creatorVasMap[c.id] || [],
                         accounts: [],
                         instagramAccounts: []
                     }));
