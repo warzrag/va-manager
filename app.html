@@ -8570,41 +8570,84 @@
                 });
 
                 // Convertir en array et trier par followers_count
-                const topAccounts = Array.from(accountsMap.values())
-                    .sort((a, b) => b.followers_count - a.followers_count)
-                    .slice(0, 10); // Top 10 comptes
+                const allAccounts = Array.from(accountsMap.values())
+                    .sort((a, b) => b.followers_count - a.followers_count);
 
-                badge.textContent = `${topAccounts.length} compte${topAccounts.length > 1 ? 's' : ''}`;
+                badge.textContent = `${allAccounts.length} compte${allAccounts.length > 1 ? 's' : ''}`;
 
-                // Générer les cartes
-                container.innerHTML = topAccounts.map((stat, index) => {
-                    const rank = index + 1;
-                    const instagramUrl = `https://instagram.com/${stat.username.replace('@', '')}`;
-
-                    // Trouver le nom de la créatrice
+                // Grouper par créatrice
+                const accountsByCreator = new Map();
+                allAccounts.forEach(stat => {
                     const instagramAccount = data.instagramAccounts.find(acc =>
                         acc.username.toLowerCase() === stat.username.toLowerCase()
                     );
                     const creator = instagramAccount ? data.creators.find(c => c.id === instagramAccount.creatorId) : null;
-                    const va = instagramAccount && instagramAccount.vaId ? data.vas.find(v => v.id === instagramAccount.vaId) : null;
+                    const creatorName = creator ? creator.name : 'Sans créatrice';
 
-                    // Badge de classement
-                    let rankBadge = '';
-                    if (rank === 1) {
-                        rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); z-index: 10;">
-                            <i class="fas fa-crown" style="color: white; font-size: 1rem;"></i>
-                        </div>`;
-                    } else if (rank === 2) {
-                        rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(156, 163, 175, 0.4); z-index: 10;">
-                            <i class="fas fa-medal" style="color: white; font-size: 1rem;"></i>
-                        </div>`;
-                    } else if (rank === 3) {
-                        rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4); z-index: 10;">
-                            <i class="fas fa-award" style="color: white; font-size: 1rem;"></i>
-                        </div>`;
+                    if (!accountsByCreator.has(creatorName)) {
+                        accountsByCreator.set(creatorName, []);
                     }
+                    accountsByCreator.get(creatorName).push({ stat, instagramAccount });
+                });
 
-                    return `
+                // Générer les sections par créatrice
+                let html = '';
+                let globalRank = 1;
+
+                accountsByCreator.forEach((accounts, creatorName) => {
+                    html += `
+                        <div style="grid-column: 1 / -1; margin-top: ${globalRank > 1 ? '2rem' : '0'}; margin-bottom: 1rem;">
+                            <h3 style="
+                                font-size: 1.25rem;
+                                font-weight: 700;
+                                color: ${isDarkMode ? '#f1f5f9' : '#1f2937'};
+                                padding-bottom: 0.5rem;
+                                border-bottom: 2px solid ${isDarkMode ? 'rgba(193, 53, 132, 0.3)' : 'rgba(193, 53, 132, 0.2)'};
+                            ">
+                                <i class="fas fa-user" style="color: #c13584; margin-right: 0.5rem;"></i>
+                                ${creatorName}
+                                <span style="font-size: 0.875rem; font-weight: 500; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; margin-left: 0.5rem;">
+                                    (${accounts.length} compte${accounts.length > 1 ? 's' : ''})
+                                </span>
+                            </h3>
+                        </div>
+                    `;
+
+                    accounts.slice(0, 10).forEach(({ stat, instagramAccount }, index) => {
+                        const rank = globalRank++;
+                        html += generateInstagramCard(stat, instagramAccount, rank, isDarkMode);
+                    });
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('❌ Error updating Instagram top accounts:', error);
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">Erreur lors du chargement des comptes Instagram</div>`;
+            }
+        }
+
+        function generateInstagramCard(stat, instagramAccount, rank, isDarkMode) {
+            const instagramUrl = `https://instagram.com/${stat.username.replace('@', '')}`;
+            const creator = instagramAccount ? data.creators.find(c => c.id === instagramAccount.creatorId) : null;
+            const va = instagramAccount && instagramAccount.vaId ? data.vas.find(v => v.id === instagramAccount.vaId) : null;
+
+            // Badge de classement
+            let rankBadge = '';
+            if (rank === 1) {
+                rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); z-index: 10;">
+                    <i class="fas fa-crown" style="color: white; font-size: 1rem;"></i>
+                </div>`;
+            } else if (rank === 2) {
+                rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(156, 163, 175, 0.4); z-index: 10;">
+                    <i class="fas fa-medal" style="color: white; font-size: 1rem;"></i>
+                </div>`;
+            } else if (rank === 3) {
+                rankBadge = `<div style="position: absolute; top: -8px; left: -8px; width: 36px; height: 36px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4); z-index: 10;">
+                    <i class="fas fa-award" style="color: white; font-size: 1rem;"></i>
+                </div>`;
+            }
+
+            return `
                         <div style="
                             position: relative;
                             background: ${isDarkMode ? 'linear-gradient(135deg, #16181d 0%, #1a1d23 100%)' : 'white'};
@@ -8695,17 +8738,6 @@
                             </div>
                         </div>
                     `;
-                }).join('');
-
-            } catch (error) {
-                console.error('❌ Error loading Instagram stats:', error);
-                container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #ef4444;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                        <p style="font-size: 1.125rem;">Erreur lors du chargement des statistiques</p>
-                    </div>
-                `;
-            }
         }
 
         // Populate Instagram accounts dropdown in stats form
