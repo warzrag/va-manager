@@ -1766,6 +1766,9 @@
         function loadWarmupAccounts() {
             const vaId = currentVA.id;
 
+            console.log('🔍 Loading warmup accounts for VA:', currentVA.name, vaId);
+            console.log('📊 Total warmup in progress:', Object.keys(sessionData.warmupProgress).length);
+
             // Get Instagram accounts in warmup assigned to this VA
             const warmupAccounts = Object.entries(sessionData.warmupProgress)
                 .filter(([username, progress]) => {
@@ -1778,13 +1781,16 @@
                         if (creator.vaIds && creator.vaIds.includes(vaId)) {
                             // This creator is assigned to this VA
                             const account = (creator.instagramAccounts || []).find(acc =>
-                                acc.username.replace('@', '') === username &&
-                                acc.assignedVaId === vaId
+                                acc.username.replace('@', '') === username
                             );
                             if (account) {
-                                foundAccount = account;
-                                assignedToThisVA = true;
-                                break;
+                                console.log(`✅ Found warmup account: ${username} in creator ${creator.name}, assignedVaId: ${account.assignedVaId}, currentVA: ${vaId}, match: ${account.assignedVaId === vaId}`);
+                                // Match if account is assigned to this VA
+                                if (account.assignedVaId === vaId) {
+                                    foundAccount = account;
+                                    assignedToThisVA = true;
+                                    break;
+                                }
                             }
                         }
                     }
