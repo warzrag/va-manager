@@ -3297,6 +3297,20 @@
                         <label for="va-name">Prénom du VA</label>
                         <input type="text" id="va-name" required placeholder="Ex: Hugo">
                     </div>
+                    <div class="form-group">
+                        <label for="va-email">Email de connexion</label>
+                        <input type="email" id="va-email" required placeholder="hugo@example.com">
+                        <small style="color: #64748b; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                            <i class="fas fa-info-circle"></i> Email pour se connecter au dashboard VA
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="va-password">Mot de passe</label>
+                        <input type="password" id="va-password" required placeholder="Mot de passe">
+                        <small style="color: #64748b; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                            <i class="fas fa-lock"></i> Minimum 6 caractères
+                        </small>
+                    </div>
                     <button type="submit" class="submit-btn">
                         <i class="fas fa-plus"></i> Ajouter VA
                     </button>
@@ -5188,9 +5202,14 @@
                 console.log(`✅ Data loaded in ${loadTime}s`);
 
                 // Map Supabase data to local data structure
+                // Load VA credentials from localStorage if not in Supabase
+                const vaCredentials = JSON.parse(localStorage.getItem('vaCredentials') || '{}');
+
                 data.vas = allData.vas.map(va => ({
                     id: va.id,
                     name: va.name,
+                    email: va.email || (vaCredentials[va.id] ? vaCredentials[va.id].email : null),
+                    password: va.password || (vaCredentials[va.id] ? vaCredentials[va.id].password : null),
                     created: va.created_at
                 }));
 
@@ -5402,9 +5421,13 @@
 
         // Save data wrapper (calls Supabase instead of localStorage)
         async function saveData() {
-            // This function now does nothing since all operations save directly to Supabase
-            // Keeping it for compatibility with existing code
-            console.log('💾 Data auto-saved to Supabase');
+            // All save operations now happen directly in Supabase via create/update functions
+            // This function is kept for compatibility and syncs to VA Dashboard
+            console.log('💾 saveData() called - all changes auto-saved to Supabase');
+
+            // Auto-sync to localStorage for VA Dashboard
+            syncToVADashboard();
+
             return true;
         }
 
@@ -5616,6 +5639,171 @@
         // Marquer que les données ont été modifiées
         function markDataModified() {
             lastSaveTime = Date.now();
+        }
+
+        // BroadcastChannel pour notifier le dashboard VA
+        let appSyncChannel = null;
+
+        // Initialiser le BroadcastChannel une seule fois
+        try {
+            if (!appSyncChannel) {
+                appSyncChannel = new BroadcastChannel('va_dashboard_sync');
+                console.log('✅ BroadcastChannel initialisé dans app.html');
+
+                // Écouter les notifications du dashboard VA
+                appSyncChannel.onmessage = (event) => {
+                    console.log('📡 Message reçu du dashboard VA:', event.data);
+
+                    if (event.data.type === 'account_deleted') {
+                        handleAccountDeleted(event.data);
+                    } else if (event.data.type === 'warmup_updated') {
+                        handleWarmupUpdated(event.data);
+                    }
+                };
+            }
+        } catch (e) {
+            console.warn('⚠️ BroadcastChannel non supporté');
+        }
+
+        // Handle account deletion from VA dashboard
+        async function handleAccountDeleted(deleteData) {
+            const { platform, username, creatorId } = deleteData;
+            console.log(`🗑️ Suppression reçue: ${platform} ${username}`);
+
+            try {
+                // Find creator
+                const creator = data.creators.find(c => c.id === creatorId);
+                if (!creator) {
+                    console.error('❌ Créatrice non trouvée:', creatorId);
+                    return;
+                }
+
+                if (platform === 'instagram') {
+                    // Remove from creator.instagramAccounts
+                    if (creator.instagramAccounts) {
+                        creator.instagramAccounts = creator.instagramAccounts.filter(acc =>
+                            acc.username !== username
+                        );
+                        console.log(`✅ Supprimé de creator.instagramAccounts: ${username}`);
+                    }
+
+                    // Remove from data.instagramAccounts
+                    const accountToDelete = data.instagramAccounts.find(acc => acc.username === username);
+                    if (accountToDelete) {
+                        data.instagramAccounts = data.instagramAccounts.filter(acc =>
+                            acc.username !== username
+                        );
+                        console.log(`✅ Supprimé de data.instagramAccounts: ${username}`);
+
+                        // Delete from Supabase if account has an ID
+                        if (accountToDelete.id) {
+                            await window.deleteInstagramAccount(accountToDelete.id);
+                            console.log(`✅ Supprimé de Supabase: ${username}`);
+                        }
+                    }
+                } else if (platform === 'twitter') {
+                    // Remove from creator.accounts
+                    if (creator.accounts) {
+                        creator.accounts = creator.accounts.filter(acc =>
+                            acc.username !== username
+                        );
+                        console.log(`✅ Supprimé de creator.accounts: ${username}`);
+                    }
+
+                    // Remove from data.twitterAccounts
+                    const accountToDelete = data.twitterAccounts.find(acc => acc.username === username);
+                    if (accountToDelete) {
+                        data.twitterAccounts = data.twitterAccounts.filter(acc =>
+                            acc.username !== username
+                        );
+                        console.log(`✅ Supprimé de data.twitterAccounts: ${username}`);
+
+                        // Delete from Supabase if account has an ID
+                        if (accountToDelete.id) {
+                            await window.deleteTwitterAccount(accountToDelete.id);
+                            console.log(`✅ Supprimé de Supabase: ${username}`);
+                        }
+                    }
+                }
+
+                // Refresh display
+                updateDisplay();
+                console.log(`✅ Dashboard app.html mis à jour après suppression de ${username}`);
+            } catch (error) {
+                console.error('❌ Erreur lors de la suppression:', error);
+            }
+        }
+
+        // Handle warmup update from VA dashboard
+        async function handleWarmupUpdated(updateData) {
+            const { username, currentDay, completed, timestamp } = updateData;
+            console.log(`📈 Mise à jour warmup reçue: ${username} - Jour ${currentDay}${completed ? ' (Terminé)' : ''}`);
+
+            try {
+                // Load warmup progress from localStorage
+                let warmupProgress = {};
+                const warmupDataStr = localStorage.getItem('warmupProgress');
+                if (warmupDataStr) {
+                    warmupProgress = JSON.parse(warmupDataStr);
+                }
+
+                // Update the specific account's progress
+                const accountKey = username.replace('@', '');
+                if (warmupProgress[accountKey]) {
+                    warmupProgress[accountKey].currentDay = currentDay;
+                    warmupProgress[accountKey].lastUpdate = timestamp;
+                    if (completed) {
+                        warmupProgress[accountKey].completed = true;
+                        warmupProgress[accountKey].completedDate = timestamp;
+                    }
+
+                    // Save back to localStorage
+                    localStorage.setItem('warmupProgress', JSON.stringify(warmupProgress));
+                    console.log(`✅ Warmup mis à jour dans localStorage: ${username} - Jour ${currentDay}/21`);
+
+                    // Refresh display if warmup management is visible
+                    if (typeof updateWarmupDisplay === 'function') {
+                        updateWarmupDisplay();
+                    }
+                } else {
+                    console.warn(`⚠️ Compte warmup non trouvé: ${accountKey}`);
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de la mise à jour du warmup:', error);
+            }
+        }
+
+        // Auto-sync to VA Dashboard localStorage
+        function syncToVADashboard() {
+            try {
+                const vaManagerData = {
+                    vas: data.vas,
+                    creators: data.creators,
+                    revenues: data.revenues,
+                    subs: data.subs,
+                    instagramAccounts: data.instagramAccounts,
+                    twitterAccounts: data.twitterAccounts,
+                    _timestamp: Date.now() // Force le hash à changer
+                };
+
+                const jsonData = JSON.stringify(vaManagerData);
+                localStorage.setItem('vaManagerData', jsonData);
+                console.log('🔄 VA Dashboard synchronized');
+                console.log('   📊 Instagram accounts synced:', data.instagramAccounts.length);
+                console.log('   📊 Creators synced:', data.creators.length);
+                console.log('   📊 Data size:', jsonData.length, 'characters');
+
+                // Notifier les autres onglets via BroadcastChannel
+                if (appSyncChannel) {
+                    appSyncChannel.postMessage({
+                        type: 'data_updated',
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('📡 Notification envoyée aux dashboards ouverts');
+                }
+            } catch (error) {
+                console.error('❌ Error syncing to VA Dashboard:', error);
+            }
         }
         
         function startAutoSave() {
@@ -6933,66 +7121,61 @@
         }
 
         // Save data (now auto-saved to Supabase on each operation)
-        async function saveData() {
-            // All save operations now happen directly in Supabase via create/update functions
-            // This function is kept for compatibility
-            console.log('💾 saveData() called - all changes auto-saved to Supabase');
-            return;
+        // REMOVED DUPLICATE - saveData() is now defined earlier in the file (line ~5423)
 
-            // OLD LOCALSTORAGE CODE - DISABLED
-            /*
-            console.log('💾 SAVE DATA - Début de la sauvegarde...');
-            try {
-                // Reconstruire les creators des VAs avant de sauvegarder
-                console.log('  🔧 Reconstruction des creators des VAs...');
-                rebuildVACreators();
-                
-                // Marquer que les données ont été modifiées
-                console.log('  📝 Marquage des données comme modifiées...');
-                markDataModified();
-                
-                // Animation de sauvegarde
-                animateSaveButton();
-                updateSaveStatus('saving');
-                
-                // Sauvegarde principale
-                await fileDB.saveAllData();
-                
-                // Sauvegarde de sécurité dans localStorage
-                const backupData = {
-                    timestamp: new Date().toISOString(),
-                    data: data
-                };
-                localStorage.setItem('vaManagerProData', JSON.stringify(data));
-                localStorage.setItem('vaManagerProData_backup', JSON.stringify(backupData));
-                
-                // Historique des sauvegardes (garder les 10 dernières)
-                updateBackupHistory(backupData);
-                
-                console.log('  ✅ Sauvegarde complétée');
-                console.log('  🔄 Mise à jour de l\'affichage...');
-                updateDisplay();
-                updateSaveStatus('saved');
-                console.log('💾 SAVE DATA - Terminé');
-                
-                // Auto backup toutes les heures
-                const lastBackup = localStorage.getItem('lastAutoBackup');
-                const now = Date.now();
-                const oneHourMs = 60 * 60 * 1000;
-                
-                if (!lastBackup || (now - parseInt(lastBackup)) > oneHourMs) {
-                    await createAutoBackup();
-                    localStorage.setItem('lastAutoBackup', now.toString());
-                }
-            } catch (error) {
-                console.error('Erreur sauvegarde:', error);
-                updateSaveStatus('error');
-                // Fallback to localStorage only
-                localStorage.setItem('vaManagerProData', JSON.stringify(data));
-                updateDisplay();
+        // OLD LOCALSTORAGE CODE - DISABLED
+        /*
+        console.log('💾 SAVE DATA - Début de la sauvegarde...');
+        try {
+            // Reconstruire les creators des VAs avant de sauvegarder
+            console.log('  🔧 Reconstruction des creators des VAs...');
+            rebuildVACreators();
+
+            // Marquer que les données ont été modifiées
+            console.log('  📝 Marquage des données comme modifiées...');
+            markDataModified();
+
+            // Animation de sauvegarde
+            animateSaveButton();
+            updateSaveStatus('saving');
+
+            // Sauvegarde principale
+            await fileDB.saveAllData();
+
+            // Sauvegarde de sécurité dans localStorage
+            const backupData = {
+                timestamp: new Date().toISOString(),
+                data: data
+            };
+            localStorage.setItem('vaManagerProData', JSON.stringify(data));
+            localStorage.setItem('vaManagerProData_backup', JSON.stringify(backupData));
+
+            // Historique des sauvegardes (garder les 10 dernières)
+            updateBackupHistory(backupData);
+
+            console.log('  ✅ Sauvegarde complétée');
+            console.log('  🔄 Mise à jour de l\'affichage...');
+            updateDisplay();
+            updateSaveStatus('saved');
+            console.log('💾 SAVE DATA - Terminé');
+
+            // Auto backup toutes les heures
+            const lastBackup = localStorage.getItem('lastAutoBackup');
+            const now = Date.now();
+            const oneHourMs = 60 * 60 * 1000;
+
+            if (!lastBackup || (now - parseInt(lastBackup)) > oneHourMs) {
+                await createAutoBackup();
+                localStorage.setItem('lastAutoBackup', now.toString());
             }
-            */
+        } catch (error) {
+            console.error('Erreur sauvegarde:', error);
+            updateSaveStatus('error');
+            // Fallback to localStorage only
+            localStorage.setItem('vaManagerProData', JSON.stringify(data));
+            updateDisplay();
         }
+        */
 
         // Animation du bouton de sauvegarde
         function animateSaveButton() {
@@ -10750,28 +10933,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         }
                         // Compter seulement les comptes Instagram assignés à CE VA
                         if (creator.instagramAccounts) {
-                            console.log(`         🔍 Filtrage Instagram pour VA "${va.name}"`);
-                            console.log(`            - creator.instagramAccounts.length: ${creator.instagramAccounts.length}`);
-                            console.log(`            - creator.vaIds.length: ${creator.vaIds?.length || 0}`);
-
                             const filteredInstagramForThisVA = creator.instagramAccounts.filter(account => {
-                                console.log(`            📸 Compte: ${account.username}`);
-                                console.log(`               - account.assignedVaId: ${account.assignedVaId}`);
-                                console.log(`               - va.id: ${va.id}`);
-                                console.log(`               - Match? ${account.assignedVaId === va.id}`);
-
                                 // Si la créatrice n'a qu'un seul VA, on compte tous ses comptes
                                 if (creator.vaIds && creator.vaIds.length === 1) {
-                                    console.log(`               ✅ Creator a 1 seul VA → ACCEPTÉ`);
                                     return true;
                                 }
                                 // Si la créatrice a plusieurs VAs, on ne compte que les comptes
                                 // explicitement assignés à CE VA
-                                const match = account.assignedVaId === va.id;
-                                console.log(`               ${match ? '✅' : '❌'} Creator a plusieurs VAs → ${match ? 'ACCEPTÉ' : 'REJETÉ'}`);
-                                return match;
+                                return account.assignedVaId === va.id;
                             });
-                            console.log(`         📊 Instagram filtrés pour ce VA: ${filteredInstagramForThisVA.length}/${creator.instagramAccounts.length}`);
                             totalInstagramAccounts += filteredInstagramForThisVA.length;
                         }
                     }
@@ -10794,25 +10964,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 }) : [];
 
                 // Filtrer les comptes Instagram pour ce VA
-                console.log(`      🎯 Filtrage Instagram DISPLAY pour creator "${creator.name}" dans VA "${va.name}"`);
                 const filteredInstagramAccounts = creator.instagramAccounts ? creator.instagramAccounts.filter(account => {
-                    console.log(`        📸 Compte ${account.username}:`);
-                    console.log(`           - assignedVaId: ${account.assignedVaId}`);
-                    console.log(`           - va.id: ${va.id}`);
-                    console.log(`           - creator.vaIds.length: ${creator.vaIds?.length || 0}`);
-
                     // Si la créatrice n'a qu'un seul VA, on affiche tous ses comptes
                     if (creator.vaIds && creator.vaIds.length === 1) {
-                        console.log(`           ✅ 1 seul VA → DISPLAY`);
                         return true;
                     }
                     // Si la créatrice a plusieurs VAs, on n'affiche que les comptes
                     // explicitement assignés à CE VA
-                    const match = account.assignedVaId === va.id;
-                    console.log(`           ${match ? '✅' : '❌'} Plusieurs VAs → ${match ? 'DISPLAY' : 'SKIP'}`);
-                    return match;
+                    return account.assignedVaId === va.id;
                 }) : [];
-                console.log(`      📊 Instagram à afficher: ${filteredInstagramAccounts.length}`);
 
                 const accountsCount = filteredAccounts.length;
                 const instagramCount = filteredInstagramAccounts.length;
@@ -11861,25 +12021,117 @@ Tapez "SUPPRIMER" pour confirmer :`;
             gmailSelect.disabled = false;
         }
 
+        // Supabase Helper: Create VA
+        async function createVA(vaData) {
+            const orgId = await getActiveOrganizationId();
+            if (!orgId) {
+                throw new Error('No active organization');
+            }
+
+            // Try to insert with email/password columns
+            try {
+                const { data, error } = await supabase
+                    .from('vas')
+                    .insert([{
+                        organization_id: orgId,
+                        name: vaData.name,
+                        email: vaData.email || null,
+                        password: vaData.password || null,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                // If columns don't exist, insert without email/password
+                console.warn('⚠️ Email/Password columns not found in Supabase, inserting without them');
+
+                const { data, error: fallbackError } = await supabase
+                    .from('vas')
+                    .insert([{
+                        organization_id: orgId,
+                        name: vaData.name,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+
+                if (fallbackError) throw fallbackError;
+
+                // Store email/password in localStorage for this VA
+                const vaCredentials = JSON.parse(localStorage.getItem('vaCredentials') || '{}');
+                vaCredentials[data.id] = {
+                    email: vaData.email,
+                    password: vaData.password
+                };
+                localStorage.setItem('vaCredentials', JSON.stringify(vaCredentials));
+
+                return {
+                    ...data,
+                    email: vaData.email,
+                    password: vaData.password
+                };
+            }
+        }
+
+        // Supabase Helper: Create Creator
+        async function createCreator(creatorData) {
+            const orgId = await getActiveOrganizationId();
+            if (!orgId) {
+                throw new Error('No active organization');
+            }
+
+            const { data, error } = await supabase
+                .from('creators')
+                .insert([{
+                    organization_id: orgId,
+                    name: creatorData.name,
+                    created_at: new Date().toISOString()
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        }
+
         // Add VA - SUPABASE VERSION
         async function addVA(e) {
             e.preventDefault();
 
             const name = document.getElementById('va-name').value.trim();
+            const email = document.getElementById('va-email').value.trim().toLowerCase();
+            const password = document.getElementById('va-password').value;
+
+            // Validation
+            if (password.length < 6) {
+                showError('Le mot de passe doit contenir au moins 6 caractères');
+                return;
+            }
+
+            // Check if email already exists
+            if (data.vas.some(v => v.email && v.email.toLowerCase() === email)) {
+                showError('Un VA avec cet email existe déjà');
+                return;
+            }
 
             try {
-                // Create VA in Supabase
-                const newVA = await createVA({ name });
+                // Create VA in Supabase with email and password
+                const newVA = await createVA({ name, email, password });
 
                 // Add to local data
                 data.vas.push({
                     id: newVA.id,
                     name: newVA.name,
+                    email: email,
+                    password: password, // Store password (in production, this should be hashed server-side)
                     created: newVA.created_at
                 });
 
                 e.target.reset();
-                showSuccess(`VA "${name}" ajouté avec succès!`);
+                showSuccess(`VA "${name}" ajouté avec succès! Email: ${email}`);
                 updateDisplay();
             } catch (error) {
                 console.error('❌ Error adding VA:', error);
@@ -12321,10 +12573,14 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     });
 
                     // Si une créatrice est sélectionnée, ajouter le compte à la créatrice
+                    console.log('🔍 DEBUG - Ajout à creator.instagramAccounts:');
+                    console.log('   creatorId:', creatorId);
                     if (creatorId) {
                         const creator = data.creators.find(c => c.id === creatorId);
+                        console.log('   creator trouvé:', creator ? creator.name : 'null');
                         if (creator) {
                             if (!creator.instagramAccounts) creator.instagramAccounts = [];
+                            console.log('   creator.instagramAccounts.length AVANT:', creator.instagramAccounts.length);
 
                             // Créer le nouveau compte avec assignedVaId si un VA est sélectionné
                             const newAccount = {
@@ -12342,6 +12598,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             }
 
                             creator.instagramAccounts.push(newAccount);
+                            console.log('   creator.instagramAccounts.length APRÈS:', creator.instagramAccounts.length);
+                            console.log('   ✅ Compte ajouté à creator.instagramAccounts');
 
                             // Assigner le VA à la créatrice si sélectionné
                             if (vaId && !creator.vaIds) {
@@ -12369,17 +12627,16 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         creatorId: newInstagramAccount.creator_id,
                         gmailId: newInstagramAccount.gmail_id,
                         vaId: newInstagramAccount.va_id,
+                        assignedVaId: vaId || null, // IMPORTANT: Ajouter assignedVaId pour le dashboard VA
                         created: newInstagramAccount.created_at
                     });
 
-                    console.log('📸 DEBUG - Compte Instagram ajouté:');
-                    console.log('  - Username:', finalUsername);
-                    console.log('  - data.instagramAccounts.length:', data.instagramAccounts.length);
-                    console.log('  - Tous les comptes Instagram:', data.instagramAccounts);
+                    console.log('📸 Compte Instagram ajouté:', finalUsername);
 
                     e.target.reset();
                     updateInstagramAccountsList();
                     updateDisplay(); // Met à jour le dashboard
+                    saveData(); // Sync to VA Dashboard
                     showSuccess(`Compte Instagram ${finalUsername} ajouté!`);
                 }
             } catch (error) {
@@ -13809,6 +14066,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 console.log('  ➡️ Mise à jour de l\'affichage...');
                 updateInstagramAccountsList();
                 updateDisplay(); // Mettre à jour le dashboard
+                saveData(); // Sync to VA Dashboard
                 showSuccess('Compte Instagram supprimé');
                 console.log('  ✅ Suppression terminée');
             } catch (error) {
@@ -14871,6 +15129,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     console.log('  ➡️ Mise à jour de l\'affichage...');
                     updateTwitterAccountsList();
                     updateDisplay(); // Mettre à jour le dashboard
+                    saveData(); // Sync to VA Dashboard
                     showSuccess(`Compte ${account.username} supprimé définitivement`);
                     console.log('  ✅ Suppression terminée');
                 } catch (error) {
