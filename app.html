@@ -3262,7 +3262,7 @@
 
             <!-- Top Instagram Accounts -->
             <div class="dashboard-section" style="margin-bottom: 2rem;">
-                <div class="dashboard-section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div class="dashboard-section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h3 class="dashboard-section-title" style="margin: 0; font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fab fa-instagram" style="color: #c13584;"></i>
                         Top Comptes Instagram
@@ -3271,6 +3271,12 @@
                         0 comptes
                     </span>
                 </div>
+
+                <!-- Creator Filter Tabs -->
+                <div id="instagram-creator-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <!-- Tabs will be generated here -->
+                </div>
+
                 <div id="instagram-top-accounts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
                     <!-- Les cartes des meilleurs comptes Instagram seront générées ici -->
                 </div>
@@ -8539,10 +8545,15 @@
         }
 
         // Update Instagram Top Accounts on Dashboard
-        async function updateInstagramTopAccounts() {
+        let currentInstagramFilter = 'all'; // Global filter state
+
+        async function updateInstagramTopAccounts(filterCreator = 'all') {
             const container = document.getElementById('instagram-top-accounts');
+            const tabsContainer = document.getElementById('instagram-creator-tabs');
             const badge = document.getElementById('instagram-count-badge');
             const isDarkMode = document.body.classList.contains('dark-mode');
+
+            currentInstagramFilter = filterCreator;
 
             try {
                 // Récupérer les stats Instagram depuis Supabase
@@ -8573,8 +8584,6 @@
                 const allAccounts = Array.from(accountsMap.values())
                     .sort((a, b) => b.followers_count - a.followers_count);
 
-                badge.textContent = `${allAccounts.length} compte${allAccounts.length > 1 ? 's' : ''}`;
-
                 // Grouper par créatrice
                 const accountsByCreator = new Map();
                 allAccounts.forEach(stat => {
@@ -8590,34 +8599,75 @@
                     accountsByCreator.get(creatorName).push({ stat, instagramAccount });
                 });
 
-                // Générer les sections par créatrice
-                let html = '';
-                let globalRank = 1;
+                // Générer les tabs de filtres
+                let tabsHtml = `
+                    <button onclick="updateInstagramTopAccounts('all')" style="
+                        background: ${filterCreator === 'all' ? (isDarkMode ? 'linear-gradient(135deg, #c13584 0%, #833ab4 100%)' : 'linear-gradient(135deg, #c13584 0%, #833ab4 100%)') : 'transparent'};
+                        color: ${filterCreator === 'all' ? 'white' : (isDarkMode ? '#9ca3af' : '#6b7280')};
+                        border: 2px solid ${filterCreator === 'all' ? 'transparent' : (isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#e5e7eb')};
+                        padding: 0.5rem 1rem;
+                        border-radius: 0.5rem;
+                        font-weight: 600;
+                        font-size: 0.875rem;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    " onmouseover="if('${filterCreator}' !== 'all') this.style.borderColor='#c13584'" onmouseout="if('${filterCreator}' !== 'all') this.style.borderColor='${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#e5e7eb'}'">
+                        Tous (${allAccounts.length})
+                    </button>
+                `;
 
                 accountsByCreator.forEach((accounts, creatorName) => {
-                    html += `
-                        <div style="grid-column: 1 / -1; margin-top: ${globalRank > 1 ? '2rem' : '0'}; margin-bottom: 1rem;">
-                            <h3 style="
-                                font-size: 1.25rem;
-                                font-weight: 700;
-                                color: ${isDarkMode ? '#f1f5f9' : '#1f2937'};
-                                padding-bottom: 0.5rem;
-                                border-bottom: 2px solid ${isDarkMode ? 'rgba(193, 53, 132, 0.3)' : 'rgba(193, 53, 132, 0.2)'};
-                            ">
-                                <i class="fas fa-user" style="color: #c13584; margin-right: 0.5rem;"></i>
-                                ${creatorName}
-                                <span style="font-size: 0.875rem; font-weight: 500; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; margin-left: 0.5rem;">
-                                    (${accounts.length} compte${accounts.length > 1 ? 's' : ''})
-                                </span>
-                            </h3>
+                    tabsHtml += `
+                        <button onclick="updateInstagramTopAccounts('${creatorName}')" style="
+                            background: ${filterCreator === creatorName ? (isDarkMode ? 'linear-gradient(135deg, #c13584 0%, #833ab4 100%)' : 'linear-gradient(135deg, #c13584 0%, #833ab4 100%)') : 'transparent'};
+                            color: ${filterCreator === creatorName ? 'white' : (isDarkMode ? '#9ca3af' : '#6b7280')};
+                            border: 2px solid ${filterCreator === creatorName ? 'transparent' : (isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#e5e7eb')};
+                            padding: 0.5rem 1rem;
+                            border-radius: 0.5rem;
+                            font-weight: 600;
+                            font-size: 0.875rem;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                        " onmouseover="if('${filterCreator}' !== '${creatorName}') this.style.borderColor='#c13584'" onmouseout="if('${filterCreator}' !== '${creatorName}') this.style.borderColor='${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#e5e7eb'}'">
+                            ${creatorName} (${accounts.length})
+                        </button>
+                    `;
+                });
+
+                tabsContainer.innerHTML = tabsHtml;
+
+                // Filtrer les comptes selon le filtre actif
+                const filteredAccounts = filterCreator === 'all'
+                    ? allAccounts
+                    : allAccounts.filter(stat => {
+                        const instagramAccount = data.instagramAccounts.find(acc =>
+                            acc.username.toLowerCase() === stat.username.toLowerCase()
+                        );
+                        const creator = instagramAccount ? data.creators.find(c => c.id === instagramAccount.creatorId) : null;
+                        const creatorName = creator ? creator.name : 'Sans créatrice';
+                        return creatorName === filterCreator;
+                    });
+
+                badge.textContent = `${filteredAccounts.length} compte${filteredAccounts.length > 1 ? 's' : ''}`;
+
+                // Générer les cartes
+                let html = '';
+                filteredAccounts.slice(0, 20).forEach((stat, index) => {
+                    const rank = index + 1;
+                    const instagramAccount = data.instagramAccounts.find(acc =>
+                        acc.username.toLowerCase() === stat.username.toLowerCase()
+                    );
+                    html += generateInstagramCard(stat, instagramAccount, rank, isDarkMode);
+                });
+
+                if (html === '') {
+                    html = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">
+                            <i class="fab fa-instagram" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                            <p style="font-size: 1.125rem;">Aucun compte pour cette créatrice</p>
                         </div>
                     `;
-
-                    accounts.slice(0, 10).forEach(({ stat, instagramAccount }, index) => {
-                        const rank = globalRank++;
-                        html += generateInstagramCard(stat, instagramAccount, rank, isDarkMode);
-                    });
-                });
+                }
 
                 container.innerHTML = html;
             } catch (error) {
