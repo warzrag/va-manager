@@ -11271,19 +11271,84 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 `;
             });
 
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
             card.innerHTML = `
-                <div class="va-header">
-                    <div>
-                        <h3 class="va-name">👤 ${va.name}</h3>
-                        <div class="va-stats">
-                            <span>${vaCreators.length} créatrice(s)</span>
-                            <span>${totalAccounts + totalInstagramAccounts} compte(s)</span>
-                            ${totalAccounts > 0 ? `<span style="color: #1DA1F2;"><i class="fab fa-twitter"></i> ${totalAccounts}</span>` : ''}
-                            ${totalInstagramAccounts > 0 ? `<span style="background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fab fa-instagram"></i> ${totalInstagramAccounts}</span>` : ''}
+                <div class="va-header" style="position: relative;">
+                    <!-- Decorative background circle -->
+                    <div style="
+                        position: absolute;
+                        top: -40px;
+                        right: -40px;
+                        width: 180px;
+                        height: 180px;
+                        background: rgba(255, 255, 255, 0.08);
+                        border-radius: 50%;
+                        pointer-events: none;
+                    "></div>
+
+                    <div style="display: flex; align-items: center; gap: 1rem; position: relative; z-index: 1;">
+                        <!-- Avatar -->
+                        <div style="
+                            width: 72px;
+                            height: 72px;
+                            background: rgba(255, 255, 255, 0.15);
+                            backdrop-filter: blur(10px);
+                            border-radius: 1.25rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 2rem;
+                            font-weight: 700;
+                            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+                            letter-spacing: -0.02em;
+                            border: 2px solid rgba(255, 255, 255, 0.2);
+                        ">
+                            ${va.name.charAt(0).toUpperCase()}
+                        </div>
+
+                        <div style="flex: 1;">
+                            <h3 class="va-name" style="margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 700; color: white; letter-spacing: -0.01em;">
+                                ${va.name}
+                            </h3>
+                            <div class="va-stats" style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                                <span style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: rgba(255, 255, 255, 0.9);">
+                                    <i class="fas fa-user-friends"></i> ${vaCreators.length} créatrice${vaCreators.length > 1 ? 's' : ''}
+                                </span>
+                                <span style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: rgba(255, 255, 255, 0.9);">
+                                    <i class="fas fa-hashtag"></i> ${totalAccounts + totalInstagramAccounts} compte${(totalAccounts + totalInstagramAccounts) > 1 ? 's' : ''}
+                                </span>
+                                ${totalAccounts > 0 ? `
+                                    <span style="display: inline-flex; align-items: center; gap: 0.375rem; background: rgba(29, 161, 242, 0.2); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8125rem; font-weight: 600; color: #60a5fa; border: 1px solid rgba(29, 161, 242, 0.3);">
+                                        <i class="fab fa-twitter"></i> ${totalAccounts}
+                                    </span>
+                                ` : ''}
+                                ${totalInstagramAccounts > 0 ? `
+                                    <span style="display: inline-flex; align-items: center; gap: 0.375rem; background: rgba(193, 53, 132, 0.2); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8125rem; font-weight: 600; color: #f472b6; border: 1px solid rgba(193, 53, 132, 0.3);">
+                                        <i class="fab fa-instagram"></i> ${totalInstagramAccounts}
+                                    </span>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
-                    <div class="va-actions">
-                        <button class="action-btn delete-btn" onclick="deleteVA('${va.id}')" title="Supprimer ce VA">
+
+                    <div class="va-actions" style="position: absolute; top: 1.25rem; right: 1.5rem; z-index: 2;">
+                        <button class="action-btn delete-btn" onclick="deleteVA('${va.id}')" title="Supprimer ce VA" style="
+                            background: rgba(239, 68, 68, 0.2);
+                            border: 1px solid rgba(239, 68, 68, 0.3);
+                            color: #fecaca;
+                            width: 44px;
+                            height: 44px;
+                            border-radius: 0.75rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                        "
+                        onmouseover="this.style.background='rgba(239, 68, 68, 0.35)'; this.style.transform='scale(1.05)'; this.style.color='white'"
+                        onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.transform='scale(1)'; this.style.color='#fecaca'">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
