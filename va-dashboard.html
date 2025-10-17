@@ -1213,70 +1213,78 @@
 
         async function attemptLogin(email, password) {
             try {
-                console.log('🔐 Attempting login for:', email);
+                console.log('🔐 Attempting Supabase Auth login for:', email);
 
                 if (!supabase) {
                     showError('Connection error. Please try again.');
                     return;
                 }
 
-                // Find VA by email directly in Supabase
+                // 1. Use Supabase Auth to sign in
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) {
+                    console.error('❌ Auth error:', authError);
+                    showError('Email ou mot de passe incorrect');
+                    return;
+                }
+
+                if (!authData.user) {
+                    showError('Erreur de connexion');
+                    return;
+                }
+
+                console.log('✅ Auth successful:', authData.user.id);
+
+                // 2. Get VA record using auth user_id
                 const { data: vas, error: vaError } = await supabase
                     .from('vas')
                     .select('*')
-                    .ilike('email', email)
-                    .limit(1);
+                    .eq('user_id', authData.user.id)
+                    .single();
 
-                if (vaError) {
-                    console.error('VA query error:', vaError);
-                    showError('Connection error. Please try again.');
+                if (vaError || !vas) {
+                    console.error('❌ VA not found for user:', authData.user.id, vaError);
+                    showError('Compte VA introuvable');
+                    await supabase.auth.signOut();
                     return;
                 }
 
-                if (!vas || vas.length === 0) {
-                    showError('Email not found');
-                    return;
-                }
+                console.log('✅ VA found:', vas.name);
 
-                const va = vas[0];
-                console.log('✅ VA found:', va.name);
-
-                // Check password
-                const expectedPassword = va.password || `${va.name.toLowerCase()}123`;
-
-                if (password !== expectedPassword) {
-                    showError('Incorrect password');
-                    return;
-                }
-
-                // Successful login - save VA and organization
+                // 3. Set current VA
                 currentVA = {
-                    id: va.id,
-                    name: va.name,
-                    email: va.email,
-                    organizationId: va.organization_id
+                    id: vas.id,
+                    name: vas.name,
+                    email: authData.user.email,
+                    organizationId: vas.organization_id,
+                    userId: authData.user.id
                 };
 
                 console.log('✅ Login successful, organization:', currentVA.organizationId);
 
-                // Save session
+                // 4. Save session
                 localStorage.setItem('va_session', JSON.stringify({
-                    vaId: va.id,
-                    email: email,
-                    name: va.name,
-                    organizationId: va.organization_id,
+                    vaId: vas.id,
+                    email: authData.user.email,
+                    name: vas.name,
+                    organizationId: vas.organization_id,
+                    userId: authData.user.id,
                     loginTime: new Date().toISOString()
                 }));
 
-                // Load data for this organization
+                // 5. Load data for this organization
                 await loadData();
 
-                // Show dashboard
+                // 6. Show dashboard
                 showDashboard();
 
             } catch (error) {
-                console.error('Login error:', error);
-                showError('Connection error. Please try again.');
+                console.error('❌ Login error:', error);
+                showError('Erreur de connexion. Veuillez réessayer.');
             }
         }
 
