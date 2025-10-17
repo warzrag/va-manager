@@ -19518,9 +19518,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                     </button>
                                 ` : `
                                     <button onclick="completeDay('${username}')"
-                                            style="flex: 1; padding: 0.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
+                                            style="flex: 1; padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
                                         <i class="fas fa-check"></i> Jour ${warmupData.currentDay} terminé
                                     </button>
+                                    ${warmupData.currentDay > 1 ? `
+                                        <button onclick="undoDay('${username}')"
+                                                style="padding: 0.5rem 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
+                                            <i class="fas fa-undo"></i> Annuler
+                                        </button>
+                                    ` : ''}
                                 `}
                             ` : `
                                 <button onclick="resetWarmup('${username}')"
@@ -19678,6 +19684,44 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 showSuccess(`🎉 Warm-up terminé pour @${username} !`);
             }
 
+            updateWarmupDisplay();
+        }
+
+        async function undoDay(username) {
+            if (!data.warmupProgress[username]) return;
+
+            const currentDay = data.warmupProgress[username].currentDay;
+
+            // Ne peut pas revenir en arrière si au jour 1
+            if (currentDay <= 1) {
+                showError('Impossible de revenir en arrière depuis le jour 1');
+                return;
+            }
+
+            const timestamp = new Date().toISOString();
+
+            // Revenir au jour précédent
+            data.warmupProgress[username].currentDay--;
+            data.warmupProgress[username].completed = false;
+            data.warmupProgress[username].completedDate = null;
+            data.warmupProgress[username].lastUpdate = timestamp;
+
+            try {
+                await upsertWarmupProgress({
+                    username: username,
+                    current_day: data.warmupProgress[username].currentDay,
+                    completed: false,
+                    start_date: data.warmupProgress[username].startDate,
+                    completed_date: null
+                });
+                console.log('✅ Warmup revenu au jour', data.warmupProgress[username].currentDay);
+            } catch (error) {
+                console.error('❌ Erreur lors du retour en arrière:', error);
+                showError('Erreur lors du retour en arrière');
+                return;
+            }
+
+            showSuccess(`Retour au jour ${data.warmupProgress[username].currentDay}`);
             updateWarmupDisplay();
         }
 
