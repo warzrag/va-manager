@@ -3303,22 +3303,8 @@
                 <h2 class="form-title">Ajouter un Virtual Assistant</h2>
                 <form id="add-va-form">
                     <div class="form-group">
-                        <label for="va-name">Nom du VA</label>
-                        <input type="text" id="va-name" required placeholder="Ex: HUGO">
-                    </div>
-                    <div class="form-group">
-                        <label for="va-email">Email de connexion</label>
-                        <input type="email" id="va-email" required placeholder="hugo@example.com">
-                        <small style="color: #64748b; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
-                            <i class="fas fa-info-circle"></i> Email pour se connecter au dashboard VA
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <label for="va-password">Mot de passe</label>
-                        <input type="password" id="va-password" required placeholder="Mot de passe">
-                        <small style="color: #64748b; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
-                            <i class="fas fa-lock"></i> Minimum 6 caractères
-                        </small>
+                        <label for="va-name">Prénom du VA</label>
+                        <input type="text" id="va-name" required placeholder="Ex: Hugo">
                     </div>
                     <button type="submit" class="submit-btn">
                         <i class="fas fa-plus"></i> Ajouter VA
@@ -12201,36 +12187,26 @@ Tapez "SUPPRIMER" pour confirmer :`;
             e.preventDefault();
 
             const name = document.getElementById('va-name').value.trim();
-            const email = document.getElementById('va-email').value.trim().toLowerCase();
-            const password = document.getElementById('va-password').value;
 
-            // Validation
-            if (password.length < 6) {
-                showError('Le mot de passe doit contenir au moins 6 caractères');
-                return;
-            }
-
-            // Check if email already exists
-            if (data.vas.some(v => v.email && v.email.toLowerCase() === email)) {
-                showError('Un VA avec cet email existe déjà');
+            // Check if VA with same name already exists
+            if (data.vas.some(v => v.name.toLowerCase() === name.toLowerCase())) {
+                showError('Un VA avec ce nom existe déjà');
                 return;
             }
 
             try {
-                // Create VA in Supabase with email and password
-                const newVA = await createVA({ name, email, password });
+                // Create VA in Supabase
+                const newVA = await createVA({ name });
 
                 // Add to local data
                 data.vas.push({
                     id: newVA.id,
                     name: newVA.name,
-                    email: email,
-                    password: password, // Store password (in production, this should be hashed server-side)
                     created: newVA.created_at
                 });
 
                 e.target.reset();
-                showSuccess(`VA "${name}" ajouté avec succès! Email: ${email}`);
+                showSuccess(`VA "${name}" ajouté avec succès!`);
                 updateDisplay();
             } catch (error) {
                 console.error('❌ Error adding VA:', error);
