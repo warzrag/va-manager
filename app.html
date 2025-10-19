@@ -578,19 +578,21 @@
         }
 
         body.dark-mode .instagram-accounts {
-            background: linear-gradient(45deg, rgba(131, 58, 180, 0.03), rgba(253, 29, 29, 0.03), rgba(252, 176, 69, 0.03)) !important;
-            border-color: rgba(193, 53, 132, 0.1) !important;
+            background: rgba(30, 41, 59, 0.3) !important;
+            border-color: rgba(71, 85, 105, 0.4) !important;
         }
 
         body.dark-mode .instagram-badge {
-            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%) !important;
-            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.2) !important;
-            border: 2px solid transparent !important;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            border: 1.5px solid rgba(71, 85, 105, 0.6) !important;
         }
 
         body.dark-mode .instagram-badge:hover {
-            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.4) !important;
-            border-color: rgba(193, 53, 132, 0.5) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+            border-color: rgba(100, 116, 139, 0.8) !important;
+            background: linear-gradient(135deg, #334155 0%, #475569 100%) !important;
         }
         
         body.dark-mode .creatrice-name {
@@ -1209,160 +1211,178 @@
             margin-top: 0.5rem;
         }
 
+        /* Twitter accounts container - ULTRA MODERNE */
+        .twitter-accounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.625rem;
+            padding: 1rem;
+            background: rgba(29, 161, 242, 0.03);
+            border-radius: 12px;
+            border: 1.5px solid rgba(29, 161, 242, 0.12);
+            margin-top: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
         .twitter-badge {
             background: linear-gradient(135deg, #1DA1F2 0%, #0C85D0 100%);
             color: white;
             padding: 0.5rem 1rem;
-            border-radius: 1.5rem;
+            border-radius: 10px;
             font-size: 0.875rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             position: relative;
-            box-shadow: 0 2px 4px rgba(29, 161, 242, 0.15);
-            transition: all 0.2s ease;
+            box-shadow: 0 3px 12px rgba(29, 161, 242, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             cursor: pointer;
-            max-width: calc(100% - 1rem);
-            margin: 0.25rem;
-            border: 1px solid rgba(29, 161, 242, 0.2);
+            border: none;
+            letter-spacing: 0.01em;
+            overflow: hidden;
         }
-        
+
+        .twitter-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
         a.twitter-badge {
             color: white;
             text-decoration: none;
         }
-        
+
         a.twitter-badge:visited {
             color: white;
         }
-        
+
         .twitter-badge:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(29, 161, 242, 0.25);
-            border-color: rgba(29, 161, 242, 0.4);
-        }
-        
-        .twitter-badge button {
-            width: 28px !important;
-            height: 28px !important;
-            font-size: 0.75rem !important;
-        }
-        
-        .twitter-badge button:hover {
-            background: rgba(255,255,255,0.3) !important;
-            transform: scale(1.1);
-        }
-        
-        /* Twitter accounts container - ULTRATHINK design */
-        .twitter-accounts {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            background: rgba(29, 161, 242, 0.02);
-            border-radius: 0.75rem;
-            border: 1px solid rgba(29, 161, 242, 0.08);
-            margin-top: 0.75rem;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(29, 161, 242, 0.2) transparent;
-        }
-        
-        .twitter-accounts::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .twitter-accounts::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .twitter-accounts::-webkit-scrollbar-thumb {
-            background: rgba(29, 161, 242, 0.2);
-            border-radius: 3px;
-        }
-        
-        .twitter-accounts::-webkit-scrollbar-thumb:hover {
-            background: rgba(29, 161, 242, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(29, 161, 242, 0.45), 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        /* Instagram accounts container */
+        .twitter-badge:hover::before {
+            opacity: 1;
+        }
+
+        .twitter-badge i.fab {
+            font-size: 1rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        .twitter-badge button {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            border-radius: 8px !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease !important;
+        }
+
+        .twitter-badge button:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            transform: scale(1.08) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Instagram accounts container - ULTRA MODERNE */
         .instagram-accounts {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            background: linear-gradient(45deg, rgba(131, 58, 180, 0.05), rgba(253, 29, 29, 0.05), rgba(252, 176, 69, 0.05));
-            border-radius: 0.75rem;
-            border: 1px solid rgba(193, 53, 132, 0.15);
+            gap: 0.625rem;
+            padding: 1rem;
+            background: rgba(248, 250, 252, 0.5);
+            border-radius: 12px;
+            border: 1.5px solid rgba(226, 232, 240, 0.6);
             margin-top: 0.75rem;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(193, 53, 132, 0.2) transparent;
-        }
-
-        .instagram-accounts::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .instagram-accounts::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .instagram-accounts::-webkit-scrollbar-thumb {
-            background: rgba(193, 53, 132, 0.2);
-            border-radius: 3px;
-        }
-
-        .instagram-accounts::-webkit-scrollbar-thumb:hover {
-            background: rgba(193, 53, 132, 0.3);
+            backdrop-filter: blur(10px);
         }
 
         .instagram-badge {
-            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%);
-            color: white;
-            padding: 0.375rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.8125rem;
-            font-weight: 500;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.15);
+            gap: 0.5rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1.5px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
             text-decoration: none;
+            letter-spacing: 0.01em;
+        }
+
+        .instagram-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
 
         a.instagram-badge {
-            color: white;
+            color: #1e293b;
             text-decoration: none;
         }
 
         a.instagram-badge:visited {
-            color: white;
+            color: #1e293b;
         }
 
         .instagram-badge:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.25);
-            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+            border-color: rgba(203, 213, 225, 1);
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+        }
+
+        .instagram-badge:hover::before {
+            opacity: 0;
+        }
+
+        .instagram-badge i.fab {
+            font-size: 1rem;
+            background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .instagram-badge button {
-            width: 28px !important;
-            height: 28px !important;
-            min-width: 28px !important;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            border-radius: 8px !important;
+            background: rgba(0, 0, 0, 0.05) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            color: #64748b !important;
+            transition: all 0.2s ease !important;
         }
 
         .instagram-badge button:hover {
-            background: rgba(255,255,255,0.3) !important;
-            transform: scale(1.1);
+            background: rgba(0, 0, 0, 0.1) !important;
+            transform: scale(1.08) !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
         }
         
         /* Adjust creatrice-item spacing */
@@ -1668,6 +1688,15 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(255, 8, 68, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 16px rgba(255, 8, 68, 0.7);
+            }
         }
 
         .competition-title {
@@ -3605,6 +3634,26 @@
 
                 <div id="instagram-top-accounts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
                     <!-- Les cartes des meilleurs comptes Instagram seront générées ici -->
+                </div>
+            </div>
+
+            <!-- Banned Accounts Alert -->
+            <div id="banned-accounts-alert" style="display: none; background: linear-gradient(135deg, #ff0844 0%, #f7022a 100%); border: 2px solid #dc2626; border-radius: 1rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(255, 8, 68, 0.3);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            ⚠️
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; color: white; font-size: 1.125rem; font-weight: 700;">Alerte Comptes Problématiques</h4>
+                            <p id="banned-accounts-message" style="margin: 0.25rem 0 0 0; color: rgba(255, 255, 255, 0.95); font-size: 0.875rem; font-weight: 500;">
+                                <!-- Message will be generated dynamically -->
+                            </p>
+                        </div>
+                    </div>
+                    <button id="show-banned-accounts-btn" onclick="filterBannedAccounts()" style="background: rgba(255, 255, 255, 0.95); color: #dc2626; padding: 0.75rem 1.5rem; border: none; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);" onmouseover="this.style.background='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.95)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.15)'">
+                        <i class="fas fa-list"></i> Voir tous les comptes
+                    </button>
                 </div>
             </div>
 
@@ -5587,6 +5636,8 @@
                     creatorId: account.creator_id,
                     vaId: account.va_id,
                     gmailId: account.gmail_id,
+                    status: account.status || 'active',
+                    notes: account.notes || '',
                     created: account.created_at
                 }));
 
@@ -5597,6 +5648,8 @@
                     creatorId: account.creator_id,
                     vaId: account.va_id,
                     gmailId: account.gmail_id,
+                    status: account.status || 'active',
+                    notes: account.notes || '',
                     created: account.created_at
                 }));
 
@@ -5684,10 +5737,13 @@
                         // Fix: Si vaId est null ET que le creator n'a qu'un seul VA, assigner automatiquement
                         const finalVaId = account.vaId || (creator.vaIds && creator.vaIds.length === 1 ? creator.vaIds[0] : null);
                         return {
+                            id: account.id,
                             username: account.username,
                             password: account.password,
                             gmailId: account.gmailId,
-                            assignedVaId: finalVaId
+                            assignedVaId: finalVaId,
+                            status: account.status,
+                            notes: account.notes
                         };
                     });
                 });
@@ -5707,10 +5763,13 @@
                         const finalVaId = account.vaId || (creator.vaIds && creator.vaIds.length === 1 ? creator.vaIds[0] : null);
                         console.log(`      📝 Mapping account ${account.username}: vaId=${account.vaId} -> assignedVaId=${finalVaId} ${account.vaId ? '' : '(AUTO-ASSIGNED)'}`);
                         return {
+                            id: account.id,
                             username: account.username,
                             password: account.password,
                             gmailId: account.gmailId,
-                            assignedVaId: finalVaId
+                            assignedVaId: finalVaId,
+                            status: account.status,
+                            notes: account.notes
                         };
                     });
                     console.log(`  ✅ Creator "${creator.name}": ${creator.accounts?.length || 0} Twitter, ${creator.instagramAccounts?.length || 0} Instagram`);
@@ -11383,6 +11442,196 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }).join('');
         }
 
+        // ============================================================================
+        // BANNED ACCOUNTS MANAGEMENT FUNCTIONS
+        // ============================================================================
+
+        // Count banned/suspended accounts for a specific VA
+        function countProblematicAccounts(vaId) {
+            let count = 0;
+
+            if (!data.creators) return 0;
+
+            data.creators.forEach(creator => {
+                // Count problematic Twitter accounts assigned to this VA
+                if (creator.accounts) {
+                    creator.accounts.forEach(account => {
+                        // Check if account is assigned to this VA AND is banned/suspended
+                        if (account.assignedVaId === vaId &&
+                            (account.status === 'banned' || account.status === 'suspended')) {
+                            count++;
+                        }
+                    });
+                }
+
+                // Count problematic Instagram accounts assigned to this VA
+                if (creator.instagramAccounts) {
+                    creator.instagramAccounts.forEach(account => {
+                        // Check if account is assigned to this VA AND is banned/suspended
+                        if (account.assignedVaId === vaId &&
+                            (account.status === 'banned' || account.status === 'suspended')) {
+                            count++;
+                        }
+                    });
+                }
+            });
+
+            return count;
+        }
+
+        // Get all banned/suspended accounts across all VAs
+        function getAllProblematicAccounts() {
+            const problematic = [];
+
+            if (!data.creators) return problematic;
+
+            data.creators.forEach(creator => {
+                // Twitter accounts
+                if (creator.accounts) {
+                    creator.accounts.forEach(account => {
+                        if (account.status === 'banned' || account.status === 'suspended') {
+                            problematic.push({
+                                type: 'twitter',
+                                username: account.username,
+                                status: account.status,
+                                creator: creator.name,
+                                vaIds: creator.vaIds || [],
+                                notes: account.notes
+                            });
+                        }
+                    });
+                }
+
+                // Instagram accounts
+                if (creator.instagramAccounts) {
+                    creator.instagramAccounts.forEach(account => {
+                        if (account.status === 'banned' || account.status === 'suspended') {
+                            problematic.push({
+                                type: 'instagram',
+                                username: account.username,
+                                status: account.status,
+                                creator: creator.name,
+                                vaIds: creator.vaIds || [],
+                                notes: account.notes
+                            });
+                        }
+                    });
+                }
+            });
+
+            return problematic;
+        }
+
+        // Update the banned accounts alert banner
+        function updateBannedAccountsAlert() {
+            const alert = document.getElementById('banned-accounts-alert');
+            const message = document.getElementById('banned-accounts-message');
+
+            if (!alert || !message) return;
+
+            const problematicAccounts = getAllProblematicAccounts();
+            const totalCount = problematicAccounts.length;
+
+            if (totalCount === 0) {
+                alert.style.display = 'none';
+            } else {
+                alert.style.display = 'block';
+
+                const bannedCount = problematicAccounts.filter(a => a.status === 'banned').length;
+                const suspendedCount = problematicAccounts.filter(a => a.status === 'suspended').length;
+
+                let msg = `<strong>${totalCount} compte${totalCount > 1 ? 's' : ''} nécessite${totalCount > 1 ? 'nt' : ''} un remplacement</strong>`;
+
+                const details = [];
+                if (bannedCount > 0) details.push(`${bannedCount} banni${bannedCount > 1 ? 's' : ''}`);
+                if (suspendedCount > 0) details.push(`${suspendedCount} suspendu${suspendedCount > 1 ? 's' : ''}`);
+
+                if (details.length > 0) {
+                    msg += ` (${details.join(', ')})`;
+                }
+
+                message.innerHTML = msg;
+            }
+        }
+
+        // Filter and show only banned accounts
+        function filterBannedAccounts() {
+            const problematicAccounts = getAllProblematicAccounts();
+
+            if (problematicAccounts.length === 0) {
+                alert('Aucun compte banni ou suspendu trouvé ! 🎉');
+                return;
+            }
+
+            // Create modal content
+            let modalContent = `
+                <div style="background: white; padding: 2rem; border-radius: 1rem; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+                        <h2 style="margin: 0; color: #1e293b; font-size: 1.5rem; font-weight: 700;">
+                            <i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 0.5rem;"></i>
+                            Comptes Problématiques (${problematicAccounts.length})
+                        </h2>
+                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 2rem; color: #64748b; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.color='#1e293b'" onmouseout="this.style.background='none'; this.style.color='#64748b'">×</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+            `;
+
+            problematicAccounts.forEach(account => {
+                const statusColor = account.status === 'banned' ? '#dc2626' : '#f59e0b';
+                const statusEmoji = account.status === 'banned' ? '🔴' : '⚠️';
+                const statusText = account.status === 'banned' ? 'BANNI' : 'SUSPENDU';
+                const icon = account.type === 'twitter' ? 'fab fa-twitter' : 'fab fa-instagram';
+                const iconColor = account.type === 'twitter' ? '#1da1f2' : '#c13584';
+
+                const vaNames = account.vaIds.map(vaId => {
+                    const va = data.vas.find(v => v.id === vaId);
+                    return va ? va.name : 'Inconnu';
+                }).join(', ');
+
+                modalContent += `
+                    <div style="background: #f8fafc; border: 2px solid ${statusColor}; border-radius: 0.75rem; padding: 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="${icon}" style="color: ${iconColor}; font-size: 1.25rem;"></i>
+                                <strong style="font-size: 1.125rem; color: #1e293b;">${account.username}</strong>
+                            </div>
+                            <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700;">
+                                ${statusEmoji} ${statusText}
+                            </span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.875rem; color: #64748b;">
+                            <div><strong style="color: #475569;">Créatrice:</strong> ${account.creator}</div>
+                            <div><strong style="color: #475569;">VA:</strong> ${vaNames || 'Non assigné'}</div>
+                        </div>
+                        ${account.notes ? `
+                            <div style="margin-top: 0.75rem; padding: 0.75rem; background: white; border-radius: 0.5rem; font-size: 0.875rem; color: #475569;">
+                                <strong style="color: #1e293b;">Note:</strong> ${account.notes}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            modalContent += `
+                    </div>
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #e5e7eb; text-align: right;">
+                        <button onclick="this.closest('.modal').remove()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+                            <i class="fas fa-check"></i> Fermer
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Create and show modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.innerHTML = modalContent;
+            document.body.appendChild(modal);
+        }
+
         // Update VA grid
         function updateVAGrid() {
             const grid = document.getElementById('va-grid');
@@ -11396,6 +11645,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (data.vas.length === 0) {
                 grid.innerHTML = '<div class="no-creator">Aucun VA ajouté. Commencez par ajouter un VA!</div>';
             }
+
+            // Update banned accounts alert
+            updateBannedAccountsAlert();
         }
 
         // Create VA card
@@ -11517,6 +11769,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     const twitterUrl = `https://twitter.com/${account.username.replace('@', '')}`;
 
                     // Générer le badge de statut
+                    console.log('Twitter account for badge:', account.id, account.username, account.status);
                     const statusBadgeHTML = typeof generateStatusBadgeHTML !== 'undefined'
                         ? generateStatusBadgeHTML(account.id, 'twitter', account.username, account.status, account.notes)
                         : '';
@@ -11583,17 +11836,19 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     const instagramUrl = `https://instagram.com/${account.username.replace('@', '')}`;
 
                     // Générer le badge de statut
+                    console.log('Instagram account for badge:', account.id, account.username, account.status);
                     const statusBadgeHTML = typeof generateStatusBadgeHTML !== 'undefined'
                         ? generateStatusBadgeHTML(account.id, 'instagram', account.username, account.status, account.notes)
                         : '';
 
-                    return `<a href="${instagramUrl}" target="_blank" class="instagram-badge" style="position: relative; padding-right: 3.5rem; text-decoration: none;">
-                        <i class="fab fa-instagram"></i> ${account.username}
+                    return `<a href="${instagramUrl}" target="_blank" class="instagram-badge" style="position: relative; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; padding-right: 3.5rem;">
+                        <i class="fab fa-instagram"></i>
+                        <span style="margin-left: 0.25rem;">${account.username}</span>
                         ${statusBadgeHTML}
                         <button onclick="event.preventDefault(); event.stopPropagation(); deleteInstagramFromCreator('${creator.id}', '${account.username}')"
                                 style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
-                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%;
-                                       width: 28px; height: 28px; display: flex; align-items: center;
+                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 8px;
+                                       width: 32px; height: 32px; display: inline-flex; align-items: center;
                                        justify-content: center; cursor: pointer; font-size: 0.75rem;
                                        transition: all 0.2s ease;"
                                 onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'"
@@ -11681,7 +11936,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             <h3 class="va-name" style="margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 700; color: white; letter-spacing: -0.01em;">
                                 ${va.name}
                             </h3>
-                            <div class="va-stats" style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                            <div class="va-stats" style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center;">
                                 <span style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: rgba(255, 255, 255, 0.9);">
                                     <i class="fas fa-user-friends"></i> ${vaCreators.length} créatrice${vaCreators.length > 1 ? 's' : ''}
                                 </span>
@@ -11698,6 +11953,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                         <i class="fab fa-instagram"></i> ${totalInstagramAccounts}
                                     </span>
                                 ` : ''}
+                                ${(() => {
+                                    const problematicCount = countProblematicAccounts(va.id);
+                                    return problematicCount > 0 ? `
+                                        <span style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #ff0844 0%, #f7022a 100%); padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.8125rem; font-weight: 700; color: white; border: 1.5px solid rgba(255, 255, 255, 0.3); box-shadow: 0 2px 8px rgba(255, 8, 68, 0.4); animation: pulse-warning 2s infinite;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <span>${problematicCount} à remplacer</span>
+                                        </span>
+                                    ` : '';
+                                })()}
                             </div>
                         </div>
                     </div>
