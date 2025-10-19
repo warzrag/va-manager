@@ -19,6 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
 
+    <!-- iPhone 14 Pro Responsiveness Fixes -->
+    <link rel="stylesheet" href="iphone-14-pro-fixes.css">
+
     <style>
         * {
             margin: 0;
@@ -5228,6 +5231,19 @@
                 currentUser = await getCurrentUser();
                 if (currentUser) {
                     console.log('✅ User authenticated:', currentUser.email);
+
+                    // Check if user is a VA (not an organization owner)
+                    const { data: vaRecord } = await supabase
+                        .from('vas')
+                        .select('id, name, organization_id')
+                        .eq('user_id', currentUser.id)
+                        .single();
+
+                    if (vaRecord) {
+                        console.log('✅ User is a VA, redirecting to VA dashboard...');
+                        window.location.href = 'va-dashboard.html';
+                        return;
+                    }
                     document.getElementById('user-email').textContent = currentUser.email;
 
                     // Show loading indicator
@@ -12341,6 +12357,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     .from('vas')
                     .insert([{
                         organization_id: orgId,
+                        user_id: vaData.user_id || null,
                         name: vaData.name,
                         email: vaData.email || null,
                         password: vaData.password || null,
@@ -12359,6 +12376,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     .from('vas')
                     .insert([{
                         organization_id: orgId,
+                        user_id: vaData.user_id || null,
                         name: vaData.name,
                         created_at: new Date().toISOString()
                     }])
