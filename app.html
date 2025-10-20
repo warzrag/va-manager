@@ -5598,11 +5598,13 @@
                 const startTime = performance.now();
                 console.log('📡 Loading essential data from Supabase...');
 
-                // Load only essential data first (VAs, creators, accounts)
-                const allData = await getAllUserData({ loadStats: false, loadFinancials: true });
+                // Load ONLY essential data (VAs, creators, accounts) - NO financials, NO stats
+                const allData = await getAllUserData({ loadStats: false, loadFinancials: false });
 
                 const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
-                console.log(`✅ Data loaded in ${loadTime}s`);
+                console.log(`✅ Supabase data fetched in ${loadTime}s`);
+
+                const mappingStart = performance.now();
 
                 // Map Supabase data to local data structure
                 // Load VA credentials from localStorage if not in Supabase
@@ -5671,61 +5673,12 @@
                     status: account.status || (bannedGmails[account.id] ? 'banned' : 'active')
                 }));
 
-                data.subs = allData.subscriptions.map(sub => ({
-                    id: sub.id,
-                    vaId: sub.va_id,
-                    date: sub.date,
-                    count: sub.count,
-                    amount: sub.amount,
-                    created: sub.created_at
-                }));
-
-                data.revenues = allData.revenues.map(rev => ({
-                    id: rev.id,
-                    vaId: rev.va_id,
-                    date: rev.date,
-                    amountUSD: rev.amount_usd,
-                    amountEUR: rev.amount_eur,
-                    amount: rev.amount_eur || 0,  // Default amount for compatibility
-                    exchangeRate: rev.exchange_rate,
-                    trackingLink: rev.tracking_link,
-                    description: rev.description,
-                    commission: rev.commission,
-                    created: rev.created_at
-                }));
-
-                data.vaPayments = allData.payments.map(payment => ({
-                    id: payment.id,
-                    vaId: payment.va_id,
-                    date: payment.date,
-                    amount: payment.amount,
-                    description: payment.description,
-                    created: payment.created_at
-                }));
-
-                data.twitterStats = allData.twitterStats.map(stat => ({
-                    id: stat.id,
-                    username: stat.username,
-                    date: stat.date,
-                    followersCount: stat.followers_count,
-                    vaId: stat.va_id,
-                    creatorId: stat.creator_id,
-                    created: stat.created_at
-                }));
-
-                // Load warmup progress from Supabase
+                // Initialize empty arrays for non-essential data (loaded on demand later)
+                data.subs = [];
+                data.revenues = [];
+                data.vaPayments = [];
+                data.twitterStats = [];
                 data.warmupProgress = {};
-                (allData.warmupProgress || []).forEach(w => {
-                    data.warmupProgress[w.username] = {
-                        currentDay: w.current_day,
-                        completed: w.completed,
-                        startDate: w.start_date,
-                        completedDate: w.completed_date,
-                        lastUpdate: w.last_update
-                    };
-                });
-
-                console.log('✅ Warmup progress loaded from Supabase:', Object.keys(data.warmupProgress).length, 'accounts');
 
                 // Populate Twitter accounts into creators' accounts arrays
                 console.log('🔄 Populating creator.accounts from data.twitterAccounts...');
@@ -5823,6 +5776,12 @@
                         console.log(`✅ Creator "${creator.name}" a déjà vaIds = [${creator.vaIds.join(', ')}]`);
                     }
                 });
+
+                const mappingTime = ((performance.now() - mappingStart) / 1000).toFixed(2);
+                console.log(`✅ Data mapping completed in ${mappingTime}s`);
+
+                const totalTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                console.log(`🎯 TOTAL loading time: ${totalTime}s`);
 
                 // Update display after data is loaded
                 console.log('🔄 Calling updateDisplay() after data load...');
