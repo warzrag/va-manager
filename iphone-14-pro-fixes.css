@@ -110,49 +110,132 @@
         padding: 0.875rem 1rem !important;
     }
 
-    /* 1.8 - Navigation buttons */
-    .nav-content {
-        padding: 0.625rem 0.75rem !important;
-        gap: 0.375rem !important;
+    /* 1.8 - Navigation MOBILE - Cacher la nav horizontale */
+    .nav {
+        display: none !important;
     }
 
-    .nav-btn {
-        padding: 0.5rem 0.75rem !important;
-        font-size: 0.8125rem !important;
-        min-height: 40px !important;
-        white-space: nowrap !important;
-        max-width: 150px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+    /* 1.9 - Bouton Menu Hamburger - Top Left */
+    .mobile-menu-btn {
+        position: fixed !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        width: 48px !important;
+        height: 48px !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        color: white !important;
+        font-size: 1.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+        z-index: 1001 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
     }
 
-    .nav-btn i {
-        font-size: 0.875rem !important;
+    .mobile-menu-btn:hover {
+        transform: scale(1.05) !important;
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5) !important;
     }
 
-    /* 1.9 - Scroll indicator pour navigation */
-    .nav-content {
-        scrollbar-width: thin !important;
-        scrollbar-color: rgba(102, 126, 234, 0.3) transparent !important;
+    /* 1.10 - Drawer Menu (Sidebar gauche) */
+    .mobile-drawer {
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important;
+        width: 280px !important;
+        height: 100vh !important;
+        background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%) !important;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3) !important;
+        z-index: 1000 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow-y: auto !important;
+        padding: 5rem 0 2rem 0 !important;
+        -webkit-overflow-scrolling: touch !important;
     }
 
-    .nav-content::-webkit-scrollbar {
-        display: block !important;
-        height: 3px !important;
+    .mobile-drawer.open {
+        left: 0 !important;
     }
 
-    .nav-content::-webkit-scrollbar-thumb {
-        background: rgba(102, 126, 234, 0.3) !important;
-        border-radius: 1.5px !important;
+    /* 1.11 - Drawer Overlay */
+    .mobile-drawer-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(4px) !important;
+        z-index: 999 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.3s ease !important;
     }
 
-    /* 1.10 - Mobile menu button */
-    .mobile-menu-toggle {
-        width: 52px !important;
-        height: 52px !important;
-        bottom: 16px !important;
-        right: 16px !important;
+    .mobile-drawer-overlay.show {
+        opacity: 1 !important;
+        pointer-events: all !important;
+    }
+
+    /* 1.12 - Drawer Navigation Items */
+    .mobile-drawer .nav-btn {
+        width: 100% !important;
+        padding: 1rem 1.5rem !important;
+        font-size: 1rem !important;
+        min-height: 56px !important;
+        border: none !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        text-align: left !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 1rem !important;
+        transition: all 0.2s ease !important;
+        border-left: 3px solid transparent !important;
+        white-space: normal !important;
+        max-width: 100% !important;
+    }
+
+    .mobile-drawer .nav-btn:hover,
+    .mobile-drawer .nav-btn:active {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-left-color: #667eea !important;
+    }
+
+    .mobile-drawer .nav-btn.active {
+        background: rgba(102, 126, 234, 0.2) !important;
+        color: white !important;
+        border-left-color: #667eea !important;
+        font-weight: 600 !important;
+    }
+
+    .mobile-drawer .nav-btn i {
         font-size: 1.25rem !important;
+        width: 24px !important;
+        text-align: center !important;
+    }
+
+    /* 1.13 - Drawer Header */
+    .mobile-drawer-header {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        padding: 1.5rem !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .mobile-drawer-title {
+        color: white !important;
+        font-size: 1.125rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
     }
 
     /* 1.11 - Stat numbers et labels */
