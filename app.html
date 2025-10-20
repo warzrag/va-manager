@@ -8382,18 +8382,10 @@
                     .map(([name, counts]) => {
                         const percentage = counts.total > 0 ? (counts.active / counts.total * 100) : 0;
 
-                        // Couleurs dynamiques selon le pourcentage ET le mode
+                        // Fond neutre pour un meilleur contraste avec les bordures colorées
                         const cardBg = isDarkMode
-                            ? (percentage >= 80
-                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.08), rgba(34, 160, 61, 0.12))'
-                                : percentage >= 50
-                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.08), rgba(34, 160, 61, 0.12))'
-                                : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.12))')
-                            : (percentage >= 80
-                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.05), rgba(34, 160, 61, 0.08))'
-                                : percentage >= 50
-                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.05), rgba(34, 160, 61, 0.08))'
-                                : 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.08))');
+                            ? 'linear-gradient(135deg, rgba(26, 29, 35, 0.6), rgba(30, 32, 40, 0.8))'
+                            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95))';
 
                         const borderColor = percentage >= 80
                             ? '#31C950'
