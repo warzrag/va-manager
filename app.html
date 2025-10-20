@@ -8365,12 +8365,17 @@
             if (activeAccountsContainer) {
                 const creatorStats = {};
 
-                // Compter les comptes actifs par créatrice
+                // Compter les comptes actifs par créatrice et stocker les comptes
                 data.creators.forEach(creator => {
                     if (creator.instagramAccounts) {
-                        const activeCount = creator.instagramAccounts.filter(acc => acc.status !== 'banned').length;
-                        const totalCount = creator.instagramAccounts.length;
-                        creatorStats[creator.name] = { active: activeCount, total: totalCount };
+                        const activeAccounts = creator.instagramAccounts.filter(acc => acc.status !== 'banned');
+                        const bannedAccounts = creator.instagramAccounts.filter(acc => acc.status === 'banned');
+                        creatorStats[creator.name] = {
+                            active: activeAccounts.length,
+                            total: creator.instagramAccounts.length,
+                            activeAccounts: activeAccounts,
+                            bannedAccounts: bannedAccounts
+                        };
                     }
                 });
 
@@ -8535,7 +8540,7 @@
 
                             <!-- Stats badges -->
                             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                                <div style="
+                                <div onclick="showAccountsModal('${name}', 'active')" style="
                                     flex: 1;
                                     display: flex;
                                     align-items: center;
@@ -8548,7 +8553,9 @@
                                     font-weight: 700;
                                     box-shadow: 0 4px 12px rgba(49, 201, 80, 0.3);
                                     border: 1px solid rgba(255, 255, 255, 0.3);
-                                ">
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(49, 201, 80, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(49, 201, 80, 0.3)';">
                                     <div style="
                                         width: 24px;
                                         height: 24px;
@@ -8561,7 +8568,7 @@
                                     ">✓</div>
                                     <span>${counts.active} Actifs</span>
                                 </div>
-                                <div style="
+                                <div onclick="showAccountsModal('${name}', 'banned')" style="
                                     flex: 1;
                                     display: flex;
                                     align-items: center;
@@ -8574,7 +8581,9 @@
                                     font-weight: 700;
                                     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
                                     border: 1px solid rgba(255, 255, 255, 0.3);
-                                ">
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(239, 68, 68, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)';">
                                     <div style="
                                         width: 24px;
                                         height: 24px;
@@ -8599,8 +8608,134 @@
                     }).join('');
 
                 activeAccountsContainer.innerHTML = statsHTML || '<span style="opacity: 0.7;">Aucun compte</span>';
+
+                // Fonction pour afficher la modale des comptes
+                window.showAccountsModal = function(creatorName, type) {
+                    const stats = creatorStats[creatorName];
+                    if (!stats) return;
+
+                    const accounts = type === 'active' ? stats.activeAccounts : stats.bannedAccounts;
+                    const title = type === 'active'
+                        ? `✅ Comptes Actifs - ${creatorName}`
+                        : `⛔ Comptes Bannis - ${creatorName}`;
+                    const color = type === 'active' ? '#31C950' : '#ef4444';
+
+                    const isDark = document.body.classList.contains('dark-mode');
+                    const bgColor = isDark ? '#1a1d23' : '#ffffff';
+                    const textColor = isDark ? '#e1e8ef' : '#1a1a1a';
+                    const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+                    const accountsList = accounts.map(acc => `
+                        <div style="
+                            background: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
+                            padding: 1rem;
+                            border-radius: 0.75rem;
+                            border: 1px solid ${borderColor};
+                            display: flex;
+                            align-items: center;
+                            gap: 1rem;
+                            transition: all 0.2s ease;
+                        " onmouseover="this.style.background='${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}'" onmouseout="this.style.background='${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'}'">
+                            <div style="
+                                width: 40px;
+                                height: 40px;
+                                background: linear-gradient(135deg, ${color}, ${color}dd);
+                                border-radius: 12px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                                font-weight: 700;
+                            ">
+                                ${type === 'active' ? '✓' : '✕'}
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; font-size: 1rem; color: ${textColor};">@${acc.username}</div>
+                                ${acc.email ? `<div style="font-size: 0.875rem; color: ${isDark ? '#9ca3af' : '#64748b'}; margin-top: 0.25rem;">${acc.email}</div>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    const modalHTML = `
+                        <div id="accounts-modal" style="
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(0, 0, 0, 0.75);
+                            backdrop-filter: blur(8px);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 10000;
+                            padding: 1rem;
+                        " onclick="if(event.target.id === 'accounts-modal') this.remove()">
+                            <div style="
+                                background: ${bgColor};
+                                border-radius: 1.5rem;
+                                max-width: 600px;
+                                width: 100%;
+                                max-height: 80vh;
+                                overflow: hidden;
+                                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                                border: 2px solid ${color};
+                            " onclick="event.stopPropagation()">
+                                <!-- Header -->
+                                <div style="
+                                    background: linear-gradient(135deg, ${color}, ${color}dd);
+                                    color: white;
+                                    padding: 1.5rem;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                ">
+                                    <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800;">${title}</h3>
+                                    <button onclick="document.getElementById('accounts-modal').remove()" style="
+                                        background: rgba(255, 255, 255, 0.2);
+                                        border: none;
+                                        color: white;
+                                        width: 32px;
+                                        height: 32px;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 1.25rem;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        transition: background 0.2s ease;
+                                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                </div>
+
+                                <!-- Content -->
+                                <div style="
+                                    padding: 1.5rem;
+                                    max-height: calc(80vh - 100px);
+                                    overflow-y: auto;
+                                ">
+                                    ${accounts.length > 0 ? `
+                                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                            ${accountsList}
+                                        </div>
+                                    ` : `
+                                        <div style="text-align: center; padding: 2rem; color: ${isDark ? '#9ca3af' : '#64748b'};">
+                                            Aucun compte ${type === 'active' ? 'actif' : 'banni'}
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Supprimer l'ancienne modale si elle existe
+                    const existingModal = document.getElementById('accounts-modal');
+                    if (existingModal) existingModal.remove();
+
+                    // Ajouter la nouvelle modale
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
+                };
             }
-            
+
             // Update other displays
             console.log('  🔄 Mise à jour des composants...');
             console.log('    - Mise à jour stats créatrices...');
