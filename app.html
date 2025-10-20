@@ -7813,6 +7813,7 @@
 
             // Update warmup display when navigating to warmup page
             if (pageName === 'instagram-warmup') {
+                await loadWarmupDataIfNeeded();
                 updateWarmupDisplay();
             }
 
@@ -19922,6 +19923,37 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // ============================================================================
 
         // Initialize warmup data structure
+        // Lazy load warmup data from Supabase when needed
+        async function loadWarmupDataIfNeeded() {
+            // Check if warmup data is already loaded
+            if (data.warmupProgress && Object.keys(data.warmupProgress).length > 0) {
+                console.log('✅ Warmup data already loaded, skipping');
+                return;
+            }
+
+            console.log('📡 Loading warmup data from Supabase...');
+            try {
+                const warmupArray = await getWarmupProgress();
+
+                // Convert array to object format: { username: { currentDay, completed, ... } }
+                data.warmupProgress = {};
+                (warmupArray || []).forEach(w => {
+                    data.warmupProgress[w.username] = {
+                        currentDay: w.current_day,
+                        completed: w.completed,
+                        startDate: w.start_date,
+                        completedDate: w.completed_date,
+                        lastUpdate: w.last_update
+                    };
+                });
+
+                console.log(`✅ Loaded ${Object.keys(data.warmupProgress).length} warmup entries from Supabase`);
+            } catch (error) {
+                console.error('❌ Error loading warmup data:', error);
+                data.warmupProgress = {};
+            }
+        }
+
         function initializeWarmupData() {
             if (!data.warmupProgress) {
                 // Initialize empty if not loaded from Supabase yet
