@@ -318,13 +318,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
         }
 
-        /* Carte Comptes Actifs - Mode Sombre */
-        body.dark-mode .dashboard-stat-card[style*="linear-gradient(135deg, #31C950"] {
-            background: linear-gradient(135deg, #1e5128, #2d6a3e) !important;
-            box-shadow: 0 8px 32px rgba(49, 201, 80, 0.2) !important;
-            border: 2px solid rgba(49, 201, 80, 0.3) !important;
-        }
-
         body.dark-mode .dashboard-section-title {
             color: #f3f4f6 !important;
         }
@@ -574,38 +567,30 @@
         }
         
         body.dark-mode .twitter-badge {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            border: 1.5px solid rgba(71, 85, 105, 0.6) !important;
+            background: linear-gradient(135deg, #1DA1F2 0%, #0C85D0 100%) !important;
+            box-shadow: 0 2px 4px rgba(29, 161, 242, 0.2) !important;
+            border-color: rgba(29, 161, 242, 0.3) !important;
         }
-
+        
         body.dark-mode .twitter-badge:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-            border-color: rgba(100, 116, 139, 0.8) !important;
-            background: linear-gradient(135deg, #334155 0%, #475569 100%) !important;
-        }
-
-        body.dark-mode .twitter-badge i.fab {
-            color: #1DA1F2 !important;
+            box-shadow: 0 3px 8px rgba(29, 161, 242, 0.4) !important;
+            border-color: rgba(29, 161, 242, 0.5) !important;
         }
 
         body.dark-mode .instagram-accounts {
-            background: rgba(30, 41, 59, 0.3) !important;
-            border-color: rgba(71, 85, 105, 0.4) !important;
+            background: linear-gradient(45deg, rgba(131, 58, 180, 0.03), rgba(253, 29, 29, 0.03), rgba(252, 176, 69, 0.03)) !important;
+            border-color: rgba(193, 53, 132, 0.1) !important;
         }
 
         body.dark-mode .instagram-badge {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
-            color: #f1f5f9 !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            border: 1.5px solid rgba(71, 85, 105, 0.6) !important;
+            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%) !important;
+            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.2) !important;
+            border: 2px solid transparent !important;
         }
 
         body.dark-mode .instagram-badge:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-            border-color: rgba(100, 116, 139, 0.8) !important;
-            background: linear-gradient(135deg, #334155 0%, #475569 100%) !important;
+            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.4) !important;
+            border-color: rgba(193, 53, 132, 0.5) !important;
         }
         
         body.dark-mode .creatrice-name {
@@ -1224,179 +1209,160 @@
             margin-top: 0.5rem;
         }
 
-        /* Twitter accounts container - ULTRA MODERNE */
+        .twitter-badge {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0C85D0 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(29, 161, 242, 0.15);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            cursor: pointer;
+            max-width: calc(100% - 1rem);
+            margin: 0.25rem;
+            border: 1px solid rgba(29, 161, 242, 0.2);
+        }
+        
+        a.twitter-badge {
+            color: white;
+            text-decoration: none;
+        }
+        
+        a.twitter-badge:visited {
+            color: white;
+        }
+        
+        .twitter-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(29, 161, 242, 0.25);
+            border-color: rgba(29, 161, 242, 0.4);
+        }
+        
+        .twitter-badge button {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 0.75rem !important;
+        }
+        
+        .twitter-badge button:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: scale(1.1);
+        }
+        
+        /* Twitter accounts container - ULTRATHINK design */
         .twitter-accounts {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.625rem;
-            padding: 1rem;
-            background: rgba(29, 161, 242, 0.03);
-            border-radius: 12px;
-            border: 1.5px solid rgba(29, 161, 242, 0.12);
-            margin-top: 0.75rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .twitter-badge {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            color: #1e293b;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
             gap: 0.5rem;
-            position: relative;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
-            text-decoration: none;
-            cursor: pointer;
-            overflow: hidden;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: rgba(29, 161, 242, 0.02);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(29, 161, 242, 0.08);
+            margin-top: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(29, 161, 242, 0.2) transparent;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-thumb {
+            background: rgba(29, 161, 242, 0.2);
+            border-radius: 3px;
+        }
+        
+        .twitter-accounts::-webkit-scrollbar-thumb:hover {
+            background: rgba(29, 161, 242, 0.3);
         }
 
-        .twitter-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.25s ease;
-        }
-
-        a.twitter-badge {
-            color: #1e293b;
-            text-decoration: none;
-        }
-
-        a.twitter-badge:visited {
-            color: #1e293b;
-        }
-
-        .twitter-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-            border-color: rgba(203, 213, 225, 1);
-            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-        }
-
-        .twitter-badge:hover::before {
-            opacity: 0;
-        }
-
-        .twitter-badge i.fab {
-            font-size: 1rem;
-            color: #1DA1F2;
-        }
-
-        .twitter-badge button {
-            width: 32px !important;
-            height: 32px !important;
-            min-width: 32px !important;
-            border-radius: 8px !important;
-            background: rgba(0, 0, 0, 0.05) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            color: #64748b !important;
-            transition: all 0.2s ease !important;
-        }
-
-        .twitter-badge button:hover {
-            background: rgba(0, 0, 0, 0.1) !important;
-            transform: scale(1.08) !important;
-            border-color: rgba(0, 0, 0, 0.15) !important;
-        }
-
-        /* Instagram accounts container - ULTRA MODERNE */
+        /* Instagram accounts container */
         .instagram-accounts {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.625rem;
-            padding: 1rem;
-            background: rgba(248, 250, 252, 0.5);
-            border-radius: 12px;
-            border: 1.5px solid rgba(226, 232, 240, 0.6);
+            gap: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: linear-gradient(45deg, rgba(131, 58, 180, 0.05), rgba(253, 29, 29, 0.05), rgba(252, 176, 69, 0.05));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(193, 53, 132, 0.15);
             margin-top: 0.75rem;
-            backdrop-filter: blur(10px);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(193, 53, 132, 0.2) transparent;
+        }
+
+        .instagram-accounts::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-thumb {
+            background: rgba(193, 53, 132, 0.2);
+            border-radius: 3px;
+        }
+
+        .instagram-accounts::-webkit-scrollbar-thumb:hover {
+            background: rgba(193, 53, 132, 0.3);
         }
 
         .instagram-badge {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            color: #1e293b;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 600;
+            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%);
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+            gap: 0.375rem;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 4px rgba(193, 53, 132, 0.15);
             position: relative;
             overflow: hidden;
             text-decoration: none;
-            letter-spacing: 0.01em;
-        }
-
-        .instagram-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.25s ease;
         }
 
         a.instagram-badge {
-            color: #1e293b;
+            color: white;
             text-decoration: none;
         }
 
         a.instagram-badge:visited {
-            color: #1e293b;
+            color: white;
         }
 
         .instagram-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-            border-color: rgba(203, 213, 225, 1);
-            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-        }
-
-        .instagram-badge:hover::before {
-            opacity: 0;
-        }
-
-        .instagram-badge i.fab {
-            font-size: 1rem;
-            background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(193, 53, 132, 0.25);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .instagram-badge button {
-            width: 32px !important;
-            height: 32px !important;
-            min-width: 32px !important;
-            border-radius: 8px !important;
-            background: rgba(0, 0, 0, 0.05) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            color: #64748b !important;
-            transition: all 0.2s ease !important;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
         }
 
         .instagram-badge button:hover {
-            background: rgba(0, 0, 0, 0.1) !important;
-            transform: scale(1.08) !important;
-            border-color: rgba(0, 0, 0, 0.15) !important;
+            background: rgba(255,255,255,0.3) !important;
+            transform: scale(1.1);
         }
         
         /* Adjust creatrice-item spacing */
@@ -1702,15 +1668,6 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
-        }
-
-        @keyframes pulse-warning {
-            0%, 100% {
-                box-shadow: 0 2px 8px rgba(255, 8, 68, 0.4);
-            }
-            50% {
-                box-shadow: 0 4px 16px rgba(255, 8, 68, 0.7);
-            }
         }
 
         .competition-title {
@@ -3068,255 +3025,11 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
         }
-
-        /* ============================================
-           ACCOUNT STATUS SYSTEM STYLES
-           ============================================ */
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 0.375rem;
-            border: 1.5px solid;
-            transition: all 0.2s ease;
-        }
-
-        .status-active {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .status-banned {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .status-suspended {
-            background: rgba(249, 115, 22, 0.15);
-            color: #f97316;
-            border-color: rgba(249, 115, 22, 0.3);
-        }
-
-        .status-warning {
-            background: rgba(234, 179, 8, 0.15);
-            color: #eab308;
-            border-color: rgba(234, 179, 8, 0.3);
-        }
-
-        .status-paused {
-            background: rgba(107, 114, 128, 0.15);
-            color: #6b7280;
-            border-color: rgba(107, 114, 128, 0.3);
-        }
-
-        .status-edit-btn {
-            background: rgba(59, 130, 246, 0.1);
-            border: none;
-            border-radius: 6px;
-            padding: 0.25rem 0.5rem;
-            cursor: pointer;
-            font-size: 0.7rem;
-            color: #3b82f6;
-            margin-left: 0.375rem;
-            transition: all 0.2s ease;
-        }
-
-        .status-edit-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        /* Status Modal */
-        .status-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .status-modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 500px;
-            width: calc(100% - 2rem);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideUp 0.3s ease;
-        }
-
-        body.dark-mode .status-modal-content {
-            background: #1e293b;
-            color: #e1e8ef;
-        }
-
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .status-modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .status-modal-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1a1a1a;
-        }
-
-        body.dark-mode .status-modal-title {
-            color: #e1e8ef;
-        }
-
-        .status-modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.2s;
-        }
-
-        .status-modal-close:hover {
-            color: #ef4444;
-        }
-
-        .status-form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .status-form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: #374151;
-        }
-
-        body.dark-mode .status-form-label {
-            color: #94a3b8;
-        }
-
-        .status-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        body.dark-mode .status-select {
-            background: #0d0f13;
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #e1e8ef;
-        }
-
-        .status-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .status-textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 0.9375rem;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 100px;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        body.dark-mode .status-textarea {
-            background: #0d0f13;
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #e1e8ef;
-        }
-
-        .status-textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .status-modal-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-        }
-
-        .status-btn {
-            flex: 1;
-            padding: 0.875rem 1.5rem;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .status-btn-save {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .status-btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
-
-        .status-btn-cancel {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        body.dark-mode .status-btn-cancel {
-            background: #334155;
-            color: #94a3b8;
-        }
-
-        .status-btn-cancel:hover {
-            background: #e5e7eb;
-        }
-
-        body.dark-mode .status-btn-cancel:hover {
-            background: #475569;
-        }
     </style>
 
     <!-- Configuration and Supabase Client -->
     <script src="config.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="account-status-system.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -3602,15 +3315,13 @@
         <div id="dashboard-page" class="page active">
             <!-- Statistiques principales -->
             <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div class="dashboard-stat-card" style="background: linear-gradient(135deg, #31C950, #22a03d); color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 8px 32px rgba(49, 201, 80, 0.4); border: 2px solid rgba(255, 255, 255, 0.9);">
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <p class="dashboard-stat-label" style="margin: 0; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; color: white;">Comptes Actifs par Créatrice</p>
-                            <i class="fas fa-chart-pie" style="font-size: 1.5rem; opacity: 0.4; color: white;"></i>
+                <div class="dashboard-stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p class="dashboard-stat-label" style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Revenus du mois</p>
+                            <p class="dashboard-stat-value" style="margin: 0; font-size: 2rem; font-weight: 700;" id="month-revenue">0€</p>
                         </div>
-                        <div id="active-accounts-by-creator" style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
-                            <!-- Les stats seront générées ici -->
-                        </div>
+                        <i class="fas fa-euro-sign" style="font-size: 2rem; opacity: 0.3;"></i>
                     </div>
                 </div>
             </div>
@@ -3650,26 +3361,6 @@
 
                 <div id="instagram-top-accounts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
                     <!-- Les cartes des meilleurs comptes Instagram seront générées ici -->
-                </div>
-            </div>
-
-            <!-- Banned Accounts Alert -->
-            <div id="banned-accounts-alert" style="display: none; background: linear-gradient(135deg, #ff0844 0%, #f7022a 100%); border: 2px solid #dc2626; border-radius: 1rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(255, 8, 68, 0.3);">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                            ⚠️
-                        </div>
-                        <div>
-                            <h4 style="margin: 0; color: white; font-size: 1.125rem; font-weight: 700;">Alerte Comptes Problématiques</h4>
-                            <p id="banned-accounts-message" style="margin: 0.25rem 0 0 0; color: rgba(255, 255, 255, 0.95); font-size: 0.875rem; font-weight: 500;">
-                                <!-- Message will be generated dynamically -->
-                            </p>
-                        </div>
-                    </div>
-                    <button id="show-banned-accounts-btn" onclick="filterBannedAccounts()" style="background: rgba(255, 255, 255, 0.95); color: #dc2626; padding: 0.75rem 1.5rem; border: none; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);" onmouseover="this.style.background='white'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.95)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.15)'">
-                        <i class="fas fa-list"></i> Voir tous les comptes
-                    </button>
                 </div>
             </div>
 
@@ -5553,23 +5244,6 @@
                         window.location.href = 'va-dashboard.html';
                         return;
                     }
-
-                    // Check if user is a manager
-                    const { data: managerRecord } = await supabase
-                        .from('managers')
-                        .select('id, name, organization_id')
-                        .eq('user_id', currentUser.id)
-                        .single();
-
-                    if (managerRecord) {
-                        console.log('✅ User is a manager of organization:', managerRecord.organization_id);
-                        // Set the current organization to the manager's organization
-                        currentOrganization = {
-                            id: managerRecord.organization_id,
-                            role: 'manager'
-                        };
-                    }
-
                     document.getElementById('user-email').textContent = currentUser.email;
 
                     // Show loading indicator
@@ -5629,15 +5303,12 @@
         async function loadAllData() {
             try {
                 const startTime = performance.now();
-                console.log('📡 Loading essential data from Supabase...');
+                console.log('📡 Loading data from Supabase...');
 
-                // Load ONLY essential data (VAs, creators, accounts) - NO financials, NO stats
-                const allData = await getAllUserData({ loadStats: false, loadFinancials: false });
+                const allData = await getAllUserData();
 
                 const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
-                console.log(`✅ Supabase data fetched in ${loadTime}s`);
-
-                const mappingStart = performance.now();
+                console.log(`✅ Data loaded in ${loadTime}s`);
 
                 // Map Supabase data to local data structure
                 // Load VA credentials from localStorage if not in Supabase
@@ -5659,14 +5330,11 @@
                     accounts: [] // Legacy structure, keeping for compatibility
                 }));
 
-                // Populate vaIds for creators based on va_creator relationships - OPTIMIZED
-                // Use the relations already fetched in getAllUserData()
-                allData.vaCreatorRelations.forEach(relation => {
-                    const creator = data.creators.find(c => c.id === relation.creator_id);
-                    if (creator && !creator.vaIds.includes(relation.va_id)) {
-                        creator.vaIds.push(relation.va_id);
-                    }
-                });
+                // Populate vaIds for creators based on va_creator relationships - IN PARALLEL
+                await Promise.all(data.creators.map(async (creator) => {
+                    const vas = await getVAsForCreator(creator.id);
+                    creator.vaIds = vas.map(va => va.id);
+                }));
 
                 data.twitterAccounts = allData.twitterAccounts.map(account => ({
                     id: account.id,
@@ -5675,8 +5343,6 @@
                     creatorId: account.creator_id,
                     vaId: account.va_id,
                     gmailId: account.gmail_id,
-                    status: account.status || 'active',
-                    notes: account.notes || '',
                     created: account.created_at
                 }));
 
@@ -5687,8 +5353,6 @@
                     creatorId: account.creator_id,
                     vaId: account.va_id,
                     gmailId: account.gmail_id,
-                    status: account.status || 'active',
-                    notes: account.notes || '',
                     created: account.created_at
                 }));
 
@@ -5706,12 +5370,61 @@
                     status: account.status || (bannedGmails[account.id] ? 'banned' : 'active')
                 }));
 
-                // Initialize empty arrays for non-essential data (loaded on demand later)
-                data.subs = [];
-                data.revenues = [];
-                data.vaPayments = [];
-                data.twitterStats = [];
+                data.subs = allData.subscriptions.map(sub => ({
+                    id: sub.id,
+                    vaId: sub.va_id,
+                    date: sub.date,
+                    count: sub.count,
+                    amount: sub.amount,
+                    created: sub.created_at
+                }));
+
+                data.revenues = allData.revenues.map(rev => ({
+                    id: rev.id,
+                    vaId: rev.va_id,
+                    date: rev.date,
+                    amountUSD: rev.amount_usd,
+                    amountEUR: rev.amount_eur,
+                    amount: rev.amount_eur || 0,  // Default amount for compatibility
+                    exchangeRate: rev.exchange_rate,
+                    trackingLink: rev.tracking_link,
+                    description: rev.description,
+                    commission: rev.commission,
+                    created: rev.created_at
+                }));
+
+                data.vaPayments = allData.payments.map(payment => ({
+                    id: payment.id,
+                    vaId: payment.va_id,
+                    date: payment.date,
+                    amount: payment.amount,
+                    description: payment.description,
+                    created: payment.created_at
+                }));
+
+                data.twitterStats = allData.twitterStats.map(stat => ({
+                    id: stat.id,
+                    username: stat.username,
+                    date: stat.date,
+                    followersCount: stat.followers_count,
+                    vaId: stat.va_id,
+                    creatorId: stat.creator_id,
+                    created: stat.created_at
+                }));
+
+                // Load warmup progress from Supabase
                 data.warmupProgress = {};
+                (allData.warmupProgress || []).forEach(w => {
+                    data.warmupProgress[w.username] = {
+                        currentDay: w.current_day,
+                        completed: w.completed,
+                        startDate: w.start_date,
+                        completedDate: w.completed_date,
+                        lastUpdate: w.last_update
+                    };
+                });
+
+                console.log('✅ Warmup progress loaded from Supabase:', Object.keys(data.warmupProgress).length, 'accounts');
 
                 // Populate Twitter accounts into creators' accounts arrays
                 console.log('🔄 Populating creator.accounts from data.twitterAccounts...');
@@ -5727,13 +5440,10 @@
                         // Fix: Si vaId est null ET que le creator n'a qu'un seul VA, assigner automatiquement
                         const finalVaId = account.vaId || (creator.vaIds && creator.vaIds.length === 1 ? creator.vaIds[0] : null);
                         return {
-                            id: account.id,
                             username: account.username,
                             password: account.password,
                             gmailId: account.gmailId,
-                            assignedVaId: finalVaId,
-                            status: account.status,
-                            notes: account.notes
+                            assignedVaId: finalVaId
                         };
                     });
                 });
@@ -5753,13 +5463,10 @@
                         const finalVaId = account.vaId || (creator.vaIds && creator.vaIds.length === 1 ? creator.vaIds[0] : null);
                         console.log(`      📝 Mapping account ${account.username}: vaId=${account.vaId} -> assignedVaId=${finalVaId} ${account.vaId ? '' : '(AUTO-ASSIGNED)'}`);
                         return {
-                            id: account.id,
                             username: account.username,
                             password: account.password,
                             gmailId: account.gmailId,
-                            assignedVaId: finalVaId,
-                            status: account.status,
-                            notes: account.notes
+                            assignedVaId: finalVaId
                         };
                     });
                     console.log(`  ✅ Creator "${creator.name}": ${creator.accounts?.length || 0} Twitter, ${creator.instagramAccounts?.length || 0} Instagram`);
@@ -5809,12 +5516,6 @@
                         console.log(`✅ Creator "${creator.name}" a déjà vaIds = [${creator.vaIds.join(', ')}]`);
                     }
                 });
-
-                const mappingTime = ((performance.now() - mappingStart) / 1000).toFixed(2);
-                console.log(`✅ Data mapping completed in ${mappingTime}s`);
-
-                const totalTime = ((performance.now() - startTime) / 1000).toFixed(2);
-                console.log(`🎯 TOTAL loading time: ${totalTime}s`);
 
                 // Update display after data is loaded
                 console.log('🔄 Calling updateDisplay() after data load...');
@@ -6537,7 +6238,6 @@
             }
         }
 
-
         // Initialize UI (called after data is loaded from Supabase)
         function initializeUI() {
             console.log('🚀 Initializing VA Manager UI...');
@@ -6547,7 +6247,7 @@
 
             console.log('📋 Setting up event listeners...');
             setupEventListeners();
-
+            
             // Vérifier que les boutons de navigation sont bien configurés
             const navButtons = document.querySelectorAll('.nav-btn');
             console.log(`✅ Found ${navButtons.length} navigation buttons`);
@@ -6559,7 +6259,7 @@
                     console.log(`  ⚠️ Button "${btn.textContent.trim()}" has no data-page attribute`);
                 }
             });
-
+            
             setupDragAndDrop();
             setupSubsTracking();
             setupRevenueTracking();
@@ -7803,7 +7503,7 @@
         }
 
         // Navigation
-        async function navigateToPage(pageName) {
+        function navigateToPage(pageName) {
             console.log('🔵 [NAV DEBUG] Navigating to page:', pageName);
 
             // Close mobile menu if open
@@ -7829,17 +7529,17 @@
             } else {
                 console.error('❌ [NAV DEBUG] Page element not found:', `${pageName}-page`);
             }
-
+            
             // Update subs display when navigating to subs tracking page
             if (pageName === 'subs-tracking') {
                 updateCompetitionDisplay();
             }
-
+            
             // Update revenue display when navigating to revenue tracking page
             if (pageName === 'revenue-tracking') {
                 updateRevenueDisplay();
             }
-
+            
             // Update financial overview when navigating to that page
             if (pageName === 'financial-overview') {
                 updateFinancialOverview();
@@ -7847,7 +7547,6 @@
 
             // Update warmup display when navigating to warmup page
             if (pageName === 'instagram-warmup') {
-                await loadWarmupDataIfNeeded();
                 updateWarmupDisplay();
             }
 
@@ -8385,382 +8084,13 @@
                 monthlyRevenue: stats.monthlyRevenue
             });
 
-            // Update active accounts by creator
-            const activeAccountsContainer = document.getElementById('active-accounts-by-creator');
-            if (activeAccountsContainer) {
-                const creatorStats = {};
-
-                // Compter les comptes actifs par créatrice et stocker les comptes
-                data.creators.forEach(creator => {
-                    if (creator.instagramAccounts) {
-                        const activeAccounts = creator.instagramAccounts.filter(acc => acc.status !== 'banned');
-                        const bannedAccounts = creator.instagramAccounts.filter(acc => acc.status === 'banned');
-                        creatorStats[creator.name] = {
-                            active: activeAccounts.length,
-                            total: creator.instagramAccounts.length,
-                            activeAccounts: activeAccounts,
-                            bannedAccounts: bannedAccounts
-                        };
-                    }
-                });
-
-                // Générer le HTML avec design ultra moderne adapté au mode sombre
-                const isDarkMode = document.body.classList.contains('dark-mode');
-
-                const statsHTML = Object.entries(creatorStats)
-                    .sort((a, b) => b[1].active - a[1].active)
-                    .map(([name, counts]) => {
-                        const percentage = counts.total > 0 ? (counts.active / counts.total * 100) : 0;
-
-                        // Fond neutre pour un meilleur contraste avec les bordures colorées
-                        const cardBg = isDarkMode
-                            ? 'linear-gradient(135deg, rgba(26, 29, 35, 0.6), rgba(30, 32, 40, 0.8))'
-                            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95))';
-
-                        const borderColor = percentage >= 80
-                            ? '#31C950'
-                            : percentage >= 50
-                            ? '#31C950'
-                            : '#ef4444';
-
-                        const iconBg = percentage >= 80
-                            ? 'linear-gradient(135deg, #31C950, #22a03d)'
-                            : percentage >= 50
-                            ? 'linear-gradient(135deg, #31C950, #22a03d)'
-                            : 'linear-gradient(135deg, #fb7185, #f43f5e)';
-
-                        const barGradient = percentage >= 80
-                            ? 'linear-gradient(90deg, #31C950, #22a03d)'
-                            : percentage >= 50
-                            ? 'linear-gradient(90deg, #31C950, #22a03d)'
-                            : 'linear-gradient(90deg, #fb7185, #f43f5e)';
-
-                        // Couleurs de texte adaptées au mode
-                        const nameColor = isDarkMode ? '#e1e8ef' : '#0f172a';
-                        const subtitleColor = isDarkMode ? '#9ca3af' : '#64748b';
-                        const labelColor = isDarkMode ? '#9ca3af' : '#64748b';
-                        const countColor = isDarkMode ? '#cbd5e1' : '#94a3b8';
-
-                        // Effet brillant adapté au mode
-                        const shineEffect = isDarkMode
-                            ? 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)'
-                            : 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)';
-
-                        // Ombres adaptées
-                        const cardShadow = isDarkMode
-                            ? '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset'
-                            : '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset';
-
-                        const hoverShadow = isDarkMode
-                            ? `0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px ${borderColor}33`
-                            : `0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 3px ${borderColor}33`;
-
-                        const avatarShadow = isDarkMode
-                            ? `0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.1)`
-                            : `0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.9)`;
-
-                        const progressBg = isDarkMode
-                            ? 'rgba(148, 163, 184, 0.1)'
-                            : 'rgba(148, 163, 184, 0.15)';
-
-                        return `
-                        <div style="
-                            position: relative;
-                            background: ${cardBg};
-                            backdrop-filter: blur(10px);
-                            border-radius: 1.5rem;
-                            padding: 1.5rem;
-                            border: 2px solid ${borderColor};
-                            box-shadow: ${cardShadow};
-                            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                            cursor: pointer;
-                            overflow: hidden;
-                        " onmouseover="
-                            this.style.transform='translateY(-8px) scale(1.02)';
-                            this.style.boxShadow='${hoverShadow}';
-                        " onmouseout="
-                            this.style.transform='translateY(0) scale(1)';
-                            this.style.boxShadow='${cardShadow}';
-                        ">
-                            <!-- Effet brillant d'arrière-plan -->
-                            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: ${shineEffect}; pointer-events: none;"></div>
-
-                            <!-- Header avec avatar et nom -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; position: relative;">
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    <div style="
-                                        width: 56px;
-                                        height: 56px;
-                                        background: ${iconBg};
-                                        border-radius: 18px;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        font-size: 1.75rem;
-                                        box-shadow: ${avatarShadow};
-                                        transform: rotate(-5deg);
-                                        transition: transform 0.3s ease;
-                                    " onmouseover="this.style.transform='rotate(0deg) scale(1.1)'" onmouseout="this.style.transform='rotate(-5deg) scale(1)'">
-                                        👤
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 800; font-size: 1.15rem; color: ${nameColor}; letter-spacing: -0.5px;">${name}</div>
-                                        <div style="font-size: 0.75rem; color: ${subtitleColor}; font-weight: 500; margin-top: 2px;">Créatrice de contenu</div>
-                                    </div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="
-                                        font-weight: 900;
-                                        font-size: 2rem;
-                                        line-height: 1;
-                                        background: ${barGradient};
-                                        -webkit-background-clip: text;
-                                        -webkit-text-fill-color: transparent;
-                                        background-clip: text;
-                                    ">
-                                        ${counts.active}
-                                    </div>
-                                    <div style="font-size: 0.7rem; color: ${countColor}; font-weight: 600; margin-top: 4px;">
-                                        / ${counts.total} comptes
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Barre de progression moderne -->
-                            <div style="margin-bottom: 1rem;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <span style="font-size: 0.7rem; font-weight: 700; color: ${labelColor}; text-transform: uppercase; letter-spacing: 0.5px;">Progression</span>
-                                    <span style="font-size: 0.85rem; font-weight: 800; color: ${borderColor};">${percentage.toFixed(0)}%</span>
-                                </div>
-                                <div style="
-                                    position: relative;
-                                    background: ${progressBg};
-                                    height: 14px;
-                                    border-radius: 20px;
-                                    overflow: hidden;
-                                    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-                                ">
-                                    <div style="
-                                        background: ${barGradient};
-                                        height: 100%;
-                                        width: ${percentage}%;
-                                        border-radius: 20px;
-                                        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-                                        box-shadow: 0 0 12px ${borderColor}60;
-                                        position: relative;
-                                        overflow: hidden;
-                                    ">
-                                        <div style="
-                                            position: absolute;
-                                            top: 0;
-                                            left: 0;
-                                            right: 0;
-                                            bottom: 0;
-                                            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                                            animation: shimmer 2s infinite;
-                                        "></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Stats badges -->
-                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                                <div onclick="showAccountsModal('${name}', 'active')" style="
-                                    flex: 1;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 0.5rem;
-                                    background: linear-gradient(135deg, #31C950, #22a03d);
-                                    color: white;
-                                    padding: 0.65rem 1rem;
-                                    border-radius: 12px;
-                                    font-size: 0.8rem;
-                                    font-weight: 700;
-                                    box-shadow: 0 4px 12px rgba(49, 201, 80, 0.3);
-                                    border: 1px solid rgba(255, 255, 255, 0.3);
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(49, 201, 80, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(49, 201, 80, 0.3)';">
-                                    <div style="
-                                        width: 24px;
-                                        height: 24px;
-                                        background: rgba(255, 255, 255, 0.25);
-                                        border-radius: 8px;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        font-size: 0.7rem;
-                                    ">✓</div>
-                                    <span>${counts.active} Actifs</span>
-                                </div>
-                                <div onclick="showAccountsModal('${name}', 'banned')" style="
-                                    flex: 1;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 0.5rem;
-                                    background: linear-gradient(135deg, #ef4444, #dc2626);
-                                    color: white;
-                                    padding: 0.65rem 1rem;
-                                    border-radius: 12px;
-                                    font-size: 0.8rem;
-                                    font-weight: 700;
-                                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-                                    border: 1px solid rgba(255, 255, 255, 0.3);
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(239, 68, 68, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)';">
-                                    <div style="
-                                        width: 24px;
-                                        height: 24px;
-                                        background: rgba(255, 255, 255, 0.25);
-                                        border-radius: 8px;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        font-size: 0.7rem;
-                                    ">✕</div>
-                                    <span>${counts.total - counts.active} Bannis</span>
-                                </div>
-                            </div>
-                        </div>
-                        <style>
-                            @keyframes shimmer {
-                                0% { transform: translateX(-100%); }
-                                100% { transform: translateX(100%); }
-                            }
-                        </style>
-                    `;
-                    }).join('');
-
-                activeAccountsContainer.innerHTML = statsHTML || '<span style="opacity: 0.7;">Aucun compte</span>';
-
-                // Fonction pour afficher la modale des comptes
-                window.showAccountsModal = function(creatorName, type) {
-                    const stats = creatorStats[creatorName];
-                    if (!stats) return;
-
-                    const accounts = type === 'active' ? stats.activeAccounts : stats.bannedAccounts;
-                    const title = type === 'active'
-                        ? `✅ Comptes Actifs - ${creatorName}`
-                        : `⛔ Comptes Bannis - ${creatorName}`;
-                    const color = type === 'active' ? '#31C950' : '#ef4444';
-
-                    const isDark = document.body.classList.contains('dark-mode');
-                    const bgColor = isDark ? '#1a1d23' : '#ffffff';
-                    const textColor = isDark ? '#e1e8ef' : '#1a1a1a';
-                    const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-
-                    const accountsList = accounts.map(acc => `
-                        <div style="
-                            background: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
-                            padding: 1rem;
-                            border-radius: 0.75rem;
-                            border: 1px solid ${borderColor};
-                            display: flex;
-                            align-items: center;
-                            gap: 1rem;
-                            transition: all 0.2s ease;
-                        " onmouseover="this.style.background='${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}'" onmouseout="this.style.background='${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'}'">
-                            <div style="
-                                width: 40px;
-                                height: 40px;
-                                background: linear-gradient(135deg, ${color}, ${color}dd);
-                                border-radius: 12px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: white;
-                                font-weight: 700;
-                            ">
-                                ${type === 'active' ? '✓' : '✕'}
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; font-size: 1rem; color: ${textColor};">@${acc.username}</div>
-                                ${acc.email ? `<div style="font-size: 0.875rem; color: ${isDark ? '#9ca3af' : '#64748b'}; margin-top: 0.25rem;">${acc.email}</div>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-
-                    const modalHTML = `
-                        <div id="accounts-modal" style="
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background: rgba(0, 0, 0, 0.75);
-                            backdrop-filter: blur(8px);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            z-index: 10000;
-                            padding: 1rem;
-                        " onclick="if(event.target.id === 'accounts-modal') this.remove()">
-                            <div style="
-                                background: ${bgColor};
-                                border-radius: 1.5rem;
-                                max-width: 600px;
-                                width: 100%;
-                                max-height: 80vh;
-                                overflow: hidden;
-                                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                                border: 2px solid ${color};
-                            " onclick="event.stopPropagation()">
-                                <!-- Header -->
-                                <div style="
-                                    background: linear-gradient(135deg, ${color}, ${color}dd);
-                                    color: white;
-                                    padding: 1.5rem;
-                                    display: flex;
-                                    justify-content: space-between;
-                                    align-items: center;
-                                ">
-                                    <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800;">${title}</h3>
-                                    <button onclick="document.getElementById('accounts-modal').remove()" style="
-                                        background: rgba(255, 255, 255, 0.2);
-                                        border: none;
-                                        color: white;
-                                        width: 32px;
-                                        height: 32px;
-                                        border-radius: 8px;
-                                        cursor: pointer;
-                                        font-size: 1.25rem;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        transition: background 0.2s ease;
-                                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
-                                </div>
-
-                                <!-- Content -->
-                                <div style="
-                                    padding: 1.5rem;
-                                    max-height: calc(80vh - 100px);
-                                    overflow-y: auto;
-                                ">
-                                    ${accounts.length > 0 ? `
-                                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                            ${accountsList}
-                                        </div>
-                                    ` : `
-                                        <div style="text-align: center; padding: 2rem; color: ${isDark ? '#9ca3af' : '#64748b'};">
-                                            Aucun compte ${type === 'active' ? 'actif' : 'banni'}
-                                        </div>
-                                    `}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    // Supprimer l'ancienne modale si elle existe
-                    const existingModal = document.getElementById('accounts-modal');
-                    if (existingModal) existingModal.remove();
-
-                    // Ajouter la nouvelle modale
-                    document.body.insertAdjacentHTML('beforeend', modalHTML);
-                };
+            const monthRevenueElement = document.getElementById('month-revenue');
+            if (monthRevenueElement) {
+                monthRevenueElement.textContent = stats.monthlyRevenue.toFixed(2) + '€';
+            } else {
+                console.warn('  ⚠️ Élément #month-revenue non trouvé');
             }
-
+            
             // Update other displays
             console.log('  🔄 Mise à jour des composants...');
             console.log('    - Mise à jour stats créatrices...');
@@ -11809,196 +11139,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }).join('');
         }
 
-        // ============================================================================
-        // BANNED ACCOUNTS MANAGEMENT FUNCTIONS
-        // ============================================================================
-
-        // Count banned/suspended accounts for a specific VA
-        function countProblematicAccounts(vaId) {
-            let count = 0;
-
-            if (!data.creators) return 0;
-
-            data.creators.forEach(creator => {
-                // Count problematic Twitter accounts assigned to this VA
-                if (creator.accounts) {
-                    creator.accounts.forEach(account => {
-                        // Check if account is assigned to this VA AND is banned/suspended
-                        if (account.assignedVaId === vaId &&
-                            (account.status === 'banned' || account.status === 'suspended')) {
-                            count++;
-                        }
-                    });
-                }
-
-                // Count problematic Instagram accounts assigned to this VA
-                if (creator.instagramAccounts) {
-                    creator.instagramAccounts.forEach(account => {
-                        // Check if account is assigned to this VA AND is banned/suspended
-                        if (account.assignedVaId === vaId &&
-                            (account.status === 'banned' || account.status === 'suspended')) {
-                            count++;
-                        }
-                    });
-                }
-            });
-
-            return count;
-        }
-
-        // Get all banned/suspended accounts across all VAs
-        function getAllProblematicAccounts() {
-            const problematic = [];
-
-            if (!data.creators) return problematic;
-
-            data.creators.forEach(creator => {
-                // Twitter accounts
-                if (creator.accounts) {
-                    creator.accounts.forEach(account => {
-                        if (account.status === 'banned' || account.status === 'suspended') {
-                            problematic.push({
-                                type: 'twitter',
-                                username: account.username,
-                                status: account.status,
-                                creator: creator.name,
-                                vaIds: creator.vaIds || [],
-                                notes: account.notes
-                            });
-                        }
-                    });
-                }
-
-                // Instagram accounts
-                if (creator.instagramAccounts) {
-                    creator.instagramAccounts.forEach(account => {
-                        if (account.status === 'banned' || account.status === 'suspended') {
-                            problematic.push({
-                                type: 'instagram',
-                                username: account.username,
-                                status: account.status,
-                                creator: creator.name,
-                                vaIds: creator.vaIds || [],
-                                notes: account.notes
-                            });
-                        }
-                    });
-                }
-            });
-
-            return problematic;
-        }
-
-        // Update the banned accounts alert banner
-        function updateBannedAccountsAlert() {
-            const alert = document.getElementById('banned-accounts-alert');
-            const message = document.getElementById('banned-accounts-message');
-
-            if (!alert || !message) return;
-
-            const problematicAccounts = getAllProblematicAccounts();
-            const totalCount = problematicAccounts.length;
-
-            if (totalCount === 0) {
-                alert.style.display = 'none';
-            } else {
-                alert.style.display = 'block';
-
-                const bannedCount = problematicAccounts.filter(a => a.status === 'banned').length;
-                const suspendedCount = problematicAccounts.filter(a => a.status === 'suspended').length;
-
-                let msg = `<strong>${totalCount} compte${totalCount > 1 ? 's' : ''} nécessite${totalCount > 1 ? 'nt' : ''} un remplacement</strong>`;
-
-                const details = [];
-                if (bannedCount > 0) details.push(`${bannedCount} banni${bannedCount > 1 ? 's' : ''}`);
-                if (suspendedCount > 0) details.push(`${suspendedCount} suspendu${suspendedCount > 1 ? 's' : ''}`);
-
-                if (details.length > 0) {
-                    msg += ` (${details.join(', ')})`;
-                }
-
-                message.innerHTML = msg;
-            }
-        }
-
-        // Filter and show only banned accounts
-        function filterBannedAccounts() {
-            const problematicAccounts = getAllProblematicAccounts();
-
-            if (problematicAccounts.length === 0) {
-                alert('Aucun compte banni ou suspendu trouvé ! 🎉');
-                return;
-            }
-
-            // Create modal content
-            let modalContent = `
-                <div style="background: white; padding: 2rem; border-radius: 1rem; max-width: 800px; max-height: 80vh; overflow-y: auto;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
-                        <h2 style="margin: 0; color: #1e293b; font-size: 1.5rem; font-weight: 700;">
-                            <i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 0.5rem;"></i>
-                            Comptes Problématiques (${problematicAccounts.length})
-                        </h2>
-                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 2rem; color: #64748b; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.color='#1e293b'" onmouseout="this.style.background='none'; this.style.color='#64748b'">×</button>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-            `;
-
-            problematicAccounts.forEach(account => {
-                const statusColor = account.status === 'banned' ? '#dc2626' : '#f59e0b';
-                const statusEmoji = account.status === 'banned' ? '🔴' : '⚠️';
-                const statusText = account.status === 'banned' ? 'BANNI' : 'SUSPENDU';
-                const icon = account.type === 'twitter' ? 'fab fa-twitter' : 'fab fa-instagram';
-                const iconColor = account.type === 'twitter' ? '#1da1f2' : '#c13584';
-
-                const vaNames = account.vaIds.map(vaId => {
-                    const va = data.vas.find(v => v.id === vaId);
-                    return va ? va.name : 'Inconnu';
-                }).join(', ');
-
-                modalContent += `
-                    <div style="background: #f8fafc; border: 2px solid ${statusColor}; border-radius: 0.75rem; padding: 1rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <i class="${icon}" style="color: ${iconColor}; font-size: 1.25rem;"></i>
-                                <strong style="font-size: 1.125rem; color: #1e293b;">${account.username}</strong>
-                            </div>
-                            <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700;">
-                                ${statusEmoji} ${statusText}
-                            </span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.875rem; color: #64748b;">
-                            <div><strong style="color: #475569;">Créatrice:</strong> ${account.creator}</div>
-                            <div><strong style="color: #475569;">VA:</strong> ${vaNames || 'Non assigné'}</div>
-                        </div>
-                        ${account.notes ? `
-                            <div style="margin-top: 0.75rem; padding: 0.75rem; background: white; border-radius: 0.5rem; font-size: 0.875rem; color: #475569;">
-                                <strong style="color: #1e293b;">Note:</strong> ${account.notes}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-
-            modalContent += `
-                    </div>
-                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #e5e7eb; text-align: right;">
-                        <button onclick="this.closest('.modal').remove()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
-                            <i class="fas fa-check"></i> Fermer
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            // Create and show modal
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'flex';
-            modal.style.alignItems = 'center';
-            modal.style.justifyContent = 'center';
-            modal.innerHTML = modalContent;
-            document.body.appendChild(modal);
-        }
-
         // Update VA grid
         function updateVAGrid() {
             const grid = document.getElementById('va-grid');
@@ -12012,9 +11152,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (data.vas.length === 0) {
                 grid.innerHTML = '<div class="no-creator">Aucun VA ajouté. Commencez par ajouter un VA!</div>';
             }
-
-            // Update banned accounts alert
-            updateBannedAccountsAlert();
         }
 
         // Create VA card
@@ -12098,11 +11235,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 const accountsCount = filteredAccounts.length;
                 const instagramCount = filteredInstagramAccounts.length;
                 const totalCount = accountsCount + instagramCount;
-
-                // Compter les comptes actifs vs bannis
-                const activeAccounts = filteredInstagramAccounts.filter(acc => acc.status !== 'banned').length;
-                const bannedAccounts = filteredInstagramAccounts.filter(acc => acc.status === 'banned').length;
-
                 let badgeColor = '#22c55e'; // Vert par défaut
                 if (totalCount === 0) badgeColor = '#ef4444'; // Rouge si 0
                 else if (totalCount >= 10) badgeColor = '#dc2626'; // Rouge foncé si 10+
@@ -12136,29 +11268,56 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         </span>` : '';
                     
                     const paddingRight = hasGmail ? '7.5rem' : '10rem';
-
+                    
                     // Créer l'URL Twitter - enlever le @ du username
                     const twitterUrl = `https://twitter.com/${account.username.replace('@', '')}`;
-
-                    // Générer le badge de statut
-                    console.log('Twitter account for badge:', account.id, account.username, account.status);
-                    const statusBadgeHTML = typeof generateStatusBadgeHTML !== 'undefined'
-                        ? generateStatusBadgeHTML(account.id, 'twitter', account.username, account.status, account.notes)
-                        : '';
-
-                    return `<a href="${twitterUrl}" target="_blank" class="twitter-badge" style="position: relative; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; padding-right: 3.5rem;">
-                        <i class="fab fa-twitter"></i>
-                        <span style="margin-left: 0.25rem;">${account.username}${followersDisplay}</span>
-                        ${statusBadgeHTML}
+                    
+                    return `<a href="${twitterUrl}" target="_blank" class="twitter-badge" style="position: relative; padding-right: ${paddingRight}; text-decoration: none;">
+                        <i class="fab fa-twitter"></i> ${account.username}${followersDisplay}
                         ${!hasGmail ? `
-                            <i class="fas fa-exclamation-triangle"
-                               style="color: #f59e0b; margin-left: 0.5rem; font-size: 0.75rem;"
+                            <i class="fas fa-exclamation-triangle" 
+                               style="color: #f59e0b; margin-left: 0.25rem; font-size: 0.75rem;" 
                                title="Pas de Gmail associé"></i>
                         ` : ''}
-                        <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})"
-                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
-                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 8px;
-                                       width: 32px; height: 32px; display: inline-flex; align-items: center;
+                        ${!hasGmail ? `
+                            <button onclick="event.preventDefault(); event.stopPropagation(); showAssignGmailModal('${creator.id}', '${account.username}')" 
+                                    style="position: absolute; right: 5.5rem; top: 50%; transform: translateY(-50%); 
+                                           background: rgba(234, 67, 53, 0.2); border: none; border-radius: 50%; 
+                                           width: 28px; height: 28px; display: flex; align-items: center; 
+                                           justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                           transition: all 0.2s ease;"
+                                    onmouseover="this.style.background='rgba(234, 67, 53, 0.4)'"
+                                    onmouseout="this.style.background='rgba(234, 67, 53, 0.2)'"
+                                    title="Assigner un Gmail">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                        ` : ''}
+                        <button onclick="event.preventDefault(); event.stopPropagation(); showUpdateFollowersModal('${account.username}')" 
+                                style="position: absolute; right: ${hasGmail ? '5.5rem' : '8rem'}; top: 50%; transform: translateY(-50%); 
+                                       background: rgba(139, 92, 246, 0.2); border: none; border-radius: 50%; 
+                                       width: 28px; height: 28px; display: flex; align-items: center; 
+                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='rgba(139, 92, 246, 0.4)'"
+                                onmouseout="this.style.background='rgba(139, 92, 246, 0.2)'"
+                                title="Mettre à jour les followers">
+                            <i class="fas fa-users"></i>
+                        </button>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); showTransferModal('${creator.id}', ${realIndex}, '${va.id}')" 
+                                style="position: absolute; right: 3rem; top: 50%; transform: translateY(-50%); 
+                                       background: rgba(59, 130, 246, 0.2); border: none; border-radius: 50%; 
+                                       width: 28px; height: 28px; display: flex; align-items: center; 
+                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='rgba(59, 130, 246, 0.4)'"
+                                onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'"
+                                title="Transférer vers un autre VA">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})" 
+                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); 
+                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%; 
+                                       width: 28px; height: 28px; display: flex; align-items: center; 
                                        justify-content: center; cursor: pointer; font-size: 0.75rem;
                                        transition: all 0.2s ease;"
                                 onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'"
@@ -12174,20 +11333,12 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     // Créer l'URL Instagram - enlever le @ du username
                     const instagramUrl = `https://instagram.com/${account.username.replace('@', '')}`;
 
-                    // Générer le badge de statut
-                    console.log('Instagram account for badge:', account.id, account.username, account.status);
-                    const statusBadgeHTML = typeof generateStatusBadgeHTML !== 'undefined'
-                        ? generateStatusBadgeHTML(account.id, 'instagram', account.username, account.status, account.notes)
-                        : '';
-
-                    return `<a href="${instagramUrl}" target="_blank" class="instagram-badge" style="position: relative; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; padding-right: 3.5rem;">
-                        <i class="fab fa-instagram"></i>
-                        <span style="margin-left: 0.25rem;">${account.username}</span>
-                        ${statusBadgeHTML}
+                    return `<a href="${instagramUrl}" target="_blank" class="instagram-badge" style="position: relative; padding-right: 3.5rem; text-decoration: none;">
+                        <i class="fab fa-instagram"></i> ${account.username}
                         <button onclick="event.preventDefault(); event.stopPropagation(); deleteInstagramFromCreator('${creator.id}', '${account.username}')"
                                 style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
-                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 8px;
-                                       width: 32px; height: 32px; display: inline-flex; align-items: center;
+                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%;
+                                       width: 28px; height: 28px; display: flex; align-items: center;
                                        justify-content: center; cursor: pointer; font-size: 0.75rem;
                                        transition: all 0.2s ease;"
                                 onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'"
@@ -12203,11 +11354,11 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         <div class="creatrice-header">
                             <span class="creatrice-name">
                                 ⭐ ${creator.name} 
-                                <span style="background: ${badgeColor};
-                                            color: white;
-                                            padding: 2px 8px;
-                                            border-radius: 12px;
-                                            font-size: 0.75rem;
+                                <span style="background: ${badgeColor}; 
+                                            color: white; 
+                                            padding: 2px 8px; 
+                                            border-radius: 12px; 
+                                            font-size: 0.75rem; 
                                             font-weight: 600;
                                             margin-left: 8px;
                                             box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -12215,28 +11366,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                     ${accountsCount > 0 ? `(${accountsCount} <i class="fab fa-twitter"></i>)` : ''}
                                     ${instagramCount > 0 ? `(${instagramCount} <i class="fab fa-instagram"></i>)` : ''}
                                 </span>
-                                ${instagramCount > 0 ? `
-                                    <span style="background: #10b981;
-                                                color: white;
-                                                padding: 2px 8px;
-                                                border-radius: 12px;
-                                                font-size: 0.75rem;
-                                                font-weight: 600;
-                                                margin-left: 4px;
-                                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <i class="fas fa-check-circle"></i> ${activeAccounts}
-                                    </span>
-                                    <span style="background: #ef4444;
-                                                color: white;
-                                                padding: 2px 8px;
-                                                border-radius: 12px;
-                                                font-size: 0.75rem;
-                                                font-weight: 600;
-                                                margin-left: 4px;
-                                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <i class="fas fa-ban"></i> ${bannedAccounts}
-                                    </span>
-                                ` : ''}
                             </span>
                             <div class="actions">
                                 <button class="action-btn view-btn" onclick="viewCreator('${va.id}', '${creator.id}')">
@@ -12297,7 +11426,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             <h3 class="va-name" style="margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 700; color: white; letter-spacing: -0.01em;">
                                 ${va.name}
                             </h3>
-                            <div class="va-stats" style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center;">
+                            <div class="va-stats" style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
                                 <span style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: rgba(255, 255, 255, 0.9);">
                                     <i class="fas fa-user-friends"></i> ${vaCreators.length} créatrice${vaCreators.length > 1 ? 's' : ''}
                                 </span>
@@ -12314,15 +11443,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                         <i class="fab fa-instagram"></i> ${totalInstagramAccounts}
                                     </span>
                                 ` : ''}
-                                ${(() => {
-                                    const problematicCount = countProblematicAccounts(va.id);
-                                    return problematicCount > 0 ? `
-                                        <span style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #ff0844 0%, #f7022a 100%); padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.8125rem; font-weight: 700; color: white; border: 1.5px solid rgba(255, 255, 255, 0.3); box-shadow: 0 2px 8px rgba(255, 8, 68, 0.4); animation: pulse-warning 2s infinite;">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            <span>${problematicCount} à remplacer</span>
-                                        </span>
-                                    ` : '';
-                                })()}
                             </div>
                         </div>
                     </div>
@@ -20320,37 +19440,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // ============================================================================
 
         // Initialize warmup data structure
-        // Lazy load warmup data from Supabase when needed
-        async function loadWarmupDataIfNeeded() {
-            // Check if warmup data is already loaded
-            if (data.warmupProgress && Object.keys(data.warmupProgress).length > 0) {
-                console.log('✅ Warmup data already loaded, skipping');
-                return;
-            }
-
-            console.log('📡 Loading warmup data from Supabase...');
-            try {
-                const warmupArray = await getWarmupProgress();
-
-                // Convert array to object format: { username: { currentDay, completed, ... } }
-                data.warmupProgress = {};
-                (warmupArray || []).forEach(w => {
-                    data.warmupProgress[w.username] = {
-                        currentDay: w.current_day,
-                        completed: w.completed,
-                        startDate: w.start_date,
-                        completedDate: w.completed_date,
-                        lastUpdate: w.last_update
-                    };
-                });
-
-                console.log(`✅ Loaded ${Object.keys(data.warmupProgress).length} warmup entries from Supabase`);
-            } catch (error) {
-                console.error('❌ Error loading warmup data:', error);
-                data.warmupProgress = {};
-            }
-        }
-
         function initializeWarmupData() {
             if (!data.warmupProgress) {
                 // Initialize empty if not loaded from Supabase yet
@@ -20414,7 +19503,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 data.instagramAccounts.forEach(account => {
                     const accountWithVA = {...account};
                     const username = (account.username || account.handle || '').replace('@', '');
-                    console.log(`Traitement compte Instagram: @${username}, vaId: ${account.vaId}, status: ${account.status}`);
+                    console.log(`Traitement compte Instagram: @${username}, vaId: ${account.vaId}`);
 
                     // Utiliser directement le vaId du compte pour trouver la VA
                     if (account.vaId && data.vas) {
@@ -20619,16 +19708,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 const isCompleted = warmupData.currentDay >= 6;
                 const isStarted = warmupData.currentDay > 0;
 
-                // Debug: log account status
-                console.log(`🎴 Card pour @${username}: status="${account.status}"`);
-
-                const isBanned = account.status === 'banned';
-                const borderStyle = isBanned
-                    ? 'border: 3px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;'
-                    : 'border: 3px solid #10b981; box-shadow: 0 0 0 1px #10b981;';
-
                 return `
-                    <div class="warmup-card ${isCompleted ? 'completed' : ''}" data-va="${account.vaName || ''}" style="${borderStyle}">
+                    <div class="warmup-card ${isCompleted ? 'completed' : ''}" data-va="${account.vaName || ''}">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                             <div style="flex: 1;">
                                 <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600;">
@@ -20641,25 +19722,12 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                         ${account.username.startsWith('@') ? account.username : '@' + username}
                                     </a>
                                 </h3>
-                                <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    ${account.vaName ? `
-                                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 1rem;">
-                                            <i class="fas fa-user-tie" style="color: #6366f1; font-size: 0.75rem;"></i>
-                                            <span style="color: #6366f1; font-weight: 600; font-size: 0.875rem;">${account.vaName}</span>
-                                        </div>
-                                    ` : ''}
-                                    ${account.status === 'banned' ? `
-                                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 1rem;">
-                                            <i class="fas fa-ban" style="color: #ef4444; font-size: 0.75rem;"></i>
-                                            <span style="color: #ef4444; font-weight: 600; font-size: 0.875rem;">BANNI</span>
-                                        </div>
-                                    ` : `
-                                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 1rem;">
-                                            <i class="fas fa-check-circle" style="color: #10b981; font-size: 0.75rem;"></i>
-                                            <span style="color: #10b981; font-weight: 600; font-size: 0.875rem;">ACTIF</span>
-                                        </div>
-                                    `}
-                                </div>
+                                ${account.vaName ? `
+                                    <div style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 1rem;">
+                                        <i class="fas fa-user-tie" style="color: #6366f1; font-size: 0.75rem;"></i>
+                                        <span style="color: #6366f1; font-weight: 600; font-size: 0.875rem;">${account.vaName}</span>
+                                    </div>
+                                ` : ''}
                                 ${account.creatorName ? `
                                     <span style="margin-left: 0.5rem; font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">
                                         (${account.creatorName})

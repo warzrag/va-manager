@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Agence Flo → Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .warning { color: #ffaa00; }
+        .info { color: #00aaff; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Import Agence Flo → Supabase</h1>
+
+        <div class="warning-box">
+            <strong>⚠️ ATTENTION:</strong> Cet import va créer les données de l'agence de Flo dans Supabase.
+            <br>L'agence de Leny ne sera PAS touchée.
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">VAs</div>
+                <div class="stat-number">7</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Créatrices</div>
+                <div class="stat-number">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Gmail</div>
+                <div class="stat-number">23</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Twitter</div>
+                <div class="stat-number">24</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Instagram</div>
+                <div class="stat-number">14</div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="startImport()" id="importBtn">
+            🚀 Lancer l'import
+        </button>
+        <button class="btn" onclick="clearLog()">
+            🗑️ Effacer le log
+        </button>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Données de Flo
+        const floData = {
+            "agence": "FLO",
+            "organizationName": "Agence Flo",
+            "vas": [
+                { "name": "hugo", "email": "hugo@agenceflo.com", "password": "Hugo2024!!" },
+                { "name": "Fifi", "email": "fifi@agenceflo.com", "password": "Fifi2024!!" },
+                { "name": "Yisse", "email": "yisse@agenceflo.com", "password": "Yisse2024!!" },
+                { "name": "moi", "email": "moi@agenceflo.com", "password": "Moi2024!!" },
+                { "name": "Jaurès", "email": "jaures@agenceflo.com", "password": "Jaures2024!!" },
+                { "name": "Adelain", "email": "adelain@agenceflo.com", "password": "Adelain2024!!" },
+                { "name": "Aures", "email": "aures@agenceflo.com", "password": "Aures2024!!" }
+            ],
+            "creators": [
+                {
+                    "name": "justine",
+                    "twitterAccounts": [
+                        { "username": "@justiine_myks", "email": "", "password": "Juju67!!", "assignedVaName": "hugo" },
+                        { "username": "@JustineMyks", "email": "", "password": "Justine12", "assignedVaName": "Adelain" },
+                        { "username": "@JMyks8", "email": "", "password": "Justine123", "assignedVaName": "Adelain" },
+                        { "username": "@MyksJustine", "email": "", "password": "Justine1234", "assignedVaName": "Adelain" }
+                    ],
+                    "instagramAccounts": [
+                        { "username": "@justine_myks", "email": "", "password": "Aris95!!", "assignedVaName": "hugo" },
+                        { "username": "@justinemyks", "email": "", "password": "Malo76!!", "assignedVaName": "moi" }
+                    ]
+                },
+                {
+                    "name": "Talia",
+                    "twitterAccounts": [],
+                    "instagramAccounts": []
+                },
+                {
+                    "name": "laura",
+                    "twitterAccounts": [
+                        { "username": "@Laura_bpts", "email": "", "password": "Hugo95!!", "assignedVaName": "hugo" },
+                        { "username": "@laura_bpt", "email": "", "password": "lauralaura", "assignedVaName": "Fifi" },
+                        { "username": "@Laurabptss", "email": "", "password": "Aristide66!!", "assignedVaName": "hugo" },
+                        { "username": "@Laura_ztg", "email": "", "password": "L@uraztg", "assignedVaName": "Jaurès" },
+                        { "username": "@Laura_jlk", "email": "", "password": "L@urajlk01", "assignedVaName": "Jaurès" },
+                        { "username": "@Laura_ity", "email": "", "password": "L@uraity01", "assignedVaName": "Jaurès" },
+                        { "username": "@Lau_bpt", "email": "", "password": "Laura95!!", "assignedVaName": "Fifi" },
+                        { "username": "@laura_frtl", "email": "", "password": "milo78za", "assignedVaName": "Fifi" }
+                    ],
+                    "instagramAccounts": [
+                        { "username": "@lolo_bpts", "email": "", "password": "Hugo76!!", "assignedVaName": "hugo" },
+                        { "username": "@lauu_bpts", "email": "", "password": "Adelain78!!", "assignedVaName": "hugo" },
+                        { "username": "@lau_bptx", "email": "", "password": "Florent95!!", "assignedVaName": "Adelain" },
+                        { "username": "@lauravissante__", "email": "", "password": "ravi32po", "assignedVaName": "Fifi" },
+                        { "username": "@lolo.bpt", "email": "", "password": "Hugo0229!", "assignedVaName": "hugo" }
+                    ]
+                }
+            ],
+            "gmailAccounts": [
+                { "email": "florent.media2@gmail.com", "password": "Fortnite95!!", "vaName": null },
+                { "email": "juju.mgnt92@gmail.com", "password": "juju.mgnt89!!", "vaName": "moi" },
+                { "email": "laura.media03@gmail.com", "password": "Lolo95!!", "vaName": "Adelain" },
+                { "email": "laura.media04@gmail.com", "password": "Laura78!!", "vaName": "hugo" },
+                { "email": "malory.media@gmail.com", "password": "Faro66!!", "vaName": null },
+                { "email": "talia.media2@gmail.com", "password": "Remtal95!!", "vaName": "hugo" },
+                { "email": "justine13788@gmail.com", "password": "Jaro66!!", "vaName": "Adelain" },
+                { "email": "talia.gudo@gmail.com", "password": "Talia78!!", "vaName": "Fifi" },
+                { "email": "claranathal78@gmail.com", "password": "L@uraaccount02", "vaName": "Jaurès" },
+                { "email": "clarathreads10@gmail.com", "password": "L@uraaccount01", "vaName": "Jaurès" },
+                { "email": "clarawarnez0@gmail.com", "password": "Accountl@ura1", "vaName": "Jaurès" },
+                { "email": "ivorraflorent1@gmail.com", "password": "flO1998florent", "vaName": null },
+                { "email": "laura.media05@gmail.com", "password": "Laura92!!", "vaName": null },
+                { "email": "talia.media3@gmail.com", "password": "Talia78??", "vaName": null },
+                { "email": "talia.gyro@gmail.com", "password": "Jury76!!!", "vaName": null },
+                { "email": "taliamanzana@gmail.com", "password": "Dury68!!", "vaName": "hugo" },
+                { "email": "indryt.media@gmail.com", "password": "Florent95!!", "vaName": null },
+                { "email": "talia.marseille21@gmail.com", "password": "Laro66!!", "vaName": "hugo" },
+                { "email": "xuantuanngoolpg@gmail.com", "password": "Xuanngo8648:hungdo6523@hotmail.com", "vaName": "Adelain" },
+                { "email": "loimanhdodhw@gmail.com", "password": "Loido4536:tienvu6366@hotmail.com", "vaName": "Adelain" },
+                { "email": "florentivo95400@gmail.com", "password": "Florent67!!", "vaName": "hugo" },
+                { "email": "aurascale.media@gmail.com", "password": "Clemflo95!!", "vaName": "hugo" }
+            ],
+            "twitterAccountsStandalone": [
+                { "username": "@laura_bpt", "email": "", "password": "lauralaura", "vaName": "Fifi" },
+                { "username": "@Laura_bpts", "email": "", "password": "Hugo95!!", "vaName": "hugo" },
+                { "username": "@Laurabptss", "email": "", "password": "Aristide66!!", "vaName": "hugo" },
+                { "username": "@Laura_ztg", "email": "", "password": "L@uraztg", "vaName": "Jaurès" },
+                { "username": "@Laura_jlk", "email": "", "password": "L@urajlk01", "vaName": "Jaurès" },
+                { "username": "@Laura_ity", "email": "", "password": "L@uraity01", "vaName": "Jaurès" },
+                { "username": "@Lau_bpt", "email": "", "password": "Laura95!!", "vaName": "Fifi" },
+                { "username": "@justiine_myks", "email": "", "password": "Juju67!!", "vaName": "hugo" },
+                { "username": "@JustineMyks", "email": "", "password": "Justine12", "vaName": "Adelain" },
+                { "username": "@JMyks8", "email": "", "password": "Justine123", "vaName": "Adelain" },
+                { "username": "@MyksJustine", "email": "", "password": "Justine1234", "vaName": "Adelain" },
+                { "username": "@laura_frtl", "email": "", "password": "milo78za", "vaName": "Fifi" }
+            ],
+            "instagramAccountsStandalone": [
+                { "username": "@lolo_bpts", "email": "", "password": "Hugo76!!", "vaName": "hugo" },
+                { "username": "@justine_myks", "email": "", "password": "Aris95!!", "vaName": "hugo" },
+                { "username": "@lauu_bpts", "email": "", "password": "Adelain78!!", "vaName": "hugo" },
+                { "username": "@lau_bptx", "email": "", "password": "Florent95!!", "vaName": "Adelain" },
+                { "username": "@lauravissante__", "email": "", "password": "ravi32po", "vaName": "Fifi" },
+                { "username": "@lolo.bpt", "email": "", "password": "Hugo0229!", "vaName": "hugo" },
+                { "username": "@justinemyks", "email": "", "password": "Malo76!!", "vaName": "moi" }
+            ]
+        };
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function startImport() {
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Import en cours...';
+
+            log('🚀 Début de l\'import de l\'agence Flo', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+
+            try {
+                // 1. Créer l'organisation Flo
+                log('📦 Étape 1: Création de l\'organisation Flo', 'info');
+                const { data: org, error: orgError } = await supabase
+                    .from('organizations')
+                    .insert({ name: floData.organizationName })
+                    .select()
+                    .single();
+
+                if (orgError) throw new Error('Erreur création organisation: ' + orgError.message);
+                log(`✅ Organisation créée: ${org.name} (ID: ${org.id})`, 'success');
+
+                const organizationId = org.id;
+                const vaMapping = {}; // Pour mapper les noms de VA aux IDs
+
+                // 2. Créer les VAs SANS Supabase Auth (direct insert)
+                log('', 'info');
+                log('👤 Étape 2: Création des 7 VAs', 'info');
+                for (const va of floData.vas) {
+                    try {
+                        // Créer directement dans la table vas (sans Auth pour l'instant)
+                        const { data: vaData, error: vaError } = await supabase
+                            .from('vas')
+                            .insert({
+                                name: va.name,
+                                email: va.email,
+                                password: va.password, // Mot de passe en clair pour l'instant
+                                organization_id: organizationId,
+                                user_id: null // Sera rempli plus tard avec Supabase Auth
+                            })
+                            .select()
+                            .single();
+
+                        if (vaError) throw vaError;
+
+                        vaMapping[va.name] = vaData.id;
+                        log(`  ✅ VA créé: ${va.name} (email: ${va.email})`, 'success');
+                    } catch (error) {
+                        log(`  ❌ Erreur VA ${va.name}: ${error.message}`, 'error');
+                    }
+                }
+
+                // 3. Créer les créatrices
+                log('', 'info');
+                log('👩 Étape 3: Création des créatrices', 'info');
+                const creatorMapping = {};
+
+                for (const creator of floData.creators) {
+                    try {
+                        // Déterminer les vaIds basés sur les comptes
+                        const vaIds = [];
+                        [...creator.twitterAccounts, ...creator.instagramAccounts].forEach(account => {
+                            const vaId = vaMapping[account.assignedVaName];
+                            if (vaId && !vaIds.includes(vaId)) {
+                                vaIds.push(vaId);
+                            }
+                        });
+
+                        const { data: creatorData, error: creatorError } = await supabase
+                            .from('creators')
+                            .insert({
+                                name: creator.name,
+                                organization_id: organizationId,
+                                va_ids: vaIds,
+                                user_id: null
+                            })
+                            .select()
+                            .single();
+
+                        if (creatorError) throw creatorError;
+
+                        creatorMapping[creator.name] = creatorData.id;
+                        log(`  ✅ Créatrice: ${creator.name} (${vaIds.length} VA(s))`, 'success');
+                    } catch (error) {
+                        log(`  ❌ Erreur créatrice ${creator.name}: ${error.message}`, 'error');
+                    }
+                }
+
+                // 4. Importer les comptes Twitter
+                log('', 'info');
+                log('🐦 Étape 4: Import des comptes Twitter', 'info');
+                let twitterCount = 0;
+
+                // 4a. Twitter depuis creators
+                for (const creator of floData.creators) {
+                    for (const twitter of creator.twitterAccounts) {
+                        try {
+                            const { error: twitterError } = await supabase
+                                .from('twitter_accounts')
+                                .insert({
+                                    username: twitter.username,
+                                    encrypted_password: twitter.password,
+                                    creator_id: creatorMapping[creator.name],
+                                    va_id: vaMapping[twitter.assignedVaName],
+                                    organization_id: organizationId,
+                                    user_id: null,
+                                    gmail_id: null
+                                });
+
+                            if (twitterError) throw twitterError;
+                            twitterCount++;
+                            log(`  ✅ ${twitter.username} → ${creator.name} (${twitter.assignedVaName})`, 'success');
+                        } catch (error) {
+                            log(`  ❌ ${twitter.username}: ${error.message}`, 'error');
+                        }
+                    }
+                }
+
+                // 4b. Twitter standalone (sans creator)
+                log('  ℹ️ Import des comptes Twitter standalone...', 'info');
+                for (const twitter of floData.twitterAccountsStandalone) {
+                    try {
+                        const { error: twitterError } = await supabase
+                            .from('twitter_accounts')
+                            .insert({
+                                username: twitter.username,
+                                encrypted_password: twitter.password,
+                                creator_id: null,
+                                va_id: vaMapping[twitter.vaName],
+                                organization_id: organizationId,
+                                user_id: null,
+                                gmail_id: null
+                            });
+
+                        if (twitterError) throw twitterError;
+                        twitterCount++;
+                        log(`  ✅ ${twitter.username} → ${twitter.vaName} (standalone)`, 'success');
+                    } catch (error) {
+                        log(`  ❌ ${twitter.username}: ${error.message}`, 'error');
+                    }
+                }
+                log(`📊 Total Twitter importés: ${twitterCount}/24`, 'info');
+
+                // 5. Importer les comptes Instagram
+                log('', 'info');
+                log('📷 Étape 5: Import des comptes Instagram', 'info');
+                let instaCount = 0;
+
+                // 5a. Instagram depuis creators
+                for (const creator of floData.creators) {
+                    for (const insta of creator.instagramAccounts) {
+                        try {
+                            const { error: instaError } = await supabase
+                                .from('instagram_accounts')
+                                .insert({
+                                    username: insta.username,
+                                    encrypted_password: insta.password,
+                                    creator_id: creatorMapping[creator.name],
+                                    va_id: vaMapping[insta.assignedVaName],
+                                    organization_id: organizationId,
+                                    user_id: null,
+                                    gmail_id: null
+                                });
+
+                            if (instaError) throw instaError;
+                            instaCount++;
+                            log(`  ✅ ${insta.username} → ${creator.name} (${insta.assignedVaName})`, 'success');
+                        } catch (error) {
+                            log(`  ❌ ${insta.username}: ${error.message}`, 'error');
+                        }
+                    }
+                }
+
+                // 5b. Instagram standalone (sans creator)
+                log('  ℹ️ Import des comptes Instagram standalone...', 'info');
+                for (const insta of floData.instagramAccountsStandalone) {
+                    try {
+                        const { error: instaError } = await supabase
+                            .from('instagram_accounts')
+                            .insert({
+                                username: insta.username,
+                                encrypted_password: insta.password,
+                                creator_id: null,
+                                va_id: vaMapping[insta.vaName],
+                                organization_id: organizationId,
+                                user_id: null,
+                                gmail_id: null
+                            });
+
+                        if (instaError) throw instaError;
+                        instaCount++;
+                        log(`  ✅ ${insta.username} → ${insta.vaName} (standalone)`, 'success');
+                    } catch (error) {
+                        log(`  ❌ ${insta.username}: ${error.message}`, 'error');
+                    }
+                }
+                log(`📊 Total Instagram importés: ${instaCount}/14`, 'info');
+
+                // 6. Importer les comptes Gmail
+                log('', 'info');
+                log('📧 Étape 6: Import des comptes Gmail', 'info');
+                let gmailCount = 0;
+
+                for (const gmail of floData.gmailAccounts) {
+                    try {
+                        const { error: gmailError } = await supabase
+                            .from('gmail_accounts')
+                            .insert({
+                                email: gmail.email,
+                                encrypted_password: gmail.password, // Utiliser encrypted_password
+                                va_id: gmail.vaName ? vaMapping[gmail.vaName] : null,
+                                organization_id: organizationId,
+                                user_id: null
+                            });
+
+                        if (gmailError) throw gmailError;
+                        gmailCount++;
+                        const status = gmail.vaName ? `→ ${gmail.vaName}` : '(non assigné)';
+                        log(`  ✅ ${gmail.email} ${status}`, 'success');
+                    } catch (error) {
+                        log(`  ❌ ${gmail.email}: ${error.message}`, 'error');
+                    }
+                }
+                log(`📊 Total Gmail importés: ${gmailCount}/23`, 'info');
+
+                // Résumé final
+                log('', 'info');
+                log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+                log('🎉 IMPORT TERMINÉ AVEC SUCCÈS!', 'success');
+                log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+                log(`📦 Organisation: ${floData.organizationName}`, 'info');
+                log(`👤 VAs: ${Object.keys(vaMapping).length}/7`, 'info');
+                log(`👩 Créatrices: ${Object.keys(creatorMapping).length}/3`, 'info');
+                log(`🐦 Twitter: ${twitterCount}/24`, 'info');
+                log(`📷 Instagram: ${instaCount}/14`, 'info');
+                log(`📧 Gmail: ${gmailCount}/23`, 'info');
+                log('', 'info');
+                log('✅ Tu peux maintenant te connecter sur app.html avec les comptes VA créés!', 'success');
+
+                btn.textContent = '✅ Import terminé!';
+                btn.style.background = '#28a745';
+
+            } catch (error) {
+                log('', 'info');
+                log('❌ ERREUR FATALE: ' + error.message, 'error');
+                log(error.stack, 'error');
+                btn.textContent = '❌ Erreur - Réessayer';
+                btn.disabled = false;
+                btn.style.background = '#dc3545';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vérifier Schéma Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Vérification du schéma Supabase</h1>
+    <button onclick="checkSchema()">Vérifier</button>
+    <pre id="result"></pre>
+
+    <script>
+        const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function checkSchema() {
+            const result = document.getElementById('result');
+            result.textContent = 'Vérification en cours...\n\n';
+
+            // Tester VAs
+            result.textContent += '📋 Table: vas\n';
+            const { data: vas, error: vasError } = await supabase.from('vas').select('*').limit(1);
+            if (vasError) {
+                result.textContent += `❌ Erreur: ${vasError.message}\n`;
+            } else {
+                result.textContent += `✅ Colonnes: ${vas.length > 0 ? Object.keys(vas[0]).join(', ') : 'Table vide'}\n`;
+            }
+
+            // Tester Creators
+            result.textContent += '\n📋 Table: creators\n';
+            const { data: creators, error: creatorsError } = await supabase.from('creators').select('*').limit(1);
+            if (creatorsError) {
+                result.textContent += `❌ Erreur: ${creatorsError.message}\n`;
+            } else {
+                result.textContent += `✅ Colonnes: ${creators.length > 0 ? Object.keys(creators[0]).join(', ') : 'Table vide'}\n`;
+            }
+
+            // Tester Twitter
+            result.textContent += '\n📋 Table: twitter_accounts\n';
+            const { data: twitter, error: twitterError } = await supabase.from('twitter_accounts').select('*').limit(1);
+            if (twitterError) {
+                result.textContent += `❌ Erreur: ${twitterError.message}\n`;
+            } else {
+                result.textContent += `✅ Colonnes: ${twitter.length > 0 ? Object.keys(twitter[0]).join(', ') : 'Table vide'}\n`;
+            }
+
+            // Tester Instagram
+            result.textContent += '\n📋 Table: instagram_accounts\n';
+            const { data: insta, error: instaError } = await supabase.from('instagram_accounts').select('*').limit(1);
+            if (instaError) {
+                result.textContent += `❌ Erreur: ${instaError.message}\n`;
+            } else {
+                result.textContent += `✅ Colonnes: ${insta.length > 0 ? Object.keys(insta[0]).join(', ') : 'Table vide'}\n`;
+            }
+
+            // Tester Gmail
+            result.textContent += '\n📋 Table: gmail_accounts\n';
+            const { data: gmail, error: gmailError } = await supabase.from('gmail_accounts').select('*').limit(1);
+            if (gmailError) {
+                result.textContent += `❌ Erreur: ${gmailError.message}\n`;
+            } else {
+                result.textContent += `✅ Colonnes: ${gmail.length > 0 ? Object.keys(gmail[0]).join(', ') : 'Table vide'}\n`;
+            }
+        }
+    </script>
+</body>
+</html>

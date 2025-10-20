@@ -1,0 +1,415 @@
+{
+  "agence": "FLO",
+  "date_extraction": "2025-01-19",
+  "vas": [
+    {
+      "id": "va_1757024397511",
+      "name": "hugo"
+    },
+    {
+      "id": "va_1757029803231",
+      "name": "Fifi"
+    },
+    {
+      "id": "va_1757029866529",
+      "name": "Yisse"
+    },
+    {
+      "id": "va_1757203475161",
+      "name": "moi"
+    },
+    {
+      "id": "va_1757324353262",
+      "name": "Jaurès"
+    },
+    {
+      "id": "va_1757668041425",
+      "name": "Adelain"
+    },
+    {
+      "id": "va_1759050792685",
+      "name": "Aures"
+    }
+  ],
+  "creators": [
+    {
+      "name": "justine",
+      "vaNames": ["hugo", "Adelain", "moi"],
+      "twitterAccounts": [
+        {
+          "username": "@justiine_myks",
+          "email": "",
+          "password": "Juju67!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@JustineMyks",
+          "email": "",
+          "password": "Justine12",
+          "assignedVaName": "Adelain"
+        },
+        {
+          "username": "@JMyks8",
+          "email": "",
+          "password": "Justine123",
+          "assignedVaName": "Adelain"
+        },
+        {
+          "username": "@MyksJustine",
+          "email": "",
+          "password": "Justine1234",
+          "assignedVaName": "Adelain"
+        }
+      ],
+      "instagramAccounts": [
+        {
+          "username": "@justine_myks",
+          "email": "",
+          "password": "Aris95!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@justinemyks",
+          "email": "",
+          "password": "Malo76!!",
+          "assignedVaName": "moi"
+        }
+      ]
+    },
+    {
+      "name": "Talia",
+      "vaNames": [],
+      "twitterAccounts": [],
+      "instagramAccounts": []
+    },
+    {
+      "name": "laura",
+      "vaNames": ["Fifi", "hugo", "Jaurès", "Adelain", "Yisse"],
+      "twitterAccounts": [
+        {
+          "username": "@Laura_bpts",
+          "email": "",
+          "password": "Hugo95!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@laura_bpt",
+          "email": "",
+          "password": "lauralaura",
+          "assignedVaName": "Fifi"
+        },
+        {
+          "username": "@Laurabptss",
+          "email": "",
+          "password": "Aristide66!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@Laura_ztg",
+          "email": "",
+          "password": "L@uraztg",
+          "assignedVaName": "Jaurès"
+        },
+        {
+          "username": "@Laura_jlk",
+          "email": "",
+          "password": "L@urajlk01",
+          "assignedVaName": "Jaurès"
+        },
+        {
+          "username": "@Laura_ity",
+          "email": "",
+          "password": "L@uraity01",
+          "assignedVaName": "Jaurès"
+        },
+        {
+          "username": "@Lau_bpt",
+          "email": "",
+          "password": "Laura95!!",
+          "assignedVaName": "Fifi"
+        },
+        {
+          "username": "@laura_frtl",
+          "email": "",
+          "password": "milo78za",
+          "assignedVaName": "Fifi"
+        }
+      ],
+      "instagramAccounts": [
+        {
+          "username": "@lolo_bpts",
+          "email": "",
+          "password": "Hugo76!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@lauu_bpts",
+          "email": "",
+          "password": "Adelain78!!",
+          "assignedVaName": "hugo"
+        },
+        {
+          "username": "@lau_bptx",
+          "email": "",
+          "password": "Florent95!!",
+          "assignedVaName": "Adelain"
+        },
+        {
+          "username": "@lauravissante__",
+          "email": "",
+          "password": "ravi32po",
+          "assignedVaName": "Fifi"
+        },
+        {
+          "username": "@lolo.bpt",
+          "email": "",
+          "password": "Hugo0229!",
+          "assignedVaName": "hugo"
+        }
+      ]
+    }
+  ],
+  "twitterAccountsStandalone": [
+    {
+      "username": "@laura_bpt",
+      "email": "",
+      "password": "lauralaura",
+      "vaName": "Fifi"
+    },
+    {
+      "username": "@Laura_bpts",
+      "email": "",
+      "password": "Hugo95!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@Laurabptss",
+      "email": "",
+      "password": "Aristide66!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@Laura_ztg",
+      "email": "",
+      "password": "L@uraztg",
+      "vaName": "Jaurès"
+    },
+    {
+      "username": "@Laura_jlk",
+      "email": "",
+      "password": "L@urajlk01",
+      "vaName": "Jaurès"
+    },
+    {
+      "username": "@Laura_ity",
+      "email": "",
+      "password": "L@uraity01",
+      "vaName": "Jaurès"
+    },
+    {
+      "username": "@Lau_bpt",
+      "email": "",
+      "password": "Laura95!!",
+      "vaName": "Fifi"
+    },
+    {
+      "username": "@justiine_myks",
+      "email": "",
+      "password": "Juju67!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@JustineMyks",
+      "email": "",
+      "password": "Justine12",
+      "vaName": "Adelain"
+    },
+    {
+      "username": "@JMyks8",
+      "email": "",
+      "password": "Justine123",
+      "vaName": "Adelain"
+    },
+    {
+      "username": "@MyksJustine",
+      "email": "",
+      "password": "Justine1234",
+      "vaName": "Adelain"
+    },
+    {
+      "username": "@laura_frtl",
+      "email": "",
+      "password": "milo78za",
+      "vaName": "Fifi"
+    }
+  ],
+  "instagramAccountsStandalone": [
+    {
+      "username": "@lolo_bpts",
+      "email": "",
+      "password": "Hugo76!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@justine_myks",
+      "email": "",
+      "password": "Aris95!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@lauu_bpts",
+      "email": "",
+      "password": "Adelain78!!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@lau_bptx",
+      "email": "",
+      "password": "Florent95!!",
+      "vaName": "Adelain"
+    },
+    {
+      "username": "@lauravissante__",
+      "email": "",
+      "password": "ravi32po",
+      "vaName": "Fifi"
+    },
+    {
+      "username": "@lolo.bpt",
+      "email": "",
+      "password": "Hugo0229!",
+      "vaName": "hugo"
+    },
+    {
+      "username": "@justinemyks",
+      "email": "",
+      "password": "Malo76!!",
+      "vaName": "moi"
+    }
+  ],
+  "gmailAccounts": [
+    {
+      "email": "florent.media2@gmail.com",
+      "password": "Fortnite95!!",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "juju.mgnt92@gmail.com",
+      "password": "juju.mgnt89!!",
+      "vaName": "moi"
+    },
+    {
+      "email": "laura.media03@gmail.com",
+      "password": "Lolo95!!",
+      "vaName": "Adelain"
+    },
+    {
+      "email": "laura.media04@gmail.com",
+      "password": "Laura78!!",
+      "vaName": "hugo"
+    },
+    {
+      "email": "malory.media@gmail.com",
+      "password": "Faro66!!",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "talia.media2@gmail.com",
+      "password": "Remtal95!!",
+      "vaName": "hugo"
+    },
+    {
+      "email": "lauralami65@gmail.com",
+      "password": "×JÊÖ¥¢øj",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "justine13788@gmail.com",
+      "password": "Jaro66!!",
+      "vaName": "Adelain"
+    },
+    {
+      "email": "talia.gudo@gmail.com",
+      "password": "Talia78!!",
+      "vaName": "Fifi"
+    },
+    {
+      "email": "claranathal78@gmail.com",
+      "password": "L@uraaccount02",
+      "vaName": "Jaurès"
+    },
+    {
+      "email": "clarathreads10@gmail.com",
+      "password": "L@uraaccount01",
+      "vaName": "Jaurès"
+    },
+    {
+      "email": "clarawarnez0@gmail.com",
+      "password": "Accountl@ura1",
+      "vaName": "Jaurès"
+    },
+    {
+      "email": "ivorraflorent1@gmail.com",
+      "password": "flO1998florent",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "laura.media05@gmail.com",
+      "password": "Laura92!!",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "talia.media3@gmail.com",
+      "password": "Talia78??",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "talia.gyro@gmail.com",
+      "password": "Jury76!!!",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "taliamanzana@gmail.com",
+      "password": "Dury68!!",
+      "vaName": "hugo"
+    },
+    {
+      "email": "indryt.media@gmail.com",
+      "password": "Florent95!!",
+      "vaName": "non assigné"
+    },
+    {
+      "email": "talia.marseille21@gmail.com",
+      "password": "Laro66!!",
+      "vaName": "hugo"
+    },
+    {
+      "email": "xuantuanngoolpg@gmail.com",
+      "password": "Xuanngo8648:hungdo6523@hotmail.com",
+      "vaName": "Adelain"
+    },
+    {
+      "email": "loimanhdodhw@gmail.com",
+      "password": "Loido4536:tienvu6366@hotmail.com",
+      "vaName": "Adelain"
+    },
+    {
+      "email": "florentivo95400@gmail.com",
+      "password": "Florent67!!",
+      "vaName": "hugo"
+    },
+    {
+      "email": "aurascale.media@gmail.com",
+      "password": "Clemflo95!!",
+      "vaName": "hugo"
+    }
+  ],
+  "resume": {
+    "totalVAs": 7,
+    "totalCreators": 3,
+    "totalGmailAccounts": 23,
+    "totalTwitterAccounts": 24,
+    "totalInstagramAccounts": 14,
+    "gmailNonAssignes": 8
+  }
+}
