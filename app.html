@@ -12138,17 +12138,19 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         ? generateStatusBadgeHTML(account.id, 'twitter', account.username, account.status, account.notes)
                         : '';
 
-                    return `<a href="${twitterUrl}" target="_blank" class="twitter-badge" style="position: relative; padding-right: ${paddingRight}; text-decoration: none;">
-                        <i class="fab fa-twitter"></i> ${account.username}${followersDisplay}${statusBadgeHTML}
+                    return `<a href="${twitterUrl}" target="_blank" class="twitter-badge" style="position: relative; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; padding-right: 3.5rem;">
+                        <i class="fab fa-twitter"></i>
+                        <span style="margin-left: 0.25rem;">${account.username}${followersDisplay}</span>
+                        ${statusBadgeHTML}
                         ${!hasGmail ? `
-                            <i class="fas fa-exclamation-triangle" 
-                               style="color: #f59e0b; margin-left: 0.25rem; font-size: 0.75rem;" 
+                            <i class="fas fa-exclamation-triangle"
+                               style="color: #f59e0b; margin-left: 0.5rem; font-size: 0.75rem;"
                                title="Pas de Gmail associé"></i>
                         ` : ''}
-                        <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})" 
-                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); 
-                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%; 
-                                       width: 28px; height: 28px; display: flex; align-items: center; 
+                        <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})"
+                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+                                       background: rgba(239, 68, 68, 0.2); border: none; border-radius: 8px;
+                                       width: 32px; height: 32px; display: inline-flex; align-items: center;
                                        justify-content: center; cursor: pointer; font-size: 0.75rem;
                                        transition: all 0.2s ease;"
                                 onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'"
