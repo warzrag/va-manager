@@ -8367,47 +8367,199 @@
                     }
                 });
 
-                // Générer le HTML avec design moderne
+                // Générer le HTML avec design ultra moderne
                 const statsHTML = Object.entries(creatorStats)
-                    .sort((a, b) => b[1].active - a[1].active) // Trier par nombre de comptes actifs
+                    .sort((a, b) => b[1].active - a[1].active)
                     .map(([name, counts]) => {
                         const percentage = counts.total > 0 ? (counts.active / counts.total * 100) : 0;
+
+                        // Couleurs dynamiques selon le pourcentage
+                        const cardBg = percentage >= 80
+                            ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.05), rgba(34, 160, 61, 0.08))'
+                            : percentage >= 50
+                            ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.08))'
+                            : 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.08))';
+
+                        const borderColor = percentage >= 80
+                            ? '#31C950'
+                            : percentage >= 50
+                            ? '#f59e0b'
+                            : '#ef4444';
+
+                        const iconBg = percentage >= 80
+                            ? 'linear-gradient(135deg, #31C950, #22a03d)'
+                            : percentage >= 50
+                            ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
+                            : 'linear-gradient(135deg, #fb7185, #f43f5e)';
+
                         const barGradient = percentage >= 80
-                            ? 'linear-gradient(90deg, #86efac, #4ade80)'
+                            ? 'linear-gradient(90deg, #31C950, #22a03d)'
                             : percentage >= 50
                             ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
                             : 'linear-gradient(90deg, #fb7185, #f43f5e)';
 
                         return `
-                        <div style="background: white; border-radius: 1rem; padding: 1.25rem; border: 2px solid rgba(150, 230, 161, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(150, 230, 161, 0.25)'; this.style.borderColor='rgba(150, 230, 161, 0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.08)'; this.style.borderColor='rgba(150, 230, 161, 0.3)';">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #d4fc79, #96e6a1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 4px 12px rgba(150, 230, 161, 0.3);">
-                                        ⭐
+                        <div style="
+                            position: relative;
+                            background: ${cardBg};
+                            backdrop-filter: blur(10px);
+                            border-radius: 1.5rem;
+                            padding: 1.5rem;
+                            border: 2px solid ${borderColor};
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                            cursor: pointer;
+                            overflow: hidden;
+                        " onmouseover="
+                            this.style.transform='translateY(-8px) scale(1.02)';
+                            this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 3px ${borderColor}33';
+                        " onmouseout="
+                            this.style.transform='translateY(0) scale(1)';
+                            this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset';
+                        ">
+                            <!-- Effet brillant d'arrière-plan -->
+                            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+
+                            <!-- Header avec avatar et nom -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; position: relative;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div style="
+                                        width: 56px;
+                                        height: 56px;
+                                        background: ${iconBg};
+                                        border-radius: 18px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 1.75rem;
+                                        box-shadow: 0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.9);
+                                        transform: rotate(-5deg);
+                                        transition: transform 0.3s ease;
+                                    " onmouseover="this.style.transform='rotate(0deg) scale(1.1)'" onmouseout="this.style.transform='rotate(-5deg) scale(1)'">
+                                        👤
                                     </div>
-                                    <span style="font-weight: 700; font-size: 1rem; color: #1a472a;">${name}</span>
+                                    <div>
+                                        <div style="font-weight: 800; font-size: 1.15rem; color: #0f172a; letter-spacing: -0.5px;">${name}</div>
+                                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 500; margin-top: 2px;">Créatrice de contenu</div>
+                                    </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-weight: 700; font-size: 1.25rem; line-height: 1;">
+                                    <div style="
+                                        font-weight: 900;
+                                        font-size: 2rem;
+                                        line-height: 1;
+                                        background: ${barGradient};
+                                        -webkit-background-clip: text;
+                                        -webkit-text-fill-color: transparent;
+                                        background-clip: text;
+                                    ">
                                         ${counts.active}
                                     </div>
-                                    <div style="font-size: 0.75rem; opacity: 0.8;">
-                                        sur ${counts.total}
+                                    <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 600; margin-top: 4px;">
+                                        / ${counts.total} comptes
                                     </div>
                                 </div>
                             </div>
-                            <div style="background: #f0f9ff; height: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #e0f2fe;">
-                                <div style="background: ${barGradient}; height: 100%; width: ${percentage}%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+
+                            <!-- Barre de progression moderne -->
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Progression</span>
+                                    <span style="font-size: 0.85rem; font-weight: 800; color: ${borderColor};">${percentage.toFixed(0)}%</span>
+                                </div>
+                                <div style="
+                                    position: relative;
+                                    background: rgba(148, 163, 184, 0.15);
+                                    height: 14px;
+                                    border-radius: 20px;
+                                    overflow: hidden;
+                                    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+                                ">
+                                    <div style="
+                                        background: ${barGradient};
+                                        height: 100%;
+                                        width: ${percentage}%;
+                                        border-radius: 20px;
+                                        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+                                        box-shadow: 0 0 12px ${borderColor}60;
+                                        position: relative;
+                                        overflow: hidden;
+                                    ">
+                                        <div style="
+                                            position: absolute;
+                                            top: 0;
+                                            left: 0;
+                                            right: 0;
+                                            bottom: 0;
+                                            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                                            animation: shimmer 2s infinite;
+                                        "></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;">
-                                <span style="background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #1a472a; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(150, 230, 161, 0.4);">
-                                    ✓ ${percentage.toFixed(0)}% actifs
-                                </span>
-                                <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 8px; border: 1px solid #fecaca;">
-                                    ✕ ${counts.total - counts.active} bannis
-                                </span>
+
+                            <!-- Stats badges -->
+                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                <div style="
+                                    flex: 1;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    background: linear-gradient(135deg, #31C950, #22a03d);
+                                    color: white;
+                                    padding: 0.65rem 1rem;
+                                    border-radius: 12px;
+                                    font-size: 0.8rem;
+                                    font-weight: 700;
+                                    box-shadow: 0 4px 12px rgba(49, 201, 80, 0.3);
+                                    border: 1px solid rgba(255, 255, 255, 0.3);
+                                ">
+                                    <div style="
+                                        width: 24px;
+                                        height: 24px;
+                                        background: rgba(255, 255, 255, 0.25);
+                                        border-radius: 8px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 0.7rem;
+                                    ">✓</div>
+                                    <span>${counts.active} Actifs</span>
+                                </div>
+                                <div style="
+                                    flex: 1;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    background: linear-gradient(135deg, #ef4444, #dc2626);
+                                    color: white;
+                                    padding: 0.65rem 1rem;
+                                    border-radius: 12px;
+                                    font-size: 0.8rem;
+                                    font-weight: 700;
+                                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                                    border: 1px solid rgba(255, 255, 255, 0.3);
+                                ">
+                                    <div style="
+                                        width: 24px;
+                                        height: 24px;
+                                        background: rgba(255, 255, 255, 0.25);
+                                        border-radius: 8px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 0.7rem;
+                                    ">✕</div>
+                                    <span>${counts.total - counts.active} Bannis</span>
+                                </div>
                             </div>
                         </div>
+                        <style>
+                            @keyframes shimmer {
+                                0% { transform: translateX(-100%); }
+                                100% { transform: translateX(100%); }
+                            }
+                        </style>
                     `;
                     }).join('');
 
