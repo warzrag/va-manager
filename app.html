@@ -5546,6 +5546,23 @@
                         window.location.href = 'va-dashboard.html';
                         return;
                     }
+
+                    // Check if user is a manager
+                    const { data: managerRecord } = await supabase
+                        .from('managers')
+                        .select('id, name, organization_id')
+                        .eq('user_id', currentUser.id)
+                        .single();
+
+                    if (managerRecord) {
+                        console.log('✅ User is a manager of organization:', managerRecord.organization_id);
+                        // Set the current organization to the manager's organization
+                        currentOrganization = {
+                            id: managerRecord.organization_id,
+                            role: 'manager'
+                        };
+                    }
+
                     document.getElementById('user-email').textContent = currentUser.email;
 
                     // Show loading indicator

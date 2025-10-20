@@ -3010,6 +3010,27 @@ async function getUserOrganization() {
       return ownedOrgs[0];
     }
 
+    // Check if user is a manager
+    const { data: managerRecord, error: managerError } = await supabase
+      .from('managers')
+      .select('organization_id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (!managerError && managerRecord) {
+      // Get the organization the manager belongs to
+      const { data: managerOrg, error: orgError } = await supabase
+        .from('organizations')
+        .select('*')
+        .eq('id', managerRecord.organization_id)
+        .single();
+
+      if (!orgError && managerOrg) {
+        console.log(`👔 User is a manager of organization: ${managerOrg.name}`);
+        return managerOrg;
+      }
+    }
+
     // Sinon, chercher s'il est membre d'une org
     const { data: memberships, error: memberError } = await supabase
       .from('organization_members')
