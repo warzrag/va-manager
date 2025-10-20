@@ -2477,6 +2477,41 @@ async function getCompleteCreatorData(creatorId) {
 }
 
 /**
+ * Get all VA-Creator relationships in a single query (optimized)
+ * @returns {Promise<Array>} - Array of {va_id, creator_id}
+ */
+async function getAllVACreatorRelations() {
+  try {
+    const organizationId = await getOrganizationId();
+
+    // Get all VA IDs for this organization
+    const { data: vas, error: vasError } = await supabase
+      .from('vas')
+      .select('id')
+      .eq('organization_id', organizationId);
+
+    if (vasError) throw vasError;
+
+    const vaIds = vas.map(v => v.id);
+
+    if (vaIds.length === 0) return [];
+
+    // Get all relations for these VAs in ONE query
+    const { data, error } = await supabase
+      .from('va_creators')
+      .select('va_id, creator_id')
+      .in('va_id', vaIds);
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting all VA-Creator relations:', error);
+    return [];
+  }
+}
+
+/**
  * Get all data for current user (for migration/export)
  * @returns {Promise<Object>}
  */
@@ -2492,7 +2527,8 @@ async function getAllUserData() {
       revenues,
       payments,
       twitterStats,
-      warmupProgress
+      warmupProgress,
+      vaCreatorRelations
     ] = await Promise.all([
       getVAs(),
       getCreators(),
@@ -2503,20 +2539,9 @@ async function getAllUserData() {
       getRevenues(),
       getPayments(),
       getTwitterStats(),
-      getWarmupProgress()
+      getWarmupProgress(),
+      getAllVACreatorRelations() // OPTIMIZED: Single query instead of N queries
     ]);
-
-    // Get VA-Creator relationships - IN PARALLEL
-    const vaCreatorRelationsArrays = await Promise.all(
-      creators.map(async (creator) => {
-        const creatorVAs = await getVAsForCreator(creator.id);
-        return creatorVAs.map(va => ({
-          va_id: va.id,
-          creator_id: creator.id
-        }));
-      })
-    );
-    const vaCreatorRelations = vaCreatorRelationsArrays.flat();
 
     console.log('✅ Retrieved all user data');
 
