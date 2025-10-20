@@ -1,0 +1,8 @@
+shelly/
+organisation/
+*.md
+*.sql
+*.backup*
+*.js.map
+node_modules/
+.git/
