@@ -2541,6 +2541,123 @@ async function getAllVACreatorRelations() {
   }
 }
 
+// ============================================================================
+// ⚡ CACHED VERSIONS - For ultra-fast loading (avoid redundant org ID queries)
+// ============================================================================
+
+async function getVAsWithCachedOrgId(organizationId) {
+  const { data, error } = await supabase
+    .from('vas')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .order('name', { ascending: true });
+  if (error) throw error;
+  console.log(`✅ Retrieved ${data.length} VAs`);
+  return data || [];
+}
+
+async function getCreatorsWithCachedOrgId(organizationId) {
+  const { data, error } = await supabase
+    .from('creators')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .order('name', { ascending: true });
+  if (error) throw error;
+  console.log(`✅ Retrieved ${data.length} creators`);
+  return data || [];
+}
+
+async function getTwitterAccountsWithCachedOrgId(organizationId, options = {}) {
+  const { skipDecryption = false } = options;
+  const { data, error } = await supabase
+    .from('twitter_accounts')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  if (skipDecryption) {
+    console.log(`✅ Retrieved ${data.length} Twitter accounts (passwords encrypted)`);
+    return (data || []).map(account => ({
+      ...account,
+      password: '••••••••'
+    }));
+  }
+  const decryptedData = await Promise.all(
+    (data || []).map(async account => ({
+      ...account,
+      password: await decryptPassword(account.encrypted_password)
+    }))
+  );
+  console.log(`✅ Retrieved ${decryptedData.length} Twitter accounts`);
+  return decryptedData;
+}
+
+async function getInstagramAccountsWithCachedOrgId(organizationId, options = {}) {
+  const { skipDecryption = false } = options;
+  const { data, error } = await supabase
+    .from('instagram_accounts')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  if (skipDecryption) {
+    console.log(`✅ Retrieved ${data.length} Instagram accounts (passwords encrypted)`);
+    return (data || []).map(account => ({
+      ...account,
+      password: '••••••••'
+    }));
+  }
+  const decryptedData = await Promise.all(
+    (data || []).map(async account => ({
+      ...account,
+      password: await decryptPassword(account.encrypted_password)
+    }))
+  );
+  console.log(`✅ Retrieved ${decryptedData.length} Instagram accounts`);
+  return decryptedData;
+}
+
+async function getGmailAccountsWithCachedOrgId(organizationId, options = {}) {
+  const { skipDecryption = false } = options;
+  const { data, error } = await supabase
+    .from('gmail_accounts')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .order('email', { ascending: true });
+  if (error) throw error;
+  if (skipDecryption) {
+    console.log(`✅ Retrieved ${data.length} Gmail accounts (passwords encrypted)`);
+    return (data || []).map(account => ({
+      ...account,
+      password: '••••••••'
+    }));
+  }
+  const decryptedData = await Promise.all(
+    (data || []).map(async account => ({
+      ...account,
+      password: await decryptPassword(account.encrypted_password || account.password)
+    }))
+  );
+  console.log(`✅ Retrieved ${decryptedData.length} Gmail accounts`);
+  return decryptedData;
+}
+
+async function getAllVACreatorRelationsWithCachedOrgId(organizationId) {
+  const { data: vas, error: vasError } = await supabase
+    .from('vas')
+    .select('id')
+    .eq('organization_id', organizationId);
+  if (vasError) throw vasError;
+  const vaIds = vas.map(v => v.id);
+  if (vaIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from('va_creators')
+    .select('va_id, creator_id')
+    .in('va_id', vaIds);
+  if (error) throw error;
+  return data || [];
+}
+
 /**
  * Get all data for current user (for migration/export)
  * @returns {Promise<Object>}
@@ -2552,7 +2669,10 @@ async function getAllUserData(options = {}) {
       loadFinancials = true  // Load financial data (subscriptions, revenues, payments)
     } = options;
 
-    // ESSENTIAL DATA - Always load first (6 queries)
+    // ⚡ CACHE organization ID to avoid 6 redundant queries
+    const organizationId = await getOrganizationId();
+
+    // ESSENTIAL DATA - Always load first (6 queries in parallel)
     // Skip password decryption for MUCH faster loading
     const [
       vas,
@@ -2562,12 +2682,12 @@ async function getAllUserData(options = {}) {
       gmailAccounts,
       vaCreatorRelations
     ] = await Promise.all([
-      getVAs(),
-      getCreators(),
-      getTwitterAccounts({ skipDecryption: true }),
-      getInstagramAccounts({ skipDecryption: true }),
-      getGmailAccounts({ skipDecryption: true }),
-      getAllVACreatorRelations()
+      getVAsWithCachedOrgId(organizationId),
+      getCreatorsWithCachedOrgId(organizationId),
+      getTwitterAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
+      getInstagramAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
+      getGmailAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
+      getAllVACreatorRelationsWithCachedOrgId(organizationId)
     ]);
 
     console.log('✅ Retrieved essential user data');
