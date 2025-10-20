@@ -20017,7 +20017,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 data.instagramAccounts.forEach(account => {
                     const accountWithVA = {...account};
                     const username = (account.username || account.handle || '').replace('@', '');
-                    console.log(`Traitement compte Instagram: @${username}, vaId: ${account.vaId}`);
+                    console.log(`Traitement compte Instagram: @${username}, vaId: ${account.vaId}, status: ${account.status}`);
 
                     // Utiliser directement le vaId du compte pour trouver la VA
                     if (account.vaId && data.vas) {
@@ -20221,6 +20221,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                 const isCompleted = warmupData.currentDay >= 6;
                 const isStarted = warmupData.currentDay > 0;
+
+                // Debug: log account status
+                console.log(`🎴 Card pour @${username}: status="${account.status}"`);
 
                 return `
                     <div class="warmup-card ${isCompleted ? 'completed' : ''}" data-va="${account.vaName || ''}">
