@@ -1,0 +1,708 @@
+/*
+ * VA Manager Pro - iPhone 14 Pro Optimized CSS
+ * Target: 390px × 844px viewport
+ * Safe areas: Dynamic Island + Home Indicator
+ * Design: Modern, Touch-friendly, Accessible
+ */
+
+@media (max-width: 390px) {
+
+/* ============================================================================
+   1. FOUNDATION - Typography & Spacing
+   ============================================================================ */
+
+/* 1.1 Typography Scale */
+body {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+}
+
+h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 1rem !important;
+}
+
+h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.25 !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    margin-bottom: 0.875rem !important;
+}
+
+h3 {
+    font-size: 1.25rem !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.75rem !important;
+}
+
+h4 {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+p, .body-text {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+}
+
+small, .text-small {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+.caption, .text-xs {
+    font-size: 0.8125rem !important;
+    line-height: 1.4 !important;
+}
+
+/* 1.2 Spacing System (8px grid) */
+:root {
+    --space-1: 0.5rem;   /* 8px */
+    --space-2: 0.75rem;  /* 12px */
+    --space-3: 1rem;     /* 16px */
+    --space-4: 1.5rem;   /* 24px */
+    --space-5: 2rem;     /* 32px */
+    --space-6: 3rem;     /* 48px */
+}
+
+
+/* ============================================================================
+   2. HEADER - Compact & Safe Area Support
+   ============================================================================ */
+
+.header {
+    padding: max(1rem, env(safe-area-inset-top)) 1rem 1rem 1rem !important;
+    min-height: auto !important;
+}
+
+.header-content {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 0.75rem !important;
+    align-items: center !important;
+    padding: 0 !important;
+}
+
+/* Header title compact */
+.header h1 {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+.header p,
+#user-email {
+    display: none !important;
+}
+
+/* Header actions */
+.header-content > div:last-child {
+    display: flex !important;
+    gap: 0.5rem !important;
+}
+
+.theme-toggle {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-toggle span {
+    display: none !important;
+}
+
+/* Hide save/logout from header */
+.header-content button[onclick*="showBackupModal"],
+.header-content button[onclick*="handleLogout"] {
+    display: none !important;
+}
+
+/* Stats in header - compact */
+.stats-header {
+    margin-top: 0.75rem !important;
+    padding-top: 0.75rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.stat-item {
+    text-align: center !important;
+}
+
+.stat-number {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+
+.stat-label {
+    font-size: 0.6875rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    opacity: 0.8 !important;
+}
+
+#save-status,
+#organization-switcher {
+    display: none !important;
+}
+
+
+/* ============================================================================
+   3. MOBILE NAVIGATION - Improved Drawer
+   ============================================================================ */
+
+/* Hide horizontal nav */
+.nav {
+    display: none !important;
+}
+
+/* Hamburger button - integrated in header */
+.mobile-menu-btn {
+    position: relative !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: white !important;
+    font-size: 1.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1001 !important;
+}
+
+/* Drawer - 85% width */
+.mobile-drawer {
+    position: fixed !important;
+    top: 0 !important;
+    left: -85% !important;
+    width: 85% !important;
+    max-width: 340px !important;
+    height: 100vh !important;
+    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-top: max(env(safe-area-inset-top), 0) !important;
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem) !important;
+}
+
+.mobile-drawer.open {
+    transform: translateX(100%) !important;
+}
+
+/* Drawer header */
+.mobile-drawer-header {
+    position: sticky !important;
+    top: 0 !important;
+    padding: 1.25rem 1.5rem !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    z-index: 10 !important;
+}
+
+.mobile-drawer-title {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    margin: 0 !important;
+}
+
+/* Navigation items - improved spacing */
+.mobile-drawer .nav-btn {
+    width: 100% !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 0.9375rem !important;
+    font-weight: 500 !important;
+    min-height: 52px !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-align: left !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.875rem !important;
+    border: none !important;
+    border-left: 3px solid transparent !important;
+    transition: all 0.2s ease !important;
+}
+
+.mobile-drawer .nav-btn:active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: scale(0.98) !important;
+}
+
+.mobile-drawer .nav-btn.active {
+    background: rgba(102, 126, 234, 0.2) !important;
+    color: white !important;
+    border-left-color: #667eea !important;
+    font-weight: 600 !important;
+}
+
+.mobile-drawer .nav-btn i {
+    font-size: 1.125rem !important;
+    width: 20px !important;
+    text-align: center !important;
+}
+
+/* Drawer overlay */
+.mobile-drawer-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 999 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s ease !important;
+}
+
+.mobile-drawer-overlay.show {
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+
+/* ============================================================================
+   4. VA CARDS - Optimized Layout
+   ============================================================================ */
+
+.va-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 0 0.75rem !important;
+}
+
+.va-card {
+    border-radius: 1rem !important;
+}
+
+.va-header {
+    padding: 1.25rem !important;
+}
+
+.va-card .va-header > div > div:first-child {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.25rem !important;
+}
+
+.va-name {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+}
+
+.va-stats {
+    gap: 0.375rem !important;
+    font-size: 0.75rem !important;
+}
+
+.creatrice-section {
+    padding: 1.25rem !important;
+}
+
+.creatrice-item {
+    padding: 1rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.creatrice-name {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+
+/* ============================================================================
+   5. BADGES - Touch Targets Fixed
+   ============================================================================ */
+
+.twitter-badge,
+.instagram-badge {
+    max-width: 100% !important;
+    padding: 0.625rem 4rem 0.625rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.twitter-badge i.fab,
+.instagram-badge i.fab {
+    font-size: 1.125rem !important;
+    flex-shrink: 0 !important;
+}
+
+/* CRITICAL: Fix touch targets */
+.twitter-badge button,
+.instagram-badge button {
+    position: absolute !important;
+    right: 0.5rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0.5rem !important;
+    border-radius: 8px !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    transition: all 0.2s ease !important;
+}
+
+.twitter-badge button:active,
+.instagram-badge button:active {
+    background: rgba(239, 68, 68, 0.3) !important;
+    transform: translateY(-50%) scale(0.95) !important;
+}
+
+.twitter-accounts,
+.instagram-accounts {
+    gap: 0.625rem !important;
+    padding: 0.75rem !important;
+}
+
+
+/* ============================================================================
+   6. FORMS - Better Touch Targets & Spacing
+   ============================================================================ */
+
+.form-group {
+    margin-bottom: 1.5rem !important;
+}
+
+.form-group label {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+input.form-control,
+select.form-control,
+textarea.form-control {
+    min-height: 48px !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+}
+
+.form-group select,
+select.form-control {
+    padding-right: 2.5rem !important;
+    background-position: right 0.75rem center !important;
+    background-size: 1rem !important;
+}
+
+textarea.form-control {
+    min-height: 100px !important;
+}
+
+/* Password fields with toggle */
+.form-group input[type="password"],
+input[type="password"].form-control {
+    padding-right: 3.5rem !important;
+}
+
+button[onclick*="togglePasswordVisibility"] {
+    position: absolute !important;
+    right: 0.5rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0.75rem !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 1.125rem !important;
+}
+
+/* Focus states */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+
+/* ============================================================================
+   7. MODALS - Full Screen on Mobile
+   ============================================================================ */
+
+.modal {
+    align-items: flex-end !important;
+}
+
+.modal-content,
+.modal-content[style*="max-width"] {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding: 1rem !important;
+    padding-top: max(1rem, env(safe-area-inset-top)) !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    overflow-y: auto !important;
+}
+
+.modal.show .modal-content {
+    animation: slideUpModal 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes slideUpModal {
+    from {
+        transform: translateY(100%) !important;
+    }
+    to {
+        transform: translateY(0) !important;
+    }
+}
+
+.close-btn,
+.close-modal {
+    position: sticky !important;
+    top: 0 !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 50% !important;
+    z-index: 100 !important;
+}
+
+/* Modal actions - primary at bottom */
+.modal-actions {
+    flex-direction: column-reverse !important;
+    gap: 0.75rem !important;
+    margin-top: 2rem !important;
+}
+
+.modal-actions .submit-btn {
+    order: 1 !important;
+    width: 100% !important;
+    min-height: 52px !important;
+    font-size: 1.0625rem !important;
+    font-weight: 700 !important;
+}
+
+.modal-actions .cancel-btn {
+    order: 0 !important;
+    width: 100% !important;
+    min-height: 48px !important;
+}
+
+
+/* ============================================================================
+   8. BUTTONS - Consistent Touch Targets
+   ============================================================================ */
+
+button,
+.btn,
+.action-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    touch-action: manipulation !important;
+}
+
+.submit-btn,
+.primary-btn {
+    min-height: 52px !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 1.0625rem !important;
+    font-weight: 700 !important;
+}
+
+.cancel-btn,
+.secondary-btn {
+    min-height: 48px !important;
+    padding: 0.875rem 1.25rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+.action-btn {
+    min-height: 44px !important;
+    padding: 0.625rem 1rem !important;
+    font-size: 0.9375rem !important;
+}
+
+/* Active states */
+button:active,
+.btn:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s ease !important;
+}
+
+
+/* ============================================================================
+   9. TABLES - Card-Based Alternative
+   ============================================================================ */
+
+.subs-table {
+    display: block !important;
+}
+
+.subs-table thead {
+    display: none !important;
+}
+
+.subs-table tbody,
+.subs-table tr {
+    display: block !important;
+}
+
+.subs-table tr {
+    margin-bottom: 1rem !important;
+    padding: 1.25rem !important;
+    background: var(--card-bg) !important;
+    border-radius: 0.75rem !important;
+    border: 2px solid var(--border-color) !important;
+}
+
+.subs-table td {
+    display: grid !important;
+    grid-template-columns: 110px 1fr !important;
+    padding: 0.625rem 0 !important;
+    border: none !important;
+    gap: 0.75rem !important;
+}
+
+.subs-table td::before {
+    content: attr(data-label) !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    color: var(--text-muted) !important;
+}
+
+.subs-table td:last-child {
+    grid-template-columns: 1fr !important;
+    margin-top: 0.75rem !important;
+    padding-top: 0.75rem !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.subs-table td:last-child::before {
+    display: none !important;
+}
+
+.subs-table td button {
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+}
+
+
+/* ============================================================================
+   10. ACCESSIBILITY - WCAG Compliance
+   ============================================================================ */
+
+/* Contrast improvements */
+body {
+    color: #1a1a1a !important;
+}
+
+.stat-label,
+.text-muted,
+small {
+    color: #475569 !important;
+}
+
+/* Focus states */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid #667eea !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Link contrast */
+a {
+    color: #1e40af !important;
+    text-decoration: underline !important;
+}
+
+a:hover {
+    color: #1e3a8a !important;
+}
+
+
+/* ============================================================================
+   11. DARK MODE ADJUSTMENTS
+   ============================================================================ */
+
+body.dark-mode {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .stat-label,
+body.dark-mode .text-muted {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .close-btn,
+body.dark-mode .close-modal {
+    background: rgba(31, 41, 55, 0.95) !important;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    border-color: #374151 !important;
+    background: #1f2937 !important;
+    color: #f1f5f9 !important;
+}
+
+
+/* ============================================================================
+   12. UTILITY CLASSES
+   ============================================================================ */
+
+.mb-1 { margin-bottom: var(--space-1) !important; }
+.mb-2 { margin-bottom: var(--space-2) !important; }
+.mb-3 { margin-bottom: var(--space-3) !important; }
+.mb-4 { margin-bottom: var(--space-4) !important; }
+
+.p-1 { padding: var(--space-1) !important; }
+.p-2 { padding: var(--space-2) !important; }
+.p-3 { padding: var(--space-3) !important; }
+.p-4 { padding: var(--space-4) !important; }
+
+.gap-1 { gap: var(--space-1) !important; }
+.gap-2 { gap: var(--space-2) !important; }
+.gap-3 { gap: var(--space-3) !important; }
+.gap-4 { gap: var(--space-4) !important; }
+
+}
