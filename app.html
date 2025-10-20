@@ -20256,7 +20256,12 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                             <i class="fas fa-ban" style="color: #ef4444; font-size: 0.75rem;"></i>
                                             <span style="color: #ef4444; font-weight: 600; font-size: 0.875rem;">BANNI</span>
                                         </div>
-                                    ` : ''}
+                                    ` : `
+                                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 1rem;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; font-size: 0.75rem;"></i>
+                                            <span style="color: #10b981; font-weight: 600; font-size: 0.875rem;">ACTIF</span>
+                                        </div>
+                                    `}
                                 </div>
                                 ${account.creatorName ? `
                                     <span style="margin-left: 0.5rem; font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">
