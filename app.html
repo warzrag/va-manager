@@ -20225,8 +20225,11 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 // Debug: log account status
                 console.log(`🎴 Card pour @${username}: status="${account.status}"`);
 
+                const isBanned = account.status === 'banned';
+                const borderStyle = isBanned ? 'border: 3px solid #ef4444; box-shadow: 0 0 0 1px #ef4444;' : '';
+
                 return `
-                    <div class="warmup-card ${isCompleted ? 'completed' : ''}" data-va="${account.vaName || ''}">
+                    <div class="warmup-card ${isCompleted ? 'completed' : ''}" data-va="${account.vaName || ''}" style="${borderStyle}">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                             <div style="flex: 1;">
                                 <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600;">
