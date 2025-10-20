@@ -12145,41 +12145,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                style="color: #f59e0b; margin-left: 0.25rem; font-size: 0.75rem;" 
                                title="Pas de Gmail associé"></i>
                         ` : ''}
-                        ${!hasGmail ? `
-                            <button onclick="event.preventDefault(); event.stopPropagation(); showAssignGmailModal('${creator.id}', '${account.username}')" 
-                                    style="position: absolute; right: 5.5rem; top: 50%; transform: translateY(-50%); 
-                                           background: rgba(234, 67, 53, 0.2); border: none; border-radius: 50%; 
-                                           width: 28px; height: 28px; display: flex; align-items: center; 
-                                           justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                           transition: all 0.2s ease;"
-                                    onmouseover="this.style.background='rgba(234, 67, 53, 0.4)'"
-                                    onmouseout="this.style.background='rgba(234, 67, 53, 0.2)'"
-                                    title="Assigner un Gmail">
-                                <i class="fas fa-envelope"></i>
-                            </button>
-                        ` : ''}
-                        <button onclick="event.preventDefault(); event.stopPropagation(); showUpdateFollowersModal('${account.username}')" 
-                                style="position: absolute; right: ${hasGmail ? '5.5rem' : '8rem'}; top: 50%; transform: translateY(-50%); 
-                                       background: rgba(139, 92, 246, 0.2); border: none; border-radius: 50%; 
-                                       width: 28px; height: 28px; display: flex; align-items: center; 
-                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                       transition: all 0.2s ease;"
-                                onmouseover="this.style.background='rgba(139, 92, 246, 0.4)'"
-                                onmouseout="this.style.background='rgba(139, 92, 246, 0.2)'"
-                                title="Mettre à jour les followers">
-                            <i class="fas fa-users"></i>
-                        </button>
-                        <button onclick="event.preventDefault(); event.stopPropagation(); showTransferModal('${creator.id}', ${realIndex}, '${va.id}')" 
-                                style="position: absolute; right: 3rem; top: 50%; transform: translateY(-50%); 
-                                       background: rgba(59, 130, 246, 0.2); border: none; border-radius: 50%; 
-                                       width: 28px; height: 28px; display: flex; align-items: center; 
-                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                       transition: all 0.2s ease;"
-                                onmouseover="this.style.background='rgba(59, 130, 246, 0.4)'"
-                                onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'"
-                                title="Transférer vers un autre VA">
-                            <i class="fas fa-exchange-alt"></i>
-                        </button>
                         <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})" 
                                 style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); 
                                        background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%; 
