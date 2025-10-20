@@ -24,10 +24,15 @@
    1. HEADER & NAVIGATION - 15 CORRECTIONS
    ============================================================================ */
 
-@media (max-width: 390px) {
-    /* 1.1 - Cacher complètement le header sur mobile */
+@media (max-width: 768px) {
+    /* 1.1 - Cacher complètement le header sur mobile et tablette */
     .header {
         display: none !important;
+    }
+
+    /* Forcer le body avec un fond distinct pour confirmer que le CSS fonctionne */
+    body {
+        background: #f8f9fa !important;
     }
 
     /* 1.4 - Stats header gap réduit */
