@@ -111,9 +111,94 @@
         padding: 0.875rem 1rem !important;
     }
 
-    /* 1.8 - Navigation MOBILE - Cacher la nav horizontale */
+    /* 1.8 - Navigation MOBILE - Transformer en dropdown */
     .nav {
-        display: none !important;
+        position: absolute !important;
+        top: 60px !important;
+        left: 10px !important;
+        background: white !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+        z-index: 1000 !important;
+        width: 280px !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .nav.open {
+        max-height: 600px !important;
+        opacity: 1 !important;
+        padding: 0.5rem 0 !important;
+    }
+
+    body.dark-mode .nav {
+        background: #1f2937 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* 1.8.1 - Bouton 3 points pour ouvrir le menu */
+    .mobile-nav-toggle {
+        position: absolute !important;
+        top: 10px !important;
+        left: 10px !important;
+        width: 44px !important;
+        height: 44px !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 10px !important;
+        color: white !important;
+        font-size: 1.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        z-index: 1001 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .mobile-nav-toggle:active {
+        transform: scale(0.95) !important;
+        background: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    /* 1.8.2 - Navigation content en colonne */
+    .nav-content {
+        flex-direction: column !important;
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+
+    .nav-btn {
+        width: 100% !important;
+        padding: 1rem 1.25rem !important;
+        border-radius: 0 !important;
+        justify-content: flex-start !important;
+        gap: 0.75rem !important;
+        font-size: 0.9375rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        background: transparent !important;
+        transition: background 0.2s ease !important;
+    }
+
+    body.dark-mode .nav-btn {
+        border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .nav-btn:hover {
+        background: rgba(102, 126, 234, 0.1) !important;
+    }
+
+    .nav-btn.active {
+        background: rgba(102, 126, 234, 0.15) !important;
+        color: #667eea !important;
+        font-weight: 600 !important;
+    }
+
+    .nav-btn:last-child {
+        border-bottom: none !important;
     }
 
     /* 1.9 - Bouton Menu Hamburger - Top Left */
