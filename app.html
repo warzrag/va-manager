@@ -3589,12 +3589,14 @@
             <!-- Statistiques principales -->
             <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 <div class="dashboard-stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p class="dashboard-stat-label" style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Revenus du mois</p>
-                            <p class="dashboard-stat-value" style="margin: 0; font-size: 2rem; font-weight: 700;" id="month-revenue">0€</p>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <p class="dashboard-stat-label" style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Comptes Actifs par Créatrice</p>
+                            <i class="fas fa-check-circle" style="font-size: 1.5rem; opacity: 0.3;"></i>
                         </div>
-                        <i class="fas fa-euro-sign" style="font-size: 2rem; opacity: 0.3;"></i>
+                        <div id="active-accounts-by-creator" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+                            <!-- Les stats seront générées ici -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -8351,11 +8353,33 @@
                 monthlyRevenue: stats.monthlyRevenue
             });
 
-            const monthRevenueElement = document.getElementById('month-revenue');
-            if (monthRevenueElement) {
-                monthRevenueElement.textContent = stats.monthlyRevenue.toFixed(2) + '€';
-            } else {
-                console.warn('  ⚠️ Élément #month-revenue non trouvé');
+            // Update active accounts by creator
+            const activeAccountsContainer = document.getElementById('active-accounts-by-creator');
+            if (activeAccountsContainer) {
+                const creatorStats = {};
+
+                // Compter les comptes actifs par créatrice
+                data.creators.forEach(creator => {
+                    if (creator.instagramAccounts) {
+                        const activeCount = creator.instagramAccounts.filter(acc => acc.status !== 'banned').length;
+                        const totalCount = creator.instagramAccounts.length;
+                        creatorStats[creator.name] = { active: activeCount, total: totalCount };
+                    }
+                });
+
+                // Générer le HTML
+                const statsHTML = Object.entries(creatorStats)
+                    .sort((a, b) => b[1].active - a[1].active) // Trier par nombre de comptes actifs
+                    .map(([name, counts]) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="opacity: 0.9;">⭐ ${name}</span>
+                            <span style="font-weight: 700; font-size: 1rem;">
+                                <i class="fas fa-check-circle"></i> ${counts.active}/${counts.total}
+                            </span>
+                        </div>
+                    `).join('');
+
+                activeAccountsContainer.innerHTML = statsHTML || '<span style="opacity: 0.7;">Aucun compte</span>';
             }
             
             // Update other displays
