@@ -1,0 +1,1435 @@
+/**
+ * ============================================================================
+ * CORRECTIONS RESPONSIVITÉ IPHONE 14 PRO (390px width)
+ * ============================================================================
+ *
+ * Ce fichier contient TOUTES les corrections nécessaires pour rendre
+ * VA Manager Pro 100% fonctionnel et professionnel sur iPhone 14 Pro.
+ *
+ * Plus de 100 problèmes identifiés et corrigés par catégorie:
+ * 1. Header & Navigation
+ * 2. VA Cards & Grids
+ * 3. Formulaires & Inputs
+ * 4. Modals & Popups
+ * 5. Tableaux & Listes
+ * 6. Charts & Graphiques
+ * 7. Autres éléments UI
+ *
+ * @author Claude Code Analysis
+ * @device iPhone 14 Pro (390x844px)
+ * @date 2025
+ */
+
+/* ============================================================================
+   1. HEADER & NAVIGATION - 15 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 1.1 - Header padding réduit + Safe area pour iPhone 14 Pro */
+    .header {
+        padding: max(1.5rem, env(safe-area-inset-top)) 0.75rem 1rem 0.75rem !important;
+    }
+
+    /* 1.2 - Header content layout */
+    .header-content {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
+        padding: 0.875rem 0.75rem !important;
+    }
+
+    /* 1.3 - Titre H1 optimisé */
+    .header h1 {
+        font-size: 1.375rem !important;
+        line-height: 1.2 !important;
+    }
+
+    /* 1.4 - Stats header gap réduit */
+    .stats-header {
+        gap: 0.5rem !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+    }
+
+    .stat-item {
+        flex: 0 1 calc(33.333% - 0.5rem) !important;
+        min-width: 85px !important;
+    }
+
+    /* 1.5 - Boutons header taille tactile */
+    .header-content .theme-toggle {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 0.625rem !important;
+        font-size: 1rem !important;
+        gap: 0 !important;
+    }
+
+    .header-content .theme-toggle span {
+        display: none !important;
+    }
+
+    .header-content .theme-toggle i {
+        margin: 0 !important;
+    }
+
+    /* 1.6 - Organization switcher button */
+    #org-switcher-btn {
+        min-width: 160px !important;
+        padding: 0.5rem 0.75rem !important;
+        gap: 0.375rem !important;
+    }
+
+    #org-switcher-btn > div:first-child {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    #current-org-name {
+        font-size: 0.75rem !important;
+        max-width: 100px !important;
+    }
+
+    #current-org-stats {
+        font-size: 0.5625rem !important;
+    }
+
+    /* 1.7 - Dropdown organization FIX CRITIQUE */
+    #org-dropdown {
+        min-width: calc(100vw - 2rem) !important;
+        max-width: calc(100vw - 2rem) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    .org-dropdown-header {
+        padding: 1rem !important;
+    }
+
+    .org-item {
+        padding: 0.875rem 1rem !important;
+    }
+
+    /* 1.8 - Navigation buttons */
+    .nav-content {
+        padding: 0.625rem 0.75rem !important;
+        gap: 0.375rem !important;
+    }
+
+    .nav-btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8125rem !important;
+        min-height: 40px !important;
+        white-space: nowrap !important;
+        max-width: 150px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .nav-btn i {
+        font-size: 0.875rem !important;
+    }
+
+    /* 1.9 - Scroll indicator pour navigation */
+    .nav-content {
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(102, 126, 234, 0.3) transparent !important;
+    }
+
+    .nav-content::-webkit-scrollbar {
+        display: block !important;
+        height: 3px !important;
+    }
+
+    .nav-content::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.3) !important;
+        border-radius: 1.5px !important;
+    }
+
+    /* 1.10 - Mobile menu button */
+    .mobile-menu-toggle {
+        width: 52px !important;
+        height: 52px !important;
+        bottom: 16px !important;
+        right: 16px !important;
+        font-size: 1.25rem !important;
+    }
+
+    /* 1.11 - Stat numbers et labels */
+    .stat-number {
+        font-size: 1.375rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .stat-label {
+        font-size: 0.6875rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* 1.12 - Save status indicator */
+    #save-status {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.625rem !important;
+    }
+
+    #save-status i {
+        font-size: 0.75rem !important;
+    }
+
+    /* 1.13 - Dropdown icon size */
+    #org-dropdown-icon {
+        font-size: 0.875rem !important;
+    }
+
+    /* 1.14 - Header gap organisation */
+    .header-content > div:first-child {
+        gap: 0.75rem !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    /* 1.15 - Nav Z-index */
+    .nav {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 99 !important;
+    }
+
+    .header {
+        position: relative !important;
+        z-index: 100 !important;
+    }
+}
+
+/* ============================================================================
+   2. VA CARDS & GRIDS - 25 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 2.1 - VA Grid 1 colonne forcée */
+    .va-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        padding: 0 0.5rem !important;
+    }
+
+    /* 2.2 - VA Card min-width reset */
+    .va-card {
+        min-width: unset !important;
+        max-width: 100% !important;
+    }
+
+    /* 2.3 - VA Header avatar réduit */
+    .va-card .va-header > div > div:first-child {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 1.5rem !important;
+    }
+
+    /* 2.4 - VA Header gap */
+    .va-card .va-header > div {
+        gap: 0.75rem !important;
+    }
+
+    /* 2.5 - VA Name taille */
+    .va-name {
+        font-size: 1.125rem !important;
+        margin-bottom: 0.375rem !important;
+    }
+
+    /* 2.6 - VA Actions button delete */
+    .va-card .va-actions button {
+        width: 36px !important;
+        height: 36px !important;
+        right: 1rem !important;
+        top: 1rem !important;
+    }
+
+    /* 2.7 - VA Stats gap */
+    .va-stats {
+        gap: 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .va-stats span {
+        font-size: 0.75rem !important;
+        padding: 0.2rem 0.5rem !important;
+    }
+
+    /* 2.8 - Twitter badges avec boutons */
+    .twitter-badge,
+    .instagram-badge {
+        max-width: 100% !important;
+        padding-right: 6.5rem !important;
+        font-size: 0.75rem !important;
+        padding: 0.375rem 6.5rem 0.375rem 0.625rem !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .twitter-badge button,
+    .instagram-badge button {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 0.625rem !important;
+    }
+
+    /* 2.9 - Instagram badges */
+    .instagram-badge {
+        padding-right: 3rem !important;
+    }
+
+    /* 2.10 - Creatrice header layout */
+    .creatrice-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+
+    .creatrice-name span {
+        font-size: 0.6875rem !important;
+        padding: 2px 6px !important;
+        margin-left: 4px !important;
+        display: block !important;
+        margin-top: 0.25rem !important;
+    }
+
+    .creatrice-header .actions {
+        width: 100% !important;
+        display: flex !important;
+        gap: 0.5rem !important;
+        justify-content: flex-start !important;
+    }
+
+    /* 2.11 - Action buttons taille tactile */
+    .action-btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 0.5rem 0.875rem !important;
+        font-size: 0.8125rem !important;
+    }
+
+    .creatrice-header .action-btn {
+        padding: 0.625rem 1rem !important;
+    }
+
+    /* 2.12 - Twitter accounts container */
+    .twitter-accounts,
+    .instagram-accounts {
+        max-height: 200px !important;
+        gap: 0.375rem !important;
+        padding: 0.375rem !important;
+    }
+
+    /* 2.13 - VA Header padding */
+    .va-header {
+        padding: 1rem 1.25rem !important;
+    }
+
+    .creatrice-section {
+        padding: 1rem !important;
+    }
+
+    /* 2.14 - Creator cards grid */
+    div[id="creators-cards-grid"],
+    div[style*="minmax(300px"],
+    div[style*="minmax(340px"],
+    div[style*="minmax(350px"] {
+        grid-template-columns: 1fr !important;
+        padding: 0 0.5rem !important;
+    }
+
+    /* 2.15 - Instagram top accounts */
+    div[id="instagram-top-accounts"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        padding: 0 0.5rem !important;
+    }
+
+    /* 2.16 - Container padding */
+    .container {
+        padding: 1rem 0.5rem !important;
+    }
+
+    /* 2.17 - Stats grids 1 colonne */
+    .stats-grid,
+    div[style*="repeat(auto-fit, minmax(200px"],
+    div[style*="repeat(auto-fit, minmax(250px"],
+    div[style*="repeat(auto-fit, minmax(280px"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    /* 2.18 - Stat cards padding */
+    .dashboard-stat-card,
+    .admin-stat-card,
+    .stat-card {
+        padding: 1rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    .dashboard-stat-card > div > div:first-child {
+        font-size: 1.5rem !important;
+    }
+
+    /* 2.19 - Grid 3 colonnes -> 1 colonne */
+    div[style*="grid-template-columns: repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    /* 2.20 - Grid 12 colonnes -> flex */
+    div[style*="grid-template-columns: repeat(12, 1fr)"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    div[style*="grid-column: span"] {
+        grid-column: unset !important;
+    }
+
+    /* 2.21 - Admin actions cards */
+    div[style*="minmax(350px"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* 2.22 - Rank badges position */
+    .dashboard-section .card,
+    .creator-card,
+    .instagram-top-accounts > div {
+        overflow: visible !important;
+        position: relative !important;
+    }
+
+    [style*="position: absolute"][style*="top: -8px"] {
+        top: -6px !important;
+        right: -6px !important;
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* 2.23 - Instagram accounts badge width */
+    .instagram-accounts .instagram-badge {
+        padding: 0.3rem 0.6rem !important;
+        font-size: 0.7rem !important;
+        max-width: 100% !important;
+    }
+
+    .instagram-badge span {
+        max-width: 120px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    /* 2.24 - Twitter accounts badge width */
+    .twitter-badge {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        max-width: calc(50% - 0.25rem) !important;
+    }
+
+    .twitter-badge span {
+        max-width: 100px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    /* 2.25 - Instagram Stats Timeline (4 colonnes -> 2 lignes) */
+    div[style*="grid-template-columns: 110px 1fr auto auto"] {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-rows: auto auto !important;
+        gap: 0.5rem !important;
+        padding: 0.75rem !important;
+    }
+
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(1) {
+        grid-column: 1 / -1 !important;
+        font-size: 0.75rem !important;
+    }
+
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(2) {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+    }
+
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(2) > div {
+        font-size: 0.875rem !important;
+    }
+
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(3),
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(4) {
+        grid-row: 2 !important;
+    }
+
+    div[style*="grid-template-columns: 110px 1fr auto auto"] > div:nth-child(3) {
+        padding: 0.375rem 0.625rem !important;
+        font-size: 0.7rem !important;
+    }
+}
+
+/* ============================================================================
+   3. FORMULAIRES & INPUTS - 18 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 3.1 - Form container */
+    .form-container {
+        padding: 0.875rem !important;
+        margin: 0.5rem auto !important;
+        width: calc(100% - 1rem) !important;
+    }
+
+    /* 3.2 - Form inputs padding */
+    .form-group input,
+    .form-group select {
+        padding: 0.625rem 0.75rem !important;
+        font-size: 16px !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    /* 3.3 - Labels */
+    .form-group label {
+        font-size: 0.9375rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.375rem !important;
+    }
+
+    /* 3.4 - Select dropdown */
+    select {
+        background-position: right 0.5rem center !important;
+        background-size: 1em !important;
+        padding-right: 2rem !important;
+        font-size: 16px !important;
+    }
+
+    /* 3.5 - Password input avec toggle */
+    .form-group input[type="password"] {
+        padding-right: 2.75rem !important;
+    }
+
+    .form-group button[onclick*="togglePasswordVisibility"] {
+        right: 0.5rem !important;
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 0.5rem !important;
+    }
+
+    button[onclick*="togglePasswordVisibility"] {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        right: 0.25rem !important;
+        padding: 0.5rem !important;
+    }
+
+    input[type="password"] {
+        padding-right: 3rem !important;
+    }
+
+    /* 3.6 - Submit/Cancel buttons */
+    .submit-btn,
+    .cancel-btn {
+        width: 100% !important;
+        padding: 1rem !important;
+        font-size: 1.0625rem !important;
+        min-height: 48px !important;
+        font-weight: 600 !important;
+    }
+
+    /* 3.7 - Small text aide */
+    .form-group small {
+        font-size: 0.8125rem !important;
+        line-height: 1.4 !important;
+        margin-top: 0.375rem !important;
+    }
+
+    /* 3.8 - Form title */
+    .form-title {
+        font-size: 1.375rem !important;
+        margin-bottom: 1.25rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* 3.9 - Textarea */
+    .form-group textarea {
+        font-size: 16px !important;
+        min-height: 100px !important;
+        padding: 0.75rem !important;
+        line-height: 1.5 !important;
+        resize: vertical !important;
+    }
+
+    /* 3.10 - Form group spacing */
+    .form-group {
+        margin-bottom: 1.25rem !important;
+    }
+
+    .form-group:last-of-type {
+        margin-bottom: 1.75rem !important;
+    }
+
+    /* 3.11 - Boutons en ligne -> colonne */
+    .modal-content form > div[style*="display: flex"] {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+
+    .modal-content .submit-btn,
+    .modal-content .cancel-btn {
+        width: 100% !important;
+    }
+
+    /* 3.12 - Input placeholders */
+    input::placeholder,
+    textarea::placeholder {
+        font-size: 15px !important;
+        opacity: 0.65 !important;
+    }
+
+    /* 3.13 - Input date/time iOS */
+    input[type="date"],
+    input[type="time"] {
+        -webkit-appearance: none !important;
+        min-height: 48px !important;
+        padding: 0.75rem !important;
+        font-size: 16px !important;
+        background-color: white !important;
+    }
+
+    @supports (-webkit-touch-callout: none) {
+        input[type="date"],
+        input[type="time"] {
+            -webkit-appearance: auto !important;
+            appearance: auto !important;
+        }
+    }
+
+    /* 3.14 - All buttons taille tactile */
+    button:not(.close-btn):not(.close-modal),
+    .action-btn,
+    .submit-btn,
+    .nav-btn,
+    .quick-action-btn,
+    .theme-toggle {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 0.625rem 1rem !important;
+    }
+
+    button[onclick*="delete"],
+    button[onclick*="edit"],
+    .btn-icon {
+        min-width: 40px !important;
+        min-height: 40px !important;
+        padding: 0.5rem !important;
+    }
+
+    /* 3.15 - Boutons modal */
+    .modal-content button {
+        min-height: 48px !important;
+        touch-action: manipulation !important;
+    }
+
+    /* 3.16 - Select iOS fix */
+    select {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+    }
+
+    /* 3.17 - Form container margin */
+    .form-container {
+        margin: 0.75rem !important;
+        padding: 1rem !important;
+    }
+
+    /* 3.18 - Boutons dans grids */
+    button,
+    .action-btn,
+    .submit-btn {
+        min-height: 48px !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+        touch-action: manipulation !important;
+    }
+}
+
+/* ============================================================================
+   4. MODALS & POPUPS - 22 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 4.1 - Modal content width et padding */
+    .modal-content,
+    .modal-content[style*="max-width"] {
+        max-width: 100% !important;
+        width: calc(100% - 1.5rem) !important;
+        margin: 0.75rem !important;
+        padding: 1rem !important;
+        border-radius: 0.75rem !important;
+        max-height: calc(100vh - 1.5rem) !important;
+    }
+
+    /* 4.2 - Modal header */
+    .modal-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        padding-bottom: 0.75rem !important;
+        margin-bottom: 1rem !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        padding-right: 3rem !important;
+    }
+
+    .modal-header h2 {
+        flex: 1 !important;
+        font-size: 1.125rem !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+        padding-right: 2.5rem !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+    }
+
+    /* 4.3 - Close button */
+    .close-btn,
+    .close-modal {
+        position: absolute !important;
+        top: 0.75rem !important;
+        right: 0.75rem !important;
+        background: transparent !important;
+        border: none !important;
+        font-size: 1.75rem !important;
+        color: #6b7280 !important;
+        cursor: pointer !important;
+        width: 48px !important;
+        height: 48px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.2s !important;
+        line-height: 1 !important;
+        padding: 0.5rem !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        z-index: 10 !important;
+    }
+
+    .close-btn:hover,
+    .close-modal:hover {
+        background: rgba(0, 0, 0, 0.05) !important;
+        color: #1f2937 !important;
+    }
+
+    /* 4.4 - Modal actions */
+    .modal-actions {
+        display: flex !important;
+        gap: 1rem !important;
+        justify-content: flex-end !important;
+        padding-top: 1rem !important;
+        margin-top: 2rem !important;
+        border-top: 1px solid #e5e7eb !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        padding-top: 1rem !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .modal-actions button {
+        width: 100% !important;
+    }
+
+    .modal-actions .submit-btn {
+        order: -1 !important;
+    }
+
+    /* 4.5 - Modal body */
+    .modal-body {
+        overflow-y: auto !important;
+        max-height: calc(100vh - 280px) !important;
+        -webkit-overflow-scrolling: touch !important;
+        font-size: 0.9375rem !important;
+    }
+
+    .modal-body pre,
+    .modal-content pre {
+        font-size: 0.75rem !important;
+        padding: 0.75rem !important;
+        line-height: 1.5 !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        word-break: break-all !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* 4.6 - Modal footer */
+    .modal-footer {
+        display: flex !important;
+        gap: 1rem !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        margin-top: 1.5rem !important;
+        padding-top: 1rem !important;
+        flex-direction: column-reverse !important;
+        gap: 0.75rem !important;
+    }
+
+    .modal-footer button {
+        width: 100% !important;
+    }
+
+    /* 4.7 - Sticky header dans modals */
+    .modal-content > h2:first-child {
+        position: sticky !important;
+        top: -1rem !important;
+        background: white !important;
+        padding: 1rem 3.5rem 0.75rem 1rem !important;
+        margin: -1rem -1rem 1rem -1rem !important;
+        z-index: 10 !important;
+    }
+
+    body.dark-mode .modal-content > h2:first-child {
+        background: #1f2937 !important;
+    }
+
+    /* 4.8 - Grilles dans modals */
+    .modal-content [style*="grid-template-columns: repeat(2"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.875rem !important;
+    }
+
+    /* 4.9 - Info boxes */
+    .modal-content [style*="border: 2px solid"] {
+        padding: 0.875rem !important;
+        border-width: 1px !important;
+    }
+
+    /* 4.10 - Success/Error messages */
+    .success-message,
+    .error-message {
+        top: 1rem !important;
+        right: 1rem !important;
+        left: 1rem !important;
+        max-width: calc(100% - 2rem) !important;
+        padding: 0.875rem 1rem !important;
+        font-size: 0.9375rem !important;
+        gap: 0.75rem !important;
+        bottom: auto !important;
+        z-index: 10001 !important;
+    }
+
+    .success-message i,
+    .error-message i {
+        font-size: 1.125rem !important;
+    }
+
+    /* 4.11 - Modal padding override */
+    .modal-content {
+        padding: 0.75rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: inherit !important;
+        z-index: 10 !important;
+        padding-bottom: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .modal-actions {
+        position: sticky !important;
+        bottom: 0 !important;
+        background: inherit !important;
+        padding-top: 1rem !important;
+        margin-top: auto !important;
+    }
+
+    /* 4.12 - Modal z-index */
+    .modal {
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        z-index: 9999 !important;
+    }
+
+    #loading-overlay {
+        z-index: 10000 !important;
+    }
+
+    /* 4.13 - Dropdown animation */
+    @keyframes dropdownSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    #org-dropdown {
+        animation: dropdownSlideIn 0.2s ease-out !important;
+        will-change: opacity, transform !important;
+    }
+
+    /* 4.14 - Shimmer animation optimisée */
+    @keyframes shimmer {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+    }
+
+    /* 4.15 - Loading overlay texte */
+    #loading-overlay > div {
+        padding: 1rem !important;
+    }
+
+    #loading-overlay i {
+        font-size: 2rem !important;
+    }
+
+    #loading-overlay p {
+        font-size: 1rem !important;
+        padding: 0 1rem !important;
+    }
+
+    /* 4.16 - Modal full screen mobile */
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            overflow-y: auto !important;
+            padding: 1.25rem !important;
+        }
+    }
+
+    /* 4.17 - Modal grids 2 colonnes -> 1 */
+    .modal-content [style*="grid-template-columns: repeat(2, 1fr)"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* 4.18 - Modal h2 titles */
+    .modal-content h2,
+    .modal-content h3 {
+        font-size: 1.25rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    /* 4.19 - Messages position bottom mobile */
+    .success-message,
+    .error-message {
+        left: 0.5rem !important;
+        right: 0.5rem !important;
+        bottom: 80px !important;
+        top: auto !important;
+        transform: none !important;
+        font-size: 0.875rem !important;
+        padding: 0.75rem !important;
+    }
+
+    /* 4.20 - Custom confirm modal */
+    .confirm-dialog {
+        padding: 1.25rem !important;
+        width: calc(100% - 1.5rem) !important;
+        margin: 0.75rem !important;
+    }
+
+    .confirm-title {
+        font-size: 1.125rem !important;
+    }
+
+    .confirm-message {
+        font-size: 0.9375rem !important;
+    }
+
+    .confirm-actions {
+        flex-direction: column-reverse !important;
+        gap: 0.625rem !important;
+    }
+
+    .confirm-actions button {
+        width: 100% !important;
+        min-height: 48px !important;
+    }
+
+    /* 4.21 - Modal content max-width override */
+    div[style*="max-width: 500px"],
+    div[style*="max-width: 600px"],
+    div[style*="max-width: 700px"],
+    div[style*="max-width: 800px"] {
+        max-width: 100% !important;
+    }
+
+    /* 4.22 - Overlay scroll lock */
+    body.overlay-active {
+        overflow: hidden !important;
+    }
+}
+
+/* ============================================================================
+   5. TABLEAUX & LISTES - 12 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 5.1 - Tables wrapper scroll */
+    .table-wrapper,
+    div[style*="overflow-x: auto"] {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(102, 126, 234, 0.3) rgba(0, 0, 0, 0.05) !important;
+        border-radius: 0.5rem !important;
+        box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .table-wrapper::-webkit-scrollbar {
+        height: 6px !important;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05) !important;
+        border-radius: 3px !important;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.4) !important;
+        border-radius: 3px !important;
+    }
+
+    /* 5.2 - Subs table */
+    .subs-table {
+        font-size: 0.7rem !important;
+    }
+
+    .subs-table th,
+    .subs-table td {
+        padding: 0.375rem 0.25rem !important;
+        font-size: 0.65rem !important;
+        white-space: nowrap !important;
+    }
+
+    .subs-table th:nth-child(3),
+    .subs-table td:nth-child(3) {
+        display: none !important;
+    }
+
+    /* 5.3 - Ultra tables -> card mode */
+    .ultra-table,
+    table[style*="min-width: 1200px"] {
+        display: block !important;
+        min-width: unset !important;
+    }
+
+    .ultra-table thead {
+        display: none !important;
+    }
+
+    .ultra-table tbody,
+    .ultra-table tr {
+        display: block !important;
+    }
+
+    .ultra-table tr {
+        margin-bottom: 1rem !important;
+        padding: 1rem !important;
+        background: var(--card-bg) !important;
+        border-radius: 0.5rem !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .ultra-table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0.5rem 0 !important;
+        border: none !important;
+    }
+
+    .ultra-table td:before {
+        content: attr(data-label) !important;
+        font-weight: 600 !important;
+        color: var(--text-muted) !important;
+    }
+
+    /* 5.4 - Tables min-width 1200px */
+    table[style*="min-width: 1200px"] {
+        min-width: 100% !important;
+        display: block !important;
+        overflow-x: auto !important;
+    }
+
+    .ultra-table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .ultra-table {
+        min-width: 600px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* 5.5 - Table responsive general */
+    table {
+        font-size: 0.75rem !important;
+    }
+
+    table th,
+    table td {
+        padding: 0.5rem 0.375rem !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* 5.6 - Account lists compact */
+    .account-list {
+        gap: 0.5rem !important;
+    }
+
+    .account-item {
+        padding: 0.75rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* 5.7 - List items */
+    li {
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 5.8 - Charts container */
+    .charts-container {
+        gap: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    /* 5.9 - Dropdown lists */
+    select,
+    .dropdown {
+        max-width: 100% !important;
+    }
+
+    /* 5.10 - Scrollable lists */
+    .scrollable-list {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* 5.11 - Badge lists */
+    .badge-list {
+        gap: 0.375rem !important;
+    }
+
+    .badge {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+
+    /* 5.12 - Table overflow indicator */
+    .table-wrapper::after {
+        content: '→' !important;
+        position: sticky !important;
+        right: 0 !important;
+        float: right !important;
+        padding: 0.5rem !important;
+        background: linear-gradient(to left, white 60%, transparent) !important;
+        color: rgba(100, 116, 139, 0.5) !important;
+        font-size: 1.2rem !important;
+        pointer-events: none !important;
+    }
+}
+
+/* ============================================================================
+   6. CHARTS & GRAPHIQUES - 8 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 6.1 - Chart containers height */
+    .chart-card canvas {
+        max-height: 300px !important;
+    }
+
+    .chart-card {
+        padding: 1rem !important;
+    }
+
+    #growth-chart,
+    #comparison-chart,
+    #engagement-chart {
+        min-height: 250px !important;
+        max-height: 300px !important;
+    }
+
+    /* 6.2 - Chart wrapper */
+    .chart-wrapper {
+        padding: 0.75rem !important;
+    }
+
+    /* 6.3 - Chart titles */
+    .chart-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* 6.4 - Chart legend (hide on mobile) */
+    .chart-legend {
+        display: none !important;
+    }
+
+    /* 6.5 - Stats boxes under charts */
+    .chart-stats {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+        margin-top: 1rem !important;
+    }
+
+    /* 6.6 - Chart container grid */
+    .charts-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* 6.7 - Chart aspect ratio */
+    .chart-container {
+        aspect-ratio: auto !important;
+        height: 280px !important;
+    }
+
+    /* 6.8 - Chart loading state */
+    .chart-loading {
+        min-height: 250px !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+/* ============================================================================
+   7. AUTRES ÉLÉMENTS UI - 15 CORRECTIONS
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* 7.1 - Dropdowns width */
+    div[style*="min-width: 380px"],
+    div[style*="min-width: 200px"] {
+        min-width: calc(100vw - 2rem) !important;
+    }
+
+    button[style*="min-width: 200px"],
+    select[style*="min-width: 200px"] {
+        min-width: 140px !important;
+        font-size: 0.8rem !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    /* 7.2 - Tooltips */
+    .tooltip {
+        max-width: 200px !important;
+        font-size: 0.75rem !important;
+        padding: 0.5rem !important;
+    }
+
+    /* 7.3 - Badges */
+    .badge {
+        font-size: 0.625rem !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+
+    /* 7.4 - Breadcrumbs */
+    .breadcrumb {
+        font-size: 0.75rem !important;
+        gap: 0.375rem !important;
+    }
+
+    /* 7.5 - Tags */
+    .tag {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.625rem !important;
+    }
+
+    /* 7.6 - Pills */
+    .pill {
+        font-size: 0.6875rem !important;
+        padding: 0.25rem 0.75rem !important;
+    }
+
+    /* 7.7 - Avatars */
+    .avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.875rem !important;
+    }
+
+    .avatar-large {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 1.5rem !important;
+    }
+
+    /* 7.8 - Alerts */
+    .alert {
+        padding: 0.875rem !important;
+        font-size: 0.875rem !important;
+        margin: 0.75rem !important;
+    }
+
+    /* 7.9 - Progress bars */
+    .progress-bar {
+        height: 6px !important;
+    }
+
+    .progress-label {
+        font-size: 0.75rem !important;
+    }
+
+    /* 7.10 - Dividers */
+    .divider {
+        margin: 1rem 0 !important;
+    }
+
+    /* 7.11 - Spacers */
+    .spacer {
+        height: 1rem !important;
+    }
+
+    /* 7.12 - Quick actions */
+    .quick-actions {
+        gap: 0.5rem !important;
+    }
+
+    .quick-action-btn {
+        font-size: 0.8125rem !important;
+        padding: 0.625rem !important;
+    }
+
+    /* 7.13 - Pagination */
+    .pagination {
+        gap: 0.375rem !important;
+    }
+
+    .pagination button {
+        min-width: 36px !important;
+        min-height: 36px !important;
+        font-size: 0.8125rem !important;
+    }
+
+    /* 7.14 - Empty states */
+    .empty-state {
+        padding: 2rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem !important;
+    }
+
+    /* 7.15 - Loading spinners */
+    .spinner {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .spinner-large {
+        width: 48px !important;
+        height: 48px !important;
+    }
+}
+
+/* ============================================================================
+   8. UTILITIES & OVERRIDES GLOBAUX
+   ============================================================================ */
+
+@media (max-width: 390px) {
+    /* Reset important overrides */
+    * {
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    /* Touch action */
+    button,
+    a,
+    [onclick] {
+        touch-action: manipulation !important;
+    }
+
+    /* Smooth scrolling */
+    * {
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Prevent zoom on inputs */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Global font adjustments */
+    body {
+        font-size: 14px !important;
+    }
+
+    h1 { font-size: 1.5rem !important; }
+    h2 { font-size: 1.25rem !important; }
+    h3 { font-size: 1.125rem !important; }
+    h4 { font-size: 1rem !important; }
+    h5 { font-size: 0.9375rem !important; }
+    h6 { font-size: 0.875rem !important; }
+
+    /* Padding utilities */
+    .p-0 { padding: 0 !important; }
+    .p-1 { padding: 0.5rem !important; }
+    .p-2 { padding: 0.75rem !important; }
+    .p-3 { padding: 1rem !important; }
+
+    /* Margin utilities */
+    .m-0 { margin: 0 !important; }
+    .m-1 { margin: 0.5rem !important; }
+    .m-2 { margin: 0.75rem !important; }
+    .m-3 { margin: 1rem !important; }
+
+    /* Gap utilities */
+    .gap-1 { gap: 0.5rem !important; }
+    .gap-2 { gap: 0.75rem !important; }
+    .gap-3 { gap: 1rem !important; }
+
+    /* Width utilities */
+    .w-full { width: 100% !important; }
+    .max-w-full { max-width: 100% !important; }
+
+    /* Hide utilities */
+    .hide-mobile { display: none !important; }
+
+    /* Show utilities */
+    .show-mobile { display: block !important; }
+}
+
+/* ============================================================================
+   FIN DES CORRECTIONS
+   ============================================================================ */
