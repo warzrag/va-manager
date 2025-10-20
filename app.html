@@ -318,6 +318,13 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
         }
 
+        /* Carte Comptes Actifs - Mode Sombre */
+        body.dark-mode .dashboard-stat-card[style*="linear-gradient(135deg, #31C950"] {
+            background: linear-gradient(135deg, #1e5128, #2d6a3e) !important;
+            box-shadow: 0 8px 32px rgba(49, 201, 80, 0.2) !important;
+            border: 2px solid rgba(49, 201, 80, 0.3) !important;
+        }
+
         body.dark-mode .dashboard-section-title {
             color: #f3f4f6 !important;
         }
@@ -8367,18 +8374,26 @@
                     }
                 });
 
-                // Générer le HTML avec design ultra moderne
+                // Générer le HTML avec design ultra moderne adapté au mode sombre
+                const isDarkMode = document.body.classList.contains('dark-mode');
+
                 const statsHTML = Object.entries(creatorStats)
                     .sort((a, b) => b[1].active - a[1].active)
                     .map(([name, counts]) => {
                         const percentage = counts.total > 0 ? (counts.active / counts.total * 100) : 0;
 
-                        // Couleurs dynamiques selon le pourcentage
-                        const cardBg = percentage >= 80
-                            ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.05), rgba(34, 160, 61, 0.08))'
-                            : percentage >= 50
-                            ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.08))'
-                            : 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.08))';
+                        // Couleurs dynamiques selon le pourcentage ET le mode
+                        const cardBg = isDarkMode
+                            ? (percentage >= 80
+                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.08), rgba(34, 160, 61, 0.12))'
+                                : percentage >= 50
+                                ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.12))'
+                                : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.12))')
+                            : (percentage >= 80
+                                ? 'linear-gradient(135deg, rgba(49, 201, 80, 0.05), rgba(34, 160, 61, 0.08))'
+                                : percentage >= 50
+                                ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.08))'
+                                : 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.08))');
 
                         const borderColor = percentage >= 80
                             ? '#31C950'
@@ -8398,6 +8413,34 @@
                             ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
                             : 'linear-gradient(90deg, #fb7185, #f43f5e)';
 
+                        // Couleurs de texte adaptées au mode
+                        const nameColor = isDarkMode ? '#e1e8ef' : '#0f172a';
+                        const subtitleColor = isDarkMode ? '#9ca3af' : '#64748b';
+                        const labelColor = isDarkMode ? '#9ca3af' : '#64748b';
+                        const countColor = isDarkMode ? '#cbd5e1' : '#94a3b8';
+
+                        // Effet brillant adapté au mode
+                        const shineEffect = isDarkMode
+                            ? 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)'
+                            : 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)';
+
+                        // Ombres adaptées
+                        const cardShadow = isDarkMode
+                            ? '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset'
+                            : '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset';
+
+                        const hoverShadow = isDarkMode
+                            ? `0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px ${borderColor}33`
+                            : `0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 3px ${borderColor}33`;
+
+                        const avatarShadow = isDarkMode
+                            ? `0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.1)`
+                            : `0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.9)`;
+
+                        const progressBg = isDarkMode
+                            ? 'rgba(148, 163, 184, 0.1)'
+                            : 'rgba(148, 163, 184, 0.15)';
+
                         return `
                         <div style="
                             position: relative;
@@ -8406,19 +8449,19 @@
                             border-radius: 1.5rem;
                             padding: 1.5rem;
                             border: 2px solid ${borderColor};
-                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                            box-shadow: ${cardShadow};
                             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                             cursor: pointer;
                             overflow: hidden;
                         " onmouseover="
                             this.style.transform='translateY(-8px) scale(1.02)';
-                            this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 3px ${borderColor}33';
+                            this.style.boxShadow='${hoverShadow}';
                         " onmouseout="
                             this.style.transform='translateY(0) scale(1)';
-                            this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset';
+                            this.style.boxShadow='${cardShadow}';
                         ">
                             <!-- Effet brillant d'arrière-plan -->
-                            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+                            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: ${shineEffect}; pointer-events: none;"></div>
 
                             <!-- Header avec avatar et nom -->
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; position: relative;">
@@ -8432,15 +8475,15 @@
                                         align-items: center;
                                         justify-content: center;
                                         font-size: 1.75rem;
-                                        box-shadow: 0 8px 24px ${borderColor}40, 0 0 0 3px rgba(255, 255, 255, 0.9);
+                                        box-shadow: ${avatarShadow};
                                         transform: rotate(-5deg);
                                         transition: transform 0.3s ease;
                                     " onmouseover="this.style.transform='rotate(0deg) scale(1.1)'" onmouseout="this.style.transform='rotate(-5deg) scale(1)'">
                                         👤
                                     </div>
                                     <div>
-                                        <div style="font-weight: 800; font-size: 1.15rem; color: #0f172a; letter-spacing: -0.5px;">${name}</div>
-                                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 500; margin-top: 2px;">Créatrice de contenu</div>
+                                        <div style="font-weight: 800; font-size: 1.15rem; color: ${nameColor}; letter-spacing: -0.5px;">${name}</div>
+                                        <div style="font-size: 0.75rem; color: ${subtitleColor}; font-weight: 500; margin-top: 2px;">Créatrice de contenu</div>
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
@@ -8455,7 +8498,7 @@
                                     ">
                                         ${counts.active}
                                     </div>
-                                    <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 600; margin-top: 4px;">
+                                    <div style="font-size: 0.7rem; color: ${countColor}; font-weight: 600; margin-top: 4px;">
                                         / ${counts.total} comptes
                                     </div>
                                 </div>
@@ -8464,12 +8507,12 @@
                             <!-- Barre de progression moderne -->
                             <div style="margin-bottom: 1rem;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <span style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Progression</span>
+                                    <span style="font-size: 0.7rem; font-weight: 700; color: ${labelColor}; text-transform: uppercase; letter-spacing: 0.5px;">Progression</span>
                                     <span style="font-size: 0.85rem; font-weight: 800; color: ${borderColor};">${percentage.toFixed(0)}%</span>
                                 </div>
                                 <div style="
                                     position: relative;
-                                    background: rgba(148, 163, 184, 0.15);
+                                    background: ${progressBg};
                                     height: 14px;
                                     border-radius: 20px;
                                     overflow: hidden;
