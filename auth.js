@@ -23,6 +23,87 @@ function initSupabase() {
     }
 }
 
+// Detect user type and redirect to appropriate dashboard
+async function detectUserTypeAndRedirect(userId) {
+    try {
+        console.log('🔍 Détection du type d\'utilisateur pour:', userId);
+
+        // Check if user is a VA
+        const { data: vaData, error: vaError } = await supabaseClient
+            .from('vas')
+            .select('id, name, organization_id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (vaError && vaError.code !== 'PGRST116') { // PGRST116 = no rows returned
+            console.error('❌ Erreur lors de la vérification VA:', vaError);
+        }
+
+        if (vaData) {
+            console.log('✅ Utilisateur détecté comme VA:', vaData.name);
+            showAlert('Connexion en tant que VA... Redirection...', 'success');
+            setTimeout(() => {
+                window.location.href = 'va-dashboard.html';
+            }, 1000);
+            return;
+        }
+
+        // Check if user is an organization owner
+        const { data: orgData, error: orgError } = await supabaseClient
+            .from('organizations')
+            .select('id, name')
+            .eq('owner_id', userId)
+            .maybeSingle();
+
+        if (orgError && orgError.code !== 'PGRST116') {
+            console.error('❌ Erreur lors de la vérification Organization:', orgError);
+        }
+
+        if (orgData) {
+            console.log('✅ Utilisateur détecté comme Owner:', orgData.name);
+            showAlert('Connexion en tant que Owner... Redirection...', 'success');
+            setTimeout(() => {
+                window.location.href = 'app.html';
+            }, 1000);
+            return;
+        }
+
+        // Check if user is a member of any organization
+        const { data: memberData, error: memberError } = await supabaseClient
+            .from('organization_members')
+            .select('organization_id, role')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (memberError && memberError.code !== 'PGRST116') {
+            console.error('❌ Erreur lors de la vérification Member:', memberError);
+        }
+
+        if (memberData) {
+            console.log('✅ Utilisateur détecté comme Member');
+            showAlert('Connexion réussie... Redirection...', 'success');
+            setTimeout(() => {
+                window.location.href = 'app.html';
+            }, 1000);
+            return;
+        }
+
+        // Default: redirect to app.html (new user without organization)
+        console.log('⚠️ Nouvel utilisateur sans organisation');
+        showAlert('Bienvenue ! Redirection...', 'success');
+        setTimeout(() => {
+            window.location.href = 'app.html';
+        }, 1000);
+
+    } catch (error) {
+        console.error('❌ Erreur lors de la détection du type d\'utilisateur:', error);
+        // Fallback to app.html
+        setTimeout(() => {
+            window.location.href = 'app.html';
+        }, 1000);
+    }
+}
+
 // Check if user is already logged in on page load
 async function checkExistingSession() {
     if (!initSupabase()) return;
@@ -35,9 +116,7 @@ async function checkExistingSession() {
         if (session) {
             console.log('✅ Session active trouvée');
             showAlert('Connexion en cours...', 'info');
-            setTimeout(() => {
-                window.location.href = 'app.html';
-            }, 500);
+            await detectUserTypeAndRedirect(session.user.id);
         }
     } catch (error) {
         console.error('Erreur lors de la vérification de la session:', error);
@@ -122,12 +201,9 @@ async function handleLogin(event) {
         if (error) throw error;
 
         console.log('✅ Connexion réussie:', data);
-        showAlert('Connexion réussie ! Redirection...', 'success');
 
-        // Redirect to app
-        setTimeout(() => {
-            window.location.href = 'app.html';
-        }, 1000);
+        // Detect user type and redirect to appropriate dashboard
+        await detectUserTypeAndRedirect(data.user.id);
 
     } catch (error) {
         console.error('❌ Erreur de connexion:', error);
@@ -266,14 +342,8 @@ async function handleRegister(event) {
             showAlert('Compte créé ! Vérifiez votre email pour confirmer votre inscription.', 'success');
             btn.innerHTML = '<i class="fas fa-check"></i> Compte créé';
         } else {
-            if (!invitationCode) {
-                showAlert('Compte créé avec succès ! Redirection...', 'success');
-            }
-
-            // Redirect to app
-            setTimeout(() => {
-                window.location.href = 'app.html';
-            }, 1500);
+            // Detect user type and redirect to appropriate dashboard
+            await detectUserTypeAndRedirect(data.user.id);
         }
 
     } catch (error) {
