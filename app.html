@@ -3332,10 +3332,99 @@
 
     <!-- Mobile Drawer -->
     <div class="mobile-drawer" id="mobile-drawer">
-        <div class="mobile-drawer-header">
-            <h2 class="mobile-drawer-title">📊 Navigation</h2>
+        <!-- Profile Header -->
+        <div class="drawer-profile">
+            <div class="drawer-profile-avatar" id="drawer-avatar">
+                <span id="drawer-avatar-text"></span>
+            </div>
+            <div class="drawer-profile-info">
+                <div class="drawer-profile-name" id="drawer-user-name">Utilisateur</div>
+                <div class="drawer-profile-email" id="drawer-user-email">email@example.com</div>
+                <div class="drawer-profile-org" id="drawer-org-name">Mon Agence</div>
+            </div>
         </div>
-        <div id="mobile-nav-content"></div>
+
+        <!-- Navigation Sections -->
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Vue d'ensemble</div>
+            <button class="nav-btn active" data-page="dashboard">
+                <i class="fas fa-home"></i> Dashboard
+            </button>
+        </div>
+
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Gestion</div>
+            <button class="nav-btn" data-page="team-management">
+                <i class="fas fa-users-cog"></i> Équipe
+            </button>
+            <button class="nav-btn" data-page="add-va">
+                <i class="fas fa-user-plus"></i> Ajouter VA
+            </button>
+            <button class="nav-btn" data-page="add-creator">
+                <i class="fas fa-user-friends"></i> Créatrices
+            </button>
+        </div>
+
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Comptes</div>
+            <button class="nav-btn" data-page="gmail-accounts">
+                <i class="fas fa-envelope"></i> Gmail
+            </button>
+            <button class="nav-btn" data-page="add-account">
+                <i class="fab fa-twitter"></i> Comptes Sociaux
+            </button>
+        </div>
+
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Analytics</div>
+            <button class="nav-btn" data-page="twitter-analytics">
+                <i class="fas fa-chart-bar"></i> Twitter Stats
+            </button>
+            <button class="nav-btn" data-page="instagram-stats">
+                <i class="fab fa-instagram"></i> Instagram Stats
+            </button>
+            <button class="nav-btn" data-page="instagram-analytics">
+                <i class="fas fa-chart-line"></i> Instagram Analytics
+            </button>
+            <button class="nav-btn" data-page="instagram-warmup">
+                <i class="fas fa-fire"></i> Warm-up
+            </button>
+        </div>
+
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Finance</div>
+            <button class="nav-btn" data-page="subs-tracking">
+                <i class="fas fa-euro-sign"></i> Subscriptions
+            </button>
+            <button class="nav-btn" data-page="revenue-tracking">
+                <i class="fas fa-chart-line"></i> Revenus
+            </button>
+            <button class="nav-btn" data-page="financial-overview">
+                <i class="fas fa-coins"></i> Vue Financière
+            </button>
+        </div>
+
+        <div class="drawer-nav-section">
+            <div class="drawer-nav-section-title">Outils</div>
+            <button class="nav-btn" data-page="search">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+            <button class="nav-btn" data-page="import">
+                <i class="fas fa-file-import"></i> Import
+            </button>
+        </div>
+
+        <!-- Drawer Footer Actions -->
+        <div class="drawer-footer">
+            <button class="drawer-action-btn primary" onclick="showBackupModal(); toggleMobileMenu();">
+                <i class="fas fa-save"></i>
+                <span>Sauvegarder</span>
+            </button>
+            <button class="drawer-action-btn danger" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
     </div>
 
     <!-- Header -->
@@ -6582,24 +6671,30 @@
                 mobileBtn.style.display = 'flex';
             }
 
-            // Clone navigation buttons into drawer
-            const navContent = document.querySelector('.nav-content');
-            const mobileNavContent = document.getElementById('mobile-nav-content');
+            // Update drawer profile info
+            const userEmail = document.getElementById('user-email')?.textContent || 'email@example.com';
+            const userName = userEmail.split('@')[0];
+            const initials = userName.substring(0, 2).toUpperCase();
+            const orgName = document.getElementById('current-org-name')?.textContent || 'Mon Agence';
 
-            if (navContent && mobileNavContent) {
-                // Clear existing content
-                mobileNavContent.innerHTML = '';
+            // Set drawer profile
+            document.getElementById('drawer-user-name').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+            document.getElementById('drawer-user-email').textContent = userEmail;
+            document.getElementById('drawer-org-name').textContent = orgName;
+            document.getElementById('drawer-avatar-text').textContent = initials;
 
-                const navButtons = navContent.querySelectorAll('.nav-btn');
-                navButtons.forEach(btn => {
-                    const clone = btn.cloneNode(true);
-                    // Close drawer on navigation
-                    clone.addEventListener('click', () => {
-                        toggleMobileMenu();
-                    });
-                    mobileNavContent.appendChild(clone);
+            // Add click handlers to drawer nav buttons
+            const drawerNavBtns = document.querySelectorAll('.mobile-drawer .nav-btn');
+            drawerNavBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active from all
+                    drawerNavBtns.forEach(b => b.classList.remove('active'));
+                    // Add active to clicked
+                    btn.classList.add('active');
+                    // Close drawer
+                    toggleMobileMenu();
                 });
-            }
+            });
 
             // Handle window resize
             window.addEventListener('resize', () => {
