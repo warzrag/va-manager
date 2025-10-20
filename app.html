@@ -5596,9 +5596,10 @@
         async function loadAllData() {
             try {
                 const startTime = performance.now();
-                console.log('📡 Loading data from Supabase...');
+                console.log('📡 Loading essential data from Supabase...');
 
-                const allData = await getAllUserData();
+                // Load only essential data first (VAs, creators, accounts)
+                const allData = await getAllUserData({ loadStats: false, loadFinancials: true });
 
                 const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
                 console.log(`✅ Data loaded in ${loadTime}s`);
@@ -5623,11 +5624,14 @@
                     accounts: [] // Legacy structure, keeping for compatibility
                 }));
 
-                // Populate vaIds for creators based on va_creator relationships - IN PARALLEL
-                await Promise.all(data.creators.map(async (creator) => {
-                    const vas = await getVAsForCreator(creator.id);
-                    creator.vaIds = vas.map(va => va.id);
-                }));
+                // Populate vaIds for creators based on va_creator relationships - OPTIMIZED
+                // Use the relations already fetched in getAllUserData()
+                allData.vaCreatorRelations.forEach(relation => {
+                    const creator = data.creators.find(c => c.id === relation.creator_id);
+                    if (creator && !creator.vaIds.includes(relation.va_id)) {
+                        creator.vaIds.push(relation.va_id);
+                    }
+                });
 
                 data.twitterAccounts = allData.twitterAccounts.map(account => ({
                     id: account.id,

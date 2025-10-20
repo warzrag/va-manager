@@ -2515,19 +2515,20 @@ async function getAllVACreatorRelations() {
  * Get all data for current user (for migration/export)
  * @returns {Promise<Object>}
  */
-async function getAllUserData() {
+async function getAllUserData(options = {}) {
   try {
+    const {
+      loadStats = false,  // Load heavy stats data (Twitter stats, warmup progress)
+      loadFinancials = true  // Load financial data (subscriptions, revenues, payments)
+    } = options;
+
+    // ESSENTIAL DATA - Always load first (6 queries)
     const [
       vas,
       creators,
       twitterAccounts,
       instagramAccounts,
       gmailAccounts,
-      subscriptions,
-      revenues,
-      payments,
-      twitterStats,
-      warmupProgress,
       vaCreatorRelations
     ] = await Promise.all([
       getVAs(),
@@ -2535,15 +2536,41 @@ async function getAllUserData() {
       getTwitterAccounts(),
       getInstagramAccounts(),
       getGmailAccounts(),
-      getSubscriptions(),
-      getRevenues(),
-      getPayments(),
-      getTwitterStats(),
-      getWarmupProgress(),
-      getAllVACreatorRelations() // OPTIMIZED: Single query instead of N queries
+      getAllVACreatorRelations()
     ]);
 
-    console.log('✅ Retrieved all user data');
+    console.log('✅ Retrieved essential user data');
+
+    // OPTIONAL DATA - Load based on options
+    let subscriptions = [];
+    let revenues = [];
+    let payments = [];
+    let twitterStats = [];
+    let warmupProgress = [];
+
+    if (loadFinancials || loadStats) {
+      const optionalPromises = [];
+
+      if (loadFinancials) {
+        optionalPromises.push(getSubscriptions(), getRevenues(), getPayments());
+      }
+
+      if (loadStats) {
+        optionalPromises.push(getTwitterStats(), getWarmupProgress());
+      }
+
+      const optionalResults = await Promise.all(optionalPromises);
+
+      if (loadFinancials) {
+        [subscriptions, revenues, payments] = optionalResults.splice(0, 3);
+      }
+
+      if (loadStats) {
+        [twitterStats, warmupProgress] = optionalResults;
+      }
+
+      console.log('✅ Retrieved optional user data');
+    }
 
     return {
       vas,
