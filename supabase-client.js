@@ -751,8 +751,9 @@ async function getVAsForCreator(creatorId) {
  * Get all Twitter accounts for current user
  * @returns {Promise<Array>}
  */
-async function getTwitterAccounts() {
+async function getTwitterAccounts(options = {}) {
   try {
+    const { skipDecryption = false } = options;
     const organizationId = await getOrganizationId();
 
     const { data, error } = await supabase
@@ -762,6 +763,15 @@ async function getTwitterAccounts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
+    if (skipDecryption) {
+      // Return with encrypted passwords for fast loading
+      console.log(`✅ Retrieved ${data.length} Twitter accounts (passwords encrypted)`);
+      return (data || []).map(account => ({
+        ...account,
+        password: '••••••••' // Placeholder
+      }));
+    }
 
     // Decrypt passwords
     const decryptedData = await Promise.all(
@@ -990,8 +1000,9 @@ async function deleteTwitterAccount(accountId) {
  * Get all Instagram accounts for current user
  * @returns {Promise<Array>}
  */
-async function getInstagramAccounts() {
+async function getInstagramAccounts(options = {}) {
   try {
+    const { skipDecryption = false } = options;
     const organizationId = await getOrganizationId();
 
     const { data, error } = await supabase
@@ -1001,6 +1012,15 @@ async function getInstagramAccounts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
+    if (skipDecryption) {
+      // Return with encrypted passwords for fast loading
+      console.log(`✅ Retrieved ${data.length} Instagram accounts (passwords encrypted)`);
+      return (data || []).map(account => ({
+        ...account,
+        password: '••••••••' // Placeholder
+      }));
+    }
 
     // Decrypt passwords
     const decryptedData = await Promise.all(
@@ -1225,8 +1245,9 @@ async function deleteInstagramAccount(accountId) {
  * Get all Gmail accounts for current user
  * @returns {Promise<Array>}
  */
-async function getGmailAccounts() {
+async function getGmailAccounts(options = {}) {
   try {
+    const { skipDecryption = false } = options;
     const organizationId = await getOrganizationId();
 
     const { data, error } = await supabase
@@ -1236,6 +1257,15 @@ async function getGmailAccounts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
+    if (skipDecryption) {
+      // Return with encrypted passwords for fast loading
+      console.log(`✅ Retrieved ${data.length} Gmail accounts (passwords encrypted)`);
+      return (data || []).map(account => ({
+        ...account,
+        password: '••••••••' // Placeholder
+      }));
+    }
 
     // Handle passwords - they come from Supabase already in the 'password' field
     const decryptedData = await Promise.all(
@@ -2523,6 +2553,7 @@ async function getAllUserData(options = {}) {
     } = options;
 
     // ESSENTIAL DATA - Always load first (6 queries)
+    // Skip password decryption for MUCH faster loading
     const [
       vas,
       creators,
@@ -2533,9 +2564,9 @@ async function getAllUserData(options = {}) {
     ] = await Promise.all([
       getVAs(),
       getCreators(),
-      getTwitterAccounts(),
-      getInstagramAccounts(),
-      getGmailAccounts(),
+      getTwitterAccounts({ skipDecryption: true }),
+      getInstagramAccounts({ skipDecryption: true }),
+      getGmailAccounts({ skipDecryption: true }),
       getAllVACreatorRelations()
     ]);
 
