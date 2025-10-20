@@ -11695,6 +11695,11 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 const accountsCount = filteredAccounts.length;
                 const instagramCount = filteredInstagramAccounts.length;
                 const totalCount = accountsCount + instagramCount;
+
+                // Compter les comptes actifs vs bannis
+                const activeAccounts = filteredInstagramAccounts.filter(acc => acc.status !== 'banned').length;
+                const bannedAccounts = filteredInstagramAccounts.filter(acc => acc.status === 'banned').length;
+
                 let badgeColor = '#22c55e'; // Vert par défaut
                 if (totalCount === 0) badgeColor = '#ef4444'; // Rouge si 0
                 else if (totalCount >= 10) badgeColor = '#dc2626'; // Rouge foncé si 10+
@@ -11828,11 +11833,11 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         <div class="creatrice-header">
                             <span class="creatrice-name">
                                 ⭐ ${creator.name} 
-                                <span style="background: ${badgeColor}; 
-                                            color: white; 
-                                            padding: 2px 8px; 
-                                            border-radius: 12px; 
-                                            font-size: 0.75rem; 
+                                <span style="background: ${badgeColor};
+                                            color: white;
+                                            padding: 2px 8px;
+                                            border-radius: 12px;
+                                            font-size: 0.75rem;
                                             font-weight: 600;
                                             margin-left: 8px;
                                             box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -11840,6 +11845,28 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                     ${accountsCount > 0 ? `(${accountsCount} <i class="fab fa-twitter"></i>)` : ''}
                                     ${instagramCount > 0 ? `(${instagramCount} <i class="fab fa-instagram"></i>)` : ''}
                                 </span>
+                                ${instagramCount > 0 ? `
+                                    <span style="background: #10b981;
+                                                color: white;
+                                                padding: 2px 8px;
+                                                border-radius: 12px;
+                                                font-size: 0.75rem;
+                                                font-weight: 600;
+                                                margin-left: 4px;
+                                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-check-circle"></i> ${activeAccounts}
+                                    </span>
+                                    <span style="background: #ef4444;
+                                                color: white;
+                                                padding: 2px 8px;
+                                                border-radius: 12px;
+                                                font-size: 0.75rem;
+                                                font-weight: 600;
+                                                margin-left: 4px;
+                                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-ban"></i> ${bannedAccounts}
+                                    </span>
+                                ` : ''}
                             </span>
                             <div class="actions">
                                 <button class="action-btn view-btn" onclick="viewCreator('${va.id}', '${creator.id}')">
