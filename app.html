@@ -7769,7 +7769,7 @@
         }
 
         // Navigation
-        function navigateToPage(pageName) {
+        async function navigateToPage(pageName) {
             console.log('🔵 [NAV DEBUG] Navigating to page:', pageName);
 
             // Close mobile menu if open
@@ -7795,17 +7795,17 @@
             } else {
                 console.error('❌ [NAV DEBUG] Page element not found:', `${pageName}-page`);
             }
-            
+
             // Update subs display when navigating to subs tracking page
             if (pageName === 'subs-tracking') {
                 updateCompetitionDisplay();
             }
-            
+
             // Update revenue display when navigating to revenue tracking page
             if (pageName === 'revenue-tracking') {
                 updateRevenueDisplay();
             }
-            
+
             // Update financial overview when navigating to that page
             if (pageName === 'financial-overview') {
                 updateFinancialOverview();
