@@ -1276,10 +1276,31 @@
         }
 
         // Check if already logged in
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             // Apply auto dark mode
             applyAutoDarkMode();
 
+            // Check if user is already authenticated via Supabase
+            if (supabase) {
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+
+                    if (error) {
+                        console.error('❌ Error checking session:', error);
+                    }
+
+                    if (session && session.user) {
+                        console.log('✅ Supabase session found, auto-logging in...');
+                        // User is already authenticated, attempt auto-login
+                        await attemptAutoLogin(session.user.id, session.user.email);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('❌ Session check error:', e);
+                }
+            }
+
+            // Fallback to localStorage session (legacy)
             const savedSession = localStorage.getItem('va_session');
             if (savedSession) {
                 try {
@@ -1386,6 +1407,59 @@
             } catch (error) {
                 console.error('❌ Login error:', error);
                 showError('Erreur de connexion. Veuillez réessayer.');
+            }
+        }
+
+        async function attemptAutoLogin(userId, email) {
+            try {
+                console.log('🔄 Attempting auto-login for user:', userId);
+
+                // Get VA record using auth user_id
+                const { data: vas, error: vaError } = await supabase
+                    .from('vas')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (vaError || !vas) {
+                    console.error('❌ VA not found for user:', userId, vaError);
+                    showError('Compte VA introuvable');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                console.log('✅ VA found:', vas.name);
+
+                // Set current VA
+                currentVA = {
+                    id: vas.id,
+                    name: vas.name,
+                    email: email,
+                    organizationId: vas.organization_id,
+                    userId: userId
+                };
+
+                console.log('✅ Auto-login successful, organization:', currentVA.organizationId);
+
+                // Save session to localStorage
+                localStorage.setItem('va_session', JSON.stringify({
+                    vaId: vas.id,
+                    email: email,
+                    name: vas.name,
+                    organizationId: vas.organization_id,
+                    userId: userId,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // Load data for this organization
+                await loadData();
+
+                // Show dashboard
+                showDashboard();
+
+            } catch (error) {
+                console.error('❌ Auto-login error:', error);
+                showError('Erreur de connexion automatique');
             }
         }
 
