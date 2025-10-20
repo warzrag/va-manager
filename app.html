@@ -3588,13 +3588,13 @@
         <div id="dashboard-page" class="page active">
             <!-- Statistiques principales -->
             <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div class="dashboard-stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div class="dashboard-stat-card" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 8px 32px rgba(6, 182, 212, 0.25); border: 1px solid rgba(255, 255, 255, 0.18);">
                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <p class="dashboard-stat-label" style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Comptes Actifs par Créatrice</p>
-                            <i class="fas fa-check-circle" style="font-size: 1.5rem; opacity: 0.3;"></i>
+                            <p class="dashboard-stat-label" style="margin: 0; opacity: 0.95; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px;">Comptes Actifs par Créatrice</p>
+                            <i class="fas fa-chart-pie" style="font-size: 1.5rem; opacity: 0.4;"></i>
                         </div>
-                        <div id="active-accounts-by-creator" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+                        <div id="active-accounts-by-creator" style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
                             <!-- Les stats seront générées ici -->
                         </div>
                     </div>
@@ -8372,16 +8372,21 @@
                     .sort((a, b) => b[1].active - a[1].active) // Trier par nombre de comptes actifs
                     .map(([name, counts]) => {
                         const percentage = counts.total > 0 ? (counts.active / counts.total * 100) : 0;
-                        const barColor = percentage >= 80 ? '#10b981' : percentage >= 50 ? '#f59e0b' : '#ef4444';
+                        const barColor = percentage >= 80 ? '#22d3ee' : percentage >= 50 ? '#fbbf24' : '#fb7185';
+                        const barGradient = percentage >= 80
+                            ? 'linear-gradient(90deg, #22d3ee, #06b6d4)'
+                            : percentage >= 50
+                            ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
+                            : 'linear-gradient(90deg, #fb7185, #f43f5e)';
 
                         return `
-                        <div style="background: rgba(255, 255, 255, 0.15); border-radius: 0.75rem; padding: 1rem; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <div style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem;">
+                        <div style="background: rgba(255, 255, 255, 0.18); border-radius: 1rem; padding: 1.25rem; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.25); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.background='rgba(255, 255, 255, 0.25)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.18)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                                         ⭐
                                     </div>
-                                    <span style="font-weight: 600; font-size: 0.95rem;">${name}</span>
+                                    <span style="font-weight: 700; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">${name}</span>
                                 </div>
                                 <div style="text-align: right;">
                                     <div style="font-weight: 700; font-size: 1.25rem; line-height: 1;">
@@ -8392,12 +8397,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div style="background: rgba(255, 255, 255, 0.2); height: 6px; border-radius: 3px; overflow: hidden;">
-                                <div style="background: ${barColor}; height: 100%; width: ${percentage}%; transition: width 0.5s ease; box-shadow: 0 0 10px ${barColor};"></div>
+                            <div style="background: rgba(255, 255, 255, 0.25); height: 8px; border-radius: 10px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                                <div style="background: ${barGradient}; height: 100%; width: ${percentage}%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px ${barColor};"></div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.9;">
-                                <span>${percentage.toFixed(0)}% actifs</span>
-                                <span>${counts.total - counts.active} bannis</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: rgba(34, 211, 238, 0.2); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(34, 211, 238, 0.4);">
+                                        ✓ ${percentage.toFixed(0)}%
+                                    </span>
+                                </div>
+                                <span style="background: rgba(251, 113, 133, 0.2); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(251, 113, 133, 0.4);">
+                                    ✕ ${counts.total - counts.active}
+                                </span>
                             </div>
                         </div>
                     `;
