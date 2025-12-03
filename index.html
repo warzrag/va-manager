@@ -18042,10 +18042,18 @@ Tapez "SUPPRIMER" pour confirmer :`;
             const element = document.getElementById(elementId);
             const icon = button.querySelector('i');
 
-            if (element.textContent === '••••••••') {
-                // Déobfusquer le mot de passe si nécessaire
-                const decodedPassword = deobfuscatePassword(password);
-                element.textContent = decodedPassword;
+            console.log('togglePasswordDisplay called:', { elementId, password, element });
+
+            if (!element) {
+                console.error('Element not found:', elementId);
+                return;
+            }
+
+            if (element.textContent.trim() === '••••••••') {
+                // Le mot de passe est déjà déchiffré par Supabase, l'afficher directement
+                // Si vide, afficher un message
+                const displayPassword = password || '(aucun mot de passe)';
+                element.textContent = displayPassword;
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
             } else {
@@ -18057,7 +18065,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
         // Copy password to clipboard
         function copyToClipboard(password, type) {
-            const decodedPassword = deobfuscatePassword(password);
+            // Le mot de passe est déjà déchiffré par Supabase
+            const decodedPassword = password || '';
             navigator.clipboard.writeText(decodedPassword).then(() => {
                 showSuccess(`Mot de passe ${type === 'twitter' ? 'Twitter' : 'Instagram'} copié !`);
             }).catch(err => {
