@@ -2684,9 +2684,9 @@ async function getAllUserData(options = {}) {
     ] = await Promise.all([
       getVAsWithCachedOrgId(organizationId),
       getCreatorsWithCachedOrgId(organizationId),
-      getTwitterAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
-      getInstagramAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
-      getGmailAccountsWithCachedOrgId(organizationId, { skipDecryption: true }),
+      getTwitterAccountsWithCachedOrgId(organizationId, { skipDecryption: false }),
+      getInstagramAccountsWithCachedOrgId(organizationId, { skipDecryption: false }),
+      getGmailAccountsWithCachedOrgId(organizationId, { skipDecryption: false }),
       getAllVACreatorRelationsWithCachedOrgId(organizationId)
     ]);
 
