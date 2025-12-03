@@ -13374,9 +13374,24 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             </strong>
                             <div style="font-size: 0.875rem; color: ${isDarkMode ? '#cbd5e1' : '#475569'}; margin-top: 0.5rem;">
                                 ${creator ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user" style="width: 20px; color: #8b5cf6;"></i> Créatrice: <strong>${creator.name}</strong></div>` : ''}
-                                ${gmail ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-envelope" style="width: 20px; color: #ea4335;"></i> Gmail: <strong>${gmail.email}</strong></div>` : 
+                                ${gmail ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-envelope" style="width: 20px; color: #ea4335;"></i> Gmail: <strong>${gmail.email}</strong></div>` :
                                   creator ? `<div style="margin-bottom: 0.25rem; color: #ef4444;"><i class="fas fa-envelope" style="width: 20px; opacity: 0.5;"></i> <em>Aucun Gmail associé</em></div>` : ''}
                                 ${va ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user-tie" style="width: 20px; color: #667eea;"></i> VA: <strong>${va.name}</strong></div>` : ''}
+                                <div style="margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-key" style="width: 20px; color: #1da1f2;"></i>
+                                    <span>Mot de passe: </span>
+                                    <span id="pwd-twitter-${account.username.replace(/[^a-zA-Z0-9]/g, '_')}" style="font-family: monospace; background: ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                        ••••••••
+                                    </span>
+                                    <button onclick="togglePasswordDisplay('pwd-twitter-${account.username.replace(/[^a-zA-Z0-9]/g, '_')}', '${(account.password || '').replace(/'/g, "\\'")}', this)"
+                                            style="background: none; border: none; cursor: pointer; color: #1da1f2; padding: 0.25rem;" title="Afficher/Masquer">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="copyToClipboard('${(account.password || '').replace(/'/g, "\\'")}', 'twitter')"
+                                            style="background: none; border: none; cursor: pointer; color: #10b981; padding: 0.25rem;" title="Copier">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
                                 ${!creator && !gmail && !va ? '<div style="color: #ef4444; font-style: italic;">Aucune association</div>' : ''}
                                 <div style="margin-top: 0.5rem; font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#6b7280'};">
                                     ${account.source === 'creator' ? '<span style="color: #8b5cf6;">Depuis créatrice</span> • ' : ''}
@@ -13386,21 +13401,17 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         </div>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             ${!gmail && creator ? `
-                                <button class="action-btn" onclick="showAssignGmailModal('${account.creatorId}', '${account.username}')" 
+                                <button class="action-btn" onclick="showAssignGmailModal('${account.creatorId}', '${account.username}')"
                                         style="background: #ea4335;" title="Assigner un Gmail">
                                     <i class="fas fa-envelope"></i> Gmail
                                 </button>
                             ` : ''}
                             ${!creator && !gmail && !va && account.id ? `
-                                <button class="action-btn" onclick="showReassignModal('${account.id}')" 
+                                <button class="action-btn" onclick="showReassignModal('${account.id}')"
                                         style="background: #10b981;" title="Réassigner ce compte">
                                     <i class="fas fa-user-plus"></i> Assigner
                                 </button>
                             ` : ''}
-                            <button class="action-btn" onclick="showTwitterPassword('${account.username}', '${account.password}')" 
-                                    style="background: #1da1f2;" title="Voir le mot de passe">
-                                <i class="fas fa-key"></i>
-                            </button>
                             <button class="action-btn" onclick="handleDeleteTwitterAccount('${account.id || account.username}')"
                                     style="background: #ef4444;" title="Supprimer définitivement">
                                 <i class="fas fa-trash"></i>
@@ -15595,6 +15606,21 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                 ${gmail ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-envelope" style="width: 20px; color: #ea4335;"></i> Gmail: <strong>${gmail}</strong></div>` :
                                   creator ? `<div style="margin-bottom: 0.25rem; color: #ef4444;"><i class="fas fa-envelope" style="width: 20px; opacity: 0.5;"></i> <em>Aucun Gmail associé</em></div>` : ''}
                                 ${va ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user-tie" style="width: 20px; color: #667eea;"></i> VA: <strong>${va}</strong></div>` : ''}
+                                <div style="margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-key" style="width: 20px; color: #c13584;"></i>
+                                    <span>Mot de passe: </span>
+                                    <span id="pwd-insta-${account.username.replace(/[^a-zA-Z0-9]/g, '_')}" style="font-family: monospace; background: ${isDarkMode ? 'rgba(193, 53, 132, 0.2)' : 'rgba(193, 53, 132, 0.1)'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                        ••••••••
+                                    </span>
+                                    <button onclick="togglePasswordDisplay('pwd-insta-${account.username.replace(/[^a-zA-Z0-9]/g, '_')}', '${(account.password || '').replace(/'/g, "\\'")}', this)"
+                                            style="background: none; border: none; cursor: pointer; color: #c13584; padding: 0.25rem;" title="Afficher/Masquer">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="copyToClipboard('${(account.password || '').replace(/'/g, "\\'")}', 'instagram')"
+                                            style="background: none; border: none; cursor: pointer; color: #10b981; padding: 0.25rem;" title="Copier">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
                                 ${!creator && !gmail && !va ? '<div style="color: #ef4444; font-style: italic;">Aucune association</div>' : ''}
                                 <div style="margin-top: 0.5rem; font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#6b7280'};">
                                     Ajouté le ${account.created ? new Date(account.created).toLocaleDateString('fr-FR') : 'Date inconnue'}
@@ -15605,10 +15631,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             <button class="action-btn" onclick="editInstagramUsername('${account.id}', '${account.username}')"
                                     style="background: #10b981;" title="Modifier le @">
                                 <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" onclick="showInstagramPassword('${account.username}', '${account.password || ''}')"
-                                    style="background: #c13584;" title="Voir le mot de passe">
-                                <i class="fas fa-key"></i>
                             </button>
                             <button class="action-btn" onclick="handleDeleteInstagramAccount('${account.id || account.username}')"
                                     style="background: #ef4444;" title="Supprimer">
@@ -18003,7 +18025,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
         function togglePasswordVisibility(inputId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(inputId + '-toggle');
-            
+
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -18013,6 +18035,41 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
+        }
+
+        // Toggle password display in account lists
+        function togglePasswordDisplay(elementId, password, button) {
+            const element = document.getElementById(elementId);
+            const icon = button.querySelector('i');
+
+            if (element.textContent === '••••••••') {
+                // Déobfusquer le mot de passe si nécessaire
+                const decodedPassword = deobfuscatePassword(password);
+                element.textContent = decodedPassword;
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                element.textContent = '••••••••';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Copy password to clipboard
+        function copyToClipboard(password, type) {
+            const decodedPassword = deobfuscatePassword(password);
+            navigator.clipboard.writeText(decodedPassword).then(() => {
+                showSuccess(`Mot de passe ${type === 'twitter' ? 'Twitter' : 'Instagram'} copié !`);
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = decodedPassword;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccess(`Mot de passe ${type === 'twitter' ? 'Twitter' : 'Instagram'} copié !`);
+            });
         }
 
         // CSV Import
