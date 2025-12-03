@@ -6387,8 +6387,8 @@
                 orgList.innerHTML = orgsWithStats.map(org => {
                     const isActive = org.id === currentOrgId;
                     return `
-                        <div class="org-item ${isActive ? 'active' : ''}" onclick="switchOrganization('${org.id}')">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="org-item ${isActive ? 'active' : ''}" style="position: relative;">
+                            <div style="display: flex; align-items: center; gap: 1rem;" onclick="switchOrganization('${org.id}')">
                                 <div style="width: 44px; height: 44px; background: ${isActive ? 'linear-gradient(135deg, #667eea, #764ba2)' : (isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f3f4f6')}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: ${isActive ? '0 4px 12px rgba(103, 110, 234, 0.3)' : 'none'};">
                                     ${isActive ?
                                         '<i class="fas fa-check-circle" style="color: white; font-size: 1.125rem;"></i>' :
@@ -6410,6 +6410,17 @@
                                     ''
                                 }
                             </div>
+                            <button onclick="event.stopPropagation(); confirmDeleteOrganization('${org.id}', '${org.name}')"
+                                style="position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%);
+                                       width: 32px; height: 32px; border-radius: 0.5rem; border: none;
+                                       background: rgba(239, 68, 68, 0.1); color: #ef4444;
+                                       cursor: pointer; display: flex; align-items: center; justify-content: center;
+                                       transition: all 0.2s; opacity: 0.7;"
+                                onmouseover="this.style.opacity='1'; this.style.background='rgba(239, 68, 68, 0.2)'"
+                                onmouseout="this.style.opacity='0.7'; this.style.background='rgba(239, 68, 68, 0.1)'"
+                                title="Supprimer cette agence">
+                                <i class="fas fa-trash" style="font-size: 0.875rem;"></i>
+                            </button>
                         </div>
                     `;
                 }).join('');
@@ -6507,6 +6518,46 @@
         function closeCreateOrganizationModal() {
             document.getElementById('create-organization-modal').classList.remove('show');
             document.getElementById('create-organization-form').reset();
+        }
+
+        // Confirm and delete organization
+        async function confirmDeleteOrganization(orgId, orgName) {
+            const confirmed = confirm(`⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment supprimer l'agence "${orgName}" ?\n\nCette action supprimera DÉFINITIVEMENT :\n- Tous les VAs de cette agence\n- Toutes les créatrices\n- Tous les comptes (Twitter, Instagram, OnlyFans, Gmail)\n- Toutes les données associées\n\nCette action est IRRÉVERSIBLE.\n\nTapez OK pour confirmer la suppression.`);
+
+            if (!confirmed) return;
+
+            try {
+                showLoadingOverlay();
+
+                // Get current active org
+                const currentOrgId = await getActiveOrganizationId();
+
+                // Delete the organization
+                await deleteOrganization(orgId);
+
+                // If we deleted the active organization, switch to another one
+                if (orgId === currentOrgId) {
+                    const orgs = await getUserOwnedOrganizations();
+                    if (orgs.length > 0) {
+                        await switchOrganization(orgs[0].id);
+                    } else {
+                        // No organizations left, redirect to create one
+                        showError('Vous n\'avez plus d\'agences. Veuillez en créer une nouvelle.');
+                        showCreateOrganizationModal();
+                    }
+                } else {
+                    // Just reload the organization list
+                    await loadUserOrganizations();
+                }
+
+                hideLoadingOverlay();
+                showSuccess(`Agence "${orgName}" supprimée avec succès`);
+
+            } catch (error) {
+                console.error('❌ Error deleting organization:', error);
+                hideLoadingOverlay();
+                showError('Erreur lors de la suppression de l\'agence: ' + error.message);
+            }
         }
 
         // Handle create organization

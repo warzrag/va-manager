@@ -3547,6 +3547,44 @@ async function getOrganizationStats(organizationId) {
   }
 }
 
+/**
+ * Delete an organization and all its related data
+ * @param {string} organizationId - Organization ID to delete
+ * @returns {Promise<boolean>}
+ */
+async function deleteOrganization(organizationId) {
+  try {
+    const userId = await getUserId();
+
+    // Verify user is the owner
+    const { data: org, error: orgError } = await supabase
+      .from('organizations')
+      .select('owner_id')
+      .eq('id', organizationId)
+      .single();
+
+    if (orgError) throw orgError;
+
+    if (org.owner_id !== userId) {
+      throw new Error('Only the organization owner can delete it');
+    }
+
+    // Delete organization (cascade will handle related data)
+    const { error: deleteError } = await supabase
+      .from('organizations')
+      .delete()
+      .eq('id', organizationId);
+
+    if (deleteError) throw deleteError;
+
+    console.log('✅ Organization deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Error deleting organization:', error);
+    throw error;
+  }
+}
+
 // ============================================================================
 // EXPORTS
 // ============================================================================
