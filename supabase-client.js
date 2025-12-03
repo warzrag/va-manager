@@ -773,12 +773,23 @@ async function getTwitterAccounts(options = {}) {
       }));
     }
 
-    // Decrypt passwords
+    // Decrypt passwords or use plain text if available
     const decryptedData = await Promise.all(
-      (data || []).map(async account => ({
-        ...account,
-        password: await decryptPassword(account.encrypted_password)
-      }))
+      (data || []).map(async account => {
+        let password = '';
+        // Try plain text password first (backward compatibility)
+        if (account.password && account.password !== '') {
+          password = account.password;
+        }
+        // Then try encrypted password
+        else if (account.encrypted_password) {
+          password = await decryptPassword(account.encrypted_password);
+        }
+        return {
+          ...account,
+          password: password
+        };
+      })
     );
 
     console.log(`✅ Retrieved ${decryptedData.length} Twitter accounts`);
@@ -2583,10 +2594,21 @@ async function getTwitterAccountsWithCachedOrgId(organizationId, options = {}) {
     }));
   }
   const decryptedData = await Promise.all(
-    (data || []).map(async account => ({
-      ...account,
-      password: await decryptPassword(account.encrypted_password)
-    }))
+    (data || []).map(async account => {
+      let password = '';
+      // Try plain text password first (backward compatibility)
+      if (account.password && account.password !== '') {
+        password = account.password;
+      }
+      // Then try encrypted password
+      else if (account.encrypted_password) {
+        password = await decryptPassword(account.encrypted_password);
+      }
+      return {
+        ...account,
+        password: password
+      };
+    })
   );
   console.log(`✅ Retrieved ${decryptedData.length} Twitter accounts`);
   return decryptedData;
@@ -2608,10 +2630,21 @@ async function getInstagramAccountsWithCachedOrgId(organizationId, options = {})
     }));
   }
   const decryptedData = await Promise.all(
-    (data || []).map(async account => ({
-      ...account,
-      password: await decryptPassword(account.encrypted_password)
-    }))
+    (data || []).map(async account => {
+      let password = '';
+      // Try plain text password first (backward compatibility)
+      if (account.password && account.password !== '') {
+        password = account.password;
+      }
+      // Then try encrypted password
+      else if (account.encrypted_password) {
+        password = await decryptPassword(account.encrypted_password);
+      }
+      return {
+        ...account,
+        password: password
+      };
+    })
   );
   console.log(`✅ Retrieved ${decryptedData.length} Instagram accounts`);
   return decryptedData;
@@ -2633,10 +2666,21 @@ async function getGmailAccountsWithCachedOrgId(organizationId, options = {}) {
     }));
   }
   const decryptedData = await Promise.all(
-    (data || []).map(async account => ({
-      ...account,
-      password: await decryptPassword(account.encrypted_password || account.password)
-    }))
+    (data || []).map(async account => {
+      let password = '';
+      // Try plain text password first (backward compatibility)
+      if (account.password && account.password !== '') {
+        password = account.password;
+      }
+      // Then try encrypted password
+      else if (account.encrypted_password) {
+        password = await decryptPassword(account.encrypted_password);
+      }
+      return {
+        ...account,
+        password: password
+      };
+    })
   );
   console.log(`✅ Retrieved ${decryptedData.length} Gmail accounts`);
   return decryptedData;
