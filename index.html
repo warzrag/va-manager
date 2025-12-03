@@ -6819,13 +6819,18 @@
         function toggleOrganizationDropdown() {
             const dropdown = document.getElementById('org-dropdown');
             const icon = document.getElementById('org-dropdown-icon');
+            const header = document.querySelector('.header');
 
             if (dropdown.style.display === 'none') {
                 dropdown.style.display = 'block';
                 icon.style.transform = 'rotate(180deg)';
+                // Mettre le header au premier plan
+                if (header) header.style.zIndex = '9999';
             } else {
                 dropdown.style.display = 'none';
                 icon.style.transform = 'rotate(0deg)';
+                // Remettre le header en position normale
+                if (header) header.style.zIndex = '';
             }
         }
 
@@ -6840,8 +6845,10 @@
                 // Close dropdown if exists
                 const dropdown = document.getElementById('org-dropdown');
                 const icon = document.getElementById('org-dropdown-icon');
+                const header = document.querySelector('.header');
                 if (dropdown) dropdown.style.display = 'none';
                 if (icon) icon.style.transform = 'rotate(0deg)';
+                if (header) header.style.zIndex = '';
 
                 // Get org info before reloading
                 const org = await getOrganizationById(orgId);
