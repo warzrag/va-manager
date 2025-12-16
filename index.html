@@ -2085,6 +2085,17 @@
             }
         }
 
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(16, 185, 129, 0.8);
+            }
+        }
+
         .competition-title {
             font-size: 2.5rem;
             font-weight: 800;
@@ -9712,38 +9723,83 @@
                                 </span>
                             </div>
 
-                            <!-- Sparkline Followers - Design amélioré -->
+                            <!-- Sparkline Followers - Design ULTRA -->
                             ${account.followerStats && account.followerStats.length > 0 ? `
-                            <div style="margin-top: 0.75rem; padding: 1rem; background: ${isDarkMode ? 'linear-gradient(135deg, rgba(29, 161, 242, 0.15) 0%, rgba(29, 161, 242, 0.05) 100%)' : 'linear-gradient(135deg, rgba(29, 161, 242, 0.08) 0%, rgba(29, 161, 242, 0.02) 100%)'}; border-radius: 0.75rem; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.25)' : 'rgba(29, 161, 242, 0.15)'};">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-users" style="color: white; font-size: 0.7rem;"></i>
+                            <div style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(29, 161, 242, 0.1)'};">
+
+                                <!-- Header avec Total Followers -->
+                                <div style="padding: 0.875rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};">
+                                    <div style="display: flex; align-items: center; gap: 0.625rem;">
+                                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #1da1f2 0%, #0a66c2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.4);">
+                                            <i class="fas fa-users" style="color: white; font-size: 0.8rem;"></i>
                                         </div>
-                                        <span style="font-size: 1.125rem; font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                            ${account.latestFollowers ? account.latestFollowers.toLocaleString() : '0'}
-                                        </span>
+                                        <div>
+                                            <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.5px; color: ${isDarkMode ? '#6b7280' : '#94a3b8'}; margin-bottom: 2px;">Followers</div>
+                                            <div style="font-size: 1.25rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
+                                                ${account.latestFollowers ? account.latestFollowers.toLocaleString() : '0'}
+                                            </div>
+                                        </div>
                                     </div>
-                                    ${account.todayGrowth !== null ? `
-                                        <span style="font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 9999px; background: ${account.todayGrowth >= 0 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%)' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%)'}; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'}; border: 1px solid ${account.todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};">
-                                            ${account.todayGrowth >= 0 ? '↑' : '↓'} ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
-                                        </span>
-                                    ` : ''}
                                 </div>
-                                <div style="height: 50px; width: 100%; overflow: hidden; border-radius: 0.5rem; background: ${isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)'}; padding: 4px;">
-                                    <canvas id="dash-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}" style="width: 100%; height: 100%; display: block;"></canvas>
+
+                                <!-- CROISSANCE AUJOURD'HUI - ULTRA DESIGN -->
+                                ${account.todayGrowth !== null && account.todayGrowth !== 0 ? `
+                                <div style="padding: 0.75rem 1rem; background: ${account.todayGrowth >= 0
+                                    ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)'
+                                    : 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)'};">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="width: 36px; height: 36px; background: ${account.todayGrowth >= 0
+                                                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px ${account.todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'}; animation: pulse-glow 2s ease-in-out infinite;">
+                                                <i class="fas fa-${account.todayGrowth >= 0 ? 'arrow-up' : 'arrow-down'}" style="color: white; font-size: 0.875rem;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.5px; color: ${isDarkMode ? '#9ca3af' : '#64748b'};">Aujourd'hui</div>
+                                                <div style="font-size: 1.5rem; font-weight: 900; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'}; line-height: 1;">
+                                                    ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 1.75rem; font-weight: 900; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'};">
+                                                ${account.todayGrowth >= 0 ? '🔥' : '📉'}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.625rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
-                                    <span>7 derniers jours</span>
-                                    <span>Aujourd'hui</span>
+                                ` : account.todayGrowth === 0 ? `
+                                <div style="padding: 0.5rem 1rem; background: ${isDarkMode ? 'rgba(107, 114, 128, 0.1)' : 'rgba(107, 114, 128, 0.05)'}; text-align: center;">
+                                    <span style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
+                                        <i class="fas fa-minus" style="margin-right: 0.25rem;"></i> Pas de changement aujourd'hui
+                                    </span>
+                                </div>
+                                ` : ''}
+
+                                <!-- Graphique Sparkline -->
+                                <div style="padding: 0.75rem 1rem;">
+                                    <div style="height: 55px; width: 100%; overflow: hidden; border-radius: 0.625rem; background: ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(29, 161, 242, 0.03)'}; padding: 6px;">
+                                        <canvas id="dash-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}" style="width: 100%; height: 100%; display: block;"></canvas>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-top: 0.375rem; font-size: 0.625rem; color: ${isDarkMode ? '#4b5563' : '#9ca3af'};">
+                                        <span>← 7 jours</span>
+                                        <span>maintenant →</span>
+                                    </div>
                                 </div>
                             </div>
                             ` : `
-                            <div style="margin-top: 0.75rem; padding: 1rem; background: ${isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(29, 161, 242, 0.03)'}; border-radius: 0.75rem; border: 2px dashed ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.15)'}; text-align: center;">
-                                <i class="fas fa-chart-line" style="font-size: 1.5rem; opacity: 0.3; color: #1da1f2; margin-bottom: 0.5rem; display: block;"></i>
+                            <div style="margin-top: 0.75rem; padding: 1.25rem; background: ${isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(29, 161, 242, 0.03)'}; border-radius: 1rem; border: 2px dashed ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.15)'}; text-align: center;">
+                                <div style="width: 48px; height: 48px; margin: 0 auto 0.75rem; background: ${isDarkMode ? 'rgba(29, 161, 242, 0.1)' : 'rgba(29, 161, 242, 0.05)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-chart-line" style="font-size: 1.25rem; color: #1da1f2; opacity: 0.5;"></i>
+                                </div>
                                 <span style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
                                     Pas encore de données
                                 </span>
+                                <div style="margin-top: 0.5rem;">
+                                    <button onclick="navigateToPage('followers-tracking')" style="font-size: 0.6875rem; padding: 0.375rem 0.75rem; background: #1da1f2; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                                        <i class="fas fa-plus" style="margin-right: 0.25rem;"></i> Ajouter
+                                    </button>
+                                </div>
                             </div>
                             `}
                         </div>
