@@ -559,14 +559,21 @@ async function createCreator(creatorData) {
     const userId = await getUserId();
     const organizationId = await getOrganizationId();
 
+    const insertData = {
+      user_id: userId,
+      organization_id: organizationId,
+      name: creatorData.name,
+      created_at: new Date().toISOString()
+    };
+
+    // Ajouter la photo si elle existe
+    if (creatorData.photo_url) {
+      insertData.photo_url = creatorData.photo_url;
+    }
+
     const { data, error } = await supabase
       .from('creators')
-      .insert([{
-        user_id: userId,
-        organization_id: organizationId,
-        name: creatorData.name,
-        created_at: new Date().toISOString()
-      }])
+      .insert([insertData])
       .select()
       .single();
 
@@ -2015,8 +2022,15 @@ async function getTwitterStats() {
 
     if (error) throw error;
 
-    console.log(`✅ Retrieved ${data.length} Twitter stats`);
-    return data || [];
+    // Normaliser les données (followers -> followers_count pour compatibilité)
+    const normalizedData = (data || []).map(stat => ({
+      ...stat,
+      followers_count: stat.followers_count || stat.followers,
+      followers: stat.followers || stat.followers_count
+    }));
+
+    console.log(`✅ Retrieved ${normalizedData.length} Twitter stats`);
+    return normalizedData;
   } catch (error) {
     console.error('❌ Error getting Twitter stats:', error);
     throw error;
@@ -2032,16 +2046,26 @@ async function getTwitterStatsByUsername(username) {
   try {
     const organizationId = await getOrganizationId();
 
+    // Essayer avec et sans @
+    const cleanUsername = username.replace('@', '');
+
     const { data, error } = await supabase
       .from('twitter_stats')
       .select('*')
       .eq('organization_id', organizationId)
-      .eq('username', username)
+      .or(`username.eq.${cleanUsername},username.eq.@${cleanUsername}`)
       .order('date', { ascending: false });
 
     if (error) throw error;
 
-    return data || [];
+    // Normaliser les données (followers -> followers_count pour compatibilité)
+    const normalizedData = (data || []).map(stat => ({
+      ...stat,
+      followers_count: stat.followers_count || stat.followers,
+      followers: stat.followers || stat.followers_count
+    }));
+
+    return normalizedData;
   } catch (error) {
     console.error('❌ Error getting Twitter stats by username:', error);
     throw error;
@@ -2085,24 +2109,23 @@ async function createTwitterStat(statsData) {
     const userId = await getUserId();
     const organizationId = await getOrganizationId();
 
+    const insertData = {
+      user_id: userId,
+      organization_id: organizationId,
+      username: statsData.username,
+      date: statsData.date,
+      followers: statsData.followers_count || statsData.followers
+    };
+
     const { data, error } = await supabase
       .from('twitter_stats')
-      .insert([{
-        user_id: userId,
-        organization_id: organizationId,
-        username: statsData.username,
-        date: statsData.date,
-        followers_count: statsData.followers_count,
-        va_id: statsData.va_id || null,
-        creator_id: statsData.creator_id || null,
-        created_at: new Date().toISOString()
-      }])
+      .insert([insertData])
       .select()
       .single();
 
     if (error) throw error;
 
-    console.log('✅ Twitter stat created:', data.username, data.followers_count);
+    console.log('✅ Twitter stat created:', data.username, data.followers);
     return data;
   } catch (error) {
     console.error('❌ Error creating Twitter stat:', error);
@@ -2120,12 +2143,14 @@ async function updateTwitterStat(statId, updates) {
   try {
     const organizationId = await getOrganizationId();
 
+    // Ne mettre à jour que les champs valides
+    const updateData = {};
+    if (updates.followers !== undefined) updateData.followers = updates.followers;
+    if (updates.followers_count !== undefined) updateData.followers = updates.followers_count;
+
     const { data, error } = await supabase
       .from('twitter_stats')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', statId)
       .eq('organization_id', organizationId)
       .select()
@@ -3063,6 +3088,12 @@ async function getUserOrganization() {
  * @returns {Promise<string>}
  */
 async function getOrganizationId() {
+  // Lire directement depuis localStorage (plus rapide, pas de requête)
+  const storedOrgId = localStorage.getItem('active_organization_id');
+  if (storedOrgId) {
+    return storedOrgId;
+  }
+  // Fallback sur l'organisation par défaut
   const org = await getUserOrganization();
   return org?.id;
 }
@@ -3360,23 +3391,46 @@ async function updateOrganization(updates) {
 // ============================================================================
 
 /**
- * Get all organizations where user is owner
+ * Get all organizations where user is owner (via owner_id OR organization_members with role owner)
  * @returns {Promise<Array>}
  */
 async function getUserOwnedOrganizations() {
   try {
     const userId = await getUserId();
 
-    const { data, error } = await supabase
+    // 1. Get organizations where user is direct owner
+    const { data: ownedOrgs, error: ownedError } = await supabase
       .from('organizations')
       .select('*')
-      .eq('owner_id', userId)
-      .order('name', { ascending: true });
+      .eq('owner_id', userId);
 
-    if (error) throw error;
+    if (ownedError) throw ownedError;
 
-    console.log(`✅ Retrieved ${(data || []).length} owned organizations`);
-    return data || [];
+    // 2. Get organizations where user is owner via organization_members
+    const { data: memberOrgs, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id, organizations(*)')
+      .eq('user_id', userId)
+      .eq('role', 'owner');
+
+    if (memberError) throw memberError;
+
+    // Combine and deduplicate
+    const allOrgs = [...(ownedOrgs || [])];
+    const existingIds = new Set(allOrgs.map(o => o.id));
+
+    (memberOrgs || []).forEach(m => {
+      if (m.organizations && !existingIds.has(m.organizations.id)) {
+        allOrgs.push(m.organizations);
+        existingIds.add(m.organizations.id);
+      }
+    });
+
+    // Sort by name
+    allOrgs.sort((a, b) => a.name.localeCompare(b.name));
+
+    console.log(`✅ Retrieved ${allOrgs.length} owned organizations`);
+    return allOrgs;
   } catch (error) {
     console.error('❌ Error getting owned organizations:', error);
     throw error;
@@ -3446,13 +3500,14 @@ async function createOrganization(name) {
 }
 
 /**
- * Check if user is multi-agency admin (owns multiple organizations)
+ * Check if user can use organization switcher (only founder florent.media2@gmail.com)
  * @returns {Promise<boolean>}
  */
 async function isMultiAgencyAdmin() {
   try {
-    const orgs = await getUserOwnedOrganizations();
-    return orgs.length > 1;
+    const { data: { user } } = await supabase.auth.getUser();
+    // Seul le fondateur peut voir le switcher d'agence
+    return user?.email === 'florent.media2@gmail.com';
   } catch (error) {
     console.error('❌ Error checking multi-agency status:', error);
     return false;
