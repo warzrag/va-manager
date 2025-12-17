@@ -9723,67 +9723,45 @@
                                 </span>
                             </div>
 
-                            <!-- Sparkline Followers - Design ULTRA -->
+                            <!-- Sparkline Followers - Courbe avec +X followers -->
                             ${account.followerStats && account.followerStats.length > 0 ? `
-                            <div style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(29, 161, 242, 0.1)'};">
+                            <div style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(180deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'};">
 
-                                <!-- Header avec Total Followers -->
-                                <div style="padding: 0.875rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};">
-                                    <div style="display: flex; align-items: center; gap: 0.625rem;">
-                                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #1da1f2 0%, #0a66c2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.4);">
-                                            <i class="fas fa-users" style="color: white; font-size: 0.8rem;"></i>
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.5px; color: ${isDarkMode ? '#6b7280' : '#94a3b8'}; margin-bottom: 2px;">Followers</div>
-                                            <div style="font-size: 1.25rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                                ${account.latestFollowers ? account.latestFollowers.toLocaleString() : '0'}
-                                            </div>
+                                <!-- Graphique avec overlay -->
+                                <div style="position: relative; padding: 1rem;">
+                                    <!-- Badge followers gagnés en overlay -->
+                                    ${account.todayGrowth !== null ? `
+                                    <div style="position: absolute; top: 0.75rem; right: 0.75rem; z-index: 10; padding: 0.5rem 0.875rem; background: ${account.todayGrowth >= 0
+                                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                        : account.todayGrowth < 0
+                                            ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                            : 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'}; border-radius: 2rem; box-shadow: 0 4px 15px ${account.todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.4)' : account.todayGrowth < 0 ? 'rgba(239, 68, 68, 0.4)' : 'rgba(107, 114, 128, 0.3)'};">
+                                        <div style="display: flex; align-items: center; gap: 0.375rem;">
+                                            <i class="fas fa-${account.todayGrowth > 0 ? 'arrow-trend-up' : account.todayGrowth < 0 ? 'arrow-trend-down' : 'minus'}" style="color: white; font-size: 0.75rem;"></i>
+                                            <span style="color: white; font-weight: 800; font-size: 0.875rem;">
+                                                ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth} followers
+                                            </span>
                                         </div>
                                     </div>
-                                </div>
+                                    ` : ''}
 
-                                <!-- CROISSANCE AUJOURD'HUI - ULTRA DESIGN -->
-                                ${account.todayGrowth !== null && account.todayGrowth !== 0 ? `
-                                <div style="padding: 0.75rem 1rem; background: ${account.todayGrowth >= 0
-                                    ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)'
-                                    : 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)'};">
-                                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <div style="width: 36px; height: 36px; background: ${account.todayGrowth >= 0
-                                                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px ${account.todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'}; animation: pulse-glow 2s ease-in-out infinite;">
-                                                <i class="fas fa-${account.todayGrowth >= 0 ? 'arrow-up' : 'arrow-down'}" style="color: white; font-size: 0.875rem;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.5px; color: ${isDarkMode ? '#9ca3af' : '#64748b'};">Aujourd'hui</div>
-                                                <div style="font-size: 1.5rem; font-weight: 900; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'}; line-height: 1;">
-                                                    ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div style="text-align: right;">
-                                            <div style="font-size: 1.75rem; font-weight: 900; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'};">
-                                                ${account.todayGrowth >= 0 ? '🔥' : '📉'}
-                                            </div>
-                                        </div>
+                                    <!-- Total followers -->
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                        <span style="font-size: 1.5rem; font-weight: 900; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
+                                            ${account.latestFollowers ? account.latestFollowers.toLocaleString() : '0'}
+                                        </span>
+                                        <span style="font-size: 0.6875rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'}; text-transform: uppercase; letter-spacing: 0.5px;">followers</span>
                                     </div>
-                                </div>
-                                ` : account.todayGrowth === 0 ? `
-                                <div style="padding: 0.5rem 1rem; background: ${isDarkMode ? 'rgba(107, 114, 128, 0.1)' : 'rgba(107, 114, 128, 0.05)'}; text-align: center;">
-                                    <span style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
-                                        <i class="fas fa-minus" style="margin-right: 0.25rem;"></i> Pas de changement aujourd'hui
-                                    </span>
-                                </div>
-                                ` : ''}
 
-                                <!-- Graphique Sparkline -->
-                                <div style="padding: 0.75rem 1rem;">
-                                    <div style="height: 55px; width: 100%; overflow: hidden; border-radius: 0.625rem; background: ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(29, 161, 242, 0.03)'}; padding: 6px;">
+                                    <!-- Canvas du graphique - Plus grand -->
+                                    <div style="height: 70px; width: 100%; border-radius: 0.75rem; background: ${isDarkMode ? 'rgba(29, 161, 242, 0.05)' : 'rgba(29, 161, 242, 0.03)'}; overflow: hidden; position: relative;">
                                         <canvas id="dash-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}" style="width: 100%; height: 100%; display: block;"></canvas>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; margin-top: 0.375rem; font-size: 0.625rem; color: ${isDarkMode ? '#4b5563' : '#9ca3af'};">
-                                        <span>← 7 jours</span>
-                                        <span>maintenant →</span>
+
+                                    <!-- Timeline -->
+                                    <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; padding: 0 0.25rem;">
+                                        <span style="font-size: 0.625rem; color: ${isDarkMode ? '#4b5563' : '#9ca3af'};">Il y a 7 jours</span>
+                                        <span style="font-size: 0.625rem; font-weight: 600; color: ${account.todayGrowth >= 0 ? '#10b981' : account.todayGrowth < 0 ? '#ef4444' : (isDarkMode ? '#6b7280' : '#9ca3af')};">Aujourd'hui ${account.todayGrowth > 0 ? '🔥' : account.todayGrowth < 0 ? '📉' : ''}</span>
                                     </div>
                                 </div>
                             </div>
@@ -13712,7 +13690,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // Objet pour stocker les instances de sparklines
         const twitterSparklines = {};
 
-        // Créer un sparkline pour un compte Twitter - Design amélioré
+        // Créer un sparkline pour un compte Twitter - Courbe visible
         function createTwitterSparkline(canvasId, stats, isDarkMode) {
             const canvas = document.getElementById(canvasId);
             if (!canvas || !stats || stats.length === 0) return null;
@@ -13739,20 +13717,20 @@ Tapez "SUPPRIMER" pour confirmer :`;
             const lastValue = dataPoints[dataPoints.length - 1] || 0;
             const trend = lastValue - firstValue;
 
-            // Couleurs selon la tendance
+            // Couleurs selon la tendance - Plus vives
             const trendColor = trend >= 0 ? '#10b981' : '#ef4444';
-            const trendColorLight = trend >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+            const trendColorBright = trend >= 0 ? '#34d399' : '#f87171';
 
-            // Créer un dégradé pour le fill
+            // Créer un dégradé pour le fill - Plus visible
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             if (trend >= 0) {
-                gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
-                gradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.15)');
-                gradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+                gradient.addColorStop(0, 'rgba(16, 185, 129, 0.6)');
+                gradient.addColorStop(0.4, 'rgba(16, 185, 129, 0.3)');
+                gradient.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
             } else {
-                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.4)');
-                gradient.addColorStop(0.5, 'rgba(239, 68, 68, 0.15)');
-                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.6)');
+                gradient.addColorStop(0.4, 'rgba(239, 68, 68, 0.3)');
+                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.05)');
             }
 
             twitterSparklines[canvasId] = new Chart(ctx, {
@@ -13763,17 +13741,17 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         data: dataPoints,
                         borderColor: trendColor,
                         backgroundColor: gradient,
-                        borderWidth: 2.5,
+                        borderWidth: 3,
                         fill: true,
                         tension: 0.4,
-                        pointRadius: dataPoints.length <= 7 ? 3 : 0,
-                        pointBackgroundColor: trendColor,
-                        pointBorderColor: isDarkMode ? '#1a1d23' : 'white',
+                        pointRadius: 4,
+                        pointBackgroundColor: trendColorBright,
+                        pointBorderColor: isDarkMode ? '#0f1115' : 'white',
                         pointBorderWidth: 2,
-                        pointHoverRadius: 5,
-                        pointHoverBackgroundColor: trendColor,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: trendColorBright,
                         pointHoverBorderColor: 'white',
-                        pointHoverBorderWidth: 2
+                        pointHoverBorderWidth: 3
                     }]
                 },
                 options: {
@@ -13781,10 +13759,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     maintainAspectRatio: false,
                     layout: {
                         padding: {
-                            top: 5,
-                            bottom: 5,
-                            left: 2,
-                            right: 2
+                            top: 8,
+                            bottom: 8,
+                            left: 4,
+                            right: 4
                         }
                     },
                     plugins: {
@@ -13795,15 +13773,16 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             intersect: false,
                             backgroundColor: isDarkMode ? '#1f2937' : 'white',
                             titleColor: isDarkMode ? '#e2e8f0' : '#1f2937',
-                            bodyColor: isDarkMode ? '#94a3b8' : '#64748b',
+                            bodyColor: trendColor,
                             borderColor: trendColor,
                             borderWidth: 2,
-                            padding: 10,
-                            cornerRadius: 8,
+                            padding: 12,
+                            cornerRadius: 10,
                             displayColors: false,
-                            titleFont: { weight: 'bold', size: 11 },
-                            bodyFont: { size: 12 },
+                            titleFont: { weight: 'bold', size: 12 },
+                            bodyFont: { weight: 'bold', size: 14 },
                             callbacks: {
+                                title: (context) => context[0].label,
                                 label: (context) => `${context.raw.toLocaleString()} followers`
                             }
                         }
@@ -13820,7 +13799,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         intersect: false
                     },
                     animation: {
-                        duration: 500,
+                        duration: 800,
                         easing: 'easeOutQuart'
                     }
                 }
