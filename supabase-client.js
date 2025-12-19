@@ -154,6 +154,11 @@ async function decryptPassword(encryptedPassword) {
   try {
     if (!encryptedPassword) return '';
 
+    // Si ce n'est pas du base64 valide (ancien format), retourner tel quel
+    if (typeof encryptedPassword !== 'string' || encryptedPassword.length < 20) {
+      return encryptedPassword || '';
+    }
+
     const key = await getEncryptionKey();
 
     // Decode from base64
@@ -173,9 +178,9 @@ async function decryptPassword(encryptedPassword) {
 
     return new TextDecoder().decode(decryptedData);
   } catch (error) {
-    console.error('❌ Decryption error:', error);
-    // Return empty string if decryption fails (backward compatibility)
-    return '';
+    // ⚠️ Si déchiffrement échoue, retourner le mot de passe tel quel (backward compat)
+    console.warn('⚠️ Decryption failed for password, using plaintext fallback:', error.message);
+    return encryptedPassword || '';
   }
 }
 
@@ -3903,10 +3908,148 @@ if (typeof module !== 'undefined' && module.exports) {
     getCompleteCreatorData,
     getAllUserData,
     bulkInsertData,
-    checkDatabaseHealth
+    checkDatabaseHealth,
+
+    // Backup functions
+    createAutomaticBackup,
+    downloadBackup,
+    getBackupHistory,
+    deleteOldBackups
   };
 
   // Export to both window.SupabaseClient AND window directly
   window.SupabaseClient = SupabaseClientAPI;
   Object.assign(window, SupabaseClientAPI);
+}
+
+// ============================================================================
+// BACKUP SYSTEM - Automatic Data Protection
+// ============================================================================
+
+/**
+ * Créer un backup automatique de tous les données
+ * @returns {Promise<Object>} - Backup metadata
+ */
+async function createAutomaticBackup() {
+  try {
+    const organizationId = currentOrganization?.id || localStorage.getItem('currentOrganizationId');
+    if (!organizationId) {
+      console.warn('⚠️ No organization ID for backup');
+      return null;
+    }
+
+    console.log('🔄 Création du backup automatique...');
+
+    // Récupérer toutes les données
+    const [vas, creators, twitterAccounts, instagramAccounts, gmailAccounts] = await Promise.all([
+      supabase.from('vas').select('*').eq('organization_id', organizationId),
+      supabase.from('creators').select('*').eq('organization_id', organizationId),
+      supabase.from('twitter_accounts').select('*').eq('organization_id', organizationId),
+      supabase.from('instagram_accounts').select('*').eq('organization_id', organizationId),
+      supabase.from('gmail_accounts').select('*').eq('organization_id', organizationId)
+    ]);
+
+    const backup = {
+      timestamp: new Date().toISOString(),
+      organizationId: organizationId,
+      version: '1.0',
+      data: {
+        vas: vas.data || [],
+        creators: creators.data || [],
+        twitter_accounts: twitterAccounts.data || [],
+        instagram_accounts: instagramAccounts.data || [],
+        gmail_accounts: gmailAccounts.data || []
+      },
+      counts: {
+        vas: (vas.data || []).length,
+        creators: (creators.data || []).length,
+        twitter_accounts: (twitterAccounts.data || []).length,
+        instagram_accounts: (instagramAccounts.data || []).length,
+        gmail_accounts: (gmailAccounts.data || []).length
+      }
+    };
+
+    // Sauvegarder dans localStorage avec timestamp
+    const backups = JSON.parse(localStorage.getItem('va_manager_backups') || '[]');
+    backups.push({
+      timestamp: backup.timestamp,
+      size: new Blob([JSON.stringify(backup)]).size,
+      counts: backup.counts
+    });
+
+    // Garder seulement les 10 derniers backups
+    const recentBackups = backups.slice(-10);
+    localStorage.setItem('va_manager_backups', JSON.stringify(recentBackups));
+
+    // Sauvegarder le backup complet
+    localStorage.setItem(`va_manager_backup_${backup.timestamp}`, JSON.stringify(backup));
+
+    console.log('✅ Backup créé:', backup.timestamp);
+    console.log('📊 Données sauvegardées:', backup.counts);
+
+    return backup;
+  } catch (error) {
+    console.error('❌ Backup failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Télécharger un backup en JSON
+ */
+function downloadBackup() {
+  try {
+    const backups = JSON.parse(localStorage.getItem('va_manager_backups') || '[]');
+    if (backups.length === 0) {
+      alert('❌ Aucun backup disponible');
+      return;
+    }
+
+    const latestBackup = backups[backups.length - 1];
+    const backupData = JSON.parse(localStorage.getItem(`va_manager_backup_${latestBackup.timestamp}`) || '{}');
+
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2)));
+    element.setAttribute('download', `va-manager-backup-${latestBackup.timestamp.split('T')[0]}.json`);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+
+    console.log('✅ Backup téléchargé');
+  } catch (error) {
+    console.error('❌ Download backup failed:', error);
+    alert('❌ Erreur lors du téléchargement');
+  }
+}
+
+/**
+ * Obtenir l'historique des backups
+ */
+function getBackupHistory() {
+  const backups = JSON.parse(localStorage.getItem('va_manager_backups') || '[]');
+  return backups.map((b, i) => ({
+    index: i + 1,
+    timestamp: b.timestamp,
+    date: new Date(b.timestamp).toLocaleString('fr-FR'),
+    size: `${(b.size / 1024).toFixed(2)} KB`,
+    counts: b.counts
+  }));
+}
+
+/**
+ * Supprimer les anciens backups (garder les 10 derniers)
+ */
+function deleteOldBackups() {
+  const backups = JSON.parse(localStorage.getItem('va_manager_backups') || '[]');
+  const toDelete = backups.slice(0, -10);
+
+  toDelete.forEach(backup => {
+    localStorage.removeItem(`va_manager_backup_${backup.timestamp}`);
+  });
+
+  const recentBackups = backups.slice(-10);
+  localStorage.setItem('va_manager_backups', JSON.stringify(recentBackups));
+
+  console.log(`🗑️ ${toDelete.length} anciens backups supprimés`);
 }

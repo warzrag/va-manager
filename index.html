@@ -5476,6 +5476,13 @@
 
                     // Initialize UI
                     initializeUI();
+
+                    // Create automatic backup (runs in background)
+                    createAutomaticBackup().then(backup => {
+                        if (backup) {
+                            console.log('✅ Automatic backup created');
+                        }
+                    }).catch(e => console.warn('⚠️ Backup creation failed:', e));
                 } else {
                     showLoginForm();
                 }
