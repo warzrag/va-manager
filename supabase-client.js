@@ -18,8 +18,10 @@
 // Import Supabase client (ensure this is loaded from CDN or npm)
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-// Initialize Supabase client
-let supabase;
+// Initialize Supabase client - Prevent double declaration
+if (typeof supabase === 'undefined') {
+    var supabase;
+}
 
 function initSupabase() {
   try {
