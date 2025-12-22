@@ -8008,7 +8008,10 @@
             }
 
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            const navBtn = document.querySelector(`[data-page="${pageName}"]`);
+            if (navBtn) {
+                navBtn.classList.add('active');
+            }
 
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
