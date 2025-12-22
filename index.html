@@ -6304,6 +6304,35 @@
                     // Load organizations
                     await loadUserOrganizations();
 
+                    // Get current active organization
+                    let activeOrgId = await getActiveOrganizationId();
+
+                    // If no active org, auto-select "Tom et Flo" as default
+                    if (!activeOrgId) {
+                        const orgs = await getUserOwnedOrganizations();
+
+                        // Try exact match first (case-insensitive)
+                        let tomEtFlo = orgs.find(org =>
+                            org.name &&
+                            org.name.toLowerCase().trim() === 'tom et flo'
+                        );
+
+                        // If not found, try partial match with both names
+                        if (!tomEtFlo) {
+                            tomEtFlo = orgs.find(org =>
+                                org.name &&
+                                org.name.toLowerCase().includes('tom') &&
+                                org.name.toLowerCase().includes('flo')
+                            );
+                        }
+
+                        if (tomEtFlo) {
+                            await setActiveOrganizationId(tomEtFlo.id);
+                            console.log('✅ Auto-selected "Tom et Flo" as default organization');
+                            activeOrgId = tomEtFlo.id;
+                        }
+                    }
+
                     // Set active organization
                     await updateActiveOrganization();
                 }
