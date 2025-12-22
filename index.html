@@ -13951,7 +13951,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
         let currentTwitterDetailStats = [];
 
         // Ouvrir la page détaillée d'un compte Twitter
-        async function openTwitterAccountDetail(username) {
+        window.openTwitterAccountDetail = async function(username) {
             const cleanUsername = username.replace('@', '');
             console.log('📊 Opening Twitter account detail for:', cleanUsername);
 
