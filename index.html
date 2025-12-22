@@ -4704,7 +4704,7 @@
                         </div>
                         <div style="display: flex; gap: 0.75rem; align-items: center;">
                             <input type="date" id="followers-tracking-date" style="padding: 0.75rem 1rem; border-radius: 0.75rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; font-size: 1rem; font-weight: 600;">
-                            <button onclick="saveAllFollowersStats()" style="background: white; color: #1da1f2; border: none; padding: 0.875rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <button onclick="saveAllFollowersStats(event)" style="background: white; color: #1da1f2; border: none; padding: 0.875rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                                 <i class="fas fa-save"></i> Enregistrer tout
                             </button>
                         </div>
@@ -4731,7 +4731,7 @@
                 </div>
 
                 <!-- Bouton Enregistrer tout -->
-                <button onclick="saveAllFollowersStats()"
+                <button onclick="saveAllFollowersStats(event)"
                         id="save-followers-btn"
                         style="width: 100%; margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: all 0.3s;"
                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'"
@@ -11275,7 +11275,11 @@
         }
 
         // Save all followers stats at once
-        async function saveAllFollowersStats() {
+        async function saveAllFollowersStats(event) {
+            // Get the button that was clicked
+            const button = event?.target?.closest('button') || document.getElementById('save-followers-btn');
+            const originalText = button ? button.innerHTML : null;
+
             const dateInput = document.getElementById('followers-tracking-date');
             const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
 
@@ -11302,7 +11306,8 @@
             }
 
             try {
-                showSuccess('Enregistrement en cours...');
+                // Set loading state
+                setButtonLoading(button, true);
 
                 let savedCount = 0;
                 for (const entry of entries) {
@@ -11335,6 +11340,9 @@
             } catch (error) {
                 console.error('❌ Error saving followers stats:', error);
                 showError('Erreur lors de l\'enregistrement: ' + error.message);
+            } finally {
+                // Restore button state
+                setButtonLoading(button, false, originalText);
             }
         }
 
@@ -15505,6 +15513,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
         async function addVA(e) {
             e.preventDefault();
 
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.innerHTML : null;
+
             const name = document.getElementById('va-name').value.trim();
 
             // Check if VA with same name already exists
@@ -15514,6 +15526,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
 
             try {
+                // Set loading state
+                setButtonLoading(submitBtn, true);
+
                 // Create VA in Supabase (name only)
                 const newVA = await createVA({ name });
 
@@ -15526,12 +15541,14 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     created: newVA.created_at
                 });
 
-                e.target.reset();
+                form.reset();
                 showSuccess(`VA "${name}" ajouté avec succès!`);
                 updateDisplay();
             } catch (error) {
                 console.error('❌ Error adding VA:', error);
                 showError(error.message || 'Erreur lors de l\'ajout du VA');
+            } finally {
+                setButtonLoading(submitBtn, false, originalText);
             }
         }
 
@@ -15711,6 +15728,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
         async function addCreator(e) {
             e.preventDefault();
 
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.innerHTML : null;
+
             const creatorName = document.getElementById('creator-name').value.trim();
             const photoInput = document.getElementById('creator-photo');
             let photoUrl = null;
@@ -15722,6 +15743,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
 
             try {
+                // Set loading state
+                setButtonLoading(submitBtn, true);
+
                 // Si une photo est sélectionnée, la convertir en base64
                 if (photoInput.files && photoInput.files[0]) {
                     photoUrl = await fileToBase64(photoInput.files[0]);
@@ -15743,7 +15767,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     created: newCreator.created_at
                 });
 
-                e.target.reset();
+                form.reset();
                 // Reset photo preview
                 document.getElementById('creator-photo-preview').innerHTML = '<i class="fas fa-camera" style="font-size: 2rem; color: #94a3b8;"></i>';
 
@@ -15753,6 +15777,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
             } catch (error) {
                 console.error('❌ Error adding creator:', error);
                 showError('Erreur lors de l\'ajout de la créatrice');
+            } finally {
+                setButtonLoading(submitBtn, false, originalText);
             }
         }
         
@@ -19810,12 +19836,50 @@ Tapez "SUPPRIMER" pour confirmer :`;
             `).join('');
         }
 
+        // ==========================================
+        // LOADING BUTTON UTILITIES
+        // ==========================================
+
+        // Set button to loading state
+        function setButtonLoading(button, isLoading, originalText = null) {
+            if (!button) return;
+
+            if (isLoading) {
+                // Save original content
+                button.dataset.originalText = button.innerHTML;
+                button.disabled = true;
+                button.style.opacity = '0.7';
+                button.style.cursor = 'wait';
+                button.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i>Chargement...';
+            } else {
+                // Restore original content
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.style.cursor = 'pointer';
+                button.innerHTML = originalText || button.dataset.originalText || 'Terminé';
+            }
+        }
+
+        // Wrapper for async button actions with loading state
+        async function withLoading(button, asyncAction) {
+            const originalText = button ? button.innerHTML : null;
+            try {
+                setButtonLoading(button, true);
+                await asyncAction();
+            } catch (error) {
+                console.error('Action failed:', error);
+                showError(error.message || 'Une erreur est survenue');
+            } finally {
+                setButtonLoading(button, false, originalText);
+            }
+        }
+
         // Show success message
         function showSuccess(message) {
             const successDiv = document.getElementById('success-message');
             document.getElementById('success-text').textContent = message;
             successDiv.classList.add('show');
-            
+
             setTimeout(() => {
                 successDiv.classList.remove('show');
             }, 3000);
