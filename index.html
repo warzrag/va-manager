@@ -4782,6 +4782,75 @@
             </div>
         </div>
 
+        <!-- Twitter Account Detail Page -->
+        <div class="page" id="twitter-account-detail-page" style="display: none;">
+            <!-- Hero Header - will be updated by JS -->
+            <div id="twitter-detail-header" style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); border-radius: 1.5rem; padding: 2.5rem 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%;"></div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <button onclick="navigateToPage('dashboard')" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div style="flex: 1;">
+                            <h2 id="twitter-detail-username" style="font-size: 2rem; margin: 0; color: white; font-weight: 800;">@compte</h2>
+                            <p id="twitter-detail-creator" style="font-size: 1rem; margin: 0.25rem 0 0 0; color: rgba(255,255,255,0.9);">Créatrice</p>
+                        </div>
+                        <a id="twitter-detail-link" href="#" target="_blank" style="background: white; color: #1da1f2; border: none; padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.875rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <i class="fab fa-twitter"></i> Voir sur Twitter
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div id="twitter-detail-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <!-- Will be populated by JS -->
+            </div>
+
+            <!-- Main Chart -->
+            <div style="background: var(--card-bg, white); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 0.75rem; color: var(--text-color);">
+                        <i class="fas fa-chart-area" style="color: #1da1f2;"></i> Évolution des Followers
+                    </h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="updateTwitterDetailChart(7)" class="twitter-detail-period-btn active" data-period="7" style="padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: none; background: #1da1f2; color: white; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">7 jours</button>
+                        <button onclick="updateTwitterDetailChart(14)" class="twitter-detail-period-btn" data-period="14" style="padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">14 jours</button>
+                        <button onclick="updateTwitterDetailChart(30)" class="twitter-detail-period-btn" data-period="30" style="padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">30 jours</button>
+                        <button onclick="updateTwitterDetailChart(90)" class="twitter-detail-period-btn" data-period="90" style="padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">90 jours</button>
+                        <button onclick="updateTwitterDetailChart(0)" class="twitter-detail-period-btn" data-period="0" style="padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Tout</button>
+                    </div>
+                </div>
+                <div style="height: 400px; position: relative;">
+                    <canvas id="twitter-detail-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Growth Stats & History -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Daily Growth -->
+                <div style="background: var(--card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
+                        <i class="fas fa-calendar-day" style="color: #10b981;"></i> Croissance journalière
+                    </h3>
+                    <div id="twitter-detail-daily-growth" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 350px; overflow-y: auto;">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div style="background: var(--card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
+                        <i class="fas fa-chart-pie" style="color: #8b5cf6;"></i> Résumé
+                    </h3>
+                    <div id="twitter-detail-summary" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Team Management Page -->
         <div class="page" id="team-management-page" style="display: none;">
             <!-- Modern Hero Header -->
@@ -9768,9 +9837,12 @@
                                 </span>
                             </div>
 
-                            <!-- Sparkline Followers - Courbe avec +X followers -->
+                            <!-- Sparkline Followers - Courbe avec +X followers - CLIQUABLE -->
                             ${account.followerStats && account.followerStats.length > 0 ? `
-                            <div style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(180deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'};">
+                            <div onclick="openTwitterAccountDetail('${account.username}')" style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(180deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}; cursor: pointer; transition: all 0.2s ease;"
+                                onmouseover="this.style.borderColor='#1da1f2'; this.style.boxShadow='0 8px 30px rgba(29, 161, 242, 0.25)'"
+                                onmouseout="this.style.borderColor='${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}'; this.style.boxShadow='0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}'"
+                            >
 
                                 <!-- Graphique avec overlay -->
                                 <div style="position: relative; padding: 1rem;">
@@ -13851,6 +13923,420 @@ Tapez "SUPPRIMER" pour confirmer :`;
             });
 
             return twitterSparklines[canvasId];
+        }
+
+        // ==========================================
+        // TWITTER ACCOUNT DETAIL PAGE
+        // ==========================================
+        let twitterDetailChart = null;
+        let currentTwitterDetailAccount = null;
+        let currentTwitterDetailStats = [];
+
+        // Ouvrir la page détaillée d'un compte Twitter
+        async function openTwitterAccountDetail(username) {
+            const cleanUsername = username.replace('@', '');
+            console.log('📊 Opening Twitter account detail for:', cleanUsername);
+
+            // Naviguer vers la page
+            navigateToPage('twitter-account-detail');
+
+            // Charger les données du compte
+            await loadTwitterAccountDetail(cleanUsername);
+        }
+
+        // Charger les données détaillées
+        async function loadTwitterAccountDetail(username) {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            try {
+                // Trouver le compte
+                const allTwitterAccounts = data.twitterAccounts || [];
+                const account = allTwitterAccounts.find(a =>
+                    a.username.replace('@', '').toLowerCase() === username.toLowerCase()
+                );
+
+                if (!account) {
+                    showError('Compte Twitter non trouvé');
+                    return;
+                }
+
+                currentTwitterDetailAccount = account;
+
+                // Charger les stats
+                let stats = [];
+                if (typeof getTwitterStatsByUsername === 'function') {
+                    stats = await getTwitterStatsByUsername(username);
+                }
+                currentTwitterDetailStats = stats || [];
+
+                // Mettre à jour le header
+                document.getElementById('twitter-detail-username').textContent = '@' + username;
+                document.getElementById('twitter-detail-link').href = 'https://x.com/' + username;
+
+                // Trouver la créatrice
+                const creator = data.creators?.find(c => c.id === account.creator_id);
+                document.getElementById('twitter-detail-creator').textContent = creator ? creator.name : 'Non assigné';
+
+                // Mettre à jour les stats cards
+                updateTwitterDetailStats(stats, isDarkMode);
+
+                // Créer le graphique
+                updateTwitterDetailChart(30);
+
+                // Mettre à jour la croissance journalière
+                updateTwitterDetailDailyGrowth(stats, isDarkMode);
+
+                // Mettre à jour le résumé
+                updateTwitterDetailSummary(stats, isDarkMode);
+
+            } catch (error) {
+                console.error('Error loading Twitter account detail:', error);
+                showError('Erreur lors du chargement des données');
+            }
+        }
+
+        // Mettre à jour les stats cards
+        function updateTwitterDetailStats(stats, isDarkMode) {
+            const container = document.getElementById('twitter-detail-stats');
+            if (!container) return;
+
+            const latestFollowers = stats.length > 0 ? stats[0].followers : 0;
+
+            // Calcul croissance aujourd'hui
+            let todayGrowth = 0;
+            if (stats.length >= 2) {
+                todayGrowth = stats[0].followers - stats[1].followers;
+            }
+
+            // Calcul croissance 7 jours
+            let weekGrowth = 0;
+            const weekStats = stats.slice(0, 7);
+            if (weekStats.length >= 2) {
+                weekGrowth = weekStats[0].followers - weekStats[weekStats.length - 1].followers;
+            }
+
+            // Calcul croissance 30 jours
+            let monthGrowth = 0;
+            const monthStats = stats.slice(0, 30);
+            if (monthStats.length >= 2) {
+                monthGrowth = monthStats[0].followers - monthStats[monthStats.length - 1].followers;
+            }
+
+            // Calcul moyenne journalière
+            let avgDaily = 0;
+            if (stats.length >= 2) {
+                const totalDays = Math.min(30, stats.length - 1);
+                avgDaily = totalDays > 0 ? Math.round((stats[0].followers - stats[Math.min(30, stats.length - 1)].followers) / totalDays) : 0;
+            }
+
+            container.innerHTML = `
+                <div style="background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'}; border-radius: 1rem; padding: 1.5rem; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(29, 161, 242, 0.08)'};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #1da1f2, #0d8bd9); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users" style="color: white; font-size: 1rem;"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.5px;">Total Followers</span>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${latestFollowers.toLocaleString()}</div>
+                </div>
+
+                <div style="background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'}; border-radius: 1rem; padding: 1.5rem; border: 1px solid ${todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)'};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="width: 40px; height: 40px; background: ${todayGrowth >= 0 ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-${todayGrowth >= 0 ? 'arrow-up' : 'arrow-down'}" style="color: white; font-size: 1rem;"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.5px;">Aujourd'hui</span>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800; color: ${todayGrowth >= 0 ? '#10b981' : '#ef4444'};">${todayGrowth >= 0 ? '+' : ''}${todayGrowth.toLocaleString()}</div>
+                </div>
+
+                <div style="background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'}; border-radius: 1rem; padding: 1.5rem; border: 1px solid ${weekGrowth >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)'};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="width: 40px; height: 40px; background: ${weekGrowth >= 0 ? 'linear-gradient(135deg, #8b5cf6, #7c3aed)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-week" style="color: white; font-size: 1rem;"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.5px;">7 jours</span>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800; color: ${weekGrowth >= 0 ? '#8b5cf6' : '#ef4444'};">${weekGrowth >= 0 ? '+' : ''}${weekGrowth.toLocaleString()}</div>
+                </div>
+
+                <div style="background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'}; border-radius: 1rem; padding: 1.5rem; border: 1px solid ${monthGrowth >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)'};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="width: 40px; height: 40px; background: ${monthGrowth >= 0 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-alt" style="color: white; font-size: 1rem;"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.5px;">30 jours</span>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800; color: ${monthGrowth >= 0 ? '#f59e0b' : '#ef4444'};">${monthGrowth >= 0 ? '+' : ''}${monthGrowth.toLocaleString()}</div>
+                </div>
+
+                <div style="background: ${isDarkMode ? 'linear-gradient(135deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'}; border-radius: 1rem; padding: 1.5rem; border: 1px solid ${isDarkMode ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)'}; box-shadow: 0 4px 15px ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)'};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-line" style="color: white; font-size: 1rem;"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.5px;">Moy/jour</span>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#a5b4fc' : '#6366f1'};">${avgDaily >= 0 ? '+' : ''}${avgDaily.toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        // Mettre à jour le graphique principal
+        function updateTwitterDetailChart(days) {
+            const canvas = document.getElementById('twitter-detail-chart');
+            if (!canvas) return;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            // Update button states
+            document.querySelectorAll('.twitter-detail-period-btn').forEach(btn => {
+                const period = parseInt(btn.dataset.period);
+                if (period === days) {
+                    btn.style.background = '#1da1f2';
+                    btn.style.color = 'white';
+                    btn.style.border = 'none';
+                    btn.classList.add('active');
+                } else {
+                    btn.style.background = isDarkMode ? '#1f2937' : 'white';
+                    btn.style.color = isDarkMode ? '#e2e8f0' : '#64748b';
+                    btn.style.border = '1px solid ' + (isDarkMode ? '#374151' : '#e5e7eb');
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Filtrer les stats par période
+            let filteredStats = [...currentTwitterDetailStats];
+            if (days > 0 && filteredStats.length > days) {
+                filteredStats = filteredStats.slice(0, days);
+            }
+
+            // Inverser pour l'ordre chronologique
+            filteredStats = filteredStats.reverse();
+
+            if (filteredStats.length === 0) {
+                if (twitterDetailChart) {
+                    twitterDetailChart.destroy();
+                    twitterDetailChart = null;
+                }
+                return;
+            }
+
+            const labels = filteredStats.map(s => {
+                const date = new Date(s.date);
+                return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+            });
+
+            const dataPoints = filteredStats.map(s => s.followers);
+
+            // Calcul tendance
+            const firstValue = dataPoints[0] || 0;
+            const lastValue = dataPoints[dataPoints.length - 1] || 0;
+            const trend = lastValue - firstValue;
+            const trendColor = trend >= 0 ? '#10b981' : '#ef4444';
+
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            if (trend >= 0) {
+                gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+                gradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.15)');
+                gradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+            } else {
+                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.4)');
+                gradient.addColorStop(0.5, 'rgba(239, 68, 68, 0.15)');
+                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+            }
+
+            if (twitterDetailChart) {
+                twitterDetailChart.destroy();
+            }
+
+            twitterDetailChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Followers',
+                        data: dataPoints,
+                        borderColor: trendColor,
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: days <= 14 ? 5 : (days <= 30 ? 3 : 0),
+                        pointBackgroundColor: trendColor,
+                        pointBorderColor: isDarkMode ? '#1f2937' : 'white',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: trendColor,
+                        pointHoverBorderColor: 'white',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: isDarkMode ? '#1f2937' : 'white',
+                            titleColor: isDarkMode ? '#e2e8f0' : '#1f2937',
+                            bodyColor: trendColor,
+                            borderColor: trendColor,
+                            borderWidth: 2,
+                            padding: 14,
+                            cornerRadius: 12,
+                            displayColors: false,
+                            titleFont: { weight: 'bold', size: 13 },
+                            bodyFont: { weight: 'bold', size: 16 },
+                            callbacks: {
+                                title: (context) => context[0].label,
+                                label: (context) => `${context.raw.toLocaleString()} followers`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: isDarkMode ? '#6b7280' : '#9ca3af',
+                                maxRotation: 45,
+                                font: { size: 11 }
+                            }
+                        },
+                        y: {
+                            display: true,
+                            grid: {
+                                color: isDarkMode ? 'rgba(107, 114, 128, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: isDarkMode ? '#6b7280' : '#9ca3af',
+                                font: { size: 11 },
+                                callback: value => value.toLocaleString()
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    animation: {
+                        duration: 600,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Mettre à jour la croissance journalière
+        function updateTwitterDetailDailyGrowth(stats, isDarkMode) {
+            const container = document.getElementById('twitter-detail-daily-growth');
+            if (!container || stats.length < 2) {
+                if (container) {
+                    container.innerHTML = `<div style="text-align: center; padding: 2rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">Pas assez de données</div>`;
+                }
+                return;
+            }
+
+            let html = '';
+            const recentStats = stats.slice(0, 14); // 14 derniers jours
+
+            for (let i = 0; i < recentStats.length - 1; i++) {
+                const current = recentStats[i];
+                const previous = recentStats[i + 1];
+                const growth = current.followers - previous.followers;
+                const date = new Date(current.date);
+                const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' });
+
+                html += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: ${isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'}; border-radius: 0.75rem; border-left: 3px solid ${growth >= 0 ? '#10b981' : '#ef4444'};">
+                        <div>
+                            <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; font-size: 0.875rem;">${dateStr}</div>
+                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">${current.followers.toLocaleString()} followers</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: ${growth >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border-radius: 0.5rem;">
+                            <i class="fas fa-${growth > 0 ? 'arrow-up' : growth < 0 ? 'arrow-down' : 'minus'}" style="color: ${growth >= 0 ? '#10b981' : '#ef4444'}; font-size: 0.75rem;"></i>
+                            <span style="font-weight: 700; color: ${growth >= 0 ? '#10b981' : '#ef4444'}; font-size: 0.875rem;">${growth >= 0 ? '+' : ''}${growth.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Mettre à jour le résumé
+        function updateTwitterDetailSummary(stats, isDarkMode) {
+            const container = document.getElementById('twitter-detail-summary');
+            if (!container) return;
+
+            const totalEntries = stats.length;
+            const firstEntry = stats.length > 0 ? stats[stats.length - 1] : null;
+            const lastEntry = stats.length > 0 ? stats[0] : null;
+
+            const totalGrowth = firstEntry && lastEntry ? lastEntry.followers - firstEntry.followers : 0;
+
+            // Calcul meilleur et pire jour
+            let bestDay = { growth: -Infinity, date: null };
+            let worstDay = { growth: Infinity, date: null };
+
+            for (let i = 0; i < stats.length - 1; i++) {
+                const growth = stats[i].followers - stats[i + 1].followers;
+                if (growth > bestDay.growth) {
+                    bestDay = { growth, date: stats[i].date };
+                }
+                if (growth < worstDay.growth) {
+                    worstDay = { growth, date: stats[i].date };
+                }
+            }
+
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+            };
+
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: ${isDarkMode ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'}; border-radius: 0.75rem;">
+                    <span style="color: ${isDarkMode ? '#a5b4fc' : '#6366f1'}; font-weight: 500;">Jours de données</span>
+                    <span style="font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${totalEntries}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: ${isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'}; border-radius: 0.75rem;">
+                    <span style="color: ${isDarkMode ? '#6ee7b7' : '#10b981'}; font-weight: 500;">Croissance totale</span>
+                    <span style="font-weight: 700; color: ${totalGrowth >= 0 ? '#10b981' : '#ef4444'};">${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toLocaleString()}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: ${isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'}; border-radius: 0.75rem;">
+                    <div>
+                        <div style="color: ${isDarkMode ? '#6ee7b7' : '#10b981'}; font-weight: 500;">Meilleur jour</div>
+                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">${formatDate(bestDay.date)}</div>
+                    </div>
+                    <span style="font-weight: 700; color: #10b981; font-size: 1.125rem;">+${bestDay.growth !== -Infinity ? bestDay.growth.toLocaleString() : '0'}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: ${isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)'}; border-radius: 0.75rem;">
+                    <div>
+                        <div style="color: ${isDarkMode ? '#fca5a5' : '#ef4444'}; font-weight: 500;">Pire jour</div>
+                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">${formatDate(worstDay.date)}</div>
+                    </div>
+                    <span style="font-weight: 700; color: #ef4444; font-size: 1.125rem;">${worstDay.growth !== Infinity ? worstDay.growth.toLocaleString() : '0'}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: ${isDarkMode ? 'rgba(29, 161, 242, 0.1)' : 'rgba(29, 161, 242, 0.05)'}; border-radius: 0.75rem;">
+                    <div>
+                        <div style="color: ${isDarkMode ? '#7dd3fc' : '#1da1f2'}; font-weight: 500;">Premier enregistrement</div>
+                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">${formatDate(firstEntry?.date)}</div>
+                    </div>
+                    <span style="font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${firstEntry ? firstEntry.followers.toLocaleString() : '0'}</span>
+                </div>
+            `;
         }
 
         // ==========================================
