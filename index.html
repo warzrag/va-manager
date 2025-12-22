@@ -9839,9 +9839,9 @@
 
                             <!-- Sparkline Followers - Courbe avec +X followers - CLIQUABLE -->
                             ${account.followerStats && account.followerStats.length > 0 ? `
-                            <div onclick="openTwitterAccountDetail('${account.username}')" style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(180deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}; cursor: pointer; transition: all 0.2s ease;"
-                                onmouseover="this.style.borderColor='#1da1f2'; this.style.boxShadow='0 8px 30px rgba(29, 161, 242, 0.25)'"
-                                onmouseout="this.style.borderColor='${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}'; this.style.boxShadow='0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}'"
+                            <div class="twitter-sparkline-clickable" data-username="${account.username.replace('@', '')}" style="margin-top: 0.75rem; border-radius: 1rem; overflow: hidden; background: ${isDarkMode ? 'linear-gradient(180deg, #1a1d23 0%, #0f1115 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'}; border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}; box-shadow: 0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}; cursor: pointer; transition: all 0.2s ease;"
+                                onmouseover="this.style.borderColor='#1da1f2'; this.style.boxShadow='0 8px 30px rgba(29, 161, 242, 0.25)'; this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.borderColor='${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.1)'}'; this.style.boxShadow='0 4px 20px ${isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(29, 161, 242, 0.08)'}'; this.style.transform='translateY(0)'"
                             >
 
                                 <!-- Graphique avec overlay -->
@@ -9919,6 +9919,19 @@
                             const canvasId = `dash-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}`;
                             createTwitterSparkline(canvasId, account.followerStats, isDarkMode);
                         }
+                    });
+
+                    // Ajouter les event listeners pour les sparklines cliquables
+                    document.querySelectorAll('.twitter-sparkline-clickable').forEach(el => {
+                        el.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const username = this.dataset.username;
+                            if (username) {
+                                console.log('📊 Clicked on sparkline for:', username);
+                                openTwitterAccountDetail(username);
+                            }
+                        });
                     });
                 }, 100);
 
