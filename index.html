@@ -6344,7 +6344,22 @@
         // Load user's organizations
         async function loadUserOrganizations() {
             try {
-                currentOrganizations = await getUserOwnedOrganizations();
+                let orgs = await getUserOwnedOrganizations();
+
+                // Sort organizations: "Tom et Flo" first, then by name
+                orgs.sort((a, b) => {
+                    const aName = a.name.toLowerCase().trim();
+                    const bName = b.name.toLowerCase().trim();
+
+                    // "Tom et Flo" goes first
+                    if (aName === 'tom et flo') return -1;
+                    if (bName === 'tom et flo') return 1;
+
+                    // Otherwise, sort alphabetically
+                    return aName.localeCompare(bName);
+                });
+
+                currentOrganizations = orgs;
 
                 const orgList = document.getElementById('org-list');
                 const orgCount = document.getElementById('org-count');
