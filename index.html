@@ -15795,31 +15795,24 @@ Tapez "SUPPRIMER" pour confirmer :`;
             const associatedRevenues = data.revenues ? data.revenues.filter(r => r.vaId === vaId).length : 0;
             const associatedPayments = data.vaPayments ? data.vaPayments.filter(p => p.vaId === vaId).length : 0;
 
-            let confirmMessage = `⚠️ ATTENTION : Supprimer le VA "${va.name}" ?\n\n`;
-            confirmMessage += `Cela supprimera DÉFINITIVEMENT :\n`;
-            confirmMessage += `• ${totalCreators} créatrice(s)\n`;
-            confirmMessage += `• ${totalAccounts} compte(s) Twitter\n`;
+            // Build details list
+            const details = [];
+            if (totalCreators > 0) details.push(`${totalCreators} créatrice(s)`);
+            if (totalAccounts > 0) details.push(`${totalAccounts} compte(s) Twitter`);
+            if (associatedSubs > 0) details.push(`${associatedSubs} entrée(s) de subs`);
+            if (associatedRevenues > 0) details.push(`${associatedRevenues} revenus enregistré(s)`);
+            if (associatedPayments > 0) details.push(`${associatedPayments} paiement(s)`);
 
-            if (associatedSubs > 0) {
-                confirmMessage += `• ${associatedSubs} entrée(s) de subs\n`;
-            }
-            if (associatedRevenues > 0) {
-                confirmMessage += `• ${associatedRevenues} revenus enregistré(s)\n`;
-            }
-            if (associatedPayments > 0) {
-                confirmMessage += `• ${associatedPayments} paiement(s)\n`;
-            }
+            // Show confirmation modal
+            const confirmed = await showConfirmModal({
+                title: `Supprimer "${va.name}" ?`,
+                message: 'Cette action est irréversible. Toutes les données associées seront définitivement supprimées.',
+                details: details,
+                confirmText: 'Supprimer définitivement',
+                cancelText: 'Annuler'
+            });
 
-            confirmMessage += `\n❌ Cette action est IRRÉVERSIBLE !`;
-
-            if (!confirm(confirmMessage)) {
-                return;
-            }
-
-            // Double confirmation for safety
-            if (!confirm(`Dernière confirmation :\nSupprimer définitivement "${va.name}" et toutes ses données ?`)) {
-                return;
-            }
+            if (!confirmed) return;
 
             try {
                 // Delete from Supabase (CASCADE will delete associated records)
@@ -15871,17 +15864,23 @@ Tapez "SUPPRIMER" pour confirmer :`;
             const associatedSubs = data.subs ? data.subs.filter(s => s.creatorId === creatorId).length : 0;
             const associatedRevenues = data.revenues ? data.revenues.filter(r => r.creatorId === creatorId).length : 0;
 
-            let confirmMessage = `⚠️ ATTENTION : Supprimer la créatrice "${creator.name}" ?\n\n`;
-            confirmMessage += `Cela supprimera DÉFINITIVEMENT :\n`;
-            if (twitterAccounts > 0) confirmMessage += `• ${twitterAccounts} compte(s) Twitter\n`;
-            if (instagramAccounts > 0) confirmMessage += `• ${instagramAccounts} compte(s) Instagram\n`;
-            if (associatedSubs > 0) confirmMessage += `• ${associatedSubs} entrée(s) de subs\n`;
-            if (associatedRevenues > 0) confirmMessage += `• ${associatedRevenues} revenus enregistré(s)\n`;
-            confirmMessage += `\n❌ Cette action est IRRÉVERSIBLE !`;
+            // Build details list
+            const details = [];
+            if (twitterAccounts > 0) details.push(`${twitterAccounts} compte(s) Twitter`);
+            if (instagramAccounts > 0) details.push(`${instagramAccounts} compte(s) Instagram`);
+            if (associatedSubs > 0) details.push(`${associatedSubs} entrée(s) de subs`);
+            if (associatedRevenues > 0) details.push(`${associatedRevenues} revenus enregistré(s)`);
 
-            if (!confirm(confirmMessage)) {
-                return;
-            }
+            // Show confirmation modal
+            const confirmed = await showConfirmModal({
+                title: `Supprimer "${creator.name}" ?`,
+                message: 'Cette action est irréversible. Tous les comptes et données associés seront définitivement supprimés.',
+                details: details,
+                confirmText: 'Supprimer définitivement',
+                cancelText: 'Annuler'
+            });
+
+            if (!confirmed) return;
 
             try {
                 // Delete from Supabase (CASCADE will delete associated accounts)
@@ -19872,6 +19871,87 @@ Tapez "SUPPRIMER" pour confirmer :`;
             } finally {
                 setButtonLoading(button, false, originalText);
             }
+        }
+
+        // ==========================================
+        // CONFIRMATION MODAL UTILITY
+        // ==========================================
+
+        // Show a confirmation modal and return a promise
+        function showConfirmModal(options) {
+            return new Promise((resolve) => {
+                const {
+                    title = 'Confirmer la suppression',
+                    message = 'Êtes-vous sûr de vouloir supprimer cet élément ?',
+                    details = [],
+                    confirmText = 'Supprimer',
+                    cancelText = 'Annuler',
+                    isDanger = true
+                } = options;
+
+                const isDarkMode = document.body.classList.contains('dark-mode');
+
+                // Create modal
+                const modal = document.createElement('div');
+                modal.id = 'confirm-modal';
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 10001; animation: fadeIn 0.2s ease;';
+
+                const detailsHtml = details.length > 0 ? `
+                    <div style="background: ${isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)'}; border: 1px solid ${isDarkMode ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 0.75rem; padding: 1rem; margin: 1rem 0; text-align: left;">
+                        ${details.map(d => `<div style="display: flex; align-items: center; gap: 0.5rem; color: ${isDarkMode ? '#fca5a5' : '#dc2626'}; font-size: 0.875rem; margin-bottom: 0.25rem;"><i class="fas fa-exclamation-circle"></i> ${d}</div>`).join('')}
+                    </div>
+                ` : '';
+
+                modal.innerHTML = `
+                    <div style="background: ${isDarkMode ? '#1f2937' : 'white'}; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 25px 50px rgba(0,0,0,0.25); max-width: 450px; width: 90%; text-align: center; animation: slideUp 0.3s ease;">
+                        <div style="width: 64px; height: 64px; background: ${isDanger ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #f59e0b, #d97706)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 8px 20px ${isDanger ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'};">
+                            <i class="fas fa-${isDanger ? 'trash-alt' : 'exclamation-triangle'}" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h2 style="margin: 0 0 0.75rem; font-size: 1.375rem; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'}; font-weight: 700;">${title}</h2>
+                        <p style="margin: 0; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; font-size: 0.9375rem; line-height: 1.5;">${message}</p>
+                        ${detailsHtml}
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center;">
+                            <button id="confirm-modal-cancel" style="flex: 1; padding: 0.875rem 1.5rem; border-radius: 0.75rem; border: 1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}; background: ${isDarkMode ? '#374151' : '#f3f4f6'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'}; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: all 0.2s;">
+                                ${cancelText}
+                            </button>
+                            <button id="confirm-modal-confirm" style="flex: 1; padding: 0.875rem 1.5rem; border-radius: 0.75rem; border: none; background: ${isDanger ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #f59e0b, #d97706)'}; color: white; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px ${isDanger ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)'};">
+                                <i class="fas fa-${isDanger ? 'trash-alt' : 'check'}" style="margin-right: 0.5rem;"></i>${confirmText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Handle buttons
+                document.getElementById('confirm-modal-cancel').onclick = () => {
+                    modal.remove();
+                    resolve(false);
+                };
+
+                document.getElementById('confirm-modal-confirm').onclick = () => {
+                    modal.remove();
+                    resolve(true);
+                };
+
+                // Close on backdrop click
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                        resolve(false);
+                    }
+                };
+
+                // Close on Escape key
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.remove();
+                        resolve(false);
+                        document.removeEventListener('keydown', handleEscape);
+                    }
+                };
+                document.addEventListener('keydown', handleEscape);
+            });
         }
 
         // Show success message
