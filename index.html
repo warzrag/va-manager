@@ -9880,6 +9880,11 @@
                                         <span style="font-size: 0.625rem; color: ${isDarkMode ? '#4b5563' : '#9ca3af'};">Il y a 7 jours</span>
                                         <span style="font-size: 0.625rem; font-weight: 600; color: ${account.todayGrowth >= 0 ? '#10b981' : account.todayGrowth < 0 ? '#ef4444' : (isDarkMode ? '#6b7280' : '#9ca3af')};">Aujourd'hui ${account.todayGrowth > 0 ? '🔥' : account.todayGrowth < 0 ? '📉' : ''}</span>
                                     </div>
+
+                                    <!-- Bouton voir détails -->
+                                    <button onclick="event.stopPropagation(); openTwitterAccountDetail('${account.username.replace('@', '').replace(/'/g, "\\'")}')" style="width: 100%; margin-top: 0.75rem; padding: 0.625rem; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); color: white; border: none; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(29, 161, 242, 0.4)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                                        <i class="fas fa-chart-line"></i> Voir l'évolution complète
+                                    </button>
                                 </div>
                             </div>
                             ` : `
