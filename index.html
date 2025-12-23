@@ -5527,38 +5527,11 @@
 
                     document.getElementById('user-email').textContent = currentUser.email;
 
-                    // STEP 1: First, set the correct organization (Tom et Flo) BEFORE loading data
-                    // Clear any existing org to force re-evaluation
-                    const previousOrgId = localStorage.getItem('active_organization_id');
-                    console.log('🔄 Previous org in localStorage:', previousOrgId);
-
+                    // Set organization before loading data
                     const orgs = await getUserOwnedOrganizations();
-                    console.log('📋 Available organizations:', orgs.map(o => `${o.name} (${o.id})`));
-
-                    // Find "Tom et Flo" - MUST contain BOTH "tom" AND "flo" together
-                    let tomEtFlo = orgs.find(org => {
-                        if (!org.name) return false;
-                        const name = org.name.toLowerCase().trim();
-                        return name.includes('tom') && name.includes('flo');
-                    });
-
-                    console.log('🔍 Tom et Flo search result:', tomEtFlo ? `FOUND: ${tomEtFlo.name}` : 'NOT FOUND');
-
-                    // ALWAYS force Tom et Flo as active
-                    if (tomEtFlo) {
-                        localStorage.setItem('active_organization_id', tomEtFlo.id);
-                        console.log('✅ FORCED localStorage to Tom et Flo:', tomEtFlo.id);
-                    } else {
-                        console.warn('⚠️ Tom et Flo NOT FOUND in orgs!');
-                        if (orgs.length > 0) {
-                            localStorage.setItem('active_organization_id', orgs[0].id);
-                            console.log('⚠️ Using fallback org:', orgs[0].name);
-                        }
+                    if (orgs.length > 0 && !localStorage.getItem('active_organization_id')) {
+                        localStorage.setItem('active_organization_id', orgs[0].id);
                     }
-
-                    // Verify localStorage was set correctly
-                    const newOrgId = localStorage.getItem('active_organization_id');
-                    console.log('✅ localStorage now contains:', newOrgId);
 
                     // STEP 2: Now load data with the correct organization set
                     const [_, organization] = await Promise.all([
