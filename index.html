@@ -5531,31 +5531,26 @@
                     const orgs = await getUserOwnedOrganizations();
                     console.log('📋 Available organizations:', orgs.map(o => ({ id: o.id, name: o.name })));
 
-                    // Find "Tom et Flo" - try exact match first, then partial
-                    let tomEtFlo = orgs.find(org =>
-                        org.name && org.name.toLowerCase().trim() === 'tom et flo'
-                    );
-                    if (!tomEtFlo) {
-                        tomEtFlo = orgs.find(org =>
-                            org.name &&
-                            org.name.toLowerCase().includes('tom') &&
-                            org.name.toLowerCase().includes('flo')
-                        );
-                    }
-                    // If still not found, try just "tom"
-                    if (!tomEtFlo) {
-                        tomEtFlo = orgs.find(org =>
-                            org.name && org.name.toLowerCase().includes('tom')
-                        );
-                    }
+                    // Find "Tom et Flo" - MUST contain BOTH "tom" AND "flo" together
+                    // This ensures we don't match "Agence Flo" which only has "flo"
+                    let tomEtFlo = orgs.find(org => {
+                        if (!org.name) return false;
+                        const name = org.name.toLowerCase().trim();
+                        // Must contain both "tom" and "flo" (not just one)
+                        return name.includes('tom') && name.includes('flo');
+                    });
 
+                    console.log('🔍 Found Tom et Flo org:', tomEtFlo ? tomEtFlo.name : 'NOT FOUND');
+
+                    // ALWAYS set Tom et Flo if found, regardless of what's in localStorage
                     if (tomEtFlo) {
-                        setActiveOrganizationId(tomEtFlo.id);
-                        console.log('✅ Pre-set organization:', tomEtFlo.name, 'as active BEFORE loading data');
+                        localStorage.setItem('active_organization_id', tomEtFlo.id);
+                        console.log('✅ FORCED Tom et Flo as active:', tomEtFlo.name, tomEtFlo.id);
                     } else {
-                        console.warn('⚠️ Could not find Tom et Flo organization, using first available');
-                        if (orgs.length > 0) {
-                            setActiveOrganizationId(orgs[0].id);
+                        console.warn('⚠️ Could not find Tom et Flo organization');
+                        // Only use first org if no Tom et Flo found
+                        if (orgs.length > 0 && !localStorage.getItem('active_organization_id')) {
+                            localStorage.setItem('active_organization_id', orgs[0].id);
                             console.log('✅ Using first organization:', orgs[0].name);
                         }
                     }
