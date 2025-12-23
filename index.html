@@ -5497,41 +5497,42 @@
                 if (currentUser) {
                     console.log('✅ User authenticated:', currentUser.email);
 
-                    // Check if user is a VA (not an organization owner)
-                    const { data: vaRecord } = await supabase
-                        .from('vas')
-                        .select('id, name, organization_id')
-                        .eq('user_id', currentUser.id)
-                        .single();
+                    // OPTIMIZED: Check VA and Manager status in parallel
+                    const [vaResult, managerResult] = await Promise.all([
+                        supabase
+                            .from('vas')
+                            .select('id, name, organization_id')
+                            .eq('user_id', currentUser.id)
+                            .maybeSingle(),
+                        supabase
+                            .from('managers')
+                            .select('id, name, organization_id')
+                            .eq('user_id', currentUser.id)
+                            .maybeSingle()
+                    ]);
 
-                    if (vaRecord) {
+                    if (vaResult.data) {
                         console.log('✅ User is a VA, redirecting to VA dashboard...');
                         window.location.href = 'va-dashboard.html';
                         return;
                     }
 
-                    // Check if user is a manager
-                    const { data: managerRecord } = await supabase
-                        .from('managers')
-                        .select('id, name, organization_id')
-                        .eq('user_id', currentUser.id)
-                        .single();
-
-                    if (managerRecord) {
-                        console.log('✅ User is a manager of organization:', managerRecord.organization_id);
-                        // Set the current organization to the manager's organization
+                    if (managerResult.data) {
+                        console.log('✅ User is a manager of organization:', managerResult.data.organization_id);
                         currentOrganization = {
-                            id: managerRecord.organization_id,
+                            id: managerResult.data.organization_id,
                             role: 'manager'
                         };
                     }
 
                     document.getElementById('user-email').textContent = currentUser.email;
 
-                    // Load all data from Supabase and admin check IN PARALLEL
+                    // OPTIMIZED: Load data, org info, and org switcher ALL in parallel
                     const [_, organization] = await Promise.all([
                         loadAllData(),
-                        getUserOrganization()
+                        getUserOrganization(),
+                        // Pre-fetch owned orgs for switcher (will be cached)
+                        getUserOwnedOrganizations()
                     ]);
 
                     // Check if user is organization owner and show admin button
@@ -5540,13 +5541,13 @@
                         console.log('✅ Admin button enabled for organization owner');
                     }
 
-                    // Initialize organization switcher (for multi-agency admins)
+                    // Initialize organization switcher (will use cached data)
                     await initOrganizationSwitcher();
 
                     // Initialize UI
                     initializeUI();
 
-                    // Create automatic backup (runs in background)
+                    // Create automatic backup (runs in background - don't await)
                     createAutomaticBackup().then(backup => {
                         if (backup) {
                             console.log('✅ Automatic backup created');
@@ -6370,19 +6371,15 @@
                     // Show the switcher
                     document.getElementById('organization-switcher').style.display = 'block';
 
-                    // Load organizations
-                    await loadUserOrganizations();
-
-                    // Always auto-select "Tom et Flo" as default organization
+                    // OPTIMIZED: Get orgs once and reuse
                     const orgs = await getUserOwnedOrganizations();
 
-                    // Try exact match first (case-insensitive)
+                    // Auto-select "Tom et Flo" as default BEFORE loading UI
                     let tomEtFlo = orgs.find(org =>
                         org.name &&
                         org.name.toLowerCase().trim() === 'tom et flo'
                     );
 
-                    // If not found, try partial match with both names
                     if (!tomEtFlo) {
                         tomEtFlo = orgs.find(org =>
                             org.name &&
@@ -6396,7 +6393,10 @@
                         console.log('✅ Auto-selected "Tom et Flo" as default organization');
                     }
 
-                    // Set active organization
+                    // Load organizations UI (will use cached orgs)
+                    await loadUserOrganizations();
+
+                    // Update active organization display
                     await updateActiveOrganization();
                 }
             } catch (error) {
@@ -6429,26 +6429,18 @@
                 if (!orgList) return;
 
                 const currentOrgId = await getActiveOrganizationId();
+                const isDarkMode = document.body.classList.contains('dark-mode');
 
                 // Update count
                 if (orgCount) {
                     orgCount.textContent = `${currentOrganizations.length} organisation${currentOrganizations.length > 1 ? 's' : ''}`;
                 }
 
-                // Get stats for each org in parallel
-                const orgsWithStats = await Promise.all(
-                    currentOrganizations.map(async (org) => {
-                        const stats = await getOrganizationStats(org.id);
-                        return { ...org, stats };
-                    })
-                );
-
-                const isDarkMode = document.body.classList.contains('dark-mode');
-
-                orgList.innerHTML = orgsWithStats.map(org => {
+                // OPTIMIZED: Show orgs immediately with loading placeholders, then load stats async
+                orgList.innerHTML = currentOrganizations.map(org => {
                     const isActive = org.id === currentOrgId;
                     return `
-                        <div class="org-item ${isActive ? 'active' : ''}" style="position: relative;">
+                        <div class="org-item ${isActive ? 'active' : ''}" style="position: relative;" data-org-id="${org.id}">
                             <div style="display: flex; align-items: center; gap: 1rem;" onclick="switchOrganization('${org.id}')">
                                 <div style="width: 44px; height: 44px; background: ${isActive ? 'linear-gradient(135deg, #667eea, #764ba2)' : (isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f3f4f6')}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: ${isActive ? '0 4px 12px rgba(103, 110, 234, 0.3)' : 'none'};">
                                     ${isActive ?
@@ -6460,10 +6452,8 @@
                                     <div style="font-size: 0.9375rem; font-weight: ${isActive ? '700' : '600'}; color: ${isDarkMode ? (isActive ? '#e0e7ff' : '#e2e8f0') : (isActive ? '#667eea' : '#1f2937')}; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         ${org.name}
                                     </div>
-                                    <div style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; display: flex; align-items: center; gap: 0.5rem;">
-                                        <span><i class="fas fa-users" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>${org.stats.vaCount} VAs</span>
-                                        <span>•</span>
-                                        <span><i class="fas fa-user-friends" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>${org.stats.creatorCount} créatrices</span>
+                                    <div class="org-stats-placeholder" style="font-size: 0.75rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="opacity: 0.5;"><i class="fas fa-spinner fa-spin" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>Chargement...</span>
                                     </div>
                                 </div>
                                 ${isActive ?
@@ -6486,6 +6476,19 @@
                     `;
                 }).join('');
 
+                // Load stats in background and update UI progressively
+                Promise.all(currentOrganizations.map(async (org) => {
+                    const stats = await getOrganizationStats(org.id);
+                    const orgItem = orgList.querySelector(`[data-org-id="${org.id}"] .org-stats-placeholder`);
+                    if (orgItem) {
+                        orgItem.innerHTML = `
+                            <span><i class="fas fa-users" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>${stats.vaCount} VAs</span>
+                            <span>•</span>
+                            <span><i class="fas fa-user-friends" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>${stats.creatorCount} créatrices</span>
+                        `;
+                    }
+                })).catch(e => console.warn('Stats loading error:', e));
+
             } catch (error) {
                 console.error('❌ Error loading organizations:', error);
             }
@@ -6497,8 +6500,11 @@
                 const orgId = await getActiveOrganizationId();
                 if (!orgId) return;
 
-                const org = await getOrganizationById(orgId);
-                const stats = await getOrganizationStats(orgId);
+                // OPTIMIZED: Run both queries in parallel
+                const [org, stats] = await Promise.all([
+                    getOrganizationById(orgId),
+                    getOrganizationStats(orgId)
+                ]);
 
                 currentOrganizationData = org;
 

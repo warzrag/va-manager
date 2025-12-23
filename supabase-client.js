@@ -23,6 +23,58 @@ if (typeof supabase === 'undefined') {
     var supabase;
 }
 
+// ============================================================================
+// MEMORY CACHE SYSTEM - Avoid redundant API calls
+// ============================================================================
+
+const memoryCache = {
+  data: new Map(),
+  ttl: new Map(), // Time-to-live for each cache entry
+
+  // Set cache with optional TTL (default 30 seconds)
+  set(key, value, ttlMs = 30000) {
+    this.data.set(key, value);
+    this.ttl.set(key, Date.now() + ttlMs);
+  },
+
+  // Get from cache if not expired
+  get(key) {
+    const expiry = this.ttl.get(key);
+    if (!expiry || Date.now() > expiry) {
+      this.data.delete(key);
+      this.ttl.delete(key);
+      return null;
+    }
+    return this.data.get(key);
+  },
+
+  // Check if cache is valid
+  has(key) {
+    return this.get(key) !== null;
+  },
+
+  // Clear specific key or all cache
+  clear(key = null) {
+    if (key) {
+      this.data.delete(key);
+      this.ttl.delete(key);
+    } else {
+      this.data.clear();
+      this.ttl.clear();
+    }
+  },
+
+  // Clear cache for organization-specific data (when switching orgs)
+  clearOrgCache() {
+    for (const key of this.data.keys()) {
+      if (key.startsWith('org_')) {
+        this.data.delete(key);
+        this.ttl.delete(key);
+      }
+    }
+  }
+};
+
 function initSupabase() {
   try {
     if (typeof window.supabase === 'undefined') {
@@ -3413,30 +3465,36 @@ async function updateOrganization(updates) {
  */
 async function getUserOwnedOrganizations() {
   try {
+    // Check cache first (60 second TTL)
+    const cached = memoryCache.get('user_owned_orgs');
+    if (cached) {
+      console.log('✅ Retrieved owned organizations from cache');
+      return cached;
+    }
+
     const userId = await getUserId();
 
-    // 1. Get organizations where user is direct owner
-    const { data: ownedOrgs, error: ownedError } = await supabase
-      .from('organizations')
-      .select('*')
-      .eq('owner_id', userId);
+    // OPTIMIZED: Run both queries in parallel
+    const [ownedResult, memberResult] = await Promise.all([
+      supabase
+        .from('organizations')
+        .select('*')
+        .eq('owner_id', userId),
+      supabase
+        .from('organization_members')
+        .select('organization_id, organizations(*)')
+        .eq('user_id', userId)
+        .eq('role', 'owner')
+    ]);
 
-    if (ownedError) throw ownedError;
-
-    // 2. Get organizations where user is owner via organization_members
-    const { data: memberOrgs, error: memberError } = await supabase
-      .from('organization_members')
-      .select('organization_id, organizations(*)')
-      .eq('user_id', userId)
-      .eq('role', 'owner');
-
-    if (memberError) throw memberError;
+    if (ownedResult.error) throw ownedResult.error;
+    if (memberResult.error) throw memberResult.error;
 
     // Combine and deduplicate
-    const allOrgs = [...(ownedOrgs || [])];
+    const allOrgs = [...(ownedResult.data || [])];
     const existingIds = new Set(allOrgs.map(o => o.id));
 
-    (memberOrgs || []).forEach(m => {
+    (memberResult.data || []).forEach(m => {
       if (m.organizations && !existingIds.has(m.organizations.id)) {
         allOrgs.push(m.organizations);
         existingIds.add(m.organizations.id);
@@ -3445,6 +3503,9 @@ async function getUserOwnedOrganizations() {
 
     // Sort by name
     allOrgs.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Cache for 60 seconds
+    memoryCache.set('user_owned_orgs', allOrgs, 60000);
 
     console.log(`✅ Retrieved ${allOrgs.length} owned organizations`);
     return allOrgs;
@@ -3575,35 +3636,39 @@ function setActiveOrganizationId(organizationId) {
  */
 async function getOrganizationStats(organizationId) {
   try {
-    // Get member count
-    const { count: memberCount, error: memberError } = await supabase
-      .from('organization_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('organization_id', organizationId);
+    // Check cache first (30 second TTL)
+    const cacheKey = `org_stats_${organizationId}`;
+    const cached = memoryCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
-    if (memberError) throw memberError;
+    // OPTIMIZED: Run all 3 count queries in parallel instead of sequentially
+    const [memberResult, creatorResult, vaResult] = await Promise.all([
+      supabase
+        .from('organization_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId),
+      supabase
+        .from('creators')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId),
+      supabase
+        .from('vas')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
+    ]);
 
-    // Get creator count
-    const { count: creatorCount, error: creatorError } = await supabase
-      .from('creators')
-      .select('*', { count: 'exact', head: true })
-      .eq('organization_id', organizationId);
-
-    if (creatorError) throw creatorError;
-
-    // Get VA count
-    const { count: vaCount, error: vaError } = await supabase
-      .from('vas')
-      .select('*', { count: 'exact', head: true })
-      .eq('organization_id', organizationId);
-
-    if (vaError) throw vaError;
-
-    return {
-      memberCount: memberCount || 0,
-      creatorCount: creatorCount || 0,
-      vaCount: vaCount || 0
+    const stats = {
+      memberCount: memberResult.count || 0,
+      creatorCount: creatorResult.count || 0,
+      vaCount: vaResult.count || 0
     };
+
+    // Cache for 30 seconds
+    memoryCache.set(cacheKey, stats, 30000);
+
+    return stats;
   } catch (error) {
     console.error('❌ Error getting organization stats:', error);
     return {
