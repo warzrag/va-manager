@@ -1989,7 +1989,7 @@ body.dark-mode .dash-creator-action-btn {
 
 .dash-va-leaderboard-header {
     display: grid;
-    grid-template-columns: 50px 2fr 1fr 80px 80px 80px 100px;
+    grid-template-columns: 50px 200px 1fr 80px 100px;
     gap: 1rem;
     padding: 1rem 1.25rem;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%);
@@ -2002,19 +2002,18 @@ body.dark-mode .dash-creator-action-btn {
 }
 
 .dash-va-leaderboard-body {
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
 }
 
 .dash-va-row {
     display: grid;
-    grid-template-columns: 50px 2fr 1fr 80px 80px 80px 100px;
+    grid-template-columns: 50px 200px 1fr 80px 100px;
     gap: 1rem;
     padding: 1rem 1.25rem;
     align-items: center;
     border-bottom: 1px solid var(--dash-border);
     transition: var(--dash-transition);
-    cursor: pointer;
 }
 
 .dash-va-row:last-child {
@@ -2142,6 +2141,45 @@ body.dark-mode .dash-creator-action-btn {
     white-space: nowrap;
 }
 
+/* Twitter Accounts Column */
+.dash-va-accounts-cell {
+    display: flex;
+    align-items: center;
+}
+
+.dash-va-twitter-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.dash-va-twitter-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(29, 161, 242, 0.08);
+    border: 1px solid rgba(29, 161, 242, 0.15);
+    border-radius: 2rem;
+    color: #1da1f2;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--dash-transition);
+    white-space: nowrap;
+}
+
+.dash-va-twitter-link i {
+    font-size: 0.75rem;
+}
+
+.dash-va-twitter-link:hover {
+    background: rgba(29, 161, 242, 0.15);
+    border-color: #1da1f2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.2);
+}
+
 /* Actions Column */
 .dash-va-actions {
     display: flex;
@@ -2192,14 +2230,7 @@ body.dark-mode .dash-creator-action-btn {
 
     .dash-va-leaderboard-header,
     .dash-va-row {
-        grid-template-columns: 40px 2fr 1fr 1fr 80px;
-    }
-
-    .dash-va-col-twitter,
-    .dash-va-col-instagram,
-    .dash-va-stat.twitter,
-    .dash-va-stat.instagram {
-        display: none;
+        grid-template-columns: 40px 180px 1fr 60px 80px;
     }
 }
 
@@ -2225,13 +2256,13 @@ body.dark-mode .dash-creator-action-btn {
 
     .dash-va-leaderboard-header,
     .dash-va-row {
-        grid-template-columns: 40px 1.5fr 80px 60px;
-        gap: 0.75rem;
+        grid-template-columns: 40px 1fr 60px 60px;
+        gap: 0.5rem;
         padding: 0.875rem 1rem;
     }
 
-    .dash-va-col-creators,
-    .dash-va-creators {
+    .dash-va-col-accounts,
+    .dash-va-accounts-cell {
         display: none;
     }
 
@@ -2252,6 +2283,11 @@ body.dark-mode .dash-creator-action-btn {
     .dash-va-action-btn {
         width: 28px;
         height: 28px;
+        font-size: 0.75rem;
+    }
+
+    .dash-va-twitter-link {
+        padding: 0.25rem 0.5rem;
         font-size: 0.75rem;
     }
 }

@@ -3785,9 +3785,7 @@
                     <div class="dash-va-leaderboard-header">
                         <div class="dash-va-col-rank">#</div>
                         <div class="dash-va-col-name">Virtual Assistant</div>
-                        <div class="dash-va-col-creators">Creatrices</div>
-                        <div class="dash-va-col-twitter">Twitter</div>
-                        <div class="dash-va-col-instagram">Instagram</div>
+                        <div class="dash-va-col-accounts">Comptes Twitter</div>
                         <div class="dash-va-col-total">Total</div>
                         <div class="dash-va-col-actions">Actions</div>
                     </div>
@@ -12934,19 +12932,27 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 const vaCreators = [];
                 let twitterCount = 0;
                 let instagramCount = 0;
+                let twitterAccounts = []; // Liste des comptes Twitter
 
                 if (data.creators) {
                     data.creators.forEach(creator => {
                         if (creator.vaIds && creator.vaIds.includes(va.id)) {
                             vaCreators.push(creator);
 
-                            // Compter les comptes Twitter
+                            // Compter et collecter les comptes Twitter
                             if (creator.accounts) {
                                 const filteredTwitter = creator.accounts.filter(account => {
                                     if (creator.vaIds && creator.vaIds.length === 1) return true;
                                     return account.assignedVaId === va.id;
                                 });
                                 twitterCount += filteredTwitter.length;
+                                // Ajouter les comptes avec le nom de la créatrice
+                                filteredTwitter.forEach(acc => {
+                                    twitterAccounts.push({
+                                        ...acc,
+                                        creatorName: creator.name
+                                    });
+                                });
                             }
 
                             // Compter les comptes Instagram
@@ -12966,6 +12972,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     creators: vaCreators,
                     twitterCount,
                     instagramCount,
+                    twitterAccounts,
                     totalAccounts: twitterCount + instagramCount
                 };
             });
@@ -13016,18 +13023,22 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     // Initiale du VA
                     const initial = va.name.charAt(0).toUpperCase();
 
-                    // Badges des créatrices
-                    let creatorsBadges = '';
-                    if (va.creators.length > 0) {
-                        const maxShow = 3;
-                        va.creators.slice(0, maxShow).forEach(creator => {
-                            creatorsBadges += `<span class="dash-va-creator-badge">${creator.name}</span>`;
+                    // Générer les liens Twitter cliquables
+                    let twitterLinksHtml = '';
+                    if (va.twitterAccounts.length > 0) {
+                        twitterLinksHtml = '<div class="dash-va-twitter-list">';
+                        va.twitterAccounts.forEach(acc => {
+                            const username = acc.username.replace('@', '');
+                            twitterLinksHtml += `
+                                <a href="https://x.com/${username}" target="_blank" class="dash-va-twitter-link" onclick="event.stopPropagation()">
+                                    <i class="fab fa-twitter"></i>
+                                    @${username}
+                                </a>
+                            `;
                         });
-                        if (va.creators.length > maxShow) {
-                            creatorsBadges += `<span class="dash-va-creator-badge">+${va.creators.length - maxShow}</span>`;
-                        }
+                        twitterLinksHtml += '</div>';
                     } else {
-                        creatorsBadges = '<span style="color: var(--dash-text-muted); font-size: 0.75rem;">-</span>';
+                        twitterLinksHtml = '<span style="color: var(--dash-text-muted); font-size: 0.8125rem;">Aucun compte</span>';
                     }
 
                     tableHtml += `
@@ -13039,12 +13050,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                 <div class="dash-va-avatar">${initial}</div>
                                 <div class="dash-va-name-info">
                                     <div class="dash-va-name">${va.name}</div>
-                                    <div class="dash-va-subtitle">${va.totalAccounts} compte${va.totalAccounts > 1 ? 's' : ''} gere${va.totalAccounts > 1 ? 's' : ''}</div>
+                                    <div class="dash-va-subtitle">${va.creators.length} creatrice${va.creators.length > 1 ? 's' : ''}</div>
                                 </div>
                             </div>
-                            <div class="dash-va-creators">${creatorsBadges}</div>
-                            <div class="dash-va-stat twitter">${va.twitterCount}</div>
-                            <div class="dash-va-stat instagram">${va.instagramCount}</div>
+                            <div class="dash-va-accounts-cell">${twitterLinksHtml}</div>
                             <div class="dash-va-stat total">${va.totalAccounts}</div>
                             <div class="dash-va-actions">
                                 <button class="dash-va-action-btn" onclick="event.stopPropagation(); editVA('${va.id}')" title="Modifier">
