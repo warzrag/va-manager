@@ -3722,20 +3722,93 @@
                 </div>
             </div>
 
-            <!-- VAs Section -->
-            <div class="dash-section">
+            <!-- VAs Section - Pro Dashboard -->
+            <div class="dash-section dash-va-pro-section">
                 <div class="dash-section-header">
                     <h3 class="dash-section-title">
-                        <i class="fas fa-user-tie" style="color: #10b981;"></i>
-                        Virtual Assistants
+                        <i class="fas fa-user-tie"></i>
+                        Equipe VAs
                     </h3>
-                    <span id="va-grid-count-badge" class="dash-section-badge">
-                        <i class="fas fa-circle" style="font-size: 0.5rem; color: #10b981;"></i>
-                        0 VAs
-                    </span>
+                    <div class="dash-va-header-actions">
+                        <span id="va-grid-count-badge" class="dash-section-badge">
+                            <i class="fas fa-circle" style="font-size: 0.5rem; color: #10b981;"></i>
+                            0 VAs
+                        </span>
+                        <button onclick="navigateToPage('add-va-page')" class="dash-action-btn success" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
+                            <i class="fas fa-plus"></i> Ajouter VA
+                        </button>
+                    </div>
                 </div>
-                <div class="dash-va-grid" id="va-grid">
+
+                <!-- KPIs VAs Globaux -->
+                <div class="dash-va-kpis" id="va-global-kpis">
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-total">0</div>
+                            <div class="dash-va-kpi-label">VAs Actifs</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon twitter">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-twitter">0</div>
+                            <div class="dash-va-kpi-label">Comptes Twitter</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon instagram">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-instagram">0</div>
+                            <div class="dash-va-kpi-label">Comptes Instagram</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon warning">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-avg">0</div>
+                            <div class="dash-va-kpi-label">Comptes/VA moy.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau de classement VAs Pro -->
+                <div class="dash-va-leaderboard" id="va-leaderboard">
+                    <div class="dash-va-leaderboard-header">
+                        <div class="dash-va-col-rank">#</div>
+                        <div class="dash-va-col-name">Virtual Assistant</div>
+                        <div class="dash-va-col-creators">Creatrices</div>
+                        <div class="dash-va-col-twitter">Twitter</div>
+                        <div class="dash-va-col-instagram">Instagram</div>
+                        <div class="dash-va-col-total">Total</div>
+                        <div class="dash-va-col-actions">Actions</div>
+                    </div>
+                    <div class="dash-va-leaderboard-body" id="va-leaderboard-body">
+                        <!-- Rows will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Vue grille (cachée par défaut) -->
+                <div class="dash-va-grid" id="va-grid" style="display: none;">
                     <!-- VA cards will be dynamically inserted here -->
+                </div>
+
+                <!-- Toggle vue -->
+                <div class="dash-va-view-toggle">
+                    <button class="dash-view-btn active" onclick="setVAView('table')" id="va-view-table">
+                        <i class="fas fa-list"></i> Tableau
+                    </button>
+                    <button class="dash-view-btn" onclick="setVAView('grid')" id="va-view-grid">
+                        <i class="fas fa-th-large"></i> Grille
+                    </button>
                 </div>
             </div>
 
@@ -12826,18 +12899,176 @@ Tapez "SUPPRIMER" pour confirmer :`;
             document.body.appendChild(modal);
         }
 
-        // Update VA grid
+        // VA View Toggle
+        let currentVAView = 'table';
+
+        function setVAView(view) {
+            currentVAView = view;
+            const tableBtn = document.getElementById('va-view-table');
+            const gridBtn = document.getElementById('va-view-grid');
+            const leaderboard = document.getElementById('va-leaderboard');
+            const gridContainer = document.getElementById('va-grid');
+
+            if (view === 'table') {
+                tableBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                leaderboard.style.display = 'block';
+                gridContainer.style.display = 'none';
+            } else {
+                tableBtn.classList.remove('active');
+                gridBtn.classList.add('active');
+                leaderboard.style.display = 'none';
+                gridContainer.style.display = 'grid';
+            }
+        }
+
+        // Update VA grid - PRO VERSION
         function updateVAGrid() {
             const grid = document.getElementById('va-grid');
+            const leaderboardBody = document.getElementById('va-leaderboard-body');
+
             grid.innerHTML = '';
 
+            // Calculer les stats pour chaque VA
+            const vasWithStats = data.vas.map(va => {
+                const vaCreators = [];
+                let twitterCount = 0;
+                let instagramCount = 0;
+
+                if (data.creators) {
+                    data.creators.forEach(creator => {
+                        if (creator.vaIds && creator.vaIds.includes(va.id)) {
+                            vaCreators.push(creator);
+
+                            // Compter les comptes Twitter
+                            if (creator.accounts) {
+                                const filteredTwitter = creator.accounts.filter(account => {
+                                    if (creator.vaIds && creator.vaIds.length === 1) return true;
+                                    return account.assignedVaId === va.id;
+                                });
+                                twitterCount += filteredTwitter.length;
+                            }
+
+                            // Compter les comptes Instagram
+                            if (creator.instagramAccounts) {
+                                const filteredInsta = creator.instagramAccounts.filter(account => {
+                                    if (creator.vaIds && creator.vaIds.length === 1) return true;
+                                    return account.assignedVaId === va.id;
+                                });
+                                instagramCount += filteredInsta.length;
+                            }
+                        }
+                    });
+                }
+
+                return {
+                    ...va,
+                    creators: vaCreators,
+                    twitterCount,
+                    instagramCount,
+                    totalAccounts: twitterCount + instagramCount
+                };
+            });
+
+            // Trier par nombre total de comptes (décroissant)
+            vasWithStats.sort((a, b) => b.totalAccounts - a.totalAccounts);
+
+            // === CALCUL DES KPIs GLOBAUX ===
+            let totalVAs = vasWithStats.length;
+            let totalTwitter = 0;
+            let totalInstagram = 0;
+
+            vasWithStats.forEach(va => {
+                totalTwitter += va.twitterCount;
+                totalInstagram += va.instagramCount;
+            });
+
+            const avgAccounts = totalVAs > 0 ? ((totalTwitter + totalInstagram) / totalVAs).toFixed(1) : 0;
+
+            // Mise à jour des KPIs
+            document.getElementById('va-kpi-total').textContent = totalVAs;
+            document.getElementById('va-kpi-twitter').textContent = totalTwitter;
+            document.getElementById('va-kpi-instagram').textContent = totalInstagram;
+            document.getElementById('va-kpi-avg').textContent = avgAccounts;
+
+            // === GÉNÉRATION DU TABLEAU LEADERBOARD ===
+            let tableHtml = '';
+
+            if (vasWithStats.length === 0) {
+                tableHtml = `
+                    <div style="text-align: center; padding: 3rem; color: var(--dash-text-muted);">
+                        <i class="fas fa-user-tie" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; display: block;"></i>
+                        <p style="font-size: 1.125rem;">Aucun VA ajoute</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.7;">Commencez par ajouter un Virtual Assistant</p>
+                    </div>
+                `;
+            } else {
+                vasWithStats.forEach((va, index) => {
+                    const rank = index + 1;
+
+                    // Classe de rang
+                    let rankClass = 'default';
+                    let rankContent = rank;
+                    if (rank === 1) { rankClass = 'gold'; rankContent = '<i class="fas fa-crown"></i>'; }
+                    else if (rank === 2) { rankClass = 'silver'; }
+                    else if (rank === 3) { rankClass = 'bronze'; }
+
+                    // Initiale du VA
+                    const initial = va.name.charAt(0).toUpperCase();
+
+                    // Badges des créatrices
+                    let creatorsBadges = '';
+                    if (va.creators.length > 0) {
+                        const maxShow = 3;
+                        va.creators.slice(0, maxShow).forEach(creator => {
+                            creatorsBadges += `<span class="dash-va-creator-badge">${creator.name}</span>`;
+                        });
+                        if (va.creators.length > maxShow) {
+                            creatorsBadges += `<span class="dash-va-creator-badge">+${va.creators.length - maxShow}</span>`;
+                        }
+                    } else {
+                        creatorsBadges = '<span style="color: var(--dash-text-muted); font-size: 0.75rem;">-</span>';
+                    }
+
+                    tableHtml += `
+                        <div class="dash-va-row">
+                            <div class="dash-va-col-rank">
+                                <div class="dash-va-rank ${rankClass}">${rankContent}</div>
+                            </div>
+                            <div class="dash-va-name-cell">
+                                <div class="dash-va-avatar">${initial}</div>
+                                <div class="dash-va-name-info">
+                                    <div class="dash-va-name">${va.name}</div>
+                                    <div class="dash-va-subtitle">${va.totalAccounts} compte${va.totalAccounts > 1 ? 's' : ''} gere${va.totalAccounts > 1 ? 's' : ''}</div>
+                                </div>
+                            </div>
+                            <div class="dash-va-creators">${creatorsBadges}</div>
+                            <div class="dash-va-stat twitter">${va.twitterCount}</div>
+                            <div class="dash-va-stat instagram">${va.instagramCount}</div>
+                            <div class="dash-va-stat total">${va.totalAccounts}</div>
+                            <div class="dash-va-actions">
+                                <button class="dash-va-action-btn" onclick="event.stopPropagation(); editVA('${va.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="dash-va-action-btn danger" onclick="event.stopPropagation(); deleteVA('${va.id}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            leaderboardBody.innerHTML = tableHtml;
+
+            // === GÉNÉRATION DES CARTES (pour vue grille - ancien style) ===
             data.vas.forEach(va => {
                 const card = createVACard(va);
                 grid.appendChild(card);
             });
 
             if (data.vas.length === 0) {
-                grid.innerHTML = '<div class="no-creator">Aucun VA ajouté. Commencez par ajouter un VA!</div>';
+                grid.innerHTML = '<div class="no-creator">Aucun VA ajoute. Commencez par ajouter un VA!</div>';
             }
 
             // Update banned accounts alert

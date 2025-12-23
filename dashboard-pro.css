@@ -1874,3 +1874,384 @@ body.dark-mode .dash-creator-action-btn {
         font-size: 0.9375rem;
     }
 }
+
+/* ============================================================================
+   VA PRO SECTION - Dashboard Analytics Style
+   ============================================================================ */
+.dash-va-pro-section {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, rgba(16, 185, 129, 0.005) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.12);
+}
+
+.dash-va-pro-section:hover {
+    border-color: rgba(16, 185, 129, 0.25);
+}
+
+.dash-va-pro-section .dash-section-title i {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+    color: #10b981;
+}
+
+.dash-va-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* VA KPIs */
+.dash-va-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dash-va-kpi {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--dash-card-bg);
+    border: 1px solid var(--dash-border);
+    border-radius: var(--dash-radius-lg);
+    transition: var(--dash-transition);
+}
+
+.dash-va-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--dash-shadow-md);
+}
+
+.dash-va-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--dash-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.dash-va-kpi-icon.primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.dash-va-kpi-icon.twitter {
+    background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+}
+
+.dash-va-kpi-icon.instagram {
+    background: linear-gradient(135deg, #e1306c 0%, #c13584 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(225, 48, 108, 0.3);
+}
+
+.dash-va-kpi-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.dash-va-kpi-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.dash-va-kpi-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--dash-text);
+    line-height: 1.2;
+}
+
+.dash-va-kpi-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--dash-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 0.125rem;
+}
+
+/* VA Leaderboard Table */
+.dash-va-leaderboard {
+    background: var(--dash-card-bg);
+    border: 1px solid var(--dash-border);
+    border-radius: var(--dash-radius-lg);
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.dash-va-leaderboard-header {
+    display: grid;
+    grid-template-columns: 50px 2fr 1fr 80px 80px 80px 100px;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%);
+    border-bottom: 1px solid var(--dash-border);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--dash-text-muted);
+}
+
+.dash-va-leaderboard-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dash-va-row {
+    display: grid;
+    grid-template-columns: 50px 2fr 1fr 80px 80px 80px 100px;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    align-items: center;
+    border-bottom: 1px solid var(--dash-border);
+    transition: var(--dash-transition);
+    cursor: pointer;
+}
+
+.dash-va-row:last-child {
+    border-bottom: none;
+}
+
+.dash-va-row:hover {
+    background: rgba(16, 185, 129, 0.04);
+}
+
+/* Rank Column */
+.dash-va-col-rank {
+    text-align: center;
+}
+
+.dash-va-rank {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    margin: 0 auto;
+}
+
+.dash-va-rank.gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.dash-va-rank.silver {
+    background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(156, 163, 175, 0.3);
+}
+
+.dash-va-rank.bronze {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.dash-va-rank.default {
+    background: var(--dash-bg);
+    color: var(--dash-text-muted);
+    border: 1px solid var(--dash-border);
+}
+
+/* VA Name Column */
+.dash-va-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.dash-va-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.dash-va-name-info {
+    min-width: 0;
+}
+
+.dash-va-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dash-text);
+}
+
+.dash-va-subtitle {
+    font-size: 0.75rem;
+    color: var(--dash-text-muted);
+    margin-top: 0.125rem;
+}
+
+/* Stats Columns */
+.dash-va-stat {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.dash-va-stat.twitter {
+    color: #1da1f2;
+}
+
+.dash-va-stat.instagram {
+    color: #e1306c;
+}
+
+.dash-va-stat.total {
+    color: var(--dash-text);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Creators Column */
+.dash-va-creators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.dash-va-creator-badge {
+    padding: 0.25rem 0.625rem;
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-radius: 2rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Actions Column */
+.dash-va-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.dash-va-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--dash-radius);
+    border: 1px solid var(--dash-border);
+    background: var(--dash-card-bg);
+    color: var(--dash-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--dash-transition);
+    font-size: 0.875rem;
+}
+
+.dash-va-action-btn:hover {
+    border-color: var(--dash-primary);
+    color: var(--dash-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.dash-va-action-btn.danger:hover {
+    border-color: var(--dash-danger);
+    color: var(--dash-danger);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* View Toggle */
+.dash-va-view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 1rem;
+}
+
+/* VA Pro Responsive */
+@media (max-width: 1200px) {
+    .dash-va-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dash-va-leaderboard-header,
+    .dash-va-row {
+        grid-template-columns: 40px 2fr 1fr 1fr 80px;
+    }
+
+    .dash-va-col-twitter,
+    .dash-va-col-instagram,
+    .dash-va-stat.twitter,
+    .dash-va-stat.instagram {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .dash-va-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .dash-va-kpis {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .dash-va-kpi {
+        padding: 1rem;
+    }
+
+    .dash-va-kpi-value {
+        font-size: 1.25rem;
+    }
+
+    .dash-va-leaderboard-header,
+    .dash-va-row {
+        grid-template-columns: 40px 1.5fr 80px 60px;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+    }
+
+    .dash-va-col-creators,
+    .dash-va-creators {
+        display: none;
+    }
+
+    .dash-va-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
+
+    .dash-va-name {
+        font-size: 0.875rem;
+    }
+
+    .dash-va-actions {
+        gap: 0.25rem;
+    }
+
+    .dash-va-action-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
