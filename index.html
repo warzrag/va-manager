@@ -13042,7 +13042,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     }
 
                     tableHtml += `
-                        <div class="dash-va-row">
+                        <div class="dash-va-row" data-rank="${index + 1}">
                             <div class="dash-va-col-rank">
                                 <div class="dash-va-rank ${rankClass}">${rankContent}</div>
                             </div>
@@ -13050,7 +13050,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                 <div class="dash-va-avatar">${initial}</div>
                                 <div class="dash-va-name-info">
                                     <div class="dash-va-name">${va.name}</div>
-                                    <div class="dash-va-subtitle">${va.creators.length} creatrice${va.creators.length > 1 ? 's' : ''}</div>
+                                    <div class="dash-va-subtitle">${va.creators.length} créatrice${va.creators.length > 1 ? 's' : ''}</div>
                                 </div>
                             </div>
                             <div class="dash-va-accounts-cell">${twitterLinksHtml}</div>
