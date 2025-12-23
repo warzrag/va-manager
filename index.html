@@ -5529,6 +5529,9 @@
 
                     // STEP 1: First, set the correct organization (Tom et Flo) BEFORE loading data
                     const orgs = await getUserOwnedOrganizations();
+                    console.log('📋 Available organizations:', orgs.map(o => ({ id: o.id, name: o.name })));
+
+                    // Find "Tom et Flo" - try exact match first, then partial
                     let tomEtFlo = orgs.find(org =>
                         org.name && org.name.toLowerCase().trim() === 'tom et flo'
                     );
@@ -5539,9 +5542,22 @@
                             org.name.toLowerCase().includes('flo')
                         );
                     }
+                    // If still not found, try just "tom"
+                    if (!tomEtFlo) {
+                        tomEtFlo = orgs.find(org =>
+                            org.name && org.name.toLowerCase().includes('tom')
+                        );
+                    }
+
                     if (tomEtFlo) {
                         setActiveOrganizationId(tomEtFlo.id);
-                        console.log('✅ Pre-set "Tom et Flo" as active organization BEFORE loading data');
+                        console.log('✅ Pre-set organization:', tomEtFlo.name, 'as active BEFORE loading data');
+                    } else {
+                        console.warn('⚠️ Could not find Tom et Flo organization, using first available');
+                        if (orgs.length > 0) {
+                            setActiveOrganizationId(orgs[0].id);
+                            console.log('✅ Using first organization:', orgs[0].name);
+                        }
                     }
 
                     // STEP 2: Now load data with the correct organization set
