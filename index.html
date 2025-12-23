@@ -6512,6 +6512,9 @@
             // Vérifier si les followers ont été mis à jour aujourd'hui
             checkFollowersUpdateStatus();
 
+            // Initialiser le popup urgent de rappel followers (23h)
+            initUrgentFollowersReminder();
+
             setupDragAndDrop();
             setupSubsTracking();
             setupRevenueTracking();
@@ -10898,6 +10901,152 @@
                     reminderEl.style.display = 'none';
                 }, 300);
             }
+        }
+
+        // ============================================================================
+        // POPUP URGENT 23H - RAPPEL FOLLOWERS
+        // ============================================================================
+
+        let urgentPopupInterval = null;
+        let midnightCountdownInterval = null;
+
+        // Vérifier si on doit afficher le popup urgent (après 23h)
+        async function checkUrgentFollowersReminder() {
+            try {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const today = now.toISOString().split('T')[0];
+
+                // Vérifier si déjà fermé aujourd'hui
+                const dismissedDate = localStorage.getItem('followers_urgent_popup_dismissed');
+                if (dismissedDate === today) {
+                    return;
+                }
+
+                // Seulement après 23h (ou pour test: changer la condition)
+                if (currentHour < 23) {
+                    return;
+                }
+
+                // Vérifier si les followers ont été mis à jour aujourd'hui
+                const { data: todayStats, error } = await supabaseClient
+                    .from('twitter_followers_history')
+                    .select('twitter_account_id')
+                    .eq('date', today);
+
+                if (error) {
+                    console.error('Erreur vérification urgent followers:', error);
+                    return;
+                }
+
+                // Récupérer tous les comptes Twitter actifs
+                const { data: allAccounts, error: accountsError } = await supabaseClient
+                    .from('twitter_accounts')
+                    .select('id, username')
+                    .eq('status', 'active');
+
+                if (accountsError || !allAccounts) {
+                    console.error('Erreur récupération comptes:', accountsError);
+                    return;
+                }
+
+                // Trouver les comptes non mis à jour
+                const updatedAccountIds = new Set((todayStats || []).map(s => s.twitter_account_id));
+                const missingAccounts = allAccounts.filter(acc => !updatedAccountIds.has(acc.id));
+
+                // Si tous les comptes sont à jour, ne pas afficher
+                if (missingAccounts.length === 0) {
+                    console.log('✅ Tous les comptes Twitter sont à jour');
+                    return;
+                }
+
+                // Afficher le popup
+                showUrgentFollowersPopup(missingAccounts);
+
+            } catch (err) {
+                console.error('Erreur checkUrgentFollowersReminder:', err);
+            }
+        }
+
+        // Afficher le popup urgent
+        function showUrgentFollowersPopup(missingAccounts) {
+            const popup = document.getElementById('followers-urgent-popup');
+            const accountsContainer = document.getElementById('followers-missing-accounts');
+
+            if (!popup || !accountsContainer) return;
+
+            // Remplir la liste des comptes manquants
+            if (missingAccounts.length > 0) {
+                accountsContainer.innerHTML = missingAccounts.map(acc => `
+                    <div class="followers-urgent-account-item">
+                        <i class="fab fa-twitter"></i>
+                        <span>@${acc.username}</span>
+                    </div>
+                `).join('');
+                accountsContainer.style.display = 'block';
+            } else {
+                accountsContainer.style.display = 'none';
+            }
+
+            // Afficher le popup
+            popup.style.display = 'flex';
+
+            // Démarrer le compte à rebours jusqu'à minuit
+            updateMidnightCountdown();
+            midnightCountdownInterval = setInterval(updateMidnightCountdown, 1000);
+
+            console.log('⚠️ Popup urgent affiché - ' + missingAccounts.length + ' comptes non mis à jour');
+        }
+
+        // Mettre à jour le compte à rebours jusqu'à minuit
+        function updateMidnightCountdown() {
+            const now = new Date();
+            const midnight = new Date(now);
+            midnight.setHours(24, 0, 0, 0);
+
+            const diff = midnight - now;
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+
+            const timerEl = document.getElementById('time-until-midnight');
+            if (timerEl) {
+                timerEl.textContent = `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+            }
+        }
+
+        // Aller à la page de suivi des followers
+        function goToFollowersTracking() {
+            dismissUrgentFollowersPopup();
+            navigateToPage('followers-tracking');
+        }
+
+        // Fermer le popup urgent
+        function dismissUrgentFollowersPopup() {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem('followers_urgent_popup_dismissed', today);
+
+            const popup = document.getElementById('followers-urgent-popup');
+            if (popup) {
+                popup.style.animation = 'popupFadeIn 0.3s ease-out reverse';
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 300);
+            }
+
+            // Arrêter le compte à rebours
+            if (midnightCountdownInterval) {
+                clearInterval(midnightCountdownInterval);
+                midnightCountdownInterval = null;
+            }
+        }
+
+        // Initialiser le système de rappel urgent
+        function initUrgentFollowersReminder() {
+            // Vérifier immédiatement
+            checkUrgentFollowersReminder();
+
+            // Revérifier toutes les 5 minutes
+            urgentPopupInterval = setInterval(checkUrgentFollowersReminder, 5 * 60 * 1000);
         }
 
         // Load the followers tracking page
@@ -23909,5 +24058,250 @@ Tapez "SUPPRIMER" pour confirmer :`;
             });
         });
     </script>
+
+    <!-- POPUP RAPPEL FOLLOWERS 23H -->
+    <div id="followers-urgent-popup" class="followers-urgent-modal" style="display: none;">
+        <div class="followers-urgent-overlay"></div>
+        <div class="followers-urgent-content">
+            <div class="followers-urgent-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="followers-urgent-title">⚠️ Mise à jour requise !</h2>
+            <p class="followers-urgent-text">
+                Les followers n'ont <strong>pas encore été mis à jour</strong> aujourd'hui.<br>
+                Il est bientôt minuit, pensez à mettre à jour les comptes !
+            </p>
+            <div class="followers-urgent-accounts" id="followers-missing-accounts">
+                <!-- Liste des comptes non mis à jour -->
+            </div>
+            <div class="followers-urgent-actions">
+                <button onclick="goToFollowersTracking()" class="followers-urgent-btn-primary">
+                    <i class="fas fa-edit"></i> Mettre à jour maintenant
+                </button>
+                <button onclick="dismissUrgentFollowersPopup()" class="followers-urgent-btn-secondary">
+                    <i class="fas fa-clock"></i> Me rappeler demain
+                </button>
+            </div>
+            <div class="followers-urgent-timer">
+                <i class="fas fa-hourglass-half"></i> <span id="time-until-midnight"></span> avant minuit
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* POPUP URGENT FOLLOWERS */
+        .followers-urgent-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popupFadeIn 0.3s ease-out;
+        }
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popupSlideIn {
+            from { opacity: 0; transform: scale(0.8) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 60px rgba(245, 158, 11, 0.7); }
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .followers-urgent-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .followers-urgent-content {
+            position: relative;
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: popupSlideIn 0.4s ease-out, pulseGlow 2s ease-in-out infinite;
+        }
+
+        .followers-urgent-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: iconBounce 1s ease-in-out infinite;
+        }
+
+        .followers-urgent-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .followers-urgent-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #f59e0b;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .followers-urgent-text {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .followers-urgent-text strong {
+            color: #fbbf24;
+        }
+
+        .followers-urgent-accounts {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .followers-urgent-account-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            color: #fbbf24;
+            font-size: 0.95rem;
+        }
+
+        .followers-urgent-account-item i {
+            color: #f59e0b;
+        }
+
+        .followers-urgent-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .followers-urgent-btn-primary {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .followers-urgent-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        .followers-urgent-btn-secondary {
+            padding: 0.875rem 1.5rem;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .followers-urgent-btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .followers-urgent-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 50px;
+            color: #fca5a5;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .followers-urgent-timer i {
+            animation: iconBounce 1s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .followers-urgent-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .followers-urgent-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .followers-urgent-icon i {
+                font-size: 1.75rem;
+            }
+
+            .followers-urgent-title {
+                font-size: 1.4rem;
+            }
+
+            .followers-urgent-text {
+                font-size: 1rem;
+            }
+
+            .followers-urgent-btn-primary {
+                font-size: 1rem;
+                padding: 0.875rem 1.5rem;
+            }
+        }
+    </style>
 </body>
 </html>
