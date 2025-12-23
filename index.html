@@ -3426,6 +3426,23 @@
                 </div>
             </div>
 
+            <!-- Alerte Rappel Mise à jour Followers -->
+            <div id="followers-update-reminder" class="dash-reminder-alert" style="display: none;">
+                <div class="dash-reminder-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="dash-reminder-content">
+                    <div class="dash-reminder-title">Mise à jour des followers requise</div>
+                    <div class="dash-reminder-text">Les followers n'ont pas encore été mis à jour aujourd'hui. Pensez à les mettre à jour pour un suivi précis.</div>
+                </div>
+                <button onclick="navigateToPage('followers-tracking')" class="dash-reminder-btn">
+                    <i class="fas fa-edit"></i> Mettre à jour
+                </button>
+                <button onclick="dismissFollowersReminder()" class="dash-reminder-close" title="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
             <!-- Stats Header - Métriques principales -->
             <div class="dash-stats-header">
                 <div class="dash-stat-card" style="--accent-color: #8b5cf6;">
@@ -6491,6 +6508,9 @@
 
             // Forcer la mise à jour du dashboard
             updateDisplay();
+
+            // Vérifier si les followers ont été mis à jour aujourd'hui
+            checkFollowersUpdateStatus();
 
             setupDragAndDrop();
             setupSubsTracking();
@@ -10824,6 +10844,61 @@
         // ============================================================================
 
         let followersGrowthChart = null;
+        let followersReminderDismissed = false;
+
+        // Vérifier si les followers ont été mis à jour aujourd'hui
+        async function checkFollowersUpdateStatus() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const reminderEl = document.getElementById('followers-update-reminder');
+
+                if (!reminderEl) return;
+
+                // Vérifier si l'utilisateur a fermé le rappel aujourd'hui
+                const dismissedDate = localStorage.getItem('followers_reminder_dismissed');
+                if (dismissedDate === today) {
+                    reminderEl.style.display = 'none';
+                    return;
+                }
+
+                // Récupérer les stats de followers d'aujourd'hui
+                const { data: todayStats, error } = await supabaseClient
+                    .from('twitter_followers_history')
+                    .select('id')
+                    .eq('date', today)
+                    .limit(1);
+
+                if (error) {
+                    console.error('Erreur vérification followers:', error);
+                    return;
+                }
+
+                // Si aucune entrée aujourd'hui, afficher le rappel
+                if (!todayStats || todayStats.length === 0) {
+                    reminderEl.style.display = 'flex';
+                    console.log('⚠️ Rappel: Les followers n\'ont pas été mis à jour aujourd\'hui');
+                } else {
+                    reminderEl.style.display = 'none';
+                    console.log('✅ Les followers ont été mis à jour aujourd\'hui');
+                }
+            } catch (err) {
+                console.error('Erreur checkFollowersUpdateStatus:', err);
+            }
+        }
+
+        // Fermer le rappel pour aujourd'hui
+        function dismissFollowersReminder() {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem('followers_reminder_dismissed', today);
+
+            const reminderEl = document.getElementById('followers-update-reminder');
+            if (reminderEl) {
+                reminderEl.style.animation = 'slideUp 0.3s ease-out reverse';
+                setTimeout(() => {
+                    reminderEl.style.display = 'none';
+                }, 300);
+            }
+        }
 
         // Load the followers tracking page
         // Ouvrir Twitter et focus sur le champ de saisie
