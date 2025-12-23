@@ -5527,12 +5527,27 @@
 
                     document.getElementById('user-email').textContent = currentUser.email;
 
-                    // OPTIMIZED: Load data, org info, and org switcher ALL in parallel
+                    // STEP 1: First, set the correct organization (Tom et Flo) BEFORE loading data
+                    const orgs = await getUserOwnedOrganizations();
+                    let tomEtFlo = orgs.find(org =>
+                        org.name && org.name.toLowerCase().trim() === 'tom et flo'
+                    );
+                    if (!tomEtFlo) {
+                        tomEtFlo = orgs.find(org =>
+                            org.name &&
+                            org.name.toLowerCase().includes('tom') &&
+                            org.name.toLowerCase().includes('flo')
+                        );
+                    }
+                    if (tomEtFlo) {
+                        setActiveOrganizationId(tomEtFlo.id);
+                        console.log('✅ Pre-set "Tom et Flo" as active organization BEFORE loading data');
+                    }
+
+                    // STEP 2: Now load data with the correct organization set
                     const [_, organization] = await Promise.all([
                         loadAllData(),
-                        getUserOrganization(),
-                        // Pre-fetch owned orgs for switcher (will be cached)
-                        getUserOwnedOrganizations()
+                        getUserOrganization()
                     ]);
 
                     // Check if user is organization owner and show admin button
@@ -5541,10 +5556,10 @@
                         console.log('✅ Admin button enabled for organization owner');
                     }
 
-                    // Initialize organization switcher (will use cached data)
+                    // STEP 3: Initialize organization switcher UI (will use cached orgs)
                     await initOrganizationSwitcher();
 
-                    // Initialize UI
+                    // STEP 4: Initialize UI
                     initializeUI();
 
                     // Create automatic backup (runs in background - don't await)
@@ -6371,29 +6386,7 @@
                     // Show the switcher
                     document.getElementById('organization-switcher').style.display = 'block';
 
-                    // OPTIMIZED: Get orgs once and reuse
-                    const orgs = await getUserOwnedOrganizations();
-
-                    // Auto-select "Tom et Flo" as default BEFORE loading UI
-                    let tomEtFlo = orgs.find(org =>
-                        org.name &&
-                        org.name.toLowerCase().trim() === 'tom et flo'
-                    );
-
-                    if (!tomEtFlo) {
-                        tomEtFlo = orgs.find(org =>
-                            org.name &&
-                            org.name.toLowerCase().includes('tom') &&
-                            org.name.toLowerCase().includes('flo')
-                        );
-                    }
-
-                    if (tomEtFlo) {
-                        await setActiveOrganizationId(tomEtFlo.id);
-                        console.log('✅ Auto-selected "Tom et Flo" as default organization');
-                    }
-
-                    // Load organizations UI (will use cached orgs)
+                    // Load organizations UI (will use cached orgs from initializeApp)
                     await loadUserOrganizations();
 
                     // Update active organization display
