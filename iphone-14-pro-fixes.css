@@ -667,350 +667,495 @@
 }
 
 /* ============================================================================
-   12. FOLLOWERS TRACKING PAGE MOBILE
+   12. FOLLOWERS TRACKING PAGE - STYLES DE BASE + MOBILE
+   ============================================================================ */
+
+/* Base styles pour la page */
+.ft-hero {
+    background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ft-hero-bg {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.ft-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ft-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ft-hero-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.ft-hero-text h2 {
+    font-size: 1.75rem;
+    margin: 0;
+    color: white;
+    font-weight: 800;
+}
+
+.ft-hero-text p {
+    font-size: 0.9375rem;
+    margin: 0.25rem 0 0 0;
+    color: rgba(255,255,255,0.9);
+}
+
+.ft-hero-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.ft-date-input {
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.ft-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.ft-save-btn {
+    background: white;
+    color: #1da1f2;
+    border: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ft-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Summary Cards */
+.ft-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Bulk Section */
+.ft-bulk-section {
+    background: var(--card-bg, white);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.ft-section-title {
+    margin: 0 0 1.25rem 0;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.ft-section-title i {
+    color: #1da1f2;
+}
+
+.ft-bulk-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ft-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+}
+
+.ft-loading i {
+    font-size: 2rem;
+}
+
+.ft-loading p {
+    margin-top: 1rem;
+}
+
+.ft-save-all-btn {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    transition: all 0.3s;
+}
+
+.ft-save-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+/* Dashboard Grid */
+.ft-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.ft-card {
+    background: var(--card-bg, white);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.ft-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.ft-card-title {
+    margin: 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.ft-card-title i {
+    color: #10b981;
+}
+
+.ft-card-title i.fa-trophy {
+    color: #f59e0b;
+}
+
+.ft-card-title i.fa-history {
+    color: #8b5cf6;
+}
+
+.ft-period-btns {
+    display: flex;
+    gap: 0.375rem;
+}
+
+.followers-period-btn {
+    padding: 0.4rem 0.875rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: #64748b;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.followers-period-btn.active {
+    background: #1da1f2;
+    color: white;
+    border-color: #1da1f2;
+}
+
+.ft-chart-container {
+    height: 280px;
+}
+
+.ft-top-performers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ft-history-card {
+    margin-top: 0;
+}
+
+.ft-history-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================================
+   FOLLOWERS TRACKING - RESPONSIVE MOBILE
    ============================================================================ */
 
 @media (max-width: 768px) {
-    /* 12.1 - Hero Header */
-    #followers-tracking-page .hero-header {
-        padding: 1rem !important;
-        text-align: center !important;
+    .ft-hero {
+        padding: 1.25rem;
+        border-radius: 1rem;
+        margin-bottom: 1rem;
     }
 
-    #followers-tracking-page .hero-header h1 {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.5rem !important;
+    .ft-hero-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
 
-    #followers-tracking-page .hero-header p {
-        font-size: 0.875rem !important;
-        margin-bottom: 1rem !important;
+    .ft-hero-main {
+        gap: 0.875rem;
     }
 
-    /* 12.2 - Date picker container */
-    #followers-tracking-page .date-picker-container {
-        flex-direction: column !important;
-        gap: 0.5rem !important;
-        align-items: stretch !important;
+    .ft-hero-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.125rem;
+        border-radius: 0.75rem;
     }
 
-    #followers-tracking-page #followers-date {
-        width: 100% !important;
-        text-align: center !important;
+    .ft-hero-text h2 {
+        font-size: 1.25rem;
     }
 
-    /* 12.3 - Summary cards grid */
-    #followers-tracking-page .summary-cards {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.75rem !important;
-        padding: 0 0.75rem !important;
+    .ft-hero-text p {
+        font-size: 0.8125rem;
     }
 
-    #followers-tracking-page .summary-card {
-        padding: 0.875rem !important;
+    .ft-hero-actions {
+        flex-direction: column;
+        gap: 0.625rem;
     }
 
-    #followers-tracking-page .summary-card .icon {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1rem !important;
+    .ft-date-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 16px; /* Evite le zoom iOS */
+        text-align: center;
     }
 
-    #followers-tracking-page .summary-card .value {
-        font-size: 1.25rem !important;
+    .ft-save-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.875rem 1rem;
     }
 
-    #followers-tracking-page .summary-card .label {
-        font-size: 0.6875rem !important;
+    /* Summary Cards */
+    .ft-summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.625rem;
+        margin-bottom: 1rem;
     }
 
-    /* 12.4 - Bulk entry section */
-    #followers-tracking-page .bulk-entry-section {
-        margin: 0.75rem !important;
-        padding: 1rem !important;
-        border-radius: 0.75rem !important;
+    /* Bulk Section */
+    .ft-bulk-section {
+        padding: 1rem;
+        border-radius: 0.875rem;
+        margin-bottom: 1rem;
     }
 
-    #followers-tracking-page .bulk-entry-section h2 {
-        font-size: 1.125rem !important;
-        margin-bottom: 1rem !important;
+    .ft-section-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
     }
 
-    /* 12.5 - Creator groups */
-    #followers-tracking-page .creator-group {
-        margin-bottom: 1rem !important;
-        padding: 0.875rem !important;
-        border-radius: 0.625rem !important;
+    .ft-bulk-form {
+        gap: 0.875rem;
     }
 
-    #followers-tracking-page .creator-group-header {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 0.375rem !important;
-        margin-bottom: 0.75rem !important;
+    .ft-save-all-btn {
+        margin-top: 1rem;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9375rem;
+        border-radius: 0.625rem;
     }
 
-    #followers-tracking-page .creator-group-header .creator-info {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
+    /* Dashboard Grid - Une colonne sur mobile */
+    .ft-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
-    #followers-tracking-page .creator-group-header .creator-photo {
-        width: 32px !important;
-        height: 32px !important;
-        border-radius: 50% !important;
+    .ft-card {
+        padding: 1rem;
+        border-radius: 0.875rem;
     }
 
-    #followers-tracking-page .creator-group-header .creator-name {
-        font-size: 1rem !important;
-        font-weight: 600 !important;
+    .ft-card-header {
+        margin-bottom: 0.875rem;
     }
 
-    #followers-tracking-page .creator-group-header .creator-total {
-        font-size: 0.8125rem !important;
-        color: #667eea !important;
-        font-weight: 600 !important;
-        align-self: flex-end !important;
+    .ft-card-title {
+        font-size: 0.9375rem;
     }
 
-    /* 12.6 - Account rows */
-    #followers-tracking-page .account-row {
-        display: grid !important;
-        grid-template-columns: 1fr auto !important;
-        gap: 0.5rem !important;
-        padding: 0.625rem 0 !important;
-        border-bottom: 1px solid rgba(0,0,0,0.05) !important;
-        align-items: center !important;
+    .ft-period-btns {
+        gap: 0.25rem;
     }
 
-    #followers-tracking-page .account-row:last-child {
-        border-bottom: none !important;
+    .followers-period-btn {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.75rem;
     }
 
-    #followers-tracking-page .account-info {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 0.25rem !important;
+    .ft-chart-container {
+        height: 200px;
     }
 
-    #followers-tracking-page .account-username {
-        font-size: 0.875rem !important;
-        font-weight: 500 !important;
-        color: #1DA1F2 !important;
-    }
-
-    #followers-tracking-page .account-growth {
-        font-size: 0.75rem !important;
-    }
-
-    #followers-tracking-page .account-input-container {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.375rem !important;
-    }
-
-    #followers-tracking-page .followers-input {
-        width: 90px !important;
-        padding: 0.5rem !important;
-        font-size: 16px !important;
-        text-align: center !important;
-        border-radius: 0.5rem !important;
-    }
-
-    /* 12.7 - Save button */
-    #followers-tracking-page .save-all-btn {
-        width: 100% !important;
-        padding: 1rem !important;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        margin-top: 1rem !important;
-        min-height: 52px !important;
-        border-radius: 0.75rem !important;
-    }
-
-    /* 12.8 - Dashboard section */
-    #followers-tracking-page .dashboard-section {
-        margin: 0.75rem !important;
-        padding: 1rem !important;
-        border-radius: 0.75rem !important;
-    }
-
-    #followers-tracking-page .dashboard-section h2 {
-        font-size: 1.125rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    /* 12.9 - Period selector */
-    #followers-tracking-page .period-selector {
-        display: flex !important;
-        gap: 0.375rem !important;
-        margin-bottom: 1rem !important;
-        flex-wrap: wrap !important;
-    }
-
-    #followers-tracking-page .period-btn {
-        flex: 1 !important;
-        min-width: 60px !important;
-        padding: 0.5rem 0.75rem !important;
-        font-size: 0.75rem !important;
-        border-radius: 0.5rem !important;
-        white-space: nowrap !important;
-    }
-
-    /* 12.10 - Chart container */
-    #followers-tracking-page .chart-container {
-        height: 220px !important;
-        margin-bottom: 1rem !important;
-    }
-
-    #followers-tracking-page .chart-container canvas {
-        max-height: 200px !important;
-    }
-
-    /* 12.11 - Top performers */
-    #followers-tracking-page .top-performers {
-        margin: 0.75rem !important;
-        padding: 1rem !important;
-        border-radius: 0.75rem !important;
-    }
-
-    #followers-tracking-page .top-performers h3 {
-        font-size: 1rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    #followers-tracking-page .performer-item {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.625rem !important;
-        padding: 0.625rem 0 !important;
-        border-bottom: 1px solid rgba(0,0,0,0.05) !important;
-    }
-
-    #followers-tracking-page .performer-item:last-child {
-        border-bottom: none !important;
-    }
-
-    #followers-tracking-page .performer-rank {
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 0.75rem !important;
-        font-weight: 700 !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex-shrink: 0 !important;
-    }
-
-    #followers-tracking-page .performer-rank.gold {
-        background: linear-gradient(135deg, #f6d365, #fda085) !important;
-        color: white !important;
-    }
-
-    #followers-tracking-page .performer-rank.silver {
-        background: linear-gradient(135deg, #bdc3c7, #95a5a6) !important;
-        color: white !important;
-    }
-
-    #followers-tracking-page .performer-rank.bronze {
-        background: linear-gradient(135deg, #cd7f32, #b87333) !important;
-        color: white !important;
-    }
-
-    #followers-tracking-page .performer-info {
-        flex: 1 !important;
-        min-width: 0 !important;
-    }
-
-    #followers-tracking-page .performer-username {
-        font-size: 0.875rem !important;
-        font-weight: 500 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    #followers-tracking-page .performer-growth {
-        font-size: 0.875rem !important;
-        font-weight: 600 !important;
-        color: #10b981 !important;
-        white-space: nowrap !important;
-    }
-
-    /* 12.12 - History section */
-    #followers-tracking-page .history-section {
-        margin: 0.75rem !important;
-        padding: 1rem !important;
-        border-radius: 0.75rem !important;
-    }
-
-    #followers-tracking-page .history-section h2 {
-        font-size: 1.125rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    #followers-tracking-page .history-table-wrapper {
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        margin: 0 -0.5rem !important;
-        padding: 0 0.5rem !important;
-    }
-
-    #followers-tracking-page .history-table {
-        font-size: 0.75rem !important;
-        min-width: 400px !important;
-    }
-
-    #followers-tracking-page .history-table th,
-    #followers-tracking-page .history-table td {
-        padding: 0.5rem 0.375rem !important;
-        white-space: nowrap !important;
-    }
-
-    /* 12.13 - Empty state */
-    #followers-tracking-page .empty-state {
-        padding: 2rem 1rem !important;
-        text-align: center !important;
-    }
-
-    #followers-tracking-page .empty-state i {
-        font-size: 3rem !important;
-        margin-bottom: 0.75rem !important;
-        opacity: 0.5 !important;
-    }
-
-    #followers-tracking-page .empty-state p {
-        font-size: 0.9375rem !important;
+    .ft-history-card {
+        margin-top: 1rem;
     }
 }
 
-/* 12.14 - Dark mode pour followers tracking */
-@media (max-width: 768px) {
-    body.dark-mode #followers-tracking-page .creator-group {
-        background: #1f2937 !important;
+/* ============================================================================
+   FOLLOWERS TRACKING - RESPONSIVE IPHONE (< 430px)
+   ============================================================================ */
+
+@media (max-width: 430px) {
+    .ft-hero {
+        padding: 1rem;
+        border-radius: 0.875rem;
     }
 
-    body.dark-mode #followers-tracking-page .account-row {
-        border-bottom-color: rgba(255,255,255,0.05) !important;
+    .ft-hero-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
 
-    body.dark-mode #followers-tracking-page .bulk-entry-section,
-    body.dark-mode #followers-tracking-page .dashboard-section,
-    body.dark-mode #followers-tracking-page .top-performers,
-    body.dark-mode #followers-tracking-page .history-section {
-        background: #1f2937 !important;
+    .ft-hero-text h2 {
+        font-size: 1.125rem;
     }
 
-    body.dark-mode #followers-tracking-page .performer-item {
-        border-bottom-color: rgba(255,255,255,0.05) !important;
+    .ft-hero-text p {
+        font-size: 0.75rem;
+        display: none;
     }
 
-    body.dark-mode #followers-tracking-page .followers-input {
-        background: #374151 !important;
-        border-color: #4b5563 !important;
-        color: white !important;
+    .ft-save-btn span {
+        display: none;
     }
+
+    .ft-save-btn {
+        padding: 0.75rem 1rem;
+    }
+
+    /* Summary Cards plus compactes */
+    .ft-summary-cards {
+        gap: 0.5rem;
+    }
+
+    /* Bulk Section */
+    .ft-bulk-section {
+        padding: 0.875rem;
+    }
+
+    .ft-section-title {
+        font-size: 0.9375rem;
+        margin-bottom: 0.875rem;
+    }
+
+    .ft-save-all-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .ft-save-all-btn i {
+        font-size: 1rem;
+    }
+
+    /* Cards */
+    .ft-card {
+        padding: 0.875rem;
+    }
+
+    .ft-card-title {
+        font-size: 0.875rem;
+    }
+
+    .followers-period-btn {
+        padding: 0.3125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    .ft-chart-container {
+        height: 180px;
+    }
+
+    .ft-top-performers {
+        gap: 0.5rem;
+    }
+}
+
+/* ============================================================================
+   FOLLOWERS TRACKING - DARK MODE
+   ============================================================================ */
+
+body.dark-mode .ft-bulk-section,
+body.dark-mode .ft-card {
+    background: var(--card-bg, #1f2937);
+}
+
+body.dark-mode .followers-period-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+body.dark-mode .followers-period-btn.active {
+    background: #1da1f2;
+    border-color: #1da1f2;
+    color: white;
+}
+
+body.dark-mode .ft-date-input {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.2);
 }

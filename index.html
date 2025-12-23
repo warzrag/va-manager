@@ -4739,94 +4739,88 @@
         <!-- Followers Tracking Page -->
         <div id="followers-tracking-page" class="page">
             <!-- Hero Header -->
-            <div style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); border-radius: 1.5rem; padding: 2.5rem 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%;"></div>
-                <div style="position: relative; z-index: 1;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
-                        <div style="display: flex; align-items: center; gap: 1.25rem;">
-                            <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: white;">
-                                <i class="fas fa-users" style="font-size: 1.75rem;"></i>
-                            </div>
-                            <div>
-                                <h2 style="font-size: 2rem; margin: 0; color: white; font-weight: 800;">Suivi Followers</h2>
-                                <p style="font-size: 1rem; margin: 0.5rem 0 0 0; color: rgba(255,255,255,0.9);">Suivez la croissance de vos comptes Twitter quotidiennement</p>
-                            </div>
+            <div class="ft-hero">
+                <div class="ft-hero-bg"></div>
+                <div class="ft-hero-content">
+                    <div class="ft-hero-main">
+                        <div class="ft-hero-icon">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <input type="date" id="followers-tracking-date" style="padding: 0.75rem 1rem; border-radius: 0.75rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; font-size: 1rem; font-weight: 600;">
-                            <button onclick="saveAllFollowersStats(event)" style="background: white; color: #1da1f2; border: none; padding: 0.875rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                                <i class="fas fa-save"></i> Enregistrer tout
-                            </button>
+                        <div class="ft-hero-text">
+                            <h2>Suivi Followers</h2>
+                            <p>Suivez la croissance de vos comptes Twitter</p>
                         </div>
+                    </div>
+                    <div class="ft-hero-actions">
+                        <input type="date" id="followers-tracking-date" class="ft-date-input">
+                        <button onclick="saveAllFollowersStats(event)" class="ft-save-btn">
+                            <i class="fas fa-save"></i> <span>Enregistrer</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Stats Summary Cards -->
-            <div id="followers-summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div id="followers-summary-cards" class="ft-summary-cards">
                 <!-- Will be populated by JS -->
             </div>
 
             <!-- Bulk Entry Form by Creator -->
-            <div style="background: var(--card-bg, white); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fab fa-twitter" style="color: #1da1f2;"></i> Saisie rapide par créatrice
+            <div class="ft-bulk-section">
+                <h3 class="ft-section-title">
+                    <i class="fab fa-twitter"></i> Saisie rapide par créatrice
                 </h3>
-                <div id="followers-bulk-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div id="followers-bulk-form" class="ft-bulk-form">
                     <!-- Will be populated by JS with creator groups -->
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                        <p style="margin-top: 1rem;">Chargement des comptes...</p>
+                    <div class="ft-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement des comptes...</p>
                     </div>
                 </div>
 
                 <!-- Bouton Enregistrer tout -->
-                <button onclick="saveAllFollowersStats(event)"
-                        id="save-followers-btn"
-                        style="width: 100%; margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: all 0.3s;"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.4)'">
-                    <i class="fas fa-save" style="font-size: 1.25rem;"></i>
+                <button onclick="saveAllFollowersStats(event)" id="save-followers-btn" class="ft-save-all-btn">
+                    <i class="fas fa-save"></i>
                     Enregistrer tous les followers
                 </button>
             </div>
 
             <!-- Growth Dashboard -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="ft-dashboard-grid">
                 <!-- Growth Chart -->
-                <div style="background: var(--card-bg, white); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="margin: 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-chart-line" style="color: #10b981;"></i> Croissance
+                <div class="ft-card">
+                    <div class="ft-card-header">
+                        <h3 class="ft-card-title">
+                            <i class="fas fa-chart-line"></i> Croissance
                         </h3>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="updateFollowersChart(7)" class="followers-period-btn active" data-period="7" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: #1da1f2; color: white; font-size: 0.875rem; cursor: pointer;">7j</button>
-                            <button onclick="updateFollowersChart(30)" class="followers-period-btn" data-period="30" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: white; color: #64748b; font-size: 0.875rem; cursor: pointer;">30j</button>
-                            <button onclick="updateFollowersChart(90)" class="followers-period-btn" data-period="90" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: white; color: #64748b; font-size: 0.875rem; cursor: pointer;">90j</button>
+                        <div class="ft-period-btns">
+                            <button onclick="updateFollowersChart(7)" class="followers-period-btn active" data-period="7">7j</button>
+                            <button onclick="updateFollowersChart(30)" class="followers-period-btn" data-period="30">30j</button>
+                            <button onclick="updateFollowersChart(90)" class="followers-period-btn" data-period="90">90j</button>
                         </div>
                     </div>
-                    <div style="height: 300px;">
+                    <div class="ft-chart-container">
                         <canvas id="followers-growth-chart"></canvas>
                     </div>
                 </div>
 
                 <!-- Top Performers -->
-                <div style="background: var(--card-bg, white); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-trophy" style="color: #f59e0b;"></i> Top Performers (hier)
+                <div class="ft-card">
+                    <h3 class="ft-card-title">
+                        <i class="fas fa-trophy"></i> Top Performers (hier)
                     </h3>
-                    <div id="followers-top-performers" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div id="followers-top-performers" class="ft-top-performers">
                         <!-- Will be populated by JS -->
                     </div>
                 </div>
             </div>
 
             <!-- Daily History Table -->
-            <div style="background: var(--card-bg, white); border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-history" style="color: #8b5cf6;"></i> Historique par créatrice
+            <div class="ft-card ft-history-card">
+                <h3 class="ft-card-title">
+                    <i class="fas fa-history"></i> Historique par créatrice
                 </h3>
-                <div id="followers-history-table" style="overflow-x: auto;">
+                <div id="followers-history-table" class="ft-history-table">
                     <!-- Will be populated by JS -->
                 </div>
             </div>
