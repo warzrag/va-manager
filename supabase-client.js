@@ -3113,53 +3113,63 @@ async function getOrganizationMembers() {
   try {
     const orgId = await getOrganizationId();
 
-    // Get members
-    const { data, error } = await supabase
+    // OPTIMIZED: Get members with user_profiles in a single query using join
+    const { data: members, error: membersError } = await supabase
       .from('organization_members')
-      .select('*')
+      .select(`
+        *,
+        user_profiles!inner (
+          pseudo,
+          email
+        )
+      `)
       .eq('organization_id', orgId);
 
-    if (error) throw error;
+    if (membersError) {
+      // Fallback if join doesn't work (schema issue)
+      console.warn('⚠️ Join failed, falling back to separate query');
+      const { data, error } = await supabase
+        .from('organization_members')
+        .select('*')
+        .eq('organization_id', orgId);
 
-    // Get pseudos AND emails for each member from user_profiles and auth.users
-    const membersWithPseudos = await Promise.all(
-      (data || []).map(async (member) => {
-        try {
-          // Get pseudo from user_profiles
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('pseudo')
-            .eq('user_id', member.user_id)
-            .single();
+      if (error) throw error;
 
-          // Get email from auth.users via RPC or directly if accessible
-          let email = 'N/A';
-          try {
-            const { data: userData, error: userError } = await supabase.auth.admin.getUserById(member.user_id);
-            if (!userError && userData?.user?.email) {
-              email = userData.user.email;
-            }
-          } catch {
-            // Fallback: try to get from a custom RPC if admin access not available
-            // For now, we'll mark as N/A
-          }
+      // Get all user_ids at once
+      const userIds = (data || []).map(m => m.user_id);
 
-          return {
-            ...member,
-            pseudo: profile?.pseudo || 'Utilisateur',
-            email: email
-          };
-        } catch {
-          return {
-            ...member,
-            pseudo: 'Utilisateur',
-            email: 'N/A'
-          };
-        }
-      })
-    );
+      // Single query to get all profiles
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('user_id, pseudo, email')
+        .in('user_id', userIds);
 
-    console.log(`✅ Retrieved ${membersWithPseudos.length} organization members`);
+      // Create a map for quick lookup
+      const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+
+      // Merge data
+      const membersWithPseudos = (data || []).map(member => {
+        const profile = profileMap.get(member.user_id);
+        return {
+          ...member,
+          pseudo: profile?.pseudo || 'Utilisateur',
+          email: profile?.email || 'N/A'
+        };
+      });
+
+      console.log(`✅ Retrieved ${membersWithPseudos.length} organization members (fallback)`);
+      return membersWithPseudos;
+    }
+
+    // Map the joined data to the expected format
+    const membersWithPseudos = (members || []).map(member => ({
+      ...member,
+      pseudo: member.user_profiles?.pseudo || 'Utilisateur',
+      email: member.user_profiles?.email || 'N/A',
+      user_profiles: undefined // Remove the nested object
+    }));
+
+    console.log(`✅ Retrieved ${membersWithPseudos.length} organization members (optimized)`);
     return membersWithPseudos;
   } catch (error) {
     console.error('❌ Error getting organization members:', error);
