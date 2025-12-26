@@ -82,38 +82,47 @@ function initSupabase() {
       throw new Error('SUPABASE_CONFIG not found. Please include config.js before this script.');
     }
 
-    // Try different ways to access Supabase createClient
-    let createClientFn = null;
-
-    // Method 1: window.supabase.createClient (UMD bundle)
-    if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
-      createClientFn = window.supabase.createClient;
-      console.log('📦 Using window.supabase.createClient');
-    }
-    // Method 2: Direct createClient on window (some CDN versions)
-    else if (typeof window.createClient === 'function') {
-      createClientFn = window.createClient;
-      console.log('📦 Using window.createClient');
-    }
-    // Method 3: supabaseJs global (alternative UMD name)
-    else if (typeof window.supabaseJs !== 'undefined' && typeof window.supabaseJs.createClient === 'function') {
-      createClientFn = window.supabaseJs.createClient;
-      console.log('📦 Using window.supabaseJs.createClient');
+    // Check if Supabase library is loaded
+    if (typeof window.supabase === 'undefined') {
+      console.warn('⏳ Supabase library not yet loaded, will retry...');
+      return null;
     }
 
-    if (!createClientFn) {
-      console.error('Available on window:', Object.keys(window).filter(k => k.toLowerCase().includes('supa')));
-      throw new Error('Supabase createClient not found. Please check CDN script.');
+    // Create client using the standard UMD export
+    if (typeof window.supabase.createClient === 'function') {
+      supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      console.log('✅ Supabase client initialized');
+      return supabase;
+    } else {
+      console.error('❌ window.supabase exists but createClient is not a function');
+      console.log('window.supabase:', window.supabase);
+      return null;
     }
-
-    // Create client
-    supabase = createClientFn(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-    console.log('✅ Supabase client initialized');
-    return supabase;
   } catch (error) {
     console.error('❌ Failed to initialize Supabase:', error);
-    throw error;
+    return null;
   }
+}
+
+// Auto-retry initialization
+let supabaseInitAttempts = 0;
+function ensureSupabaseInit() {
+  if (supabase) return Promise.resolve(supabase);
+
+  return new Promise((resolve, reject) => {
+    const tryInit = () => {
+      supabaseInitAttempts++;
+      const result = initSupabase();
+      if (result) {
+        resolve(result);
+      } else if (supabaseInitAttempts < 20) {
+        setTimeout(tryInit, 250);
+      } else {
+        reject(new Error('Failed to initialize Supabase after 20 attempts'));
+      }
+    };
+    tryInit();
+  });
 }
 
 // ============================================================================

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase Client Library -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.10/dist/umd/supabase.min.js"></script>
 
     <!-- Configuration (must load before supabase-client.js) -->
     <script src="config.js?v=3"></script>
@@ -5680,7 +5680,14 @@
 
             try {
                 errorDiv.style.display = 'none';
-                const { data: authData, error } = await supabase.auth.signInWithPassword({
+
+                // S'assurer que Supabase est initialisé
+                const supabaseClient = await ensureSupabaseInit();
+                if (!supabaseClient) {
+                    throw new Error('Supabase non disponible. Veuillez rafraîchir la page.');
+                }
+
+                const { data: authData, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
@@ -5694,7 +5701,7 @@
                 await initializeApp();
             } catch (error) {
                 console.error('Login error:', error);
-                errorDiv.textContent = 'Email ou mot de passe incorrect';
+                errorDiv.textContent = error.message || 'Email ou mot de passe incorrect';
                 errorDiv.style.display = 'block';
             }
         }
