@@ -5637,33 +5637,318 @@
             if (!loginOverlay) {
                 loginOverlay = document.createElement('div');
                 loginOverlay.id = 'login-overlay';
-                loginOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;';
                 loginOverlay.innerHTML = `
-                    <div style="background: white; padding: 3rem; border-radius: 1.5rem; box-shadow: 0 25px 50px rgba(0,0,0,0.25); max-width: 400px; width: 90%;">
-                        <h1 style="text-align: center; margin-bottom: 0.5rem; font-size: 1.75rem; color: #1a1a1a;">
-                            <i class="fas fa-users-cog" style="color: #667eea;"></i> VA Manager Pro
-                        </h1>
-                        <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">Connectez-vous pour continuer</p>
+                    <style>
+                        #login-overlay {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 10000;
+                            overflow: hidden;
+                        }
+
+                        .login-bg-shapes {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            pointer-events: none;
+                        }
+
+                        .login-shape {
+                            position: absolute;
+                            border-radius: 50%;
+                            filter: blur(80px);
+                            opacity: 0.5;
+                            animation: floatShape 20s ease-in-out infinite;
+                        }
+
+                        .login-shape-1 {
+                            width: 600px;
+                            height: 600px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            top: -200px;
+                            right: -100px;
+                            animation-delay: 0s;
+                        }
+
+                        .login-shape-2 {
+                            width: 400px;
+                            height: 400px;
+                            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                            bottom: -150px;
+                            left: -100px;
+                            animation-delay: -5s;
+                        }
+
+                        .login-shape-3 {
+                            width: 300px;
+                            height: 300px;
+                            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            animation-delay: -10s;
+                        }
+
+                        @keyframes floatShape {
+                            0%, 100% { transform: translate(0, 0) scale(1); }
+                            25% { transform: translate(30px, -30px) scale(1.05); }
+                            50% { transform: translate(-20px, 20px) scale(0.95); }
+                            75% { transform: translate(20px, 10px) scale(1.02); }
+                        }
+
+                        .login-card {
+                            position: relative;
+                            background: rgba(255, 255, 255, 0.03);
+                            backdrop-filter: blur(20px);
+                            -webkit-backdrop-filter: blur(20px);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            border-radius: 2rem;
+                            padding: 3rem;
+                            max-width: 420px;
+                            width: 90%;
+                            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                            animation: cardAppear 0.6s ease-out;
+                        }
+
+                        @keyframes cardAppear {
+                            from {
+                                opacity: 0;
+                                transform: translateY(30px) scale(0.95);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0) scale(1);
+                            }
+                        }
+
+                        .login-logo {
+                            width: 80px;
+                            height: 80px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-radius: 1.5rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto 1.5rem;
+                            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+                            animation: logoPulse 3s ease-in-out infinite;
+                        }
+
+                        @keyframes logoPulse {
+                            0%, 100% { box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4); }
+                            50% { box-shadow: 0 15px 60px rgba(102, 126, 234, 0.6); }
+                        }
+
+                        .login-logo i {
+                            font-size: 2.25rem;
+                            color: white;
+                        }
+
+                        .login-title {
+                            text-align: center;
+                            font-size: 2rem;
+                            font-weight: 800;
+                            color: white;
+                            margin-bottom: 0.5rem;
+                            letter-spacing: -0.02em;
+                        }
+
+                        .login-subtitle {
+                            text-align: center;
+                            color: rgba(255, 255, 255, 0.6);
+                            margin-bottom: 2.5rem;
+                            font-size: 1rem;
+                        }
+
+                        .login-input-group {
+                            margin-bottom: 1.25rem;
+                        }
+
+                        .login-label {
+                            display: block;
+                            margin-bottom: 0.5rem;
+                            font-weight: 600;
+                            color: rgba(255, 255, 255, 0.8);
+                            font-size: 0.875rem;
+                        }
+
+                        .login-input-wrapper {
+                            position: relative;
+                        }
+
+                        .login-input-icon {
+                            position: absolute;
+                            left: 1rem;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            color: rgba(255, 255, 255, 0.4);
+                            font-size: 1rem;
+                            transition: color 0.3s;
+                            pointer-events: none;
+                        }
+
+                        .login-input {
+                            width: 100%;
+                            padding: 1rem 1rem 1rem 3rem;
+                            background: rgba(255, 255, 255, 0.05);
+                            border: 2px solid rgba(255, 255, 255, 0.1);
+                            border-radius: 1rem;
+                            font-size: 1rem;
+                            color: white;
+                            transition: all 0.3s ease;
+                            box-sizing: border-box;
+                        }
+
+                        .login-input::placeholder {
+                            color: rgba(255, 255, 255, 0.3);
+                        }
+
+                        .login-input:focus {
+                            outline: none;
+                            border-color: #667eea;
+                            background: rgba(102, 126, 234, 0.1);
+                            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+                        }
+
+                        .login-input:focus + .login-input-icon,
+                        .login-input-wrapper:focus-within .login-input-icon {
+                            color: #667eea;
+                        }
+
+                        .login-error {
+                            display: none;
+                            background: rgba(239, 68, 68, 0.15);
+                            border: 1px solid rgba(239, 68, 68, 0.3);
+                            color: #fca5a5;
+                            padding: 1rem;
+                            border-radius: 0.75rem;
+                            margin-bottom: 1.25rem;
+                            font-size: 0.875rem;
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        }
+
+                        .login-error i {
+                            font-size: 1rem;
+                        }
+
+                        .login-btn {
+                            width: 100%;
+                            padding: 1rem;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 1rem;
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.75rem;
+                            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+                            margin-top: 0.5rem;
+                        }
+
+                        .login-btn:hover {
+                            transform: translateY(-3px);
+                            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+                        }
+
+                        .login-btn:active {
+                            transform: translateY(-1px);
+                        }
+
+                        .login-footer {
+                            margin-top: 2rem;
+                            text-align: center;
+                            color: rgba(255, 255, 255, 0.4);
+                            font-size: 0.8rem;
+                        }
+
+                        .login-footer i {
+                            margin-right: 0.25rem;
+                        }
+
+                        @media (max-width: 480px) {
+                            .login-card {
+                                padding: 2rem;
+                                margin: 1rem;
+                                border-radius: 1.5rem;
+                            }
+
+                            .login-logo {
+                                width: 64px;
+                                height: 64px;
+                                border-radius: 1rem;
+                            }
+
+                            .login-logo i {
+                                font-size: 1.75rem;
+                            }
+
+                            .login-title {
+                                font-size: 1.5rem;
+                            }
+                        }
+                    </style>
+
+                    <div class="login-bg-shapes">
+                        <div class="login-shape login-shape-1"></div>
+                        <div class="login-shape login-shape-2"></div>
+                        <div class="login-shape login-shape-3"></div>
+                    </div>
+
+                    <div class="login-card">
+                        <div class="login-logo">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h1 class="login-title">VA Manager Pro</h1>
+                        <p class="login-subtitle">Connectez-vous pour accéder à votre espace</p>
+
                         <form id="login-form" onsubmit="handleLogin(event)">
-                            <div style="margin-bottom: 1rem;">
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Email</label>
-                                <input type="email" id="login-email" required placeholder="votre@email.com"
-                                    style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; transition: border-color 0.2s;"
-                                    onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'">
+                            <div class="login-input-group">
+                                <label class="login-label">Email</label>
+                                <div class="login-input-wrapper">
+                                    <input type="email" id="login-email" class="login-input" required placeholder="votre@email.com">
+                                    <i class="fas fa-envelope login-input-icon"></i>
+                                </div>
                             </div>
-                            <div style="margin-bottom: 1.5rem;">
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Mot de passe</label>
-                                <input type="password" id="login-password" required placeholder="••••••••"
-                                    style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; transition: border-color 0.2s;"
-                                    onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'">
+
+                            <div class="login-input-group">
+                                <label class="login-label">Mot de passe</label>
+                                <div class="login-input-wrapper">
+                                    <input type="password" id="login-password" class="login-input" required placeholder="••••••••">
+                                    <i class="fas fa-lock login-input-icon"></i>
+                                </div>
                             </div>
-                            <div id="login-error" style="display: none; background: #fef2f2; color: #dc2626; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem;"></div>
-                            <button type="submit" style="width: 100%; padding: 0.875rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 0.75rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(102,126,234,0.3)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <i class="fas fa-sign-in-alt"></i> Se connecter
+
+                            <div id="login-error" class="login-error" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
+
+                            <button type="submit" class="login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Se connecter
                             </button>
                         </form>
+
+                        <div class="login-footer">
+                            <i class="fas fa-shield-alt"></i> Connexion sécurisée
+                        </div>
                     </div>
                 `;
                 document.body.appendChild(loginOverlay);
@@ -5701,8 +5986,13 @@
                 await initializeApp();
             } catch (error) {
                 console.error('Login error:', error);
-                errorDiv.textContent = error.message || 'Email ou mot de passe incorrect';
-                errorDiv.style.display = 'block';
+                const errorSpan = errorDiv.querySelector('span');
+                if (errorSpan) {
+                    errorSpan.textContent = error.message || 'Email ou mot de passe incorrect';
+                } else {
+                    errorDiv.textContent = error.message || 'Email ou mot de passe incorrect';
+                }
+                errorDiv.style.display = 'flex';
             }
         }
 
