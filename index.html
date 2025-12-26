@@ -174,9 +174,11 @@
             background-size: 200% 200%;
             animation: gradient-shift 15s ease infinite;
             color: white;
-            padding: var(--space-xl);
-            position: relative;
-            overflow: visible;
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
         }
 
         .header::before {
@@ -190,16 +192,6 @@
             pointer-events: none;
         }
 
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        }
-
         .header-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -208,6 +200,279 @@
             align-items: center;
             position: relative;
             z-index: 1;
+            gap: 1rem;
+        }
+
+        /* Logo et titre */
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .header-title p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .header-user-email {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* Stats dans le header */
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .header-stat {
+            text-align: center;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .header-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .header-stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
+        /* Actions du header */
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .header-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .header-btn i {
+            font-size: 0.875rem;
+        }
+
+        .header-btn-save {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border-color: transparent;
+        }
+
+        .header-btn-save:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        }
+
+        .header-btn-logout {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .header-btn-logout:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .header-btn-text {
+            display: inline;
+        }
+
+        /* Status badge */
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 50px;
+            font-size: 0.7rem;
+            color: #86efac;
+        }
+
+        .header-status i {
+            font-size: 0.625rem;
+        }
+
+        /* Menu hamburger mobile */
+        .header-mobile-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Menu mobile dropdown */
+        .header-mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(30, 27, 75, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1rem;
+            min-width: 220px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 200;
+            margin-top: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-mobile-menu.open {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-mobile-menu .header-btn {
+            width: 100%;
+            justify-content: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-mobile-menu .header-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .header-mobile-stats {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-mobile-stats .header-stat {
+            flex: 1;
+            padding: 0.5rem;
+        }
+
+        .header-mobile-stats .header-stat-value {
+            font-size: 1.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .header-stats {
+                display: none;
+            }
+
+            .header-btn-text {
+                display: none;
+            }
+
+            .header-btn {
+                padding: 0.625rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.875rem 1rem;
+            }
+
+            .header-logo {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .header-title h1 {
+                font-size: 1.1rem;
+            }
+
+            .header-title p,
+            .header-user-email {
+                display: none;
+            }
+
+            .header-actions {
+                display: none;
+            }
+
+            .header-mobile-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header-title h1 {
+                font-size: 1rem;
+            }
+
+            .header-logo {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
         }
         
         /* Dark mode - Modern design */
@@ -3277,65 +3542,88 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                <div>
-                    <h1>📊 VA Manager Pro</h1>
-                    <p>Gestion des Virtual Assistants et Créatrices</p>
-                    <div style="margin-top: 0.5rem;">
-                        <span id="user-email" style="font-size: 0.875rem; opacity: 0.9;"></span>
-                    </div>
+            <!-- Brand -->
+            <div class="header-brand">
+                <div class="header-logo">📊</div>
+                <div class="header-title">
+                    <h1>VA Manager Pro</h1>
+                    <p>Gestion des Virtual Assistants</p>
+                    <span id="user-email" class="header-user-email"></span>
                 </div>
-
             </div>
-            <div class="stats-header">
-                <div class="stat-item">
-                    <div class="stat-number" id="total-vas">0</div>
-                    <div class="stat-label">VAs</div>
+
+            <!-- Stats (desktop) -->
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="header-stat-value" id="total-vas">0</div>
+                    <div class="header-stat-label">VAs</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="total-creators">0</div>
-                    <div class="stat-label">Créatrices</div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="total-creators">0</div>
+                    <div class="header-stat-label">Créatrices</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="total-accounts">0</div>
-                    <div class="stat-label">Comptes</div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="total-accounts">0</div>
+                    <div class="header-stat-label">Comptes</div>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <div id="save-status" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; 
-                                                 background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); 
-                                                 border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-shield-alt" style="color: #22c55e;"></i>
-                        <span id="save-status-text" style="color: #22c55e;">Protégé</span>
+            </div>
+
+            <!-- Actions (desktop) -->
+            <div class="header-actions">
+                <div class="header-status" id="save-status">
+                    <i class="fas fa-shield-alt"></i>
+                    <span id="save-status-text">Protégé</span>
+                </div>
+                <button class="header-btn" onclick="toggleDarkMode()">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                    <span class="header-btn-text" id="theme-text">Nuit</span>
+                </button>
+                <button class="header-btn header-btn-save" onclick="showBackupModal()">
+                    <i class="fas fa-save"></i>
+                    <span class="header-btn-text">Sauvegarder</span>
+                </button>
+                <button class="header-btn header-btn-logout" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="header-btn-text">Sortir</span>
+                </button>
+            </div>
+
+            <!-- Mobile menu toggle -->
+            <button class="header-mobile-toggle" onclick="toggleHeaderMenu()">
+                <i class="fas fa-bars" id="header-menu-icon"></i>
+            </button>
+
+            <!-- Mobile dropdown menu -->
+            <div class="header-mobile-menu" id="header-mobile-menu">
+                <div class="header-mobile-stats">
+                    <div class="header-stat">
+                        <div class="header-stat-value" id="mobile-total-vas">0</div>
+                        <div class="header-stat-label">VAs</div>
                     </div>
-                    <button class="theme-toggle" onclick="toggleDarkMode()">
-                        <i class="fas fa-moon" id="theme-icon"></i>
-                        <span id="theme-text">Mode Nuit</span>
-                    </button>
-                    <button class="theme-toggle" onclick="showBackupModal()"
-                            style="background: linear-gradient(135deg, #22c55e, #16a34a);
-                                   color: white; font-weight: 600; position: relative; overflow: hidden;">
-                        <i class="fas fa-save"></i>
-                        <span>Sauvegarder</span>
-                        <div id="save-pulse" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
-                                                   background: rgba(255,255,255,0.3); border-radius: 50%;
-                                                   transform: translate(-50%, -50%) scale(0); opacity: 0;"></div>
-                    </button>
-                    <button class="theme-toggle" onclick="handleLogout()"
-                            style="background: rgba(239, 68, 68, 0.2);
-                                   border-color: rgba(239, 68, 68, 0.3);
-                                   color: #fecaca;">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span>
-                    </button>
+                    <div class="header-stat">
+                        <div class="header-stat-value" id="mobile-total-creators">0</div>
+                        <div class="header-stat-label">Créatrices</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value" id="mobile-total-accounts">0</div>
+                        <div class="header-stat-label">Comptes</div>
+                    </div>
                 </div>
+                <button class="header-btn" onclick="toggleDarkMode(); toggleHeaderMenu();">
+                    <i class="fas fa-moon"></i>
+                    <span>Mode Nuit</span>
+                </button>
+                <button class="header-btn header-btn-save" onclick="showBackupModal(); toggleHeaderMenu();">
+                    <i class="fas fa-save"></i>
+                    <span>Sauvegarder</span>
+                </button>
+                <button class="header-btn header-btn-logout" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </button>
             </div>
         </div>
     </header>
-
-    <!-- Mobile Nav Toggle Button (3 points) -->
-    <button class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" style="display: none;">
-        <i class="fas fa-ellipsis-v"></i>
-    </button>
 
     <!-- Navigation -->
     <nav class="nav" id="mobile-nav-dropdown">
@@ -6765,6 +7053,38 @@
                 icon.className = 'fas fa-ellipsis-v';
             }
         }
+
+        // Toggle header mobile menu
+        function toggleHeaderMenu() {
+            const menu = document.getElementById('header-mobile-menu');
+            const icon = document.getElementById('header-menu-icon');
+
+            menu.classList.toggle('open');
+
+            // Change icon
+            if (menu.classList.contains('open')) {
+                icon.className = 'fas fa-times';
+                // Sync mobile stats
+                document.getElementById('mobile-total-vas').textContent = document.getElementById('total-vas').textContent;
+                document.getElementById('mobile-total-creators').textContent = document.getElementById('total-creators').textContent;
+                document.getElementById('mobile-total-accounts').textContent = document.getElementById('total-accounts').textContent;
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        }
+
+        // Close header menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('header-mobile-menu');
+            const toggle = document.querySelector('.header-mobile-toggle');
+
+            if (menu && toggle && menu.classList.contains('open')) {
+                if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+                    menu.classList.remove('open');
+                    document.getElementById('header-menu-icon').className = 'fas fa-bars';
+                }
+            }
+        });
 
         // Close mobile nav when clicking outside
         document.addEventListener('click', function(event) {
