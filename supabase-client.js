@@ -77,17 +77,37 @@ const memoryCache = {
 
 function initSupabase() {
   try {
-    if (typeof window.supabase === 'undefined') {
-      throw new Error('Supabase library not loaded. Please include the Supabase CDN script.');
-    }
-
     // Check if config is available
     if (typeof SUPABASE_CONFIG === 'undefined') {
       throw new Error('SUPABASE_CONFIG not found. Please include config.js before this script.');
     }
 
-    // Use config from config.js
-    supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    // Try different ways to access Supabase createClient
+    let createClientFn = null;
+
+    // Method 1: window.supabase.createClient (UMD bundle)
+    if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+      createClientFn = window.supabase.createClient;
+      console.log('📦 Using window.supabase.createClient');
+    }
+    // Method 2: Direct createClient on window (some CDN versions)
+    else if (typeof window.createClient === 'function') {
+      createClientFn = window.createClient;
+      console.log('📦 Using window.createClient');
+    }
+    // Method 3: supabaseJs global (alternative UMD name)
+    else if (typeof window.supabaseJs !== 'undefined' && typeof window.supabaseJs.createClient === 'function') {
+      createClientFn = window.supabaseJs.createClient;
+      console.log('📦 Using window.supabaseJs.createClient');
+    }
+
+    if (!createClientFn) {
+      console.error('Available on window:', Object.keys(window).filter(k => k.toLowerCase().includes('supa')));
+      throw new Error('Supabase createClient not found. Please check CDN script.');
+    }
+
+    // Create client
+    supabase = createClientFn(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
     console.log('✅ Supabase client initialized');
     return supabase;
   } catch (error) {
