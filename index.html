@@ -3658,6 +3658,9 @@
             <button class="nav-btn" data-page="followers-tracking" style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); color: white; font-weight: 600; border: 2px solid rgba(29, 161, 242, 0.3); box-shadow: 0 4px 15px rgba(29, 161, 242, 0.2);">
                 <i class="fas fa-users"></i> Suivi Followers
             </button>
+            <button class="nav-btn" data-page="subs-tracking" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; font-weight: 600; border: 2px solid rgba(139, 92, 246, 0.3); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);">
+                <i class="fas fa-chart-bar"></i> Suivi Subs
+            </button>
             <button class="nav-btn" data-page="instagram-warmup" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-weight: 600; border: 2px solid rgba(245, 158, 11, 0.3); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);">
                 <i class="fas fa-fire"></i> Warm-up
             </button>
@@ -5126,6 +5129,96 @@
                     <i class="fas fa-history"></i> Historique par créatrice
                 </h3>
                 <div id="followers-history-table" class="ft-history-table">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Subs Tracking Page -->
+        <div id="subs-tracking-page" class="page">
+            <!-- Hero Header -->
+            <div class="st-hero" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%;"></div>
+                <div style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-bar" style="font-size: 1.75rem; color: white;"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.75rem; margin: 0; color: white; font-weight: 800;">Suivi Subs</h2>
+                            <p style="font-size: 0.9rem; margin: 0.25rem 0 0 0; color: rgba(255,255,255,0.9);">Suivez les clics et abonnements de vos tracking links</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <input type="date" id="subs-tracking-date" class="ft-date-input" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
+                        <button onclick="saveAllSubsStats(event)" class="st-save-btn" style="background: white; color: #7c3aed; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.2s;">
+                            <i class="fas fa-save"></i> <span>Enregistrer</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Summary Cards -->
+            <div id="subs-summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <!-- Will be populated by JS -->
+            </div>
+
+            <!-- Bulk Entry Form by Creator -->
+            <div class="st-bulk-section" style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.75rem; color: var(--text-color);">
+                    <i class="fab fa-twitter" style="color: #8b5cf6;"></i> Saisie rapide par compte
+                </h3>
+                <div id="subs-bulk-form">
+                    <!-- Will be populated by JS with account cards -->
+                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 1rem;">Chargement des comptes...</p>
+                    </div>
+                </div>
+
+                <!-- Bouton Enregistrer tout -->
+                <button onclick="saveAllSubsStats(event)" id="save-subs-btn" style="width: 100%; margin-top: 1.5rem; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 1rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4); transition: all 0.2s;">
+                    <i class="fas fa-save"></i>
+                    Enregistrer tous les clics & subs
+                </button>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Growth Chart -->
+                <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <h3 style="margin: 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
+                            <i class="fas fa-chart-line" style="color: #8b5cf6;"></i> Evolution
+                        </h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="updateSubsChart(7)" class="subs-period-btn active" data-period="7" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; background: #8b5cf6; color: white; font-size: 0.8125rem; font-weight: 600; cursor: pointer;">7j</button>
+                            <button onclick="updateSubsChart(30)" class="subs-period-btn" data-period="30" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.8125rem; font-weight: 600; cursor: pointer;">30j</button>
+                            <button onclick="updateSubsChart(90)" class="subs-period-btn" data-period="90" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.8125rem; font-weight: 600; cursor: pointer;">90j</button>
+                        </div>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="subs-growth-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Performers -->
+                <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
+                        <i class="fas fa-trophy" style="color: #f59e0b;"></i> Meilleurs taux de conversion
+                    </h3>
+                    <div id="subs-top-performers" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
+                    <i class="fas fa-history" style="color: #10b981;"></i> Historique
+                </h3>
+                <div id="subs-history-table" style="overflow-x: auto;">
                     <!-- Will be populated by JS -->
                 </div>
             </div>
@@ -8507,6 +8600,11 @@
             // Load Followers Tracking when navigating to followers-tracking page
             if (pageName === 'followers-tracking') {
                 loadFollowersTrackingPage();
+            }
+
+            // Load Subs Tracking when navigating to subs-tracking page
+            if (pageName === 'subs-tracking') {
+                loadSubsTrackingPage();
             }
 
             // Close mobile menu if open
@@ -12530,6 +12628,587 @@
 
         // ============================================================================
         // END FOLLOWERS TRACKING
+        // ============================================================================
+
+        // ============================================================================
+        // SUBS TRACKING (Clics & Abonnements)
+        // ============================================================================
+
+        let subsGrowthChart = null;
+
+        async function loadSubsTrackingPage() {
+            console.log('📊 Loading Subs Tracking Page...');
+
+            // Set default date to today
+            const dateInput = document.getElementById('subs-tracking-date');
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Load all data
+            await loadSubsTrackingData();
+            await updateSubsChart(7);
+            await updateSubsTopPerformers();
+            await updateSubsHistory();
+        }
+
+        // Navigation vers le prochain champ avec Entrée (pour subs)
+        function goToNextSubsInput(currentIndex, type) {
+            const allClicksInputs = document.querySelectorAll('.st-clicks-input');
+            const allSubsInputs = document.querySelectorAll('.st-subs-input');
+
+            if (type === 'clicks') {
+                // Aller au champ subs du même compte
+                if (allSubsInputs[currentIndex]) {
+                    allSubsInputs[currentIndex].focus();
+                    allSubsInputs[currentIndex].select();
+                }
+            } else {
+                // Aller au champ clics du compte suivant
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < allClicksInputs.length) {
+                    allClicksInputs[nextIndex].focus();
+                    allClicksInputs[nextIndex].select();
+                } else {
+                    // Dernier input, on sauvegarde
+                    const saveBtn = document.getElementById('save-subs-btn');
+                    if (saveBtn) {
+                        saveBtn.focus();
+                        saveBtn.click();
+                    }
+                }
+            }
+        }
+
+        // Load subs tracking data and populate the bulk form
+        async function loadSubsTrackingData() {
+            const formContainer = document.getElementById('subs-bulk-form');
+            const summaryContainer = document.getElementById('subs-summary-cards');
+            if (!formContainer) return;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            try {
+                // Get all subs tracking data
+                const allSubsStats = await getSubsTracking(30) || [];
+                const statsByUsername = {};
+                allSubsStats.forEach(stat => {
+                    if (!statsByUsername[stat.username]) {
+                        statsByUsername[stat.username] = [];
+                    }
+                    statsByUsername[stat.username].push(stat);
+                });
+
+                // Sort stats by date for each username
+                Object.keys(statsByUsername).forEach(username => {
+                    statsByUsername[username].sort((a, b) => new Date(a.date) - new Date(b.date));
+                });
+
+                // Get all accounts from creators
+                const allAccounts = [];
+                let totalClicks = 0;
+                let totalSubs = 0;
+                let yesterdayClicks = 0;
+                let yesterdaySubs = 0;
+
+                if (data.creators) {
+                    data.creators.forEach(creator => {
+                        if (creator.accounts && creator.accounts.length > 0) {
+                            creator.accounts.forEach(acc => {
+                                const username = acc.username.replace('@', '');
+                                const stats = statsByUsername[username] || [];
+                                const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
+                                const yesterdayStat = stats.length > 1 ? stats[stats.length - 2] : null;
+
+                                const currentClicks = latestStat ? latestStat.clicks : 0;
+                                const currentSubs = latestStat ? latestStat.subs : 0;
+                                const prevClicks = yesterdayStat ? yesterdayStat.clicks : 0;
+                                const prevSubs = yesterdayStat ? yesterdayStat.subs : 0;
+
+                                totalClicks += currentClicks;
+                                totalSubs += currentSubs;
+                                yesterdayClicks += (currentClicks - prevClicks);
+                                yesterdaySubs += (currentSubs - prevSubs);
+
+                                allAccounts.push({
+                                    username: acc.username,
+                                    creatorId: creator.id,
+                                    creatorName: creator.name,
+                                    creatorPhoto: creator.photo_url,
+                                    currentClicks,
+                                    currentSubs,
+                                    clicksGrowth: currentClicks - prevClicks,
+                                    subsGrowth: currentSubs - prevSubs,
+                                    trackingLink: latestStat ? latestStat.tracking_link : '',
+                                    lastDate: latestStat ? latestStat.date : null
+                                });
+                            });
+                        }
+                    });
+                }
+
+                // Calculate conversion rate
+                const conversionRate = totalClicks > 0 ? ((totalSubs / totalClicks) * 100).toFixed(1) : 0;
+
+                // Update summary cards
+                summaryContainer.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 1rem; padding: 1.25rem; color: white;">
+                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Clics</div>
+                        <div style="font-size: 2rem; font-weight: 800;">${totalClicks.toLocaleString()}</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">${yesterdayClicks >= 0 ? '+' : ''}${yesterdayClicks} hier</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 1rem; padding: 1.25rem; color: white;">
+                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Subs</div>
+                        <div style="font-size: 2rem; font-weight: 800;">${totalSubs.toLocaleString()}</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">${yesterdaySubs >= 0 ? '+' : ''}${yesterdaySubs} hier</div>
+                    </div>
+                    <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
+                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Taux Conv.</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${conversionRate}%</div>
+                    </div>
+                    <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
+                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Comptes</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${allAccounts.length}</div>
+                    </div>
+                `;
+
+                // Build the bulk entry form
+                if (allAccounts.length === 0) {
+                    formContainer.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">Aucun compte Twitter trouvé</p>
+                            <p style="font-size: 0.875rem;">Ajoutez des comptes Twitter à vos créatrices pour commencer le suivi</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort by creator name
+                allAccounts.sort((a, b) => a.creatorName.localeCompare(b.creatorName));
+
+                formContainer.innerHTML = `
+                    <div class="st-intuitive-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+                        ${allAccounts.map((acc, index) => {
+                            const today = new Date().toISOString().split('T')[0];
+                            const isUpdatedToday = acc.lastDate === today;
+                            const inputIdClicks = `subs-clicks-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                            const inputIdSubs = `subs-subs-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                            const inputIdLink = `subs-link-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+                            return `
+                                <div class="st-account-card" style="background: ${isDarkMode ? '#1f2937' : 'white'}; border: 2px solid ${isUpdatedToday ? '#10b981' : (isDarkMode ? '#374151' : '#e2e8f0')}; border-radius: 1rem; padding: 1.25rem; position: relative; transition: all 0.2s;">
+                                    <!-- Status Badge -->
+                                    <div style="position: absolute; top: 0.75rem; right: 0.75rem; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; ${isUpdatedToday ? 'background: #10b981; color: white;' : 'background: ' + (isDarkMode ? '#374151' : '#f1f5f9') + '; color: #94a3b8;'}">
+                                        ${isUpdatedToday ? '<i class="fas fa-check"></i>' : '<i class="fas fa-clock"></i>'}
+                                    </div>
+
+                                    <!-- Header: Creator + Twitter -->
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: ${isDarkMode ? '#374151' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center;">
+                                            ${acc.creatorPhoto
+                                                ? `<img src="${acc.creatorPhoto}" alt="${acc.creatorName}" style="width: 100%; height: 100%; object-fit: cover;">`
+                                                : `<i class="fas fa-user" style="color: #94a3b8;"></i>`
+                                            }
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; font-size: 0.9375rem;">${acc.creatorName}</div>
+                                            <a href="https://twitter.com/${acc.username.replace('@', '')}" target="_blank" style="color: #8b5cf6; font-size: 0.8125rem; text-decoration: none;">
+                                                <i class="fab fa-twitter"></i> ${acc.username}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tracking Link -->
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
+                                            <i class="fas fa-link"></i> Tracking Link
+                                        </label>
+                                        <input type="text"
+                                               id="${inputIdLink}"
+                                               data-username="${acc.username}"
+                                               value="${acc.trackingLink || ''}"
+                                               placeholder="https://track.link/..."
+                                               class="st-link-input"
+                                               style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.5rem; font-size: 0.8125rem; background: ${isDarkMode ? '#111827' : '#f8fafc'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
+                                    </div>
+
+                                    <!-- Inputs Row: Clics + Subs -->
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                        <div>
+                                            <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
+                                                <i class="fas fa-mouse-pointer"></i> Clics
+                                            </label>
+                                            <input type="number"
+                                                   id="${inputIdClicks}"
+                                                   data-username="${acc.username}"
+                                                   data-creator-id="${acc.creatorId}"
+                                                   value="${acc.currentClicks || ''}"
+                                                   placeholder="0"
+                                                   class="st-clicks-input"
+                                                   style="width: 100%; padding: 0.75rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
+                                                   onfocus="this.select(); this.style.borderColor='#8b5cf6'"
+                                                   onblur="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'"
+                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}, 'clicks'); }">
+                                            ${acc.clicksGrowth !== 0 ? `
+                                                <div style="font-size: 0.6875rem; text-align: center; margin-top: 0.25rem; color: ${acc.clicksGrowth > 0 ? '#10b981' : '#ef4444'};">
+                                                    ${acc.clicksGrowth > 0 ? '+' : ''}${acc.clicksGrowth}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
+                                                <i class="fas fa-user-plus"></i> Subs
+                                            </label>
+                                            <input type="number"
+                                                   id="${inputIdSubs}"
+                                                   data-username="${acc.username}"
+                                                   data-creator-id="${acc.creatorId}"
+                                                   value="${acc.currentSubs || ''}"
+                                                   placeholder="0"
+                                                   class="st-subs-input"
+                                                   style="width: 100%; padding: 0.75rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
+                                                   onfocus="this.select(); this.style.borderColor='#10b981'"
+                                                   onblur="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'"
+                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}, 'subs'); }">
+                                            ${acc.subsGrowth !== 0 ? `
+                                                <div style="font-size: 0.6875rem; text-align: center; margin-top: 0.25rem; color: ${acc.subsGrowth > 0 ? '#10b981' : '#ef4444'};">
+                                                    ${acc.subsGrowth > 0 ? '+' : ''}${acc.subsGrowth}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('❌ Error loading subs tracking data:', error);
+                formContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 1rem;">Erreur lors du chargement des données</p>
+                        <p style="font-size: 0.875rem;">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Save all subs tracking stats at once
+        async function saveAllSubsStats(event) {
+            const button = event?.target?.closest('button') || document.getElementById('save-subs-btn');
+            const originalText = button ? button.innerHTML : null;
+
+            const dateInput = document.getElementById('subs-tracking-date');
+            const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+
+            // Get all input values
+            const clicksInputs = document.querySelectorAll('.st-clicks-input');
+            const subsInputs = document.querySelectorAll('.st-subs-input');
+            const linkInputs = document.querySelectorAll('.st-link-input');
+
+            const entries = [];
+            const usernameMap = new Map();
+
+            // Build entries from inputs
+            clicksInputs.forEach((input, index) => {
+                const username = input.dataset.username;
+                const clicks = parseInt(input.value) || 0;
+                usernameMap.set(username, { clicks, subs: 0, tracking_link: '' });
+            });
+
+            subsInputs.forEach((input, index) => {
+                const username = input.dataset.username;
+                const subs = parseInt(input.value) || 0;
+                if (usernameMap.has(username)) {
+                    usernameMap.get(username).subs = subs;
+                }
+            });
+
+            linkInputs.forEach((input, index) => {
+                const username = input.dataset.username;
+                const link = input.value.trim();
+                if (usernameMap.has(username)) {
+                    usernameMap.get(username).tracking_link = link;
+                }
+            });
+
+            // Convert to entries array
+            usernameMap.forEach((data, username) => {
+                entries.push({
+                    username: username,
+                    clicks: data.clicks,
+                    subs: data.subs,
+                    tracking_link: data.tracking_link,
+                    date: date
+                });
+            });
+
+            if (entries.length === 0) {
+                showError('Aucune donnée à enregistrer');
+                return;
+            }
+
+            try {
+                setButtonLoading(button, true);
+
+                // Bulk save all entries
+                await bulkSaveSubsTracking(entries, date);
+
+                showSuccess(`✅ ${entries.length} entrée(s) enregistrée(s) !`);
+
+                // Refresh displays
+                await loadSubsTrackingData();
+                await updateSubsChart(7);
+                await updateSubsTopPerformers();
+                await updateSubsHistory();
+
+            } catch (error) {
+                console.error('❌ Error saving subs stats:', error);
+                showError('Erreur lors de l\'enregistrement: ' + error.message);
+            } finally {
+                setButtonLoading(button, false, originalText);
+            }
+        }
+
+        // Update subs growth chart
+        async function updateSubsChart(days = 7) {
+            const canvas = document.getElementById('subs-growth-chart');
+            if (!canvas) return;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            // Update period buttons
+            document.querySelectorAll('.subs-period-btn').forEach(btn => {
+                if (parseInt(btn.dataset.period) === days) {
+                    btn.style.background = '#8b5cf6';
+                    btn.style.color = 'white';
+                    btn.style.border = 'none';
+                } else {
+                    btn.style.background = isDarkMode ? '#1f2937' : 'white';
+                    btn.style.color = isDarkMode ? '#e2e8f0' : '#64748b';
+                    btn.style.border = `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`;
+                }
+            });
+
+            const ctx = canvas.getContext('2d');
+
+            if (subsGrowthChart) {
+                subsGrowthChart.destroy();
+            }
+
+            try {
+                const allStats = await getSubsTracking(days) || [];
+
+                if (allStats.length === 0) {
+                    ctx.font = '14px Inter';
+                    ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Aucune donnée disponible', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+
+                // Group by date
+                const statsByDate = {};
+                allStats.forEach(stat => {
+                    if (!statsByDate[stat.date]) {
+                        statsByDate[stat.date] = { clicks: 0, subs: 0 };
+                    }
+                    statsByDate[stat.date].clicks += stat.clicks;
+                    statsByDate[stat.date].subs += stat.subs;
+                });
+
+                // Sort dates
+                const dates = Object.keys(statsByDate).sort();
+                const clicksData = dates.map(d => ({ x: d, y: statsByDate[d].clicks }));
+                const subsData = dates.map(d => ({ x: d, y: statsByDate[d].subs }));
+
+                subsGrowthChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Clics',
+                                data: clicksData,
+                                borderColor: '#8b5cf6',
+                                backgroundColor: '#8b5cf620',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Subs',
+                                data: subsData,
+                                borderColor: '#10b981',
+                                backgroundColor: '#10b98120',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: { day: 'dd/MM' }
+                                },
+                                grid: { display: false },
+                                ticks: { color: isDarkMode ? '#94a3b8' : '#64748b' }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: isDarkMode ? '#374151' : '#e2e8f0' },
+                                ticks: { color: isDarkMode ? '#94a3b8' : '#64748b' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: { color: isDarkMode ? '#e2e8f0' : '#1f2937' }
+                            },
+                            tooltip: {
+                                backgroundColor: isDarkMode ? '#1f2937' : 'white',
+                                titleColor: isDarkMode ? '#e2e8f0' : '#1f2937',
+                                bodyColor: isDarkMode ? '#94a3b8' : '#64748b',
+                                borderColor: isDarkMode ? '#374151' : '#e2e8f0',
+                                borderWidth: 1
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('❌ Error updating subs chart:', error);
+            }
+        }
+
+        // Update subs top performers
+        async function updateSubsTopPerformers() {
+            const container = document.getElementById('subs-top-performers');
+            if (!container) return;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            try {
+                const allStats = await getSubsTracking(30) || [];
+
+                if (allStats.length === 0) {
+                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 1rem;">Aucune donnée disponible</p>`;
+                    return;
+                }
+
+                // Calculate conversion rate per username
+                const statsByUsername = {};
+                allStats.forEach(stat => {
+                    if (!statsByUsername[stat.username]) {
+                        statsByUsername[stat.username] = { clicks: 0, subs: 0 };
+                    }
+                    statsByUsername[stat.username].clicks += stat.clicks;
+                    statsByUsername[stat.username].subs += stat.subs;
+                });
+
+                // Calculate conversion rate and sort
+                const performers = Object.entries(statsByUsername)
+                    .map(([username, data]) => ({
+                        username,
+                        clicks: data.clicks,
+                        subs: data.subs,
+                        rate: data.clicks > 0 ? (data.subs / data.clicks) * 100 : 0
+                    }))
+                    .filter(p => p.clicks > 0)
+                    .sort((a, b) => b.rate - a.rate)
+                    .slice(0, 5);
+
+                if (performers.length === 0) {
+                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 1rem;">Aucune donnée disponible</p>`;
+                    return;
+                }
+
+                container.innerHTML = performers.map((p, i) => `
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: ${isDarkMode ? '#111827' : '#f8fafc'}; border-radius: 0.75rem;">
+                        <div style="width: 28px; height: 28px; border-radius: 50%; background: ${i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : i === 2 ? '#cd7c32' : (isDarkMode ? '#374151' : '#e2e8f0')}; color: ${i < 3 ? 'white' : (isDarkMode ? '#94a3b8' : '#64748b')}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
+                            ${i + 1}
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600; color: #8b5cf6; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.username}</div>
+                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">${p.clicks} clics / ${p.subs} subs</div>
+                        </div>
+                        <div style="font-weight: 700; color: #10b981; font-size: 0.9375rem;">
+                            ${p.rate.toFixed(1)}%
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('❌ Error updating subs top performers:', error);
+            }
+        }
+
+        // Update subs history table
+        async function updateSubsHistory() {
+            const container = document.getElementById('subs-history-table');
+            if (!container) return;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            try {
+                const allStats = await getSubsTracking(30) || [];
+
+                if (allStats.length === 0) {
+                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 2rem;">Aucun historique disponible</p>`;
+                    return;
+                }
+
+                // Get last 7 days
+                const dates = [...new Set(allStats.map(s => s.date))].sort().reverse().slice(0, 7);
+                const usernames = [...new Set(allStats.map(s => s.username))].sort();
+
+                // Build stats lookup
+                const statsLookup = {};
+                allStats.forEach(s => {
+                    statsLookup[`${s.username}_${s.date}`] = { clicks: s.clicks, subs: s.subs };
+                });
+
+                container.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8125rem;">
+                        <thead>
+                            <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc'};">
+                                <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">Compte</th>
+                                ${dates.map(date => `<th style="padding: 0.75rem; text-align: center; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">${new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${usernames.map(username => `
+                                <tr style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
+                                    <td style="padding: 0.75rem; color: #8b5cf6; font-weight: 600;">${username}</td>
+                                    ${dates.map(date => {
+                                        const data = statsLookup[`${username}_${date}`];
+                                        return `<td style="padding: 0.75rem; text-align: center; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
+                                            ${data ? `<span style="color: #8b5cf6;">${data.clicks}</span>/<span style="color: #10b981;">${data.subs}</span>` : '-'}
+                                        </td>`;
+                                    }).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+            } catch (error) {
+                console.error('❌ Error updating subs history:', error);
+            }
+        }
+
+        // ============================================================================
+        // END SUBS TRACKING
         // ============================================================================
 
         // Update Twitter Analytics (page supprimée - fonction désactivée)

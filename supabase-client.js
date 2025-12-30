@@ -2280,6 +2280,213 @@ async function deleteTwitterStat(statId) {
 }
 
 // ============================================================================
+// SUBS TRACKING FUNCTIONS (Clics & Abonnements)
+// ============================================================================
+
+/**
+ * Get all subs tracking data for current organization
+ * @param {number} days - Number of days to fetch (default 30)
+ * @returns {Promise<Array>}
+ */
+async function getSubsTracking(days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    console.log(`✅ Retrieved ${(data || []).length} subs tracking entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting subs tracking:', error);
+    return [];
+  }
+}
+
+/**
+ * Get subs tracking for a specific account
+ * @param {string} username
+ * @param {number} days - Number of days to fetch
+ * @returns {Promise<Array>}
+ */
+async function getSubsTrackingByUsername(username, days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+    const cleanUsername = username.replace('@', '');
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .or(`username.eq.${cleanUsername},username.eq.@${cleanUsername}`)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting subs tracking by username:', error);
+    return [];
+  }
+}
+
+/**
+ * Get latest subs tracking entry for an account
+ * @param {string} username
+ * @returns {Promise<Object|null>}
+ */
+async function getLatestSubsTracking(username) {
+  try {
+    const organizationId = await getOrganizationId();
+    const cleanUsername = username.replace('@', '');
+
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .or(`username.eq.${cleanUsername},username.eq.@${cleanUsername}`)
+      .order('date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('❌ Error getting latest subs tracking:', error);
+    return null;
+  }
+}
+
+/**
+ * Create or update a subs tracking entry
+ * @param {Object} trackingData - { username, date, clicks, subs, tracking_link }
+ * @returns {Promise<Object>}
+ */
+async function upsertSubsTracking(trackingData) {
+  try {
+    const userId = await getUserId();
+    const organizationId = await getOrganizationId();
+    const cleanUsername = trackingData.username.replace('@', '');
+
+    const insertData = {
+      user_id: userId,
+      organization_id: organizationId,
+      username: cleanUsername,
+      date: trackingData.date || new Date().toISOString().split('T')[0],
+      clicks: trackingData.clicks || 0,
+      subs: trackingData.subs || 0,
+      tracking_link: trackingData.tracking_link || null
+    };
+
+    // Upsert - insert or update if exists for same username/date
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .upsert([insertData], {
+        onConflict: 'username,date,organization_id',
+        ignoreDuplicates: false
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✅ Subs tracking saved:', cleanUsername, insertData.clicks, 'clicks,', insertData.subs, 'subs');
+    return data;
+  } catch (error) {
+    console.error('❌ Error saving subs tracking:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new subs tracking entry
+ * @param {Object} trackingData - { username, date, clicks, subs, tracking_link }
+ * @returns {Promise<Object>}
+ */
+async function createSubsTracking(trackingData) {
+  return upsertSubsTracking(trackingData);
+}
+
+/**
+ * Bulk save subs tracking entries
+ * @param {Array} entries - Array of { username, clicks, subs, tracking_link }
+ * @param {string} date - Date for all entries
+ * @returns {Promise<Array>}
+ */
+async function bulkSaveSubsTracking(entries, date) {
+  try {
+    const userId = await getUserId();
+    const organizationId = await getOrganizationId();
+    const targetDate = date || new Date().toISOString().split('T')[0];
+
+    const insertData = entries.map(entry => ({
+      user_id: userId,
+      organization_id: organizationId,
+      username: entry.username.replace('@', ''),
+      date: targetDate,
+      clicks: entry.clicks || 0,
+      subs: entry.subs || 0,
+      tracking_link: entry.tracking_link || null
+    }));
+
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .upsert(insertData, {
+        onConflict: 'username,date,organization_id',
+        ignoreDuplicates: false
+      })
+      .select();
+
+    if (error) throw error;
+
+    console.log(`✅ Bulk saved ${(data || []).length} subs tracking entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error bulk saving subs tracking:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a subs tracking entry
+ * @param {string} trackingId
+ * @returns {Promise<boolean>}
+ */
+async function deleteSubsTracking(trackingId) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const { error } = await supabase
+      .from('twitter_subs_tracking')
+      .delete()
+      .eq('id', trackingId)
+      .eq('organization_id', organizationId);
+
+    if (error) throw error;
+
+    console.log('✅ Subs tracking deleted:', trackingId);
+    return true;
+  } catch (error) {
+    console.error('❌ Error deleting subs tracking:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // INSTAGRAM STATS FUNCTIONS
 // ============================================================================
 
