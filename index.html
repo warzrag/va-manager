@@ -17137,13 +17137,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 }
             });
 
-            // Convertir en arrays pour Chart.js
+            // Convertir en arrays pour Chart.js (ignorer les jours à 0 = données manquantes)
             const labels = [];
             const dataPoints = [];
             dateMap.forEach((value, key) => {
-                const date = new Date(key);
-                labels.push(date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }));
-                dataPoints.push(value);
+                if (value > 0) { // Ignorer les jours sans données
+                    const date = new Date(key);
+                    labels.push(date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }));
+                    dataPoints.push(value);
+                }
             });
 
             // Vérifier si on a des données
