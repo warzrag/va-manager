@@ -12653,34 +12653,24 @@
         }
 
         // Navigation vers le prochain champ avec Entrée (pour subs)
-        function goToNextSubsInput(currentIndex, type) {
-            const allClicksInputs = document.querySelectorAll('.st-clicks-input');
+        function goToNextSubsInput(currentIndex) {
             const allSubsInputs = document.querySelectorAll('.st-subs-input');
+            const nextIndex = currentIndex + 1;
 
-            if (type === 'clicks') {
-                // Aller au champ subs du même compte
-                if (allSubsInputs[currentIndex]) {
-                    allSubsInputs[currentIndex].focus();
-                    allSubsInputs[currentIndex].select();
-                }
+            if (nextIndex < allSubsInputs.length) {
+                allSubsInputs[nextIndex].focus();
+                allSubsInputs[nextIndex].select();
             } else {
-                // Aller au champ clics du compte suivant
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < allClicksInputs.length) {
-                    allClicksInputs[nextIndex].focus();
-                    allClicksInputs[nextIndex].select();
-                } else {
-                    // Dernier input, on sauvegarde
-                    const saveBtn = document.getElementById('save-subs-btn');
-                    if (saveBtn) {
-                        saveBtn.focus();
-                        saveBtn.click();
-                    }
+                // Dernier input, on sauvegarde
+                const saveBtn = document.getElementById('save-subs-btn');
+                if (saveBtn) {
+                    saveBtn.focus();
+                    saveBtn.click();
                 }
             }
         }
 
-        // Load subs tracking data and populate the bulk form
+        // Load subs tracking data and populate the bulk form (comme followers)
         async function loadSubsTrackingData() {
             const formContainer = document.getElementById('subs-bulk-form');
             const summaryContainer = document.getElementById('subs-summary-cards');
@@ -12690,8 +12680,9 @@
 
             try {
                 // Get all subs tracking data
-                const allSubsStats = await getSubsTracking(30) || [];
+                const allSubsStats = await getSubsTracking(90) || [];
                 const statsByUsername = {};
+
                 allSubsStats.forEach(stat => {
                     if (!statsByUsername[stat.username]) {
                         statsByUsername[stat.username] = [];
@@ -12704,42 +12695,37 @@
                     statsByUsername[username].sort((a, b) => new Date(a.date) - new Date(b.date));
                 });
 
+                const today = new Date().toISOString().split('T')[0];
+
                 // Get all accounts from creators
                 const allAccounts = [];
-                let totalClicks = 0;
                 let totalSubs = 0;
-                let yesterdayClicks = 0;
-                let yesterdaySubs = 0;
+                let totalGrowth = 0;
 
                 if (data.creators) {
                     data.creators.forEach(creator => {
                         if (creator.accounts && creator.accounts.length > 0) {
                             creator.accounts.forEach(acc => {
                                 const username = acc.username.replace('@', '');
-                                const stats = statsByUsername[username] || [];
+                                const stats = statsByUsername[username] || statsByUsername[acc.username] || [];
                                 const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
                                 const yesterdayStat = stats.length > 1 ? stats[stats.length - 2] : null;
 
-                                const currentClicks = latestStat ? latestStat.clicks : 0;
                                 const currentSubs = latestStat ? latestStat.subs : 0;
-                                const prevClicks = yesterdayStat ? yesterdayStat.clicks : 0;
-                                const prevSubs = yesterdayStat ? yesterdayStat.subs : 0;
+                                const yesterdaySubs = yesterdayStat ? yesterdayStat.subs : currentSubs;
+                                const dailyGrowth = currentSubs - yesterdaySubs;
 
-                                totalClicks += currentClicks;
                                 totalSubs += currentSubs;
-                                yesterdayClicks += (currentClicks - prevClicks);
-                                yesterdaySubs += (currentSubs - prevSubs);
+                                totalGrowth += dailyGrowth;
 
                                 allAccounts.push({
                                     username: acc.username,
                                     creatorId: creator.id,
                                     creatorName: creator.name,
                                     creatorPhoto: creator.photo_url,
-                                    currentClicks,
                                     currentSubs,
-                                    clicksGrowth: currentClicks - prevClicks,
-                                    subsGrowth: currentSubs - prevSubs,
-                                    trackingLink: latestStat ? latestStat.tracking_link : '',
+                                    yesterdaySubs,
+                                    dailyGrowth,
                                     lastDate: latestStat ? latestStat.date : null
                                 });
                             });
@@ -12747,24 +12733,19 @@
                     });
                 }
 
-                // Calculate conversion rate
-                const conversionRate = totalClicks > 0 ? ((totalSubs / totalClicks) * 100).toFixed(1) : 0;
-
                 // Update summary cards
                 summaryContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 1rem; padding: 1.25rem; color: white;">
-                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Clics</div>
-                        <div style="font-size: 2rem; font-weight: 800;">${totalClicks.toLocaleString()}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">${yesterdayClicks >= 0 ? '+' : ''}${yesterdayClicks} hier</div>
-                    </div>
                     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 1rem; padding: 1.25rem; color: white;">
                         <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Subs</div>
                         <div style="font-size: 2rem; font-weight: 800;">${totalSubs.toLocaleString()}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">${yesterdaySubs >= 0 ? '+' : ''}${yesterdaySubs} hier</div>
+                    </div>
+                    <div style="background: ${totalGrowth >= 0 ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}; border-radius: 1rem; padding: 1.25rem; color: white;">
+                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Croissance (hier)</div>
+                        <div style="font-size: 2rem; font-weight: 800;">${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toLocaleString()}</div>
                     </div>
                     <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
-                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Taux Conv.</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${conversionRate}%</div>
+                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Créatrices</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${data.creators ? data.creators.length : 0}</div>
                     </div>
                     <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
                         <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Comptes</div>
@@ -12788,13 +12769,10 @@
                 allAccounts.sort((a, b) => a.creatorName.localeCompare(b.creatorName));
 
                 formContainer.innerHTML = `
-                    <div class="st-intuitive-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+                    <div class="st-intuitive-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
                         ${allAccounts.map((acc, index) => {
-                            const today = new Date().toISOString().split('T')[0];
                             const isUpdatedToday = acc.lastDate === today;
-                            const inputIdClicks = `subs-clicks-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                            const inputIdSubs = `subs-subs-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                            const inputIdLink = `subs-link-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                            const inputIdSubs = `subs-input-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
                             return `
                                 <div class="st-account-card" style="background: ${isDarkMode ? '#1f2937' : 'white'}; border: 2px solid ${isUpdatedToday ? '#10b981' : (isDarkMode ? '#374151' : '#e2e8f0')}; border-radius: 1rem; padding: 1.25rem; position: relative; transition: all 0.2s;">
@@ -12805,78 +12783,50 @@
 
                                     <!-- Header: Creator + Twitter -->
                                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: ${isDarkMode ? '#374151' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: ${isDarkMode ? '#374151' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                             ${acc.creatorPhoto
                                                 ? `<img src="${acc.creatorPhoto}" alt="${acc.creatorName}" style="width: 100%; height: 100%; object-fit: cover;">`
                                                 : `<i class="fas fa-user" style="color: #94a3b8;"></i>`
                                             }
                                         </div>
-                                        <div>
+                                        <div style="min-width: 0;">
                                             <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; font-size: 0.9375rem;">${acc.creatorName}</div>
-                                            <a href="https://twitter.com/${acc.username.replace('@', '')}" target="_blank" style="color: #8b5cf6; font-size: 0.8125rem; text-decoration: none;">
-                                                <i class="fab fa-twitter"></i> ${acc.username}
-                                            </a>
+                                            <div style="color: #10b981; font-size: 0.8125rem;">${acc.username}</div>
                                         </div>
                                     </div>
 
-                                    <!-- Tracking Link -->
-                                    <div style="margin-bottom: 1rem;">
+                                    <!-- Subs Input -->
+                                    <div class="st-input-area">
                                         <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
-                                            <i class="fas fa-link"></i> Tracking Link
+                                            <i class="fas fa-user-plus"></i> Total Subs
                                         </label>
-                                        <input type="text"
-                                               id="${inputIdLink}"
-                                               data-username="${acc.username}"
-                                               value="${acc.trackingLink || ''}"
-                                               placeholder="https://track.link/..."
-                                               class="st-link-input"
-                                               style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.5rem; font-size: 0.8125rem; background: ${isDarkMode ? '#111827' : '#f8fafc'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                    </div>
-
-                                    <!-- Inputs Row: Clics + Subs -->
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
-                                                <i class="fas fa-mouse-pointer"></i> Clics
-                                            </label>
-                                            <input type="number"
-                                                   id="${inputIdClicks}"
-                                                   data-username="${acc.username}"
-                                                   data-creator-id="${acc.creatorId}"
-                                                   value="${acc.currentClicks || ''}"
-                                                   placeholder="0"
-                                                   class="st-clicks-input"
-                                                   style="width: 100%; padding: 0.75rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
-                                                   onfocus="this.select(); this.style.borderColor='#8b5cf6'"
-                                                   onblur="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'"
-                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}, 'clicks'); }">
-                                            ${acc.clicksGrowth !== 0 ? `
-                                                <div style="font-size: 0.6875rem; text-align: center; margin-top: 0.25rem; color: ${acc.clicksGrowth > 0 ? '#10b981' : '#ef4444'};">
-                                                    ${acc.clicksGrowth > 0 ? '+' : ''}${acc.clicksGrowth}
-                                                </div>
-                                            ` : ''}
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
-                                                <i class="fas fa-user-plus"></i> Subs
-                                            </label>
+                                        <div style="position: relative;">
                                             <input type="number"
                                                    id="${inputIdSubs}"
                                                    data-username="${acc.username}"
                                                    data-creator-id="${acc.creatorId}"
                                                    value="${acc.currentSubs || ''}"
-                                                   placeholder="0"
+                                                   placeholder="Ex: 150"
                                                    class="st-subs-input"
-                                                   style="width: 100%; padding: 0.75rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.125rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
+                                                   style="width: 100%; padding: 0.875rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.5rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
                                                    onfocus="this.select(); this.style.borderColor='#10b981'"
                                                    onblur="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'"
-                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}, 'subs'); }">
-                                            ${acc.subsGrowth !== 0 ? `
-                                                <div style="font-size: 0.6875rem; text-align: center; margin-top: 0.25rem; color: ${acc.subsGrowth > 0 ? '#10b981' : '#ef4444'};">
-                                                    ${acc.subsGrowth > 0 ? '+' : ''}${acc.subsGrowth}
-                                                </div>
-                                            ` : ''}
+                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}); }">
                                         </div>
+                                        ${acc.currentSubs > 0 ? `
+                                            <div style="margin-top: 0.5rem; font-size: 0.8125rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">
+                                                Dernier: <strong style="color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${acc.currentSubs.toLocaleString()}</strong>
+                                                ${acc.dailyGrowth !== 0 ? `
+                                                    <span style="margin-left: 0.5rem; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; ${acc.dailyGrowth > 0 ? 'background: #d1fae5; color: #059669;' : 'background: #fee2e2; color: #dc2626;'}">
+                                                        ${acc.dailyGrowth > 0 ? '+' : ''}${acc.dailyGrowth}
+                                                    </span>
+                                                ` : ''}
+                                            </div>
+                                        ` : `
+                                            <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #f59e0b;">
+                                                <i class="fas fa-star"></i> Premier enregistrement
+                                            </div>
+                                        `}
                                     </div>
                                 </div>
                             `;
@@ -12904,46 +12854,20 @@
             const dateInput = document.getElementById('subs-tracking-date');
             const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
 
-            // Get all input values
-            const clicksInputs = document.querySelectorAll('.st-clicks-input');
+            // Get all subs input values
             const subsInputs = document.querySelectorAll('.st-subs-input');
-            const linkInputs = document.querySelectorAll('.st-link-input');
-
             const entries = [];
-            const usernameMap = new Map();
 
-            // Build entries from inputs
-            clicksInputs.forEach((input, index) => {
-                const username = input.dataset.username;
-                const clicks = parseInt(input.value) || 0;
-                usernameMap.set(username, { clicks, subs: 0, tracking_link: '' });
-            });
-
-            subsInputs.forEach((input, index) => {
-                const username = input.dataset.username;
-                const subs = parseInt(input.value) || 0;
-                if (usernameMap.has(username)) {
-                    usernameMap.get(username).subs = subs;
+            subsInputs.forEach(input => {
+                const value = parseInt(input.value);
+                if (value && value > 0) {
+                    entries.push({
+                        username: input.dataset.username,
+                        subs: value,
+                        clicks: 0,
+                        date: date
+                    });
                 }
-            });
-
-            linkInputs.forEach((input, index) => {
-                const username = input.dataset.username;
-                const link = input.value.trim();
-                if (usernameMap.has(username)) {
-                    usernameMap.get(username).tracking_link = link;
-                }
-            });
-
-            // Convert to entries array
-            usernameMap.forEach((data, username) => {
-                entries.push({
-                    username: username,
-                    clicks: data.clicks,
-                    subs: data.subs,
-                    tracking_link: data.tracking_link,
-                    date: date
-                });
             });
 
             if (entries.length === 0) {
@@ -12973,7 +12897,7 @@
             }
         }
 
-        // Update subs growth chart
+        // Update subs growth chart (comme followers - par compte)
         async function updateSubsChart(days = 7) {
             const canvas = document.getElementById('subs-growth-chart');
             if (!canvas) return;
@@ -12983,7 +12907,7 @@
             // Update period buttons
             document.querySelectorAll('.subs-period-btn').forEach(btn => {
                 if (parseInt(btn.dataset.period) === days) {
-                    btn.style.background = '#8b5cf6';
+                    btn.style.background = '#10b981';
                     btn.style.color = 'white';
                     btn.style.border = 'none';
                 } else {
@@ -13010,47 +12934,47 @@
                     return;
                 }
 
-                // Group by date
-                const statsByDate = {};
+                // Group by username (comme followers)
+                const statsByUsername = {};
                 allStats.forEach(stat => {
-                    if (!statsByDate[stat.date]) {
-                        statsByDate[stat.date] = { clicks: 0, subs: 0 };
+                    if (!statsByUsername[stat.username]) {
+                        statsByUsername[stat.username] = [];
                     }
-                    statsByDate[stat.date].clicks += stat.clicks;
-                    statsByDate[stat.date].subs += stat.subs;
+                    statsByUsername[stat.username].push(stat);
                 });
 
-                // Sort dates
-                const dates = Object.keys(statsByDate).sort();
-                const clicksData = dates.map(d => ({ x: d, y: statsByDate[d].clicks }));
-                const subsData = dates.map(d => ({ x: d, y: statsByDate[d].subs }));
+                // Sort each username's stats by date
+                Object.keys(statsByUsername).forEach(username => {
+                    statsByUsername[username].sort((a, b) => new Date(a.date) - new Date(b.date));
+                });
+
+                // Create datasets (une ligne par compte)
+                const colors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4'];
+                const datasets = Object.keys(statsByUsername).map((username, i) => ({
+                    label: username,
+                    data: statsByUsername[username].map(s => ({
+                        x: s.date,
+                        y: s.subs
+                    })),
+                    borderColor: colors[i % colors.length],
+                    backgroundColor: colors[i % colors.length] + '20',
+                    tension: 0.3,
+                    fill: false,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }));
+
+                if (datasets.length === 0) {
+                    ctx.font = '14px Inter';
+                    ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Aucune donnée disponible', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
 
                 subsGrowthChart = new Chart(ctx, {
                     type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: 'Clics',
-                                data: clicksData,
-                                borderColor: '#8b5cf6',
-                                backgroundColor: '#8b5cf620',
-                                tension: 0.3,
-                                fill: true,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: 'Subs',
-                                data: subsData,
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b98120',
-                                tension: 0.3,
-                                fill: true,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            }
-                        ]
-                    },
+                    data: { datasets },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -13092,6 +13016,7 @@
         }
 
         // Update subs top performers
+        // Top performers - meilleure croissance subs (comme followers)
         async function updateSubsTopPerformers() {
             const container = document.getElementById('subs-top-performers');
             if (!container) return;
@@ -13106,26 +13031,29 @@
                     return;
                 }
 
-                // Calculate conversion rate per username
+                // Group by username and calculate growth
                 const statsByUsername = {};
                 allStats.forEach(stat => {
                     if (!statsByUsername[stat.username]) {
-                        statsByUsername[stat.username] = { clicks: 0, subs: 0 };
+                        statsByUsername[stat.username] = [];
                     }
-                    statsByUsername[stat.username].clicks += stat.clicks;
-                    statsByUsername[stat.username].subs += stat.subs;
+                    statsByUsername[stat.username].push(stat);
                 });
 
-                // Calculate conversion rate and sort
+                // Calculate daily growth for each username
                 const performers = Object.entries(statsByUsername)
-                    .map(([username, data]) => ({
-                        username,
-                        clicks: data.clicks,
-                        subs: data.subs,
-                        rate: data.clicks > 0 ? (data.subs / data.clicks) * 100 : 0
-                    }))
-                    .filter(p => p.clicks > 0)
-                    .sort((a, b) => b.rate - a.rate)
+                    .map(([username, stats]) => {
+                        stats.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        const latest = stats[stats.length - 1];
+                        const previous = stats.length > 1 ? stats[stats.length - 2] : null;
+                        const growth = previous ? latest.subs - previous.subs : 0;
+                        return {
+                            username,
+                            currentSubs: latest.subs,
+                            growth
+                        };
+                    })
+                    .sort((a, b) => b.growth - a.growth)
                     .slice(0, 5);
 
                 if (performers.length === 0) {
@@ -13139,11 +13067,11 @@
                             ${i + 1}
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 600; color: #8b5cf6; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.username}</div>
-                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">${p.clicks} clics / ${p.subs} subs</div>
+                            <div style="font-weight: 600; color: #10b981; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.username}</div>
+                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Total: ${p.currentSubs.toLocaleString()} subs</div>
                         </div>
-                        <div style="font-weight: 700; color: #10b981; font-size: 0.9375rem;">
-                            ${p.rate.toFixed(1)}%
+                        <div style="font-weight: 700; color: ${p.growth >= 0 ? '#10b981' : '#ef4444'}; font-size: 0.9375rem;">
+                            ${p.growth >= 0 ? '+' : ''}${p.growth}
                         </div>
                     </div>
                 `).join('');
@@ -13153,7 +13081,7 @@
             }
         }
 
-        // Update subs history table
+        // Update subs history table (comme followers - affiche total subs)
         async function updateSubsHistory() {
             const container = document.getElementById('subs-history-table');
             if (!container) return;
@@ -13175,11 +13103,11 @@
                 // Build stats lookup
                 const statsLookup = {};
                 allStats.forEach(s => {
-                    statsLookup[`${s.username}_${s.date}`] = { clicks: s.clicks, subs: s.subs };
+                    statsLookup[`${s.username}_${s.date}`] = s.subs;
                 });
 
                 container.innerHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8125rem;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
                         <thead>
                             <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc'};">
                                 <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">Compte</th>
@@ -13189,12 +13117,10 @@
                         <tbody>
                             ${usernames.map(username => `
                                 <tr style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
-                                    <td style="padding: 0.75rem; color: #8b5cf6; font-weight: 600;">${username}</td>
+                                    <td style="padding: 0.75rem; color: #10b981; font-weight: 600;">${username}</td>
                                     ${dates.map(date => {
-                                        const data = statsLookup[`${username}_${date}`];
-                                        return `<td style="padding: 0.75rem; text-align: center; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                            ${data ? `<span style="color: #8b5cf6;">${data.clicks}</span>/<span style="color: #10b981;">${data.subs}</span>` : '-'}
-                                        </td>`;
+                                        const value = statsLookup[`${username}_${date}`];
+                                        return `<td style="padding: 0.75rem; text-align: center; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${value !== undefined ? value.toLocaleString() : '-'}</td>`;
                                     }).join('')}
                                 </tr>
                             `).join('')}
