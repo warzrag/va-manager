@@ -2651,7 +2651,711 @@
             font-size: 0.875rem;
             color: #64748b;
         }
-        
+
+        /* ========== SUBS TRACKING STYLES - Competition Design ========== */
+
+        .st-hero {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+        }
+
+        .st-hero-bg {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: st-float 6s ease-in-out infinite;
+        }
+
+        .st-hero-particles .st-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: st-particle-float 4s ease-in-out infinite;
+        }
+
+        .st-hero-particles .st-particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .st-hero-particles .st-particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 1s; }
+        .st-hero-particles .st-particle:nth-child(3) { top: 40%; left: 50%; animation-delay: 2s; }
+
+        @keyframes st-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        @keyframes st-particle-float {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-15px) scale(1.5); opacity: 0.6; }
+        }
+
+        .st-hero-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .st-hero-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .st-hero-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .st-hero-icon i {
+            font-size: 2rem;
+            color: #fbbf24;
+            text-shadow: 0 2px 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .st-hero-text h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+        }
+
+        .st-hero-text p {
+            color: rgba(255,255,255,0.8);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .st-hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .st-date-input {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 0.75rem;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .st-date-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.25);
+        }
+
+        .st-save-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #7c3aed;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .st-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Summary Cards */
+        .st-summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .st-summary-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .st-summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .st-summary-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .st-summary-icon i {
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .st-summary-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .st-summary-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .st-summary-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Bulk Entry Section */
+        .st-bulk-section {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .st-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .st-section-title i {
+            color: #8b5cf6;
+        }
+
+        .st-bulk-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .st-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .st-loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #8b5cf6;
+        }
+
+        /* Account Card for Subs */
+        .st-account-card {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f3ff 100%);
+            border: 2px solid #e9d5ff;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .st-account-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+            border-color: #c4b5fd;
+        }
+
+        .st-card-pending {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+        }
+
+        .st-card-updated {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+
+        .st-status-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .st-status-todo {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .st-status-done {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .st-card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .st-creator-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .st-creator-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .st-creator-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .st-creator-avatar i {
+            font-size: 0.7rem;
+            color: white;
+        }
+
+        .st-creator-name {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .st-account-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #8b5cf6;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .st-account-link:hover {
+            color: #7c3aed;
+        }
+
+        .st-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .st-input-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .st-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .st-input-icon {
+            position: absolute;
+            left: 1rem;
+            color: #a78bfa;
+            font-size: 1rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .st-input-wrapper.focused .st-input-icon {
+            color: #8b5cf6;
+        }
+
+        .st-subs-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 2px solid #e9d5ff;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .st-subs-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .st-subs-input::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .st-last-value {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        .st-last-value strong {
+            color: #8b5cf6;
+        }
+
+        .st-growth {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .st-growth.positive {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .st-growth.negative {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Save All Button */
+        .st-save-all-btn {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .st-save-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .st-save-all-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Dashboard Grid */
+        .st-dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .st-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .st-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .st-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .st-card-title i {
+            color: #8b5cf6;
+        }
+
+        .st-period-btns {
+            display: flex;
+            gap: 0.25rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .subs-period-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .subs-period-btn:hover {
+            color: #8b5cf6;
+        }
+
+        .subs-period-btn.active {
+            background: white;
+            color: #8b5cf6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .st-chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Leaderboard Card */
+        .st-leaderboard-card {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .st-top-performers {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .st-performer-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-radius: 1rem;
+            transition: all 0.3s;
+        }
+
+        .st-performer-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+        }
+
+        .st-performer-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .st-rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+        .st-rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; }
+        .st-rank-3 { background: linear-gradient(135deg, #cd7f32, #b8860b); color: white; }
+        .st-rank-other { background: #e2e8f0; color: #64748b; }
+
+        .st-performer-info {
+            flex: 1;
+        }
+
+        .st-performer-name {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .st-performer-username {
+            font-size: 0.8rem;
+            color: #8b5cf6;
+        }
+
+        .st-performer-growth {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #10b981;
+        }
+
+        /* History Card */
+        .st-history-card {
+            overflow-x: auto;
+        }
+
+        .st-history-table {
+            width: 100%;
+            min-width: 600px;
+        }
+
+        .st-history-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .st-history-table th {
+            text-align: left;
+            padding: 1rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .st-history-table th:first-child {
+            border-radius: 0.75rem 0 0 0;
+        }
+
+        .st-history-table th:last-child {
+            border-radius: 0 0.75rem 0 0;
+        }
+
+        .st-history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .st-history-table tr:hover td {
+            background: #faf5ff;
+        }
+
+        /* Dark Mode */
+        body.dark-mode .st-summary-card {
+            background: var(--dash-card-bg, #1e293b);
+            border-color: var(--dash-border, #334155);
+        }
+
+        body.dark-mode .st-summary-value {
+            color: white;
+        }
+
+        body.dark-mode .st-bulk-section,
+        body.dark-mode .st-card {
+            background: var(--dash-card-bg, #1e293b);
+        }
+
+        body.dark-mode .st-section-title,
+        body.dark-mode .st-card-title {
+            color: white;
+        }
+
+        body.dark-mode .st-account-card {
+            background: linear-gradient(135deg, #1e293b 0%, #2d3748 100%);
+            border-color: #4c1d95;
+        }
+
+        body.dark-mode .st-subs-input {
+            background: #0f172a;
+            border-color: #4c1d95;
+            color: white;
+        }
+
+        body.dark-mode .st-performer-item {
+            background: linear-gradient(135deg, #2d1f4e 0%, #3b2d5e 100%);
+        }
+
+        body.dark-mode .st-performer-name {
+            color: white;
+        }
+
+        body.dark-mode .st-history-table td {
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .st-history-table tr:hover td {
+            background: #2d1f4e;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .st-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .st-hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .st-hero-main {
+                flex-direction: column;
+            }
+
+            .st-summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .st-bulk-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ========== MOBILE RESPONSIVE DESIGN ========== */
         
         /* Menu burger pour mobile */
@@ -3645,9 +4349,6 @@
             </button>
             <button class="nav-btn" data-page="add-account">
                 <i class="fab fa-twitter"></i> Comptes
-            </button>
-            <button class="nav-btn" data-page="subs-tracking">
-                <i class="fas fa-euro-sign"></i> Subs
             </button>
             <button class="nav-btn" data-page="revenue-tracking">
                 <i class="fas fa-chart-line"></i> Revenus
@@ -4723,101 +5424,130 @@
 
         <!-- Subs Tracking Page -->
         <div id="subs-tracking-page" class="page">
-            <!-- Competition Header -->
-            <div class="competition-header">
-                <h1 class="competition-title">🏆 Compétition des VAs</h1>
-                <div class="competition-stats">
-                    <div class="stat-box">
-                        <span class="stat-value" id="total-subs-today">0</span>
-                        <span class="stat-label">Subs Aujourd'hui</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value" id="total-payment">0€</span>
-                        <span class="stat-label">Total Généré</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value" id="total-paid" style="color: #22c55e;">0€</span>
-                        <span class="stat-label">Déjà Payé</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value" id="total-remaining" style="color: #ef4444;">0€</span>
-                        <span class="stat-label">Reste à Payer</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value" id="best-va-name">-</span>
-                        <span class="stat-label">Meilleur VA</span>
-                    </div>
+            <!-- Competition Hero Header -->
+            <div class="st-hero">
+                <div class="st-hero-bg"></div>
+                <div class="st-hero-particles">
+                    <div class="st-particle"></div>
+                    <div class="st-particle"></div>
+                    <div class="st-particle"></div>
                 </div>
-            </div>
-
-            <!-- Period Tabs -->
-            <div class="period-tabs" style="margin-bottom: 2rem;">
-                <button class="period-tab active" data-period="today">Aujourd'hui</button>
-                <button class="period-tab" data-period="week">Cette semaine</button>
-                <button class="period-tab" data-period="month">Ce mois</button>
-                <button class="period-tab" data-period="all">Tout</button>
-            </div>
-
-            <!-- Leaderboard and Quick Actions -->
-            <div class="leaderboard-container">
-                <div class="leaderboard">
-                    <div class="leaderboard-header">
-                        <div class="leaderboard-title">
+                <div class="st-hero-content">
+                    <div class="st-hero-main">
+                        <div class="st-hero-icon">
                             <i class="fas fa-trophy"></i>
-                            Classement des VAs
                         </div>
-                        <div class="period-display" id="period-display">Cette semaine</div>
+                        <div class="st-hero-text">
+                            <h2>🏆 Compétition des VAs</h2>
+                            <p>Suivez les abonnements sur la plateforme</p>
+                        </div>
                     </div>
-                    <div id="leaderboard-content">
-                        <!-- Leaderboard items will be inserted here -->
-                    </div>
-                </div>
-
-                <div class="quick-actions">
-                    <h3 style="margin-bottom: 1rem;">Actions rapides</h3>
-                    <div class="action-grid">
-                        <button onclick="openAddSubsModal()" class="quick-action-btn add-subs-quick">
-                            <i class="fas fa-plus-circle"></i>
-                            Ajouter des subs
-                        </button>
-                        <button onclick="showDetailedView()" class="quick-action-btn view-details-btn">
-                            <i class="fas fa-chart-line"></i>
-                            Vue détaillée
-                        </button>
-                        <button onclick="exportSubsData()" class="quick-action-btn view-details-btn">
-                            <i class="fas fa-download"></i>
-                            Exporter
+                    <div class="st-hero-actions">
+                        <input type="date" id="subs-tracking-date" class="st-date-input">
+                        <button onclick="saveAllSubsStats(event)" class="st-save-btn">
+                            <i class="fas fa-save"></i> <span>Enregistrer</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Performance Charts -->
-            <div class="charts-container">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Performance par VA</h3>
+            <!-- Stats Summary Cards -->
+            <div class="st-summary-cards">
+                <div class="st-summary-card">
+                    <div class="st-summary-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div id="va-performance-chart">
-                        <!-- Chart will be inserted here -->
+                    <div class="st-summary-info">
+                        <span class="st-summary-value" id="st-total-subs">0</span>
+                        <span class="st-summary-label">Total Subs</span>
                     </div>
                 </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Évolution des subs</h3>
+                <div class="st-summary-card">
+                    <div class="st-summary-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div id="subs-evolution-chart">
-                        <!-- Chart will be inserted here -->
+                    <div class="st-summary-info">
+                        <span class="st-summary-value" id="st-total-growth">+0</span>
+                        <span class="st-summary-label">Croissance Aujourd'hui</span>
+                    </div>
+                </div>
+                <div class="st-summary-card">
+                    <div class="st-summary-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="st-summary-info">
+                        <span class="st-summary-value" id="st-best-performer">-</span>
+                        <span class="st-summary-label">Meilleur Performer</span>
+                    </div>
+                </div>
+                <div class="st-summary-card">
+                    <div class="st-summary-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="st-summary-info">
+                        <span class="st-summary-value" id="st-accounts-count">0</span>
+                        <span class="st-summary-label">Comptes Actifs</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
-            <div class="activity-feed">
-                <h3 style="margin-bottom: 1.5rem;">Activité récente</h3>
-                <div id="activity-list">
-                    <!-- Activity items will be inserted here -->
+            <!-- Bulk Entry Form by Creator -->
+            <div class="st-bulk-section">
+                <h3 class="st-section-title">
+                    <i class="fas fa-crown"></i> Saisie des Subs par Compte
+                </h3>
+                <div id="subs-bulk-form" class="st-bulk-form">
+                    <!-- Will be populated by JS with account cards -->
+                    <div class="st-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement des comptes...</p>
+                    </div>
+                </div>
+
+                <!-- Save All Button -->
+                <button onclick="saveAllSubsStats(event)" id="save-subs-btn" class="st-save-all-btn">
+                    <i class="fas fa-save"></i>
+                    Enregistrer tous les subs
+                </button>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="st-dashboard-grid">
+                <!-- Evolution Chart -->
+                <div class="st-card">
+                    <div class="st-card-header">
+                        <h3 class="st-card-title">
+                            <i class="fas fa-chart-line"></i> Évolution des Subs
+                        </h3>
+                        <div class="st-period-btns">
+                            <button onclick="updateSubsChart(7)" class="subs-period-btn active" data-period="7">7j</button>
+                            <button onclick="updateSubsChart(30)" class="subs-period-btn" data-period="30">30j</button>
+                            <button onclick="updateSubsChart(90)" class="subs-period-btn" data-period="90">90j</button>
+                        </div>
+                    </div>
+                    <div class="st-chart-container">
+                        <canvas id="subs-growth-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Performers Leaderboard -->
+                <div class="st-card st-leaderboard-card">
+                    <h3 class="st-card-title">
+                        <i class="fas fa-medal"></i> Top Performers (Croissance)
+                    </h3>
+                    <div id="subs-top-performers" class="st-top-performers">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="st-card st-history-card">
+                <h3 class="st-card-title">
+                    <i class="fas fa-history"></i> Historique des Subs
+                </h3>
+                <div id="subs-history-table" class="st-history-table">
+                    <!-- Will be populated by JS -->
                 </div>
             </div>
         </div>
@@ -8553,11 +9283,6 @@
                 console.log('✅ [NAV DEBUG] Page shown:', pageName);
             } else {
                 console.error('❌ [NAV DEBUG] Page element not found:', `${pageName}-page`);
-            }
-
-            // Update subs display when navigating to subs tracking page
-            if (pageName === 'subs-tracking') {
-                updateCompetitionDisplay();
             }
 
             // Update revenue display when navigating to revenue tracking page
@@ -21972,570 +22697,496 @@ Tapez "SUPPRIMER" pour confirmer :`;
             a.click();
         }
 
-        // ========== SUBS COMPETITION FUNCTIONS ==========
+        // ========== SUBS COMPETITION FUNCTIONS (Like Followers Tracking) ==========
 
-        let currentPeriod = 'week';
+        let subsChart = null;
+        let subsTrackingData = [];
 
-        function setupSubsTracking() {
-            // Period tabs
-            document.querySelectorAll('.period-tab').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentPeriod = this.dataset.period;
-                    updateCompetitionDisplay();
+        async function loadSubsTrackingPage() {
+            // Set today's date
+            const dateInput = document.getElementById('subs-tracking-date');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Load data
+            await loadSubsTrackingData();
+        }
+
+        async function loadSubsTrackingData() {
+            const container = document.getElementById('subs-bulk-form');
+            if (!container) return;
+
+            try {
+                // Get all Twitter accounts from data
+                const allAccounts = [];
+                data.vas.forEach(va => {
+                    va.creators.forEach(creator => {
+                        creator.accounts.forEach(account => {
+                            allAccounts.push({
+                                username: account.username,
+                                creatorName: creator.name,
+                                creatorImage: creator.image,
+                                vaName: va.name
+                            });
+                        });
+                    });
                 });
-            });
-            
-            // Add subs form submit event
-            const addSubsForm = document.getElementById('add-subs-form');
-            if (addSubsForm) {
-                addSubsForm.addEventListener('submit', addSubsEntry);
-            }
-        }
 
-        function updateCompetitionDisplay() {
-            updateLeaderboard();
-            updateCompetitionStats();
-            updatePerformanceCharts();
-            updateActivityFeed();
-            updateSubsStats();
-            updateSubsTable();
-        }
-        
-        function updateSubsStats() {
-            const allSubs = data.subs || [];
-            const today = new Date().toISOString().split('T')[0];
-            const todaySubs = allSubs.filter(s => s.date === today);
-            
-            const totalAmount = allSubs.reduce((sum, sub) => sum + sub.amount, 0);
-            const totalToday = todaySubs.reduce((sum, sub) => sum + sub.count, 0);
-            
-            // Calculate paid amounts
-            const totalPaidSubs = (data.vaPayments || [])
-                .filter(p => p.type === 'subs' || p.type === 'both')
-                .reduce((sum, p) => sum + (p.subsAmount || 0), 0);
-            
-            const totalRemaining = totalAmount - totalPaidSubs;
-            
-            // Find best VA
-            const vaStats = {};
-            allSubs.forEach(sub => {
-                if (!vaStats[sub.vaId]) vaStats[sub.vaId] = 0;
-                vaStats[sub.vaId] += sub.count;
-            });
-            
-            let bestVaId = null;
-            let maxSubs = 0;
-            Object.entries(vaStats).forEach(([vaId, count]) => {
-                if (count > maxSubs) {
-                    maxSubs = count;
-                    bestVaId = vaId;
-                }
-            });
-            
-            const bestVa = bestVaId ? data.vas.find(va => va.id === bestVaId) : null;
-            
-            // Update display
-            document.getElementById('total-subs-week').textContent = allSubs.length;
-            document.getElementById('total-subs-today').textContent = totalToday;
-            document.getElementById('total-payment').textContent = totalAmount.toFixed(2) + '€';
-            document.getElementById('total-paid').textContent = totalPaidSubs.toFixed(2) + '€';
-            document.getElementById('total-remaining').textContent = totalRemaining.toFixed(2) + '€';
-            document.getElementById('best-va-name').textContent = bestVa ? bestVa.name : '-';
-        }
-        
-        function updateSubsTable() {
-            const container = document.getElementById('subs-history');
-            if (!container) return;
-            
-            const allSubs = (data.subs || []).sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            if (allSubs.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #94a3b8;">Aucune entrée de subs</p>';
-                return;
-            }
-            
-            let html = `
-                <table class="subs-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>VA</th>
-                            <th>Nombre</th>
-                            <th>Montant</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            allSubs.forEach(sub => {
-                const va = data.vas.find(v => v.id === sub.vaId);
-                const paidAmount = calculatePaidAmountForSub(sub);
-                const isPaid = paidAmount >= sub.amount;
-                const status = isPaid ? 
-                    '<span style="color: #22c55e;"><i class="fas fa-check-circle"></i> Payé</span>' : 
-                    '<span style="color: #ef4444;"><i class="fas fa-clock"></i> En attente</span>';
-                
-                html += `
-                    <tr>
-                        <td>${new Date(sub.date).toLocaleDateString('fr-FR')}</td>
-                        <td>${va ? va.name : 'VA supprimé'}</td>
-                        <td>${sub.count}</td>
-                        <td>${sub.amount.toFixed(2)}€</td>
-                        <td>${status}</td>
-                        <td>
-                            <button onclick="deleteSub('${sub.id}')" class="btn-icon" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-        
-        function calculatePaidAmountForSub(sub) {
-            // This is a simplified calculation - in reality you might want to track payments per sub
-            const vaPayments = (data.vaPayments || [])
-                .filter(p => p.vaId === sub.vaId && (p.type === 'subs' || p.type === 'both'));
-            
-            let totalPaid = 0;
-            vaPayments.forEach(payment => {
-                if (new Date(payment.date) >= new Date(sub.date)) {
-                    totalPaid += payment.subsAmount || 0;
-                }
-            });
-            
-            return totalPaid;
-        }
-
-        function updateLeaderboard() {
-            const container = document.getElementById('leaderboard-content');
-            if (!container) return;
-            
-            // Calculate VA scores
-            const vaScores = calculateVAScores();
-            
-            // Sort by score
-            const sortedVAs = Object.entries(vaScores)
-                .sort((a, b) => b[1].totalSubs - a[1].totalSubs)
-                .slice(0, 10); // Top 10
-            
-            container.innerHTML = '';
-            
-            if (sortedVAs.length === 0) {
-                container.innerHTML = `
-                    <div style="padding: 3rem; text-align: center; color: #94a3b8;">
-                        <i class="fas fa-trophy" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
-                        <p>Aucune donnée de compétition</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Commencez à ajouter des subs pour voir le classement!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            sortedVAs.forEach(([vaId, stats], index) => {
-                const va = data.vas.find(v => v.id === vaId);
-                if (!va) return;
-                
-                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other';
-                const trend = stats.trend > 0 ? '↑' : stats.trend < 0 ? '↓' : '→';
-                const trendColor = stats.trend > 0 ? '#10b981' : stats.trend < 0 ? '#ef4444' : '#64748b';
-                
-                const item = document.createElement('div');
-                item.className = 'leaderboard-item';
-                item.innerHTML = `
-                    <div class="rank-badge ${rankClass}">${index + 1}</div>
-                    <div class="va-info">
-                        <div class="va-name">${va.name}</div>
-                        <div class="va-stats-mini">
-                            <span>${stats.totalSubs} subs</span>
-                            <span style="color: ${trendColor};">${trend} ${Math.abs(stats.trend)}%</span>
-                        </div>
-                    </div>
-                    <div class="va-score">
-                        <div class="score-value">${stats.amount.toFixed(2)}€</div>
-                        <div class="score-label">à payer</div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function calculateVAScores() {
-            const scores = {};
-            const filteredSubs = getFilteredSubs();
-            
-            // Initialize scores for all VAs
-            data.vas.forEach(va => {
-                scores[va.id] = { totalSubs: 0, amount: 0, trend: 0 };
-            });
-            
-            // Calculate scores
-            filteredSubs.forEach(sub => {
-                if (scores[sub.vaId]) {
-                    scores[sub.vaId].totalSubs += sub.count;
-                    scores[sub.vaId].amount += sub.amount;
-                }
-            });
-            
-            // Calculate trends (comparison with previous period)
-            Object.keys(scores).forEach(vaId => {
-                const previousScore = calculatePreviousPeriodScore(vaId);
-                if (previousScore > 0) {
-                    scores[vaId].trend = Math.round(((scores[vaId].totalSubs - previousScore) / previousScore) * 100);
-                }
-            });
-            
-            return scores;
-        }
-
-        function calculatePreviousPeriodScore(vaId) {
-            // Simplified trend calculation
-            if (!data.subs || data.subs.length === 0) return 0;
-            
-            const lastWeekSubs = data.subs
-                .filter(s => s.vaId === vaId && new Date(s.date) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
-                .reduce((sum, s) => sum + s.count, 0);
-            return lastWeekSubs;
-        }
-
-        function updateCompetitionStats() {
-            const today = new Date().toISOString().split('T')[0];
-            const todaySubs = data.subs.filter(s => s.date === today);
-            const totalSubsToday = todaySubs.reduce((sum, s) => sum + s.count, 0);
-            
-            const filteredSubs = getFilteredSubs();
-            const totalAmount = filteredSubs.reduce((sum, s) => sum + s.amount, 0);
-            
-            // Find best VA
-            const vaScores = calculateVAScores();
-            const bestVA = Object.entries(vaScores).sort((a, b) => b[1].totalSubs - a[1].totalSubs)[0];
-            const bestVAName = bestVA ? data.vas.find(v => v.id === bestVA[0])?.name || '-' : '-';
-            
-            document.getElementById('total-subs-today').textContent = totalSubsToday;
-            document.getElementById('total-payment').textContent = totalAmount.toFixed(2) + '€';
-            document.getElementById('best-va-name').textContent = bestVAName;
-            
-            // Update period display
-            const periodDisplay = {
-                'today': "Aujourd'hui",
-                'week': "Cette semaine",
-                'month': "Ce mois",
-                'all': "Tout"
-            };
-            document.getElementById('period-display').textContent = periodDisplay[currentPeriod];
-        }
-
-        function updatePerformanceCharts() {
-            // VA Performance Chart
-            const performanceChart = document.getElementById('va-performance-chart');
-            const vaScores = calculateVAScores();
-            const topVAs = Object.entries(vaScores)
-                .sort((a, b) => b[1].totalSubs - a[1].totalSubs)
-                .slice(0, 5);
-            
-            if (topVAs.length === 0) {
-                performanceChart.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <i class="fas fa-chart-bar" style="font-size: 2rem; opacity: 0.3;"></i>
-                        <p style="margin-top: 0.5rem;">Aucune donnée à afficher</p>
-                    </div>
-                `;
-            } else {
-                performanceChart.innerHTML = '';
-                const maxSubs = Math.max(...topVAs.map(([_, stats]) => stats.totalSubs));
-                
-                topVAs.forEach(([vaId, stats]) => {
-                    const va = data.vas.find(v => v.id === vaId);
-                    if (!va) return;
-                    
-                    const percentage = (stats.totalSubs / maxSubs) * 100;
-                    
-                    const progressContainer = document.createElement('div');
-                    progressContainer.className = 'progress-container';
-                    progressContainer.innerHTML = `
-                        <div class="progress-header">
-                            <span>${va.name}</span>
-                            <span>${stats.totalSubs} subs (${stats.amount.toFixed(2)}€)</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                if (allAccounts.length === 0) {
+                    container.innerHTML = `
+                        <div class="st-loading">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Aucun compte Twitter trouvé</p>
+                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des comptes Twitter depuis le dashboard</p>
                         </div>
                     `;
-                    performanceChart.appendChild(progressContainer);
+                    return;
+                }
+
+                // Fetch latest subs data for all accounts
+                const subsData = await window.getSubsTracking(30);
+                const latestSubsByUsername = {};
+                const yesterdaySubsByUsername = {};
+
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+                subsData.forEach(entry => {
+                    const username = entry.username.toLowerCase();
+                    if (entry.date === today) {
+                        latestSubsByUsername[username] = entry.subs;
+                    }
+                    if (entry.date === yesterday) {
+                        yesterdaySubsByUsername[username] = entry.subs;
+                    }
+                    // Keep track of last known value
+                    if (!latestSubsByUsername[username] && entry.date < today) {
+                        if (!yesterdaySubsByUsername[username] || entry.date > Object.keys(yesterdaySubsByUsername).find(k => k === username)) {
+                            yesterdaySubsByUsername[username] = entry.subs;
+                        }
+                    }
                 });
-            }
-            
-            // Evolution Chart (simplified)
-            const evolutionChart = document.getElementById('subs-evolution-chart');
-            const last7Days = getLast7DaysData();
-            
-            evolutionChart.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; height: 150px; align-items: flex-end;">
-                    ${last7Days.map(day => `
-                        <div style="position: relative;">
-                            <div style="background: linear-gradient(135deg, #667eea, #764ba2); height: ${day.height}%; border-radius: 0.25rem 0.25rem 0 0; transition: height 0.5s;"></div>
-                            <div style="text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">${day.label}</div>
+
+                // Build the form HTML
+                let html = '';
+                let totalSubs = 0;
+                let totalGrowth = 0;
+                let accountsWithData = 0;
+
+                allAccounts.forEach((account, index) => {
+                    const username = account.username.toLowerCase().replace('@', '');
+                    const currentSubs = latestSubsByUsername[username] || 0;
+                    const previousSubs = yesterdaySubsByUsername[username] || 0;
+                    const growth = currentSubs - previousSubs;
+
+                    totalSubs += currentSubs;
+                    if (currentSubs > 0) {
+                        totalGrowth += growth;
+                        accountsWithData++;
+                    }
+
+                    const hasValue = currentSubs > 0;
+                    const cardClass = hasValue ? 'st-card-updated' : 'st-card-pending';
+                    const badgeClass = hasValue ? 'st-status-done' : 'st-status-todo';
+                    const badgeIcon = hasValue ? 'fa-check' : 'fa-clock';
+
+                    let growthHtml = '';
+                    if (previousSubs > 0 && currentSubs > 0) {
+                        const growthClass = growth >= 0 ? 'positive' : 'negative';
+                        const growthIcon = growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                        growthHtml = `<span class="st-growth ${growthClass}"><i class="fas ${growthIcon}"></i> ${growth >= 0 ? '+' : ''}${growth}</span>`;
+                    }
+
+                    html += `
+                        <div class="st-account-card ${cardClass}" data-username="${username}">
+                            <div class="st-status-badge ${badgeClass}">
+                                <i class="fas ${badgeIcon}"></i>
+                            </div>
+                            <div class="st-card-header">
+                                <div class="st-creator-info">
+                                    <div class="st-creator-avatar">
+                                        ${account.creatorImage ?
+                                            `<img src="${account.creatorImage}" alt="${account.creatorName}">` :
+                                            `<i class="fas fa-user"></i>`
+                                        }
+                                    </div>
+                                    <span class="st-creator-name">${account.creatorName}</span>
+                                </div>
+                                <a href="https://twitter.com/${username}" target="_blank" class="st-account-link">
+                                    <i class="fas fa-crown"></i>
+                                    @${username}
+                                    <i class="fas fa-external-link-alt" style="font-size: 0.7rem; opacity: 0.5;"></i>
+                                </a>
+                            </div>
+                            <div class="st-input-area">
+                                <label class="st-input-label">Total Subs</label>
+                                <div class="st-input-wrapper">
+                                    <i class="fas fa-users st-input-icon"></i>
+                                    <input type="number"
+                                           class="st-subs-input"
+                                           data-username="${username}"
+                                           data-index="${index}"
+                                           value="${currentSubs || ''}"
+                                           placeholder="0"
+                                           min="0"
+                                           onkeydown="goToNextSubsInput(event, ${index})"
+                                           onfocus="this.parentElement.classList.add('focused')"
+                                           onblur="this.parentElement.classList.remove('focused')"
+                                    >
+                                </div>
+                                <div class="st-last-value">
+                                    Hier: <strong>${previousSubs}</strong> subs
+                                    ${growthHtml}
+                                </div>
+                            </div>
                         </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function getLast7DaysData() {
-            const days = [];
-            const maxCount = Math.max(...[...Array(7)].map((_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                const count = data.subs
-                    .filter(s => s.date === dateStr)
-                    .reduce((sum, s) => sum + s.count, 0);
-                return count;
-            })) || 1;
-            
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                const count = data.subs
-                    .filter(s => s.date === dateStr)
-                    .reduce((sum, s) => sum + s.count, 0);
-                
-                days.push({
-                    label: date.toLocaleDateString('fr', { weekday: 'short' }),
-                    height: (count / maxCount) * 100
+                    `;
                 });
-            }
-            
-            return days;
-        }
 
-        function updateActivityFeed() {
-            const container = document.getElementById('activity-list');
-            const recentSubs = [...data.subs]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-            
-            if (recentSubs.length === 0) {
+                container.innerHTML = html;
+
+                // Update summary cards
+                document.getElementById('st-total-subs').textContent = totalSubs.toLocaleString();
+                document.getElementById('st-total-growth').textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toLocaleString();
+                document.getElementById('st-accounts-count').textContent = accountsWithData;
+
+                // Find best performer
+                let bestPerformer = '-';
+                let bestGrowth = 0;
+                allAccounts.forEach(account => {
+                    const username = account.username.toLowerCase().replace('@', '');
+                    const current = latestSubsByUsername[username] || 0;
+                    const previous = yesterdaySubsByUsername[username] || 0;
+                    const growth = current - previous;
+                    if (growth > bestGrowth) {
+                        bestGrowth = growth;
+                        bestPerformer = '@' + username;
+                    }
+                });
+                document.getElementById('st-best-performer').textContent = bestPerformer;
+
+                // Update chart and leaderboard
+                await updateSubsChart(7);
+                await updateSubsTopPerformers();
+                await updateSubsHistory();
+
+            } catch (error) {
+                console.error('Error loading subs tracking data:', error);
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <i class="fas fa-history" style="font-size: 2rem; opacity: 0.3;"></i>
-                        <p style="margin-top: 0.5rem;">Aucune activité récente</p>
+                    <div class="st-loading">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                        <p>Erreur lors du chargement</p>
                     </div>
                 `;
-                return;
             }
-            
-            container.innerHTML = '';
-            recentSubs.forEach(sub => {
-                const va = data.vas.find(v => v.id === sub.vaId);
-                const item = document.createElement('div');
-                item.className = 'activity-item';
-                
-                const timeAgo = getTimeAgo(new Date(sub.date));
-                
-                item.innerHTML = `
-                    <div class="activity-icon" style="background: #dbeafe; color: #3b82f6;">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">${va ? va.name : 'VA supprimé'} - ${sub.count} subs</div>
-                        <div class="activity-time">${timeAgo} • ${sub.amount.toFixed(2)}€</div>
-                    </div>
-                `;
-                container.appendChild(item);
+        }
+
+        function goToNextSubsInput(event, currentIndex) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const allInputs = document.querySelectorAll('.st-subs-input');
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < allInputs.length) {
+                    allInputs[nextIndex].focus();
+                    allInputs[nextIndex].select();
+                }
+            }
+        }
+
+        async function saveAllSubsStats(event) {
+            if (event) event.preventDefault();
+
+            const dateInput = document.getElementById('subs-tracking-date');
+            const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+            const inputs = document.querySelectorAll('.st-subs-input');
+
+            const entries = [];
+            inputs.forEach(input => {
+                const username = input.dataset.username;
+                const subs = parseInt(input.value) || 0;
+                if (subs > 0) {
+                    entries.push({ username, subs });
+                }
             });
-        }
 
-        function getTimeAgo(date) {
-            const now = new Date();
-            const diff = now - date;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            
-            if (days === 0) return "Aujourd'hui";
-            if (days === 1) return "Hier";
-            if (days < 7) return `Il y a ${days} jours`;
-            return date.toLocaleDateString('fr-FR');
-        }
-
-
-        function getFilteredSubs() {
-            if (!data.subs) return [];
-            
-            let filtered = [...data.subs];
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Filter by period
-            if (currentPeriod === 'today') {
-                filtered = filtered.filter(sub => sub.date === today);
-            } else if (currentPeriod === 'week') {
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                filtered = filtered.filter(sub => new Date(sub.date) >= oneWeekAgo);
-            } else if (currentPeriod === 'month') {
-                const oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                filtered = filtered.filter(sub => new Date(sub.date) >= oneMonthAgo);
-            }
-            // 'all' returns everything
-            
-            // Sort by date (most recent first)
-            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            return filtered;
-        }
-
-        function openAddSubsModal() {
-            // Update VA select
-            const vaSelect = document.getElementById('subs-va-select');
-            if (!vaSelect) {
-                console.error('VA select not found');
-                return;
-            }
-            
-            const vaOptions = data.vas.map(va => 
-                `<option value="${va.id}">${va.name}</option>`
-            ).join('');
-            vaSelect.innerHTML = '<option value="">-- Choisir un VA --</option>' + vaOptions;
-            
-            const modal = document.getElementById('add-subs-modal');
-            if (!modal) {
-                console.error('Add subs modal not found');
-                return;
-            }
-            
-            modal.classList.add('show');
-        }
-
-        function closeAddSubsModal() {
-            document.getElementById('add-subs-modal').classList.remove('show');
-        }
-
-        // Add Subscription Entry - SUPABASE VERSION
-        async function addSubsEntry(event) {
-            event.preventDefault();
-            console.log('Adding subs entry...');
-
-            const vaId = document.getElementById('subs-va-select').value;
-            const date = document.getElementById('subs-date').value;
-            const count = parseInt(document.getElementById('subs-count').value);
-
-            if (!vaId || !date || !count) {
-                alert('Veuillez remplir tous les champs');
+            if (entries.length === 0) {
+                showError('Aucune donnée à enregistrer');
                 return;
             }
 
             try {
-                // Create subscription in Supabase
-                const newSubscription = await window.createSubscription({
-                    va_id: vaId,
-                    date: date,
-                    count: count,
-                    amount: count * 0.50
-                });
-
-                // Add to local data
-                if (!data.subs) {
-                    data.subs = [];
+                // Show loading state
+                const saveBtn = document.getElementById('save-subs-btn');
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+                    saveBtn.disabled = true;
                 }
 
-                data.subs.push({
-                    id: newSubscription.id,
-                    vaId: newSubscription.va_id,
-                    date: newSubscription.date,
-                    count: newSubscription.count,
-                    amount: newSubscription.amount
-                });
+                await window.bulkSaveSubsTracking(entries, date);
 
-                event.target.reset();
-                document.getElementById('subs-date').value = new Date().toISOString().split('T')[0];
-                closeAddSubsModal();
-                showSuccess(`${count} subs ajoutés avec succès!`);
+                showSuccess(`${entries.length} entrées enregistrées avec succès!`);
 
-                updateCompetitionDisplay();
+                // Reload the data
+                await loadSubsTrackingData();
+
+                // Reset save button
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Enregistrer tous les subs';
+                    saveBtn.disabled = false;
+                }
             } catch (error) {
-                console.error('Error adding subscription:', error);
-                showError('Erreur lors de l\'ajout des subs');
-            }
-        }
+                console.error('Error saving subs:', error);
+                showError('Erreur lors de l\'enregistrement');
 
-        // Delete Subscription - SUPABASE VERSION
-        async function deleteSub(subId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette entrée?')) {
-                try {
-                    // Delete from Supabase
-                    await window.deleteSubscription(subId);
-
-                    // Remove from local data
-                    data.subs = data.subs.filter(sub => sub.id !== subId);
-                    updateCompetitionDisplay();
-                    showSuccess('Entrée supprimée');
-                } catch (error) {
-                    console.error('Error deleting subscription:', error);
-                    showError('Erreur lors de la suppression');
+                const saveBtn = document.getElementById('save-subs-btn');
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Enregistrer tous les subs';
+                    saveBtn.disabled = false;
                 }
             }
         }
 
-        function showDetailedView() {
-            alert('Vue détaillée en développement - bientôt disponible!');
-            // TODO: Implement detailed view with full table and analytics
-        }
-
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            return date.toLocaleDateString('fr-FR', options);
-        }
-
-        function exportSubsData() {
-            let csv = 'Date,VA,Nombre de subs,Montant (€)\n';
-            
-            const filteredSubs = getFilteredSubs();
-            
-            filteredSubs.forEach(sub => {
-                const va = data.vas.find(v => v.id === sub.vaId);
-                csv += `${sub.date},${va ? va.name : 'VA supprimé'},${sub.count},${sub.amount.toFixed(2)}\n`;
+        async function updateSubsChart(days = 7) {
+            // Update active button
+            document.querySelectorAll('.subs-period-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.period) === days);
             });
-            
-            // Add summary
-            const totalSubs = filteredSubs.reduce((sum, sub) => sum + sub.count, 0);
-            const totalAmount = filteredSubs.reduce((sum, sub) => sum + sub.amount, 0);
-            
-            csv += `\n\nRÉSUMÉ\n`;
-            csv += `Total subs,${totalSubs}\n`;
-            csv += `Total à payer,${totalAmount.toFixed(2)}€\n`;
-            
-            // Add per VA summary
-            csv += `\nPAR VA\n`;
-            const vaPayments = {};
-            filteredSubs.forEach(sub => {
-                if (!vaPayments[sub.vaId]) {
-                    vaPayments[sub.vaId] = { name: '', count: 0, amount: 0 };
+
+            try {
+                const subsData = await window.getSubsTracking(days);
+                const canvas = document.getElementById('subs-growth-chart');
+                if (!canvas) return;
+
+                // Group data by username and date
+                const dataByUsername = {};
+                const allDates = new Set();
+
+                subsData.forEach(entry => {
+                    const username = entry.username;
+                    if (!dataByUsername[username]) {
+                        dataByUsername[username] = {};
+                    }
+                    dataByUsername[username][entry.date] = entry.subs;
+                    allDates.add(entry.date);
+                });
+
+                // Sort dates
+                const sortedDates = [...allDates].sort();
+
+                // Generate colors for each username
+                const colors = [
+                    '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
+                    '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#a855f7'
+                ];
+
+                const datasets = Object.keys(dataByUsername).map((username, index) => {
+                    const data = sortedDates.map(date => dataByUsername[username][date] || null);
+                    return {
+                        label: '@' + username,
+                        data: data,
+                        borderColor: colors[index % colors.length],
+                        backgroundColor: colors[index % colors.length] + '20',
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    };
+                });
+
+                // Destroy existing chart
+                if (subsChart) {
+                    subsChart.destroy();
                 }
-                const va = data.vas.find(v => v.id === sub.vaId);
-                vaPayments[sub.vaId].name = va ? va.name : 'VA supprimé';
-                vaPayments[sub.vaId].count += sub.count;
-                vaPayments[sub.vaId].amount += sub.amount;
-            });
-            
-            Object.values(vaPayments).forEach(payment => {
-                csv += `${payment.name},${payment.count} subs,${payment.amount.toFixed(2)}€\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `subs_export_${currentPeriod}_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
+
+                // Create new chart
+                subsChart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: sortedDates.map(d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })),
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error updating subs chart:', error);
+            }
+        }
+
+        async function updateSubsTopPerformers() {
+            const container = document.getElementById('subs-top-performers');
+            if (!container) return;
+
+            try {
+                const subsData = await window.getSubsTracking(7);
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+                // Calculate growth per username
+                const growthByUsername = {};
+                subsData.forEach(entry => {
+                    const username = entry.username;
+                    if (!growthByUsername[username]) {
+                        growthByUsername[username] = { today: 0, yesterday: 0 };
+                    }
+                    if (entry.date === today) {
+                        growthByUsername[username].today = entry.subs;
+                    }
+                    if (entry.date === yesterday) {
+                        growthByUsername[username].yesterday = entry.subs;
+                    }
+                });
+
+                // Calculate growth and sort
+                const performers = Object.entries(growthByUsername)
+                    .map(([username, data]) => ({
+                        username,
+                        growth: data.today - data.yesterday,
+                        total: data.today
+                    }))
+                    .filter(p => p.growth > 0)
+                    .sort((a, b) => b.growth - a.growth)
+                    .slice(0, 5);
+
+                if (performers.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-medal" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 0.5rem;">Pas encore de données</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = performers.map((p, index) => {
+                    const rankClass = index === 0 ? 'st-rank-1' : index === 1 ? 'st-rank-2' : index === 2 ? 'st-rank-3' : 'st-rank-other';
+                    return `
+                        <div class="st-performer-item">
+                            <div class="st-performer-rank ${rankClass}">${index + 1}</div>
+                            <div class="st-performer-info">
+                                <div class="st-performer-name">@${p.username}</div>
+                                <div class="st-performer-username">${p.total} subs total</div>
+                            </div>
+                            <div class="st-performer-growth">+${p.growth}</div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error updating top performers:', error);
+            }
+        }
+
+        async function updateSubsHistory() {
+            const container = document.getElementById('subs-history-table');
+            if (!container) return;
+
+            try {
+                const subsData = await window.getSubsTracking(30);
+
+                if (subsData.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-history" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 0.5rem;">Aucun historique</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group by date
+                const dataByDate = {};
+                subsData.forEach(entry => {
+                    if (!dataByDate[entry.date]) {
+                        dataByDate[entry.date] = [];
+                    }
+                    dataByDate[entry.date].push(entry);
+                });
+
+                // Sort dates descending
+                const sortedDates = Object.keys(dataByDate).sort((a, b) => new Date(b) - new Date(a));
+
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Compte</th>
+                                <th>Total Subs</th>
+                                <th>Croissance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                sortedDates.slice(0, 20).forEach(date => {
+                    dataByDate[date].forEach(entry => {
+                        // Find previous day value for growth calculation
+                        const prevDate = new Date(new Date(date) - 86400000).toISOString().split('T')[0];
+                        const prevEntry = subsData.find(e => e.username === entry.username && e.date === prevDate);
+                        const growth = prevEntry ? entry.subs - prevEntry.subs : 0;
+                        const growthClass = growth > 0 ? 'positive' : growth < 0 ? 'negative' : '';
+                        const growthIcon = growth > 0 ? 'fa-arrow-up' : growth < 0 ? 'fa-arrow-down' : '';
+
+                        html += `
+                            <tr>
+                                <td>${new Date(date).toLocaleDateString('fr-FR')}</td>
+                                <td><strong>@${entry.username}</strong></td>
+                                <td>${entry.subs.toLocaleString()}</td>
+                                <td>
+                                    ${growth !== 0 ? `
+                                        <span class="st-growth ${growthClass}">
+                                            <i class="fas ${growthIcon}"></i> ${growth > 0 ? '+' : ''}${growth}
+                                        </span>
+                                    ` : '<span style="color: #94a3b8;">-</span>'}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+
+                html += '</tbody></table>';
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error updating subs history:', error);
+            }
+        }
+
+        // Legacy functions for backward compatibility
+        function openAddSubsModal() {
+            // Redirect to subs tracking page
+            navigateToPage('subs-tracking');
+        }
+
+        function closeAddSubsModal() {
+            // Legacy - no longer used
         }
 
         // ========== REVENUE TRACKING FUNCTIONS ==========
