@@ -3076,6 +3076,219 @@
             color: #dc2626;
         }
 
+        /* VA Group Styles - Subs Tracking by Twitter */
+        .va-group {
+            background: white;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .va-group-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .va-group-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .va-group-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .va-group-avatar i {
+            font-size: 1.25rem;
+        }
+
+        .va-group-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .va-group-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .va-group-count {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .va-group-total {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .va-total-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .va-total-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .va-accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+        }
+
+        .twitter-account-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .twitter-account-card:hover {
+            border-color: #1da1f2;
+            box-shadow: 0 4px 12px rgba(29, 161, 242, 0.15);
+        }
+
+        .twitter-account-card.has-data {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+        }
+
+        .twitter-account-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .twitter-username {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .twitter-input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .twitter-subs-input {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .twitter-subs-input:focus {
+            outline: none;
+            border-color: #1da1f2;
+            box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.15);
+        }
+
+        .twitter-subs-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .twitter-yesterday {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .orphan-group .va-group-header {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        /* Dark mode for VA groups */
+        body.dark-mode .va-group {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .va-accounts-grid {
+            background: #0f172a;
+        }
+
+        body.dark-mode .twitter-account-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .twitter-account-card.has-data {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            border-color: #10b981;
+        }
+
+        body.dark-mode .twitter-username {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .twitter-subs-input {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .twitter-yesterday {
+            color: #94a3b8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .va-group-header {
+                flex-wrap: wrap;
+            }
+
+            .va-group-total {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 0.5rem;
+                padding-top: 0.75rem;
+                border-top: 1px solid rgba(255,255,255,0.2);
+            }
+
+            .va-accounts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
         /* Save All Button */
         .st-save-all-btn {
             width: 100%;
@@ -22170,182 +22383,276 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                console.log('🔄 [SUBS] Loading subs tracking data by VA...');
+                console.log('🔄 [SUBS] Loading subs tracking data by Twitter account...');
 
-                // Get all VAs
-                const allVAs = [];
+                // Build VA -> Twitter accounts mapping
+                const vaAccountsMap = new Map(); // vaId -> { va, accounts: [] }
+                const orphanAccounts = []; // Twitter accounts without VA
 
-                if (data.vas && data.vas.length > 0) {
-                    data.vas.forEach(va => {
-                        // Find Twitter accounts managed by this VA
-                        // Method 1: Direct vaId on twitter accounts
-                        let vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.vaId === va.id);
+                // Get all Twitter accounts with their VA info
+                (data.twitterAccounts || []).forEach(acc => {
+                    let vaId = acc.vaId;
+                    let vaName = null;
+                    let vaImage = null;
 
-                        // Method 2: Via creators managed by this VA
-                        if (vaTwitterAccounts.length === 0 && data.creators) {
-                            // Find creators managed by this VA
-                            const vaCreatorIds = data.creators
-                                .filter(c => c.vaIds && c.vaIds.includes(va.id))
-                                .map(c => c.id);
-
-                            // Find Twitter accounts of these creators
-                            vaTwitterAccounts = (data.twitterAccounts || []).filter(acc =>
-                                vaCreatorIds.includes(acc.creatorId)
-                            );
+                    // Method 1: Direct vaId on twitter account
+                    if (vaId) {
+                        const va = (data.vas || []).find(v => v.id === vaId);
+                        if (va) {
+                            vaName = va.name;
+                            vaImage = va.image || va.photo_url;
                         }
+                    }
 
-                        allVAs.push({
-                            id: va.id,
-                            name: va.name,
-                            image: va.image || va.photo_url,
-                            twitterAccounts: vaTwitterAccounts.map(acc => acc.username)
-                        });
-                    });
-                }
+                    // Method 2: Via creator's vaIds
+                    if (!vaId && acc.creatorId && data.creators) {
+                        const creator = data.creators.find(c => c.id === acc.creatorId);
+                        if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                            vaId = creator.vaIds[0]; // Use first VA
+                            const va = (data.vas || []).find(v => v.id === vaId);
+                            if (va) {
+                                vaName = va.name;
+                                vaImage = va.image || va.photo_url;
+                            }
+                        }
+                    }
 
-                console.log('🔄 [SUBS] Found VAs:', allVAs.length);
+                    const accountData = {
+                        id: acc.id,
+                        username: acc.username,
+                        vaId: vaId
+                    };
 
-                if (allVAs.length === 0) {
+                    if (vaId && vaName) {
+                        if (!vaAccountsMap.has(vaId)) {
+                            vaAccountsMap.set(vaId, {
+                                va: { id: vaId, name: vaName, image: vaImage },
+                                accounts: []
+                            });
+                        }
+                        vaAccountsMap.get(vaId).accounts.push(accountData);
+                    } else {
+                        orphanAccounts.push(accountData);
+                    }
+                });
+
+                // Check if we have any accounts
+                const totalAccounts = Array.from(vaAccountsMap.values()).reduce((sum, v) => sum + v.accounts.length, 0) + orphanAccounts.length;
+
+                if (totalAccounts === 0) {
                     container.innerHTML = `
                         <div class="st-loading">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Aucun VA trouvé</p>
-                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des VAs depuis le dashboard</p>
+                            <p>Aucun compte Twitter trouvé</p>
+                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des comptes Twitter depuis le dashboard</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Fetch latest subs data for all VAs
-                const subsData = await window.getVASubsTracking(30);
-                const latestSubsByVAId = {};
-                const yesterdaySubsByVAId = {};
+                // Fetch latest subs data for all Twitter accounts
+                const subsData = await window.getTwitterSubsTracking(30);
+                const latestSubsByAccountId = {};
+                const yesterdaySubsByAccountId = {};
 
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
                 subsData.forEach(entry => {
-                    const vaId = entry.va_id;
+                    const accId = entry.twitter_account_id;
                     if (entry.date === today) {
-                        latestSubsByVAId[vaId] = entry.subs;
+                        latestSubsByAccountId[accId] = entry.subs;
                     }
                     if (entry.date === yesterday) {
-                        yesterdaySubsByVAId[vaId] = entry.subs;
+                        yesterdaySubsByAccountId[accId] = entry.subs;
                     }
-                    // Keep track of last known value
-                    if (!latestSubsByVAId[vaId] && entry.date < today) {
-                        if (!yesterdaySubsByVAId[vaId]) {
-                            yesterdaySubsByVAId[vaId] = entry.subs;
-                        }
+                    if (!latestSubsByAccountId[accId] && entry.date < today && !yesterdaySubsByAccountId[accId]) {
+                        yesterdaySubsByAccountId[accId] = entry.subs;
                     }
                 });
 
-                // Build the form HTML
+                // Build the form HTML - grouped by VA
                 let html = '';
                 let totalSubs = 0;
                 let totalGrowth = 0;
-                let vasWithData = 0;
+                let accountsWithData = 0;
+                let inputIndex = 0;
 
                 // Sort VAs by name
-                allVAs.sort((a, b) => a.name.localeCompare(b.name));
+                const sortedVAs = Array.from(vaAccountsMap.values()).sort((a, b) =>
+                    a.va.name.localeCompare(b.va.name)
+                );
 
-                allVAs.forEach((va, index) => {
-                    const currentSubs = latestSubsByVAId[va.id] || 0;
-                    const previousSubs = yesterdaySubsByVAId[va.id] || 0;
-                    const growth = currentSubs - previousSubs;
+                // Track VA totals for leaderboard
+                const vaTotals = {};
 
-                    totalSubs += currentSubs;
-                    if (currentSubs > 0) {
-                        totalGrowth += growth;
-                        vasWithData++;
-                    }
+                sortedVAs.forEach(({ va, accounts }) => {
+                    let vaTotal = 0;
+                    let vaGrowth = 0;
 
-                    const hasValue = currentSubs > 0;
-                    const cardClass = hasValue ? 'st-card-updated' : 'st-card-pending';
-                    const badgeClass = hasValue ? 'st-status-done' : 'st-status-todo';
-                    const badgeIcon = hasValue ? 'fa-check' : 'fa-clock';
-
-                    let growthHtml = '';
-                    if (previousSubs > 0 && currentSubs > 0) {
-                        const growthClass = growth >= 0 ? 'positive' : 'negative';
-                        const growthIcon = growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-                        growthHtml = `<span class="st-growth ${growthClass}"><i class="fas ${growthIcon}"></i> ${growth >= 0 ? '+' : ''}${growth}</span>`;
-                    }
-
+                    // VA Group Header
                     html += `
-                        <div class="st-account-card ${cardClass}" data-va-id="${va.id}">
-                            <div class="st-status-badge ${badgeClass}">
-                                <i class="fas ${badgeIcon}"></i>
-                            </div>
-                            <div class="st-card-header">
-                                <div class="st-creator-info">
-                                    <div class="st-creator-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">
-                                        ${va.image ?
-                                            `<img src="${va.image}" alt="${va.name}">` :
-                                            `<i class="fas fa-user-tie" style="color: white;"></i>`
-                                        }
-                                    </div>
-                                    <div style="display: flex; flex-direction: column;">
-                                        <span class="st-creator-name" style="font-size: 1.1rem; font-weight: 700;">${va.name}</span>
-                                        ${va.twitterAccounts && va.twitterAccounts.length > 0 ?
-                                            `<span style="font-size: 0.75rem; color: #1da1f2;">
-                                                <i class="fab fa-twitter"></i> ${va.twitterAccounts.map(u => '@' + u.replace('@', '')).join(', ')}
-                                            </span>` :
-                                            `<span style="font-size: 0.7rem; color: #94a3b8; opacity: 0.8;">
-                                                <i class="fas fa-link"></i> Aucun compte Twitter
-                                            </span>`
-                                        }
-                                    </div>
+                        <div class="va-group" data-va-id="${va.id}">
+                            <div class="va-group-header">
+                                <div class="va-group-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">
+                                    ${va.image ?
+                                        `<img src="${va.image}" alt="${va.name}">` :
+                                        `<i class="fas fa-user-tie" style="color: white;"></i>`
+                                    }
+                                </div>
+                                <div class="va-group-info">
+                                    <span class="va-group-name">${va.name}</span>
+                                    <span class="va-group-count">${accounts.length} compte${accounts.length > 1 ? 's' : ''} Twitter</span>
+                                </div>
+                                <div class="va-group-total">
+                                    <span class="va-total-label">Total VA</span>
+                                    <span class="va-total-value" id="va-total-${va.id}">0</span>
                                 </div>
                             </div>
-                            <div class="st-input-area">
-                                <label class="st-input-label">Total Subs</label>
-                                <div class="st-input-wrapper">
-                                    <i class="fas fa-heart st-input-icon" style="color: #ec4899;"></i>
+                            <div class="va-accounts-grid">
+                    `;
+
+                    // Sort accounts by username
+                    accounts.sort((a, b) => a.username.localeCompare(b.username));
+
+                    accounts.forEach(acc => {
+                        const currentSubs = latestSubsByAccountId[acc.id] || 0;
+                        const previousSubs = yesterdaySubsByAccountId[acc.id] || 0;
+                        const growth = currentSubs - previousSubs;
+
+                        vaTotal += currentSubs;
+                        vaGrowth += growth;
+                        totalSubs += currentSubs;
+                        if (currentSubs > 0) {
+                            totalGrowth += growth;
+                            accountsWithData++;
+                        }
+
+                        const hasValue = currentSubs > 0;
+
+                        let growthHtml = '';
+                        if (previousSubs > 0 || currentSubs > 0) {
+                            const growthClass = growth >= 0 ? 'positive' : 'negative';
+                            const growthIcon = growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                            growthHtml = `<span class="st-growth ${growthClass}"><i class="fas ${growthIcon}"></i> ${growth >= 0 ? '+' : ''}${growth}</span>`;
+                        }
+
+                        html += `
+                            <div class="twitter-account-card ${hasValue ? 'has-data' : ''}">
+                                <div class="twitter-account-header">
+                                    <i class="fab fa-twitter" style="color: #1da1f2;"></i>
+                                    <span class="twitter-username">@${acc.username.replace('@', '')}</span>
+                                </div>
+                                <div class="twitter-input-row">
                                     <input type="number"
-                                           class="st-subs-input"
+                                           class="st-subs-input twitter-subs-input"
+                                           data-account-id="${acc.id}"
                                            data-va-id="${va.id}"
-                                           data-va-name="${va.name}"
-                                           data-index="${index}"
+                                           data-username="${acc.username}"
+                                           data-index="${inputIndex}"
                                            value="${currentSubs || ''}"
                                            placeholder="0"
                                            min="0"
-                                           onkeydown="goToNextSubsInput(event, ${index})"
-                                           onfocus="this.parentElement.classList.add('focused')"
-                                           onblur="this.parentElement.classList.remove('focused')"
+                                           onkeydown="goToNextSubsInput(event, ${inputIndex})"
+                                           oninput="updateVATotal('${va.id}')"
                                     >
+                                    <span class="twitter-subs-label">subs</span>
                                 </div>
-                                <div class="st-last-value">
-                                    Hier: <strong>${previousSubs}</strong> subs
-                                    ${growthHtml}
+                                <div class="twitter-yesterday">
+                                    Hier: ${previousSubs} ${growthHtml}
                                 </div>
+                            </div>
+                        `;
+                        inputIndex++;
+                    });
+
+                    html += `
                             </div>
                         </div>
                     `;
+
+                    vaTotals[va.id] = { name: va.name, total: vaTotal, growth: vaGrowth };
                 });
 
+                // Handle orphan accounts (no VA)
+                if (orphanAccounts.length > 0) {
+                    html += `
+                        <div class="va-group orphan-group">
+                            <div class="va-group-header" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
+                                <div class="va-group-avatar" style="background: #475569;">
+                                    <i class="fas fa-question" style="color: white;"></i>
+                                </div>
+                                <div class="va-group-info">
+                                    <span class="va-group-name">Sans VA assigné</span>
+                                    <span class="va-group-count">${orphanAccounts.length} compte${orphanAccounts.length > 1 ? 's' : ''}</span>
+                                </div>
+                            </div>
+                            <div class="va-accounts-grid">
+                    `;
+
+                    orphanAccounts.forEach(acc => {
+                        const currentSubs = latestSubsByAccountId[acc.id] || 0;
+                        const previousSubs = yesterdaySubsByAccountId[acc.id] || 0;
+                        totalSubs += currentSubs;
+
+                        html += `
+                            <div class="twitter-account-card ${currentSubs > 0 ? 'has-data' : ''}">
+                                <div class="twitter-account-header">
+                                    <i class="fab fa-twitter" style="color: #1da1f2;"></i>
+                                    <span class="twitter-username">@${acc.username.replace('@', '')}</span>
+                                </div>
+                                <div class="twitter-input-row">
+                                    <input type="number"
+                                           class="st-subs-input twitter-subs-input"
+                                           data-account-id="${acc.id}"
+                                           data-username="${acc.username}"
+                                           data-index="${inputIndex}"
+                                           value="${currentSubs || ''}"
+                                           placeholder="0"
+                                           min="0"
+                                           onkeydown="goToNextSubsInput(event, ${inputIndex})"
+                                    >
+                                    <span class="twitter-subs-label">subs</span>
+                                </div>
+                                <div class="twitter-yesterday">
+                                    Hier: ${previousSubs}
+                                </div>
+                            </div>
+                        `;
+                        inputIndex++;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML = html;
+
+                // Update VA totals in UI
+                Object.entries(vaTotals).forEach(([vaId, data]) => {
+                    const el = document.getElementById(`va-total-${vaId}`);
+                    if (el) el.textContent = data.total.toLocaleString();
+                });
 
                 // Update summary cards
                 document.getElementById('st-total-subs').textContent = totalSubs.toLocaleString();
                 document.getElementById('st-total-growth').textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toLocaleString();
-                document.getElementById('st-accounts-count').textContent = vasWithData;
+                document.getElementById('st-accounts-count').textContent = accountsWithData;
 
                 // Find best performer (VA with best growth)
                 let bestPerformer = '-';
                 let bestGrowth = 0;
-                allVAs.forEach(va => {
-                    const current = latestSubsByVAId[va.id] || 0;
-                    const previous = yesterdaySubsByVAId[va.id] || 0;
-                    const growth = current - previous;
-                    if (growth > bestGrowth) {
-                        bestGrowth = growth;
+                Object.values(vaTotals).forEach(va => {
+                    if (va.growth > bestGrowth) {
+                        bestGrowth = va.growth;
                         bestPerformer = va.name;
                     }
                 });
                 document.getElementById('st-best-performer').textContent = bestPerformer;
 
-                // Update chart and leaderboard (by VA!)
+                // Update chart and leaderboard
                 await updateSubsChartByVA(7);
                 await updateVALeaderboard();
                 await updateSubsHistory();
@@ -22359,6 +22666,30 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     </div>
                 `;
             }
+        }
+
+        // Update VA total when input changes
+        function updateVATotal(vaId) {
+            const inputs = document.querySelectorAll(`.st-subs-input[data-va-id="${vaId}"]`);
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            const totalEl = document.getElementById(`va-total-${vaId}`);
+            if (totalEl) totalEl.textContent = total.toLocaleString();
+
+            // Also update global total
+            updateGlobalTotal();
+        }
+
+        function updateGlobalTotal() {
+            const inputs = document.querySelectorAll('.st-subs-input');
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            const el = document.getElementById('st-total-subs');
+            if (el) el.textContent = total.toLocaleString();
         }
 
         function goToNextSubsInput(event, currentIndex) {
@@ -22382,10 +22713,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
             const entries = [];
             inputs.forEach(input => {
-                const vaId = input.dataset.vaId;
-                const subs = parseInt(input.value) || 0;
-                if (subs > 0 && vaId) {
-                    entries.push({ va_id: vaId, subs });
+                const accountId = input.dataset.accountId;
+                const subs = input.value;
+                if (accountId && subs !== '') {
+                    entries.push({ twitter_account_id: accountId, subs: parseInt(subs) || 0 });
                 }
             });
 
@@ -22402,9 +22733,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     saveBtn.disabled = true;
                 }
 
-                await window.bulkSaveVASubsTracking(entries, date);
+                await window.bulkSaveTwitterSubsTracking(entries, date);
 
-                showSuccess(`${entries.length} VAs enregistrés avec succès!`);
+                showSuccess(`${entries.length} comptes enregistrés avec succès!`);
 
                 // Reload the data
                 await loadSubsTrackingData();
@@ -22430,6 +22761,38 @@ Tapez "SUPPRIMER" pour confirmer :`;
             await updateSubsChartByVA(days);
         }
 
+        // Helper function to build Twitter Account -> VA mapping
+        function buildTwitterToVAMapping() {
+            const accountToVA = {}; // accountId -> { vaId, vaName }
+
+            (data.twitterAccounts || []).forEach(acc => {
+                let vaId = acc.vaId;
+                let vaName = null;
+
+                // Method 1: Direct vaId
+                if (vaId) {
+                    const va = (data.vas || []).find(v => v.id === vaId);
+                    if (va) vaName = va.name;
+                }
+
+                // Method 2: Via creator
+                if (!vaId && acc.creatorId && data.creators) {
+                    const creator = data.creators.find(c => c.id === acc.creatorId);
+                    if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                        vaId = creator.vaIds[0];
+                        const va = (data.vas || []).find(v => v.id === vaId);
+                        if (va) vaName = va.name;
+                    }
+                }
+
+                if (vaId && vaName) {
+                    accountToVA[acc.id] = { vaId, vaName };
+                }
+            });
+
+            return accountToVA;
+        }
+
         async function updateSubsChartByVA(days = 7) {
             // Update active button
             document.querySelectorAll('.subs-period-btn').forEach(btn => {
@@ -22437,12 +22800,34 @@ Tapez "SUPPRIMER" pour confirmer :`;
             });
 
             try {
-                const subsData = await window.getVASubsTracking(days);
+                const twitterSubsData = await window.getTwitterSubsTracking(days);
                 const canvas = document.getElementById('subs-growth-chart');
                 if (!canvas) return;
 
+                // Build Twitter Account -> VA mapping
+                const accountToVA = buildTwitterToVAMapping();
+
+                // Aggregate Twitter subs by VA and date
+                const vaSubsByDate = {}; // vaId -> { vaName, dates: { date -> totalSubs } }
+
+                twitterSubsData.forEach(entry => {
+                    const mapping = accountToVA[entry.twitter_account_id];
+                    if (mapping) {
+                        if (!vaSubsByDate[mapping.vaId]) {
+                            vaSubsByDate[mapping.vaId] = {
+                                vaName: mapping.vaName,
+                                dates: {}
+                            };
+                        }
+                        if (!vaSubsByDate[mapping.vaId].dates[entry.date]) {
+                            vaSubsByDate[mapping.vaId].dates[entry.date] = 0;
+                        }
+                        vaSubsByDate[mapping.vaId].dates[entry.date] += entry.subs;
+                    }
+                });
+
                 // Get all unique dates
-                const allDates = [...new Set(subsData.map(s => s.date))].sort();
+                const allDates = [...new Set(twitterSubsData.map(s => s.date))].sort();
 
                 if (allDates.length === 0) {
                     const ctx = canvas.getContext('2d');
@@ -22453,35 +22838,16 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     return;
                 }
 
-                // Group data by VA
-                const dataByVA = {};
-                if (data.vas) {
-                    data.vas.forEach(va => {
-                        dataByVA[va.id] = {
-                            name: va.name,
-                            dataByDate: {}
-                        };
-                    });
-                }
-
-                // Fill in data
-                subsData.forEach(entry => {
-                    if (dataByVA[entry.va_id]) {
-                        dataByVA[entry.va_id].dataByDate[entry.date] = entry.subs;
-                    }
-                });
-
                 // Generate colors for each VA
                 const colors = [
                     '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
                     '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#a855f7'
                 ];
 
-                const datasets = Object.values(dataByVA)
-                    .filter(va => Object.keys(va.dataByDate).length > 0)
+                const datasets = Object.values(vaSubsByDate)
                     .map((va, index) => ({
-                        label: va.name,
-                        data: allDates.map(date => va.dataByDate[date] || null),
+                        label: va.vaName,
+                        data: allDates.map(date => va.dates[date] || null),
                         borderColor: colors[index % colors.length],
                         backgroundColor: colors[index % colors.length] + '20',
                         fill: false,
@@ -22517,7 +22883,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             },
                             title: {
                                 display: true,
-                                text: 'Performance des VAs (Subs par jour)',
+                                text: 'Performance des VAs (Subs agrégés par compte Twitter)',
                                 font: { size: 14, weight: 'bold' }
                             }
                         },
@@ -22555,20 +22921,26 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                const subsData = await window.getVASubsTracking(30);
+                const twitterSubsData = await window.getTwitterSubsTracking(30);
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-                // Get today and yesterday subs for each VA
+                // Build Twitter Account -> VA mapping
+                const accountToVA = buildTwitterToVAMapping();
+
+                // Aggregate subs by VA for today and yesterday
                 const todaySubsByVA = {};
                 const yesterdaySubsByVA = {};
 
-                subsData.forEach(entry => {
-                    if (entry.date === today) {
-                        todaySubsByVA[entry.va_id] = entry.subs;
-                    }
-                    if (entry.date === yesterday) {
-                        yesterdaySubsByVA[entry.va_id] = entry.subs;
+                twitterSubsData.forEach(entry => {
+                    const mapping = accountToVA[entry.twitter_account_id];
+                    if (mapping) {
+                        if (entry.date === today) {
+                            todaySubsByVA[mapping.vaId] = (todaySubsByVA[mapping.vaId] || 0) + entry.subs;
+                        }
+                        if (entry.date === yesterday) {
+                            yesterdaySubsByVA[mapping.vaId] = (yesterdaySubsByVA[mapping.vaId] || 0) + entry.subs;
+                        }
                     }
                 });
 
@@ -22589,7 +22961,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     });
                 }
 
-                // Sort by total subs (or by growth)
+                // Sort by total subs
                 vaPerformance.sort((a, b) => b.totalSubs - a.totalSubs);
 
                 // Filter VAs with data
@@ -22611,7 +22983,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     const isTop3 = index < 3;
 
                     return `
-                        <div class="st-performer-item" style="background: ${isTop3 ? 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(236,72,153,0.1) 100%)' : 'rgba(0,0,0,0.02)'}; border: ${isTop3 ? '2px solid rgba(139,92,246,0.3)' : '1px solid rgba(0,0,0,0.05)'}; border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem;">
+                        <div class="st-performer-item" style="background: ${isTop3 ? 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(236,72,153,0.1) 100%)' : 'rgba(0,0,0,0.02)'}; border: ${isTop3 ? '2px solid rgba(139,92,246,0.3)' : '1px solid rgba(0,0,0,0.05)'}; border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; display: flex; align-items: center;">
                             <div class="st-performer-rank" style="background: ${rankBg}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                                 ${index + 1}
                             </div>

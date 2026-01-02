@@ -2751,6 +2751,82 @@ async function bulkSaveVASubsTracking(entries, date) {
 }
 
 // ============================================================================
+// TWITTER SUBS TRACKING FUNCTIONS (Subs par compte Twitter)
+// ============================================================================
+
+/**
+ * Get all Twitter subs tracking data for current organization
+ * @param {number} days - Number of days to fetch (default 30)
+ * @returns {Promise<Array>}
+ */
+async function getTwitterSubsTracking(days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('twitter_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    console.log(`✅ Retrieved ${(data || []).length} Twitter subs tracking entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting Twitter subs tracking:', error);
+    return [];
+  }
+}
+
+/**
+ * Bulk save Twitter subs tracking for a specific date
+ * @param {Array} entries - Array of { twitter_account_id, subs }
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {Promise<boolean>}
+ */
+async function bulkSaveTwitterSubsTracking(entries, date) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    // Filter out entries with no subs value
+    const validEntries = entries.filter(e => e.subs !== null && e.subs !== undefined && e.subs !== '');
+
+    if (validEntries.length === 0) {
+      console.log('⚠️ No valid Twitter subs entries to save');
+      return true;
+    }
+
+    const records = validEntries.map(entry => ({
+      organization_id: organizationId,
+      twitter_account_id: entry.twitter_account_id,
+      date: date,
+      subs: parseInt(entry.subs) || 0,
+      updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('twitter_subs_tracking')
+      .upsert(records, {
+        onConflict: 'twitter_account_id,date,organization_id'
+      });
+
+    if (error) throw error;
+
+    console.log(`✅ Bulk saved ${validEntries.length} Twitter subs tracking entries`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error bulk saving Twitter subs tracking:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // INSTAGRAM STATS FUNCTIONS
 // ============================================================================
 
@@ -4510,7 +4586,11 @@ if (typeof module !== 'undefined' && module.exports) {
     getVASubsTracking,
     getVASubsByVAId,
     upsertVASubsTracking,
-    bulkSaveVASubsTracking
+    bulkSaveVASubsTracking,
+
+    // Twitter Subs Tracking
+    getTwitterSubsTracking,
+    bulkSaveTwitterSubsTracking
   };
 
   // Export to both window.SupabaseClient AND window directly
