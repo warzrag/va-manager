@@ -5486,7 +5486,7 @@
                     </div>
                     <div class="st-summary-info">
                         <span class="st-summary-value" id="st-accounts-count">0</span>
-                        <span class="st-summary-label">Comptes Actifs</span>
+                        <span class="st-summary-label">Créatrices Actives</span>
                     </div>
                 </div>
             </div>
@@ -5494,7 +5494,7 @@
             <!-- Bulk Entry Form by Creator -->
             <div class="st-bulk-section">
                 <h3 class="st-section-title">
-                    <i class="fas fa-crown"></i> Saisie des Subs par Compte
+                    <i class="fas fa-heart"></i> Saisie des Subs par Créatrice
                 </h3>
                 <div id="subs-bulk-form" class="st-bulk-form">
                     <!-- Will be populated by JS with account cards -->
@@ -5513,11 +5513,11 @@
 
             <!-- Dashboard Grid -->
             <div class="st-dashboard-grid">
-                <!-- Evolution Chart -->
+                <!-- Performance Chart by VA -->
                 <div class="st-card">
                     <div class="st-card-header">
                         <h3 class="st-card-title">
-                            <i class="fas fa-chart-line"></i> Évolution des Subs
+                            <i class="fas fa-chart-line"></i> Performance des VAs
                         </h3>
                         <div class="st-period-btns">
                             <button onclick="updateSubsChart(7)" class="subs-period-btn active" data-period="7">7j</button>
@@ -5530,10 +5530,10 @@
                     </div>
                 </div>
 
-                <!-- Top Performers Leaderboard -->
+                <!-- VA Leaderboard -->
                 <div class="st-card st-leaderboard-card">
                     <h3 class="st-card-title">
-                        <i class="fas fa-medal"></i> Top Performers (Croissance)
+                        <i class="fas fa-trophy"></i> Classement des VAs
                     </h3>
                     <div id="subs-top-performers" class="st-top-performers">
                         <!-- Will be populated by JS -->
@@ -5859,96 +5859,6 @@
                     <i class="fas fa-history"></i> Historique par créatrice
                 </h3>
                 <div id="followers-history-table" class="ft-history-table">
-                    <!-- Will be populated by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Subs Tracking Page -->
-        <div id="subs-tracking-page" class="page">
-            <!-- Hero Header -->
-            <div class="st-hero" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%;"></div>
-                <div style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-chart-bar" style="font-size: 1.75rem; color: white;"></i>
-                        </div>
-                        <div>
-                            <h2 style="font-size: 1.75rem; margin: 0; color: white; font-weight: 800;">Suivi Subs</h2>
-                            <p style="font-size: 0.9rem; margin: 0.25rem 0 0 0; color: rgba(255,255,255,0.9);">Suivez les clics et abonnements de vos tracking links</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <input type="date" id="subs-tracking-date" class="ft-date-input" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.9rem;">
-                        <button onclick="saveAllSubsStats(event)" class="st-save-btn" style="background: white; color: #7c3aed; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.2s;">
-                            <i class="fas fa-save"></i> <span>Enregistrer</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats Summary Cards -->
-            <div id="subs-summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <!-- Will be populated by JS -->
-            </div>
-
-            <!-- Bulk Entry Form by Creator -->
-            <div class="st-bulk-section" style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.75rem; color: var(--text-color);">
-                    <i class="fab fa-twitter" style="color: #8b5cf6;"></i> Saisie rapide par compte
-                </h3>
-                <div id="subs-bulk-form">
-                    <!-- Will be populated by JS with account cards -->
-                    <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                        <p style="margin-top: 1rem;">Chargement des comptes...</p>
-                    </div>
-                </div>
-
-                <!-- Bouton Enregistrer tout -->
-                <button onclick="saveAllSubsStats(event)" id="save-subs-btn" style="width: 100%; margin-top: 1.5rem; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 1rem; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4); transition: all 0.2s;">
-                    <i class="fas fa-save"></i>
-                    Enregistrer tous les clics & subs
-                </button>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-                <!-- Growth Chart -->
-                <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                        <h3 style="margin: 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
-                            <i class="fas fa-chart-line" style="color: #8b5cf6;"></i> Evolution
-                        </h3>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="updateSubsChart(7)" class="subs-period-btn active" data-period="7" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; background: #8b5cf6; color: white; font-size: 0.8125rem; font-weight: 600; cursor: pointer;">7j</button>
-                            <button onclick="updateSubsChart(30)" class="subs-period-btn" data-period="30" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.8125rem; font-weight: 600; cursor: pointer;">30j</button>
-                            <button onclick="updateSubsChart(90)" class="subs-period-btn" data-period="90" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: var(--card-bg, white); color: var(--text-color); font-size: 0.8125rem; font-weight: 600; cursor: pointer;">90j</button>
-                        </div>
-                    </div>
-                    <div style="height: 300px; position: relative;">
-                        <canvas id="subs-growth-chart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Top Performers -->
-                <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
-                        <i class="fas fa-trophy" style="color: #f59e0b;"></i> Meilleurs taux de conversion
-                    </h3>
-                    <div id="subs-top-performers" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <!-- Will be populated by JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- History Table -->
-            <div style="background: var(--dash-card-bg, white); border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                <h3 style="margin: 0 0 1.25rem 0; font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-color);">
-                    <i class="fas fa-history" style="color: #10b981;"></i> Historique
-                </h3>
-                <div id="subs-history-table" style="overflow-x: auto;">
                     <!-- Will be populated by JS -->
                 </div>
             </div>
@@ -13397,489 +13307,11 @@
             await updateSubsHistory();
         }
 
-        // Navigation vers le prochain champ avec Entrée (pour subs)
-        function goToNextSubsInput(currentIndex) {
-            const allSubsInputs = document.querySelectorAll('.st-subs-input');
-            const nextIndex = currentIndex + 1;
-
-            if (nextIndex < allSubsInputs.length) {
-                allSubsInputs[nextIndex].focus();
-                allSubsInputs[nextIndex].select();
-            } else {
-                // Dernier input, on sauvegarde
-                const saveBtn = document.getElementById('save-subs-btn');
-                if (saveBtn) {
-                    saveBtn.focus();
-                    saveBtn.click();
-                }
-            }
-        }
-
-        // Load subs tracking data and populate the bulk form (comme followers)
-        async function loadSubsTrackingData() {
-            const formContainer = document.getElementById('subs-bulk-form');
-            const summaryContainer = document.getElementById('subs-summary-cards');
-            if (!formContainer) return;
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-
-            try {
-                // Get all subs tracking data
-                const allSubsStats = await getSubsTracking(90) || [];
-                const statsByUsername = {};
-
-                allSubsStats.forEach(stat => {
-                    if (!statsByUsername[stat.username]) {
-                        statsByUsername[stat.username] = [];
-                    }
-                    statsByUsername[stat.username].push(stat);
-                });
-
-                // Sort stats by date for each username
-                Object.keys(statsByUsername).forEach(username => {
-                    statsByUsername[username].sort((a, b) => new Date(a.date) - new Date(b.date));
-                });
-
-                const today = new Date().toISOString().split('T')[0];
-
-                // Get all accounts from creators
-                const allAccounts = [];
-                let totalSubs = 0;
-                let totalGrowth = 0;
-
-                if (data.creators) {
-                    data.creators.forEach(creator => {
-                        if (creator.accounts && creator.accounts.length > 0) {
-                            creator.accounts.forEach(acc => {
-                                const username = acc.username.replace('@', '');
-                                const stats = statsByUsername[username] || statsByUsername[acc.username] || [];
-                                const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
-                                const yesterdayStat = stats.length > 1 ? stats[stats.length - 2] : null;
-
-                                const currentSubs = latestStat ? latestStat.subs : 0;
-                                const yesterdaySubs = yesterdayStat ? yesterdayStat.subs : currentSubs;
-                                const dailyGrowth = currentSubs - yesterdaySubs;
-
-                                totalSubs += currentSubs;
-                                totalGrowth += dailyGrowth;
-
-                                allAccounts.push({
-                                    username: acc.username,
-                                    creatorId: creator.id,
-                                    creatorName: creator.name,
-                                    creatorPhoto: creator.photo_url,
-                                    currentSubs,
-                                    yesterdaySubs,
-                                    dailyGrowth,
-                                    lastDate: latestStat ? latestStat.date : null
-                                });
-                            });
-                        }
-                    });
-                }
-
-                // Update summary cards
-                summaryContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 1rem; padding: 1.25rem; color: white;">
-                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Subs</div>
-                        <div style="font-size: 2rem; font-weight: 800;">${totalSubs.toLocaleString()}</div>
-                    </div>
-                    <div style="background: ${totalGrowth >= 0 ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}; border-radius: 1rem; padding: 1.25rem; color: white;">
-                        <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Croissance (hier)</div>
-                        <div style="font-size: 2rem; font-weight: 800;">${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toLocaleString()}</div>
-                    </div>
-                    <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
-                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Créatrices</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${data.creators ? data.creators.length : 0}</div>
-                    </div>
-                    <div style="background: ${isDarkMode ? '#374151' : '#f1f5f9'}; border-radius: 1rem; padding: 1.25rem;">
-                        <div style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; margin-bottom: 0.5rem;">Comptes</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${allAccounts.length}</div>
-                    </div>
-                `;
-
-                // Build the bulk entry form
-                if (allAccounts.length === 0) {
-                    formContainer.innerHTML = `
-                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p style="margin-top: 1rem;">Aucun compte Twitter trouvé</p>
-                            <p style="font-size: 0.875rem;">Ajoutez des comptes Twitter à vos créatrices pour commencer le suivi</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Sort by creator name
-                allAccounts.sort((a, b) => a.creatorName.localeCompare(b.creatorName));
-
-                formContainer.innerHTML = `
-                    <div class="st-intuitive-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
-                        ${allAccounts.map((acc, index) => {
-                            const isUpdatedToday = acc.lastDate === today;
-                            const inputIdSubs = `subs-input-${acc.username.replace(/[^a-zA-Z0-9]/g, '_')}`;
-
-                            return `
-                                <div class="st-account-card" style="background: ${isDarkMode ? '#1f2937' : 'white'}; border: 2px solid ${isUpdatedToday ? '#10b981' : (isDarkMode ? '#374151' : '#e2e8f0')}; border-radius: 1rem; padding: 1.25rem; position: relative; transition: all 0.2s;">
-                                    <!-- Status Badge -->
-                                    <div style="position: absolute; top: 0.75rem; right: 0.75rem; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; ${isUpdatedToday ? 'background: #10b981; color: white;' : 'background: ' + (isDarkMode ? '#374151' : '#f1f5f9') + '; color: #94a3b8;'}">
-                                        ${isUpdatedToday ? '<i class="fas fa-check"></i>' : '<i class="fas fa-clock"></i>'}
-                                    </div>
-
-                                    <!-- Header: Creator + Twitter -->
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: ${isDarkMode ? '#374151' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            ${acc.creatorPhoto
-                                                ? `<img src="${acc.creatorPhoto}" alt="${acc.creatorName}" style="width: 100%; height: 100%; object-fit: cover;">`
-                                                : `<i class="fas fa-user" style="color: #94a3b8;"></i>`
-                                            }
-                                        </div>
-                                        <div style="min-width: 0;">
-                                            <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; font-size: 0.9375rem;">${acc.creatorName}</div>
-                                            <div style="color: #10b981; font-size: 0.8125rem;">${acc.username}</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Subs Input -->
-                                    <div class="st-input-area">
-                                        <label style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; display: block; margin-bottom: 0.25rem;">
-                                            <i class="fas fa-user-plus"></i> Total Subs
-                                        </label>
-                                        <div style="position: relative;">
-                                            <input type="number"
-                                                   id="${inputIdSubs}"
-                                                   data-username="${acc.username}"
-                                                   data-creator-id="${acc.creatorId}"
-                                                   value="${acc.currentSubs || ''}"
-                                                   placeholder="Ex: 150"
-                                                   class="st-subs-input"
-                                                   style="width: 100%; padding: 0.875rem; border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; border-radius: 0.75rem; font-size: 1.5rem; font-weight: 700; text-align: center; background: ${isDarkMode ? '#111827' : 'white'}; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};"
-                                                   onfocus="this.select(); this.style.borderColor='#10b981'"
-                                                   onblur="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'"
-                                                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); goToNextSubsInput(${index}); }">
-                                        </div>
-                                        ${acc.currentSubs > 0 ? `
-                                            <div style="margin-top: 0.5rem; font-size: 0.8125rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">
-                                                Dernier: <strong style="color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${acc.currentSubs.toLocaleString()}</strong>
-                                                ${acc.dailyGrowth !== 0 ? `
-                                                    <span style="margin-left: 0.5rem; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; ${acc.dailyGrowth > 0 ? 'background: #d1fae5; color: #059669;' : 'background: #fee2e2; color: #dc2626;'}">
-                                                        ${acc.dailyGrowth > 0 ? '+' : ''}${acc.dailyGrowth}
-                                                    </span>
-                                                ` : ''}
-                                            </div>
-                                        ` : `
-                                            <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #f59e0b;">
-                                                <i class="fas fa-star"></i> Premier enregistrement
-                                            </div>
-                                        `}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error('❌ Error loading subs tracking data:', error);
-                formContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
-                        <p style="margin-top: 1rem;">Erreur lors du chargement des données</p>
-                        <p style="font-size: 0.875rem;">${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Save all subs tracking stats at once
-        async function saveAllSubsStats(event) {
-            const button = event?.target?.closest('button') || document.getElementById('save-subs-btn');
-            const originalText = button ? button.innerHTML : null;
-
-            const dateInput = document.getElementById('subs-tracking-date');
-            const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
-
-            // Get all subs input values
-            const subsInputs = document.querySelectorAll('.st-subs-input');
-            const entries = [];
-
-            subsInputs.forEach(input => {
-                const value = parseInt(input.value);
-                if (value && value > 0) {
-                    entries.push({
-                        username: input.dataset.username,
-                        subs: value,
-                        clicks: 0,
-                        date: date
-                    });
-                }
-            });
-
-            if (entries.length === 0) {
-                showError('Aucune donnée à enregistrer');
-                return;
-            }
-
-            try {
-                setButtonLoading(button, true);
-
-                // Bulk save all entries
-                await bulkSaveSubsTracking(entries, date);
-
-                showSuccess(`✅ ${entries.length} entrée(s) enregistrée(s) !`);
-
-                // Refresh displays
-                await loadSubsTrackingData();
-                await updateSubsChart(7);
-                await updateSubsTopPerformers();
-                await updateSubsHistory();
-
-            } catch (error) {
-                console.error('❌ Error saving subs stats:', error);
-                showError('Erreur lors de l\'enregistrement: ' + error.message);
-            } finally {
-                setButtonLoading(button, false, originalText);
-            }
-        }
-
-        // Update subs growth chart (comme followers - par compte)
-        async function updateSubsChart(days = 7) {
-            const canvas = document.getElementById('subs-growth-chart');
-            if (!canvas) return;
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-
-            // Update period buttons
-            document.querySelectorAll('.subs-period-btn').forEach(btn => {
-                if (parseInt(btn.dataset.period) === days) {
-                    btn.style.background = '#10b981';
-                    btn.style.color = 'white';
-                    btn.style.border = 'none';
-                } else {
-                    btn.style.background = isDarkMode ? '#1f2937' : 'white';
-                    btn.style.color = isDarkMode ? '#e2e8f0' : '#64748b';
-                    btn.style.border = `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`;
-                }
-            });
-
-            const ctx = canvas.getContext('2d');
-
-            if (subsGrowthChart) {
-                subsGrowthChart.destroy();
-            }
-
-            try {
-                const allStats = await getSubsTracking(days) || [];
-
-                if (allStats.length === 0) {
-                    ctx.font = '14px Inter';
-                    ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Aucune donnée disponible', canvas.width / 2, canvas.height / 2);
-                    return;
-                }
-
-                // Group by username (comme followers)
-                const statsByUsername = {};
-                allStats.forEach(stat => {
-                    if (!statsByUsername[stat.username]) {
-                        statsByUsername[stat.username] = [];
-                    }
-                    statsByUsername[stat.username].push(stat);
-                });
-
-                // Sort each username's stats by date
-                Object.keys(statsByUsername).forEach(username => {
-                    statsByUsername[username].sort((a, b) => new Date(a.date) - new Date(b.date));
-                });
-
-                // Create datasets (une ligne par compte)
-                const colors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4'];
-                const datasets = Object.keys(statsByUsername).map((username, i) => ({
-                    label: username,
-                    data: statsByUsername[username].map(s => ({
-                        x: s.date,
-                        y: s.subs
-                    })),
-                    borderColor: colors[i % colors.length],
-                    backgroundColor: colors[i % colors.length] + '20',
-                    tension: 0.3,
-                    fill: false,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }));
-
-                if (datasets.length === 0) {
-                    ctx.font = '14px Inter';
-                    ctx.fillStyle = isDarkMode ? '#94a3b8' : '#64748b';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Aucune donnée disponible', canvas.width / 2, canvas.height / 2);
-                    return;
-                }
-
-                subsGrowthChart = new Chart(ctx, {
-                    type: 'line',
-                    data: { datasets },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'day',
-                                    displayFormats: { day: 'dd/MM' }
-                                },
-                                grid: { display: false },
-                                ticks: { color: isDarkMode ? '#94a3b8' : '#64748b' }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: isDarkMode ? '#374151' : '#e2e8f0' },
-                                ticks: { color: isDarkMode ? '#94a3b8' : '#64748b' }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: { color: isDarkMode ? '#e2e8f0' : '#1f2937' }
-                            },
-                            tooltip: {
-                                backgroundColor: isDarkMode ? '#1f2937' : 'white',
-                                titleColor: isDarkMode ? '#e2e8f0' : '#1f2937',
-                                bodyColor: isDarkMode ? '#94a3b8' : '#64748b',
-                                borderColor: isDarkMode ? '#374151' : '#e2e8f0',
-                                borderWidth: 1
-                            }
-                        }
-                    }
-                });
-
-            } catch (error) {
-                console.error('❌ Error updating subs chart:', error);
-            }
-        }
-
-        // Update subs top performers
-        // Top performers - meilleure croissance subs (comme followers)
-        async function updateSubsTopPerformers() {
-            const container = document.getElementById('subs-top-performers');
-            if (!container) return;
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-
-            try {
-                const allStats = await getSubsTracking(30) || [];
-
-                if (allStats.length === 0) {
-                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 1rem;">Aucune donnée disponible</p>`;
-                    return;
-                }
-
-                // Group by username and calculate growth
-                const statsByUsername = {};
-                allStats.forEach(stat => {
-                    if (!statsByUsername[stat.username]) {
-                        statsByUsername[stat.username] = [];
-                    }
-                    statsByUsername[stat.username].push(stat);
-                });
-
-                // Calculate daily growth for each username
-                const performers = Object.entries(statsByUsername)
-                    .map(([username, stats]) => {
-                        stats.sort((a, b) => new Date(a.date) - new Date(b.date));
-                        const latest = stats[stats.length - 1];
-                        const previous = stats.length > 1 ? stats[stats.length - 2] : null;
-                        const growth = previous ? latest.subs - previous.subs : 0;
-                        return {
-                            username,
-                            currentSubs: latest.subs,
-                            growth
-                        };
-                    })
-                    .sort((a, b) => b.growth - a.growth)
-                    .slice(0, 5);
-
-                if (performers.length === 0) {
-                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 1rem;">Aucune donnée disponible</p>`;
-                    return;
-                }
-
-                container.innerHTML = performers.map((p, i) => `
-                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: ${isDarkMode ? '#111827' : '#f8fafc'}; border-radius: 0.75rem;">
-                        <div style="width: 28px; height: 28px; border-radius: 50%; background: ${i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : i === 2 ? '#cd7c32' : (isDarkMode ? '#374151' : '#e2e8f0')}; color: ${i < 3 ? 'white' : (isDarkMode ? '#94a3b8' : '#64748b')}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
-                            ${i + 1}
-                        </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 600; color: #10b981; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.username}</div>
-                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Total: ${p.currentSubs.toLocaleString()} subs</div>
-                        </div>
-                        <div style="font-weight: 700; color: ${p.growth >= 0 ? '#10b981' : '#ef4444'}; font-size: 0.9375rem;">
-                            ${p.growth >= 0 ? '+' : ''}${p.growth}
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error('❌ Error updating subs top performers:', error);
-            }
-        }
-
-        // Update subs history table (comme followers - affiche total subs)
-        async function updateSubsHistory() {
-            const container = document.getElementById('subs-history-table');
-            if (!container) return;
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-
-            try {
-                const allStats = await getSubsTracking(30) || [];
-
-                if (allStats.length === 0) {
-                    container.innerHTML = `<p style="color: ${isDarkMode ? '#94a3b8' : '#64748b'}; text-align: center; padding: 2rem;">Aucun historique disponible</p>`;
-                    return;
-                }
-
-                // Get last 7 days
-                const dates = [...new Set(allStats.map(s => s.date))].sort().reverse().slice(0, 7);
-                const usernames = [...new Set(allStats.map(s => s.username))].sort();
-
-                // Build stats lookup
-                const statsLookup = {};
-                allStats.forEach(s => {
-                    statsLookup[`${s.username}_${s.date}`] = s.subs;
-                });
-
-                container.innerHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-                        <thead>
-                            <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc'};">
-                                <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">Compte</th>
-                                ${dates.map(date => `<th style="padding: 0.75rem; text-align: center; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">${new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${usernames.map(username => `
-                                <tr style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
-                                    <td style="padding: 0.75rem; color: #10b981; font-weight: 600;">${username}</td>
-                                    ${dates.map(date => {
-                                        const value = statsLookup[`${username}_${date}`];
-                                        return `<td style="padding: 0.75rem; text-align: center; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${value !== undefined ? value.toLocaleString() : '-'}</td>`;
-                                    }).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-
-            } catch (error) {
-                console.error('❌ Error updating subs history:', error);
-            }
-        }
+        // NOTE: Les fonctions Subs Tracking sont définies plus bas dans le fichier
+        // Voir: SUBS COMPETITION FUNCTIONS (Par Créatrice avec Calcul par VA)
 
         // ============================================================================
-        // END SUBS TRACKING
+        // END SUBS TRACKING (Les vraies fonctions sont dans la section SUBS COMPETITION FUNCTIONS)
         // ============================================================================
 
         // Update Twitter Analytics (page supprimée - fonction désactivée)
@@ -22717,7 +22149,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             a.click();
         }
 
-        // ========== SUBS COMPETITION FUNCTIONS (Like Followers Tracking) ==========
+        // ========== SUBS COMPETITION FUNCTIONS (Par Créatrice avec Calcul par VA) ==========
 
         let subsChart = null;
         let subsTrackingData = [];
@@ -22738,68 +22170,65 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                console.log('🔄 [SUBS] Loading subs tracking data...');
+                console.log('🔄 [SUBS] Loading subs tracking data by CREATOR...');
 
-                // Get all Twitter accounts from data.twitterAccounts
-                const allAccounts = [];
+                // Get all creators
+                const allCreators = [];
 
-                // Use data.twitterAccounts directly
-                if (data.twitterAccounts && data.twitterAccounts.length > 0) {
-                    data.twitterAccounts.forEach(account => {
-                        // Find creator for this account
-                        let creatorName = 'Inconnu';
-                        let creatorImage = null;
-
-                        if (data.creators) {
-                            data.creators.forEach(creator => {
-                                if (creator.accounts && creator.accounts.some(a => a.id === account.id || a.username === account.username)) {
-                                    creatorName = creator.name;
-                                    creatorImage = creator.image;
-                                }
-                            });
+                if (data.creators && data.creators.length > 0) {
+                    data.creators.forEach(creator => {
+                        // Get VA names for this creator
+                        let vaNames = [];
+                        if (creator.vaIds && creator.vaIds.length > 0 && data.vas) {
+                            vaNames = creator.vaIds.map(vaId => {
+                                const va = data.vas.find(v => v.id === vaId);
+                                return va ? va.name : null;
+                            }).filter(Boolean);
                         }
 
-                        allAccounts.push({
-                            username: account.username,
-                            creatorName: creatorName,
-                            creatorImage: creatorImage
+                        allCreators.push({
+                            id: creator.id,
+                            name: creator.name,
+                            image: creator.image || creator.photo_url,
+                            vaIds: creator.vaIds || [],
+                            vaNames: vaNames
                         });
                     });
                 }
 
-                console.log('🔄 [SUBS] Found accounts:', allAccounts.length);
+                console.log('🔄 [SUBS] Found creators:', allCreators.length);
 
-                if (allAccounts.length === 0) {
+                if (allCreators.length === 0) {
                     container.innerHTML = `
                         <div class="st-loading">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Aucun compte Twitter trouvé</p>
-                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des comptes Twitter depuis le dashboard</p>
+                            <p>Aucune créatrice trouvée</p>
+                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des créatrices depuis le dashboard</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Fetch latest subs data for all accounts
-                const subsData = await window.getSubsTracking(30);
-                const latestSubsByUsername = {};
-                const yesterdaySubsByUsername = {};
+                // Fetch latest subs data for all creators
+                const subsData = await window.getCreatorSubsTracking(30);
+                const latestSubsByCreatorId = {};
+                const yesterdaySubsByCreatorId = {};
 
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
                 subsData.forEach(entry => {
-                    const username = entry.username.toLowerCase();
+                    const creatorId = entry.creator_id;
                     if (entry.date === today) {
-                        latestSubsByUsername[username] = entry.subs;
+                        latestSubsByCreatorId[creatorId] = entry.subs;
                     }
                     if (entry.date === yesterday) {
-                        yesterdaySubsByUsername[username] = entry.subs;
+                        yesterdaySubsByCreatorId[creatorId] = entry.subs;
                     }
                     // Keep track of last known value
-                    if (!latestSubsByUsername[username] && entry.date < today) {
-                        if (!yesterdaySubsByUsername[username] || entry.date > Object.keys(yesterdaySubsByUsername).find(k => k === username)) {
-                            yesterdaySubsByUsername[username] = entry.subs;
+                    if (!latestSubsByCreatorId[creatorId] && entry.date < today) {
+                        if (!yesterdaySubsByCreatorId[creatorId]) {
+                            yesterdaySubsByCreatorId[creatorId] = entry.subs;
                         }
                     }
                 });
@@ -22808,18 +22237,20 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 let html = '';
                 let totalSubs = 0;
                 let totalGrowth = 0;
-                let accountsWithData = 0;
+                let creatorsWithData = 0;
 
-                allAccounts.forEach((account, index) => {
-                    const username = account.username.toLowerCase().replace('@', '');
-                    const currentSubs = latestSubsByUsername[username] || 0;
-                    const previousSubs = yesterdaySubsByUsername[username] || 0;
+                // Sort creators by name
+                allCreators.sort((a, b) => a.name.localeCompare(b.name));
+
+                allCreators.forEach((creator, index) => {
+                    const currentSubs = latestSubsByCreatorId[creator.id] || 0;
+                    const previousSubs = yesterdaySubsByCreatorId[creator.id] || 0;
                     const growth = currentSubs - previousSubs;
 
                     totalSubs += currentSubs;
                     if (currentSubs > 0) {
                         totalGrowth += growth;
-                        accountsWithData++;
+                        creatorsWithData++;
                     }
 
                     const hasValue = currentSubs > 0;
@@ -22835,33 +22266,36 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     }
 
                     html += `
-                        <div class="st-account-card ${cardClass}" data-username="${username}">
+                        <div class="st-account-card ${cardClass}" data-creator-id="${creator.id}">
                             <div class="st-status-badge ${badgeClass}">
                                 <i class="fas ${badgeIcon}"></i>
                             </div>
                             <div class="st-card-header">
                                 <div class="st-creator-info">
                                     <div class="st-creator-avatar">
-                                        ${account.creatorImage ?
-                                            `<img src="${account.creatorImage}" alt="${account.creatorName}">` :
+                                        ${creator.image ?
+                                            `<img src="${creator.image}" alt="${creator.name}">` :
                                             `<i class="fas fa-user"></i>`
                                         }
                                     </div>
-                                    <span class="st-creator-name">${account.creatorName}</span>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span class="st-creator-name">${creator.name}</span>
+                                        ${creator.vaNames.length > 0 ?
+                                            `<span style="font-size: 0.7rem; color: #8b5cf6; opacity: 0.8;">
+                                                <i class="fas fa-user-tie"></i> ${creator.vaNames.join(', ')}
+                                            </span>` : ''
+                                        }
+                                    </div>
                                 </div>
-                                <a href="https://twitter.com/${username}" target="_blank" class="st-account-link">
-                                    <i class="fas fa-crown"></i>
-                                    @${username}
-                                    <i class="fas fa-external-link-alt" style="font-size: 0.7rem; opacity: 0.5;"></i>
-                                </a>
                             </div>
                             <div class="st-input-area">
-                                <label class="st-input-label">Total Subs</label>
+                                <label class="st-input-label">Total Subs Plateforme</label>
                                 <div class="st-input-wrapper">
-                                    <i class="fas fa-users st-input-icon"></i>
+                                    <i class="fas fa-heart st-input-icon" style="color: #ec4899;"></i>
                                     <input type="number"
                                            class="st-subs-input"
-                                           data-username="${username}"
+                                           data-creator-id="${creator.id}"
+                                           data-creator-name="${creator.name}"
                                            data-index="${index}"
                                            value="${currentSubs || ''}"
                                            placeholder="0"
@@ -22885,26 +22319,25 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 // Update summary cards
                 document.getElementById('st-total-subs').textContent = totalSubs.toLocaleString();
                 document.getElementById('st-total-growth').textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toLocaleString();
-                document.getElementById('st-accounts-count').textContent = accountsWithData;
+                document.getElementById('st-accounts-count').textContent = creatorsWithData;
 
-                // Find best performer
+                // Find best performer (creator with best growth)
                 let bestPerformer = '-';
                 let bestGrowth = 0;
-                allAccounts.forEach(account => {
-                    const username = account.username.toLowerCase().replace('@', '');
-                    const current = latestSubsByUsername[username] || 0;
-                    const previous = yesterdaySubsByUsername[username] || 0;
+                allCreators.forEach(creator => {
+                    const current = latestSubsByCreatorId[creator.id] || 0;
+                    const previous = yesterdaySubsByCreatorId[creator.id] || 0;
                     const growth = current - previous;
                     if (growth > bestGrowth) {
                         bestGrowth = growth;
-                        bestPerformer = '@' + username;
+                        bestPerformer = creator.name;
                     }
                 });
                 document.getElementById('st-best-performer').textContent = bestPerformer;
 
-                // Update chart and leaderboard
-                await updateSubsChart(7);
-                await updateSubsTopPerformers();
+                // Update chart and leaderboard (by VA!)
+                await updateSubsChartByVA(7);
+                await updateVALeaderboard();
                 await updateSubsHistory();
 
             } catch (error) {
@@ -22939,10 +22372,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
             const entries = [];
             inputs.forEach(input => {
-                const username = input.dataset.username;
+                const creatorId = input.dataset.creatorId;
                 const subs = parseInt(input.value) || 0;
-                if (subs > 0) {
-                    entries.push({ username, subs });
+                if (subs > 0 && creatorId) {
+                    entries.push({ creator_id: creatorId, subs });
                 }
             });
 
@@ -22959,9 +22392,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     saveBtn.disabled = true;
                 }
 
-                await window.bulkSaveSubsTracking(entries, date);
+                await window.bulkSaveCreatorSubsTracking(entries, date);
 
-                showSuccess(`${entries.length} entrées enregistrées avec succès!`);
+                showSuccess(`${entries.length} créatrices enregistrées avec succès!`);
 
                 // Reload the data
                 await loadSubsTrackingData();
@@ -22983,52 +22416,125 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
         }
 
+        // Calculate subs per VA from creator subs
+        function calculateSubsByVA(subsData, forDate = null) {
+            const subsByVA = {};
+
+            // Initialize all VAs with 0
+            if (data.vas) {
+                data.vas.forEach(va => {
+                    subsByVA[va.id] = {
+                        id: va.id,
+                        name: va.name,
+                        totalSubs: 0,
+                        creators: []
+                    };
+                });
+            }
+
+            // For each creator, add their subs to their VAs
+            if (data.creators) {
+                data.creators.forEach(creator => {
+                    // Find subs for this creator
+                    let creatorSubs = 0;
+                    if (forDate) {
+                        const entry = subsData.find(s => s.creator_id === creator.id && s.date === forDate);
+                        creatorSubs = entry ? entry.subs : 0;
+                    } else {
+                        // Get latest subs
+                        const creatorEntries = subsData.filter(s => s.creator_id === creator.id);
+                        if (creatorEntries.length > 0) {
+                            creatorEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                            creatorSubs = creatorEntries[0].subs;
+                        }
+                    }
+
+                    // Add subs to each VA managing this creator
+                    if (creator.vaIds && creator.vaIds.length > 0) {
+                        // Split subs equally among VAs if multiple
+                        const subsPerVA = Math.round(creatorSubs / creator.vaIds.length);
+                        creator.vaIds.forEach(vaId => {
+                            if (subsByVA[vaId]) {
+                                subsByVA[vaId].totalSubs += subsPerVA;
+                                subsByVA[vaId].creators.push({
+                                    name: creator.name,
+                                    subs: subsPerVA
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            return subsByVA;
+        }
+
         async function updateSubsChart(days = 7) {
+            await updateSubsChartByVA(days);
+        }
+
+        async function updateSubsChartByVA(days = 7) {
             // Update active button
             document.querySelectorAll('.subs-period-btn').forEach(btn => {
                 btn.classList.toggle('active', parseInt(btn.dataset.period) === days);
             });
 
             try {
-                const subsData = await window.getSubsTracking(days);
+                const subsData = await window.getCreatorSubsTracking(days);
                 const canvas = document.getElementById('subs-growth-chart');
                 if (!canvas) return;
 
-                // Group data by username and date
-                const dataByUsername = {};
-                const allDates = new Set();
+                // Get all unique dates
+                const allDates = [...new Set(subsData.map(s => s.date))].sort();
 
-                subsData.forEach(entry => {
-                    const username = entry.username;
-                    if (!dataByUsername[username]) {
-                        dataByUsername[username] = {};
-                    }
-                    dataByUsername[username][entry.date] = entry.subs;
-                    allDates.add(entry.date);
+                if (allDates.length === 0) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.font = '14px Inter';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Aucune donnée disponible', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+
+                // Calculate subs by VA for each date
+                const dataByVA = {};
+                if (data.vas) {
+                    data.vas.forEach(va => {
+                        dataByVA[va.id] = {
+                            name: va.name,
+                            data: []
+                        };
+                    });
+                }
+
+                allDates.forEach(date => {
+                    const vaStats = calculateSubsByVA(subsData, date);
+                    Object.keys(vaStats).forEach(vaId => {
+                        if (dataByVA[vaId]) {
+                            dataByVA[vaId].data.push(vaStats[vaId].totalSubs);
+                        }
+                    });
                 });
 
-                // Sort dates
-                const sortedDates = [...allDates].sort();
-
-                // Generate colors for each username
+                // Generate colors for each VA
                 const colors = [
                     '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
                     '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#a855f7'
                 ];
 
-                const datasets = Object.keys(dataByUsername).map((username, index) => {
-                    const data = sortedDates.map(date => dataByUsername[username][date] || null);
-                    return {
-                        label: '@' + username,
-                        data: data,
+                const datasets = Object.values(dataByVA)
+                    .filter(va => va.data.some(d => d > 0))
+                    .map((va, index) => ({
+                        label: va.name,
+                        data: va.data,
                         borderColor: colors[index % colors.length],
                         backgroundColor: colors[index % colors.length] + '20',
                         fill: false,
                         tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    };
-                });
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        borderWidth: 3
+                    }));
 
                 // Destroy existing chart
                 if (subsChart) {
@@ -23039,7 +22545,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 subsChart = new Chart(canvas, {
                     type: 'line',
                     data: {
-                        labels: sortedDates.map(d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })),
+                        labels: allDates.map(d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })),
                         datasets: datasets
                     },
                     options: {
@@ -23050,8 +22556,14 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                 position: 'bottom',
                                 labels: {
                                     usePointStyle: true,
-                                    padding: 15
+                                    padding: 15,
+                                    font: { weight: 'bold' }
                                 }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Performance des VAs (Subs par jour)',
+                                font: { size: 14, weight: 'bold' }
                             }
                         },
                         scales: {
@@ -23059,6 +22571,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                 beginAtZero: true,
                                 grid: {
                                     color: 'rgba(0,0,0,0.05)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Total Subs'
                                 }
                             },
                             x: {
@@ -23071,71 +22587,87 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 });
 
             } catch (error) {
-                console.error('Error updating subs chart:', error);
+                console.error('Error updating subs chart by VA:', error);
             }
         }
 
         async function updateSubsTopPerformers() {
+            await updateVALeaderboard();
+        }
+
+        async function updateVALeaderboard() {
             const container = document.getElementById('subs-top-performers');
             if (!container) return;
 
             try {
-                const subsData = await window.getSubsTracking(7);
+                const subsData = await window.getCreatorSubsTracking(30);
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-                // Calculate growth per username
-                const growthByUsername = {};
-                subsData.forEach(entry => {
-                    const username = entry.username;
-                    if (!growthByUsername[username]) {
-                        growthByUsername[username] = { today: 0, yesterday: 0 };
-                    }
-                    if (entry.date === today) {
-                        growthByUsername[username].today = entry.subs;
-                    }
-                    if (entry.date === yesterday) {
-                        growthByUsername[username].yesterday = entry.subs;
-                    }
+                // Calculate subs by VA for today and yesterday
+                const todayStats = calculateSubsByVA(subsData, today);
+                const yesterdayStats = calculateSubsByVA(subsData, yesterday);
+
+                // Calculate growth per VA
+                const vaPerformance = [];
+                Object.keys(todayStats).forEach(vaId => {
+                    const todaySubs = todayStats[vaId].totalSubs;
+                    const yesterdaySubs = yesterdayStats[vaId] ? yesterdayStats[vaId].totalSubs : 0;
+                    const growth = todaySubs - yesterdaySubs;
+
+                    vaPerformance.push({
+                        id: vaId,
+                        name: todayStats[vaId].name,
+                        totalSubs: todaySubs,
+                        growth: growth,
+                        creators: todayStats[vaId].creators
+                    });
                 });
 
-                // Calculate growth and sort
-                const performers = Object.entries(growthByUsername)
-                    .map(([username, data]) => ({
-                        username,
-                        growth: data.today - data.yesterday,
-                        total: data.today
-                    }))
-                    .filter(p => p.growth > 0)
-                    .sort((a, b) => b.growth - a.growth)
-                    .slice(0, 5);
+                // Sort by total subs (or by growth)
+                vaPerformance.sort((a, b) => b.totalSubs - a.totalSubs);
 
-                if (performers.length === 0) {
+                // Filter VAs with data
+                const performersWithData = vaPerformance.filter(p => p.totalSubs > 0);
+
+                if (performersWithData.length === 0) {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                            <i class="fas fa-medal" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <i class="fas fa-trophy" style="font-size: 2rem; opacity: 0.3;"></i>
                             <p style="margin-top: 0.5rem;">Pas encore de données</p>
                         </div>
                     `;
                     return;
                 }
 
-                container.innerHTML = performers.map((p, index) => {
-                    const rankClass = index === 0 ? 'st-rank-1' : index === 1 ? 'st-rank-2' : index === 2 ? 'st-rank-3' : 'st-rank-other';
+                container.innerHTML = performersWithData.map((va, index) => {
+                    const rankColors = ['#f59e0b', '#94a3b8', '#cd7c32', '#374151', '#374151'];
+                    const rankBg = rankColors[index] || '#374151';
+                    const isTop3 = index < 3;
+
                     return `
-                        <div class="st-performer-item">
-                            <div class="st-performer-rank ${rankClass}">${index + 1}</div>
-                            <div class="st-performer-info">
-                                <div class="st-performer-name">@${p.username}</div>
-                                <div class="st-performer-username">${p.total} subs total</div>
+                        <div class="st-performer-item" style="background: ${isTop3 ? 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(236,72,153,0.1) 100%)' : 'rgba(0,0,0,0.02)'}; border: ${isTop3 ? '2px solid rgba(139,92,246,0.3)' : '1px solid rgba(0,0,0,0.05)'}; border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem;">
+                            <div class="st-performer-rank" style="background: ${rankBg}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                ${index + 1}
                             </div>
-                            <div class="st-performer-growth">+${p.growth}</div>
+                            <div class="st-performer-info" style="flex: 1; margin-left: 1rem;">
+                                <div class="st-performer-name" style="font-weight: 700; font-size: 1rem; color: #1f2937;">
+                                    <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 0.5rem;"></i>${va.name}
+                                </div>
+                                <div class="st-performer-username" style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                                    ${va.creators.length} créatrice${va.creators.length > 1 ? 's' : ''} -
+                                    Total: <strong>${va.totalSubs.toLocaleString()}</strong> subs
+                                </div>
+                            </div>
+                            <div class="st-performer-growth" style="font-weight: 700; font-size: 1.125rem; color: ${va.growth >= 0 ? '#10b981' : '#ef4444'};">
+                                ${va.growth >= 0 ? '+' : ''}${va.growth}
+                            </div>
                         </div>
                     `;
                 }).join('');
 
             } catch (error) {
-                console.error('Error updating top performers:', error);
+                console.error('Error updating VA leaderboard:', error);
             }
         }
 
@@ -23144,7 +22676,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                const subsData = await window.getSubsTracking(30);
+                const subsData = await window.getCreatorSubsTracking(30);
 
                 if (subsData.length === 0) {
                     container.innerHTML = `
@@ -23162,6 +22694,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     if (!dataByDate[entry.date]) {
                         dataByDate[entry.date] = [];
                     }
+                    // Find creator name
+                    const creator = data.creators ? data.creators.find(c => c.id === entry.creator_id) : null;
+                    entry.creatorName = creator ? creator.name : 'Inconnu';
                     dataByDate[entry.date].push(entry);
                 });
 
@@ -23169,38 +22704,37 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 const sortedDates = Object.keys(dataByDate).sort((a, b) => new Date(b) - new Date(a));
 
                 let html = `
-                    <table>
+                    <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Compte</th>
-                                <th>Total Subs</th>
-                                <th>Croissance</th>
+                            <tr style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+                                <th style="padding: 0.75rem; text-align: left;">Date</th>
+                                <th style="padding: 0.75rem; text-align: left;">Créatrice</th>
+                                <th style="padding: 0.75rem; text-align: right;">Total Subs</th>
+                                <th style="padding: 0.75rem; text-align: right;">Croissance</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
 
-                sortedDates.slice(0, 20).forEach(date => {
-                    dataByDate[date].forEach(entry => {
+                sortedDates.slice(0, 10).forEach(date => {
+                    // Sort entries by subs descending
+                    dataByDate[date].sort((a, b) => b.subs - a.subs);
+
+                    dataByDate[date].forEach((entry, idx) => {
                         // Find previous day value for growth calculation
                         const prevDate = new Date(new Date(date) - 86400000).toISOString().split('T')[0];
-                        const prevEntry = subsData.find(e => e.username === entry.username && e.date === prevDate);
+                        const prevEntry = subsData.find(e => e.creator_id === entry.creator_id && e.date === prevDate);
                         const growth = prevEntry ? entry.subs - prevEntry.subs : 0;
-                        const growthClass = growth > 0 ? 'positive' : growth < 0 ? 'negative' : '';
+                        const growthClass = growth > 0 ? 'color: #10b981;' : growth < 0 ? 'color: #ef4444;' : 'color: #94a3b8;';
                         const growthIcon = growth > 0 ? 'fa-arrow-up' : growth < 0 ? 'fa-arrow-down' : '';
 
                         html += `
-                            <tr>
-                                <td>${new Date(date).toLocaleDateString('fr-FR')}</td>
-                                <td><strong>@${entry.username}</strong></td>
-                                <td>${entry.subs.toLocaleString()}</td>
-                                <td>
-                                    ${growth !== 0 ? `
-                                        <span class="st-growth ${growthClass}">
-                                            <i class="fas ${growthIcon}"></i> ${growth > 0 ? '+' : ''}${growth}
-                                        </span>
-                                    ` : '<span style="color: #94a3b8;">-</span>'}
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 0.75rem;">${idx === 0 ? new Date(date).toLocaleDateString('fr-FR') : ''}</td>
+                                <td style="padding: 0.75rem;"><strong>${entry.creatorName}</strong></td>
+                                <td style="padding: 0.75rem; text-align: right; font-weight: 600;">${entry.subs.toLocaleString()}</td>
+                                <td style="padding: 0.75rem; text-align: right; font-weight: 600; ${growthClass}">
+                                    ${growth !== 0 ? `<i class="fas ${growthIcon}"></i> ${growth > 0 ? '+' : ''}${growth}` : '-'}
                                 </td>
                             </tr>
                         `;

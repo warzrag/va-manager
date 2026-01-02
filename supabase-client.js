@@ -2487,6 +2487,138 @@ async function deleteSubsTracking(trackingId) {
 }
 
 // ============================================================================
+// CREATOR SUBS TRACKING FUNCTIONS (Subs par Créatrice)
+// ============================================================================
+
+/**
+ * Get all creator subs tracking data for current organization
+ * @param {number} days - Number of days to fetch (default 30)
+ * @returns {Promise<Array>}
+ */
+async function getCreatorSubsTracking(days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('creator_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    console.log(`✅ Retrieved ${(data || []).length} creator subs tracking entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting creator subs tracking:', error);
+    return [];
+  }
+}
+
+/**
+ * Get creator subs tracking for a specific creator
+ * @param {string} creatorId
+ * @param {number} days - Number of days to fetch
+ * @returns {Promise<Array>}
+ */
+async function getCreatorSubsByCreatorId(creatorId, days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('creator_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('creator_id', creatorId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting creator subs by creator ID:', error);
+    return [];
+  }
+}
+
+/**
+ * Upsert (insert or update) creator subs tracking
+ * @param {Object} trackingData - { creator_id, date, subs }
+ * @returns {Promise<Object>}
+ */
+async function upsertCreatorSubsTracking(trackingData) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const { data, error } = await supabase
+      .from('creator_subs_tracking')
+      .upsert({
+        organization_id: organizationId,
+        creator_id: trackingData.creator_id,
+        date: trackingData.date,
+        subs: trackingData.subs,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'creator_id,date,organization_id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✅ Creator subs tracking upserted:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Error upserting creator subs tracking:', error);
+    throw error;
+  }
+}
+
+/**
+ * Bulk save creator subs tracking for a specific date
+ * @param {Array} entries - Array of { creator_id, subs }
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {Promise<boolean>}
+ */
+async function bulkSaveCreatorSubsTracking(entries, date) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const records = entries.map(entry => ({
+      organization_id: organizationId,
+      creator_id: entry.creator_id,
+      date: date,
+      subs: entry.subs,
+      updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('creator_subs_tracking')
+      .upsert(records, {
+        onConflict: 'creator_id,date,organization_id'
+      });
+
+    if (error) throw error;
+
+    console.log(`✅ Bulk saved ${entries.length} creator subs tracking entries`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error bulk saving creator subs tracking:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // INSTAGRAM STATS FUNCTIONS
 // ============================================================================
 
@@ -4225,7 +4357,22 @@ if (typeof module !== 'undefined' && module.exports) {
     createAutomaticBackup,
     downloadBackup,
     getBackupHistory,
-    deleteOldBackups
+    deleteOldBackups,
+
+    // Subs Tracking (Twitter accounts)
+    getSubsTracking,
+    getSubsTrackingByUsername,
+    getLatestSubsTracking,
+    upsertSubsTracking,
+    createSubsTracking,
+    bulkSaveSubsTracking,
+    deleteSubsTracking,
+
+    // Creator Subs Tracking
+    getCreatorSubsTracking,
+    getCreatorSubsByCreatorId,
+    upsertCreatorSubsTracking,
+    bulkSaveCreatorSubsTracking
   };
 
   // Export to both window.SupabaseClient AND window directly
