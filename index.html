@@ -16979,8 +16979,29 @@ Tapez "SUPPRIMER" pour confirmer :`;
                             const yesterday = account.stats[1].followers || 0;
                             const growth = latest - yesterday;
                             todayGrowth += growth;
+
+                            // Find VA name for this account
+                            let vaName = null;
+                            let vaId = account.vaId;
+
+                            // Method 1: Direct vaId
+                            if (vaId) {
+                                const va = (data.vas || []).find(v => v.id === vaId);
+                                if (va) vaName = va.name;
+                            }
+
+                            // Method 2: Via creator
+                            if (!vaName && account.creatorId && data.creators) {
+                                const creator = data.creators.find(c => c.id === account.creatorId);
+                                if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                                    const va = (data.vas || []).find(v => v.id === creator.vaIds[0]);
+                                    if (va) vaName = va.name;
+                                }
+                            }
+
                             performers.push({
                                 username: account.username,
+                                vaName: vaName,
                                 growth: growth,
                                 followers: latest
                             });
@@ -17033,13 +17054,18 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         performersEl.innerHTML = top3.map((p, i) => {
                             const medals = ['🥇', '🥈', '🥉'];
                             const bgColors = ['rgba(251, 191, 36, 0.1)', 'rgba(156, 163, 175, 0.1)', 'rgba(249, 115, 22, 0.1)'];
+                            const displayName = p.vaName || `@${p.username.replace('@', '')}`;
+                            const isVA = !!p.vaName;
                             return `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: ${bgColors[i]}; border-radius: 0.5rem;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                                         <span style="font-size: 1.25rem;">${medals[i]}</span>
-                                        <a href="https://x.com/${p.username.replace('@', '')}" target="_blank" style="color: #1da1f2; font-weight: 600; text-decoration: none;">
-                                            @${p.username.replace('@', '')}
-                                        </a>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span style="color: ${isVA ? '#8b5cf6' : '#1da1f2'}; font-weight: 600;">
+                                                ${isVA ? '<i class="fas fa-user-tie" style="margin-right: 0.25rem; font-size: 0.8rem;"></i>' : ''}${displayName}
+                                            </span>
+                                            ${isVA ? `<a href="https://x.com/${p.username.replace('@', '')}" target="_blank" style="color: #64748b; font-size: 0.75rem; text-decoration: none;">@${p.username.replace('@', '')}</a>` : ''}
+                                        </div>
                                     </div>
                                     <span style="font-weight: 700; color: ${p.growth >= 0 ? '#10b981' : '#ef4444'};">
                                         ${p.growth >= 0 ? '+' : ''}${p.growth}
