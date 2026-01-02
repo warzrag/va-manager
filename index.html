@@ -3289,6 +3289,326 @@
             }
         }
 
+        /* VA Group Clickable */
+        .va-group-header {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .va-group-header:hover {
+            filter: brightness(1.1);
+        }
+
+        .va-group-header::after {
+            content: '\f054';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: auto;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .va-group-header:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* VA Detail Modal Styles */
+        .va-detail-modal {
+            z-index: 10000;
+        }
+
+        .va-detail-content {
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            border-radius: 1.25rem;
+        }
+
+        .va-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            position: relative;
+        }
+
+        .va-detail-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .va-detail-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .va-detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .va-detail-avatar i {
+            font-size: 1.5rem;
+        }
+
+        .va-detail-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .va-detail-header p {
+            margin: 0.25rem 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .va-detail-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .va-detail-stat {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .va-stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+
+        .va-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .va-detail-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .va-detail-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .va-detail-body {
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            flex: 1;
+            background: #f8fafc;
+        }
+
+        .va-detail-period-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .va-period-btn {
+            padding: 0.5rem 1.25rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .va-period-btn:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .va-period-btn.active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            border-color: #8b5cf6;
+            color: white;
+        }
+
+        .va-detail-chart-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            height: 300px;
+        }
+
+        .va-detail-table-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .va-detail-table-section h3 {
+            margin: 0 0 1rem;
+            font-size: 1rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .va-detail-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .va-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .va-detail-table th,
+        .va-detail-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .va-detail-table th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .va-detail-table td {
+            font-size: 0.95rem;
+        }
+
+        .va-detail-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .va-detail-table .account-name {
+            font-weight: 600;
+            color: #1da1f2;
+        }
+
+        .va-detail-table .growth-positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .va-detail-table .growth-negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Dark mode for VA detail modal */
+        body.dark-mode .va-detail-content {
+            background: #1e293b;
+        }
+
+        body.dark-mode .va-detail-body {
+            background: #0f172a;
+        }
+
+        body.dark-mode .va-period-btn {
+            background: #1e293b;
+            border-color: #334155;
+            color: #94a3b8;
+        }
+
+        body.dark-mode .va-period-btn:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        body.dark-mode .va-detail-chart-container,
+        body.dark-mode .va-detail-table-section {
+            background: #1e293b;
+        }
+
+        body.dark-mode .va-detail-table-section h3 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .va-detail-table th {
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        body.dark-mode .va-detail-table td {
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .va-detail-table tbody tr:hover {
+            background: #334155;
+        }
+
+        @media (max-width: 768px) {
+            .va-detail-content {
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .va-detail-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
+            .va-detail-stats {
+                width: 100%;
+                justify-content: space-around;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255,255,255,0.2);
+            }
+
+            .va-detail-body {
+                padding: 1rem;
+            }
+
+            .va-detail-chart-container {
+                height: 250px;
+                padding: 1rem;
+            }
+        }
+
         /* Save All Button */
         .st-save-all-btn {
             width: 100%;
@@ -6548,13 +6868,77 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Password Modal -->
     <div id="password-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
             <h3>Détails du compte</h3>
             <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- VA Detail Modal - Evolution Chart -->
+    <div id="va-detail-modal" class="modal va-detail-modal">
+        <div class="modal-content va-detail-content">
+            <div class="va-detail-header">
+                <div class="va-detail-info">
+                    <div class="va-detail-avatar" id="va-detail-avatar">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h2 id="va-detail-name">VA Name</h2>
+                        <p id="va-detail-accounts-count">0 comptes Twitter</p>
+                    </div>
+                </div>
+                <div class="va-detail-stats">
+                    <div class="va-detail-stat">
+                        <span class="va-stat-value" id="va-detail-total">0</span>
+                        <span class="va-stat-label">Total Subs</span>
+                    </div>
+                    <div class="va-detail-stat">
+                        <span class="va-stat-value" id="va-detail-growth">+0</span>
+                        <span class="va-stat-label">Aujourd'hui</span>
+                    </div>
+                </div>
+                <button class="va-detail-close" onclick="closeVADetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="va-detail-body">
+                <!-- Period Selector -->
+                <div class="va-detail-period-selector">
+                    <button class="va-period-btn active" data-days="7" onclick="updateVADetailChart(7)">7 jours</button>
+                    <button class="va-period-btn" data-days="14" onclick="updateVADetailChart(14)">14 jours</button>
+                    <button class="va-period-btn" data-days="30" onclick="updateVADetailChart(30)">30 jours</button>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="va-detail-chart-container">
+                    <canvas id="va-detail-chart"></canvas>
+                </div>
+
+                <!-- Twitter Accounts Table -->
+                <div class="va-detail-table-section">
+                    <h3><i class="fab fa-twitter" style="color: #1da1f2;"></i> Performance par compte</h3>
+                    <div class="va-detail-table-wrapper">
+                        <table class="va-detail-table" id="va-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>Compte</th>
+                                    <th>Aujourd'hui</th>
+                                    <th>Hier</th>
+                                    <th>Évolution</th>
+                                    <th>7 jours</th>
+                                </tr>
+                            </thead>
+                            <tbody id="va-detail-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -22491,9 +22875,17 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     let vaGrowth = 0;
 
                     // VA Group Header
+                    const vaDataEncoded = encodeURIComponent(JSON.stringify({
+                        id: va.id,
+                        name: va.name,
+                        image: va.image,
+                        accountsCount: accounts.length,
+                        accountIds: accounts.map(a => a.id)
+                    }));
+
                     html += `
                         <div class="va-group" data-va-id="${va.id}">
-                            <div class="va-group-header">
+                            <div class="va-group-header" onclick="openVADetailModal('${vaDataEncoded}')">
                                 <div class="va-group-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">
                                     ${va.image ?
                                         `<img src="${va.image}" alt="${va.name}">` :
@@ -23005,6 +23397,296 @@ Tapez "SUPPRIMER" pour confirmer :`;
             } catch (error) {
                 console.error('Error updating VA leaderboard:', error);
             }
+        }
+
+        // ============================================================================
+        // VA DETAIL MODAL FUNCTIONS
+        // ============================================================================
+
+        let currentVAData = null;
+        let vaDetailChart = null;
+
+        function openVADetailModal(encodedData) {
+            try {
+                currentVAData = JSON.parse(decodeURIComponent(encodedData));
+                console.log('Opening VA detail modal for:', currentVAData.name);
+
+                const modal = document.getElementById('va-detail-modal');
+
+                // Update header info
+                document.getElementById('va-detail-name').textContent = currentVAData.name;
+                document.getElementById('va-detail-accounts-count').textContent =
+                    `${currentVAData.accountsCount} compte${currentVAData.accountsCount > 1 ? 's' : ''} Twitter`;
+
+                // Update avatar
+                const avatarEl = document.getElementById('va-detail-avatar');
+                if (currentVAData.image) {
+                    avatarEl.innerHTML = `<img src="${currentVAData.image}" alt="${currentVAData.name}">`;
+                } else {
+                    avatarEl.innerHTML = `<i class="fas fa-user-tie"></i>`;
+                }
+
+                // Show modal
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Load data
+                updateVADetailChart(7);
+
+            } catch (error) {
+                console.error('Error opening VA detail modal:', error);
+            }
+        }
+
+        function closeVADetailModal() {
+            const modal = document.getElementById('va-detail-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            currentVAData = null;
+
+            if (vaDetailChart) {
+                vaDetailChart.destroy();
+                vaDetailChart = null;
+            }
+        }
+
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('va-detail-modal');
+            if (e.target === modal) {
+                closeVADetailModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('va-detail-modal');
+                if (modal && modal.style.display === 'flex') {
+                    closeVADetailModal();
+                }
+            }
+        });
+
+        async function updateVADetailChart(days = 7) {
+            if (!currentVAData) return;
+
+            // Update period buttons
+            document.querySelectorAll('.va-period-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.days) === days);
+            });
+
+            try {
+                const twitterSubsData = await window.getTwitterSubsTracking(days);
+                const canvas = document.getElementById('va-detail-chart');
+                if (!canvas) return;
+
+                // Filter data for this VA's accounts
+                const vaAccountIds = new Set(currentVAData.accountIds);
+                const vaData = twitterSubsData.filter(entry => vaAccountIds.has(entry.twitter_account_id));
+
+                // Get Twitter account info
+                const accountInfo = {};
+                (data.twitterAccounts || []).forEach(acc => {
+                    if (vaAccountIds.has(acc.id)) {
+                        accountInfo[acc.id] = acc.username;
+                    }
+                });
+
+                // Get all unique dates
+                const allDates = [...new Set(vaData.map(s => s.date))].sort();
+
+                // Calculate today's totals for header stats
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+                let todayTotal = 0;
+                let yesterdayTotal = 0;
+                const todayByAccount = {};
+                const yesterdayByAccount = {};
+                const last7DaysByAccount = {};
+
+                vaData.forEach(entry => {
+                    const accId = entry.twitter_account_id;
+                    if (entry.date === today) {
+                        todayTotal += entry.subs;
+                        todayByAccount[accId] = entry.subs;
+                    }
+                    if (entry.date === yesterday) {
+                        yesterdayTotal += entry.subs;
+                        yesterdayByAccount[accId] = entry.subs;
+                    }
+                    // Sum all for 7 days total
+                    if (!last7DaysByAccount[accId]) last7DaysByAccount[accId] = 0;
+                    last7DaysByAccount[accId] += entry.subs;
+                });
+
+                const growth = todayTotal - yesterdayTotal;
+
+                // Update header stats
+                document.getElementById('va-detail-total').textContent = todayTotal.toLocaleString();
+                const growthEl = document.getElementById('va-detail-growth');
+                growthEl.textContent = (growth >= 0 ? '+' : '') + growth.toLocaleString();
+                growthEl.style.color = growth >= 0 ? '#10b981' : '#ef4444';
+
+                // Build datasets for each Twitter account
+                const accountSubsByDate = {};
+                vaData.forEach(entry => {
+                    if (!accountSubsByDate[entry.twitter_account_id]) {
+                        accountSubsByDate[entry.twitter_account_id] = {};
+                    }
+                    accountSubsByDate[entry.twitter_account_id][entry.date] = entry.subs;
+                });
+
+                // Generate colors
+                const colors = [
+                    '#1da1f2', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
+                    '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#a855f7'
+                ];
+
+                const datasets = Object.entries(accountSubsByDate).map(([accId, dateData], index) => ({
+                    label: '@' + (accountInfo[accId] || 'compte').replace('@', ''),
+                    data: allDates.map(date => dateData[date] || null),
+                    borderColor: colors[index % colors.length],
+                    backgroundColor: colors[index % colors.length] + '20',
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    borderWidth: 2
+                }));
+
+                // Add total line
+                const totalByDate = {};
+                allDates.forEach(date => {
+                    totalByDate[date] = vaData
+                        .filter(e => e.date === date)
+                        .reduce((sum, e) => sum + e.subs, 0);
+                });
+
+                datasets.unshift({
+                    label: 'Total ' + currentVAData.name,
+                    data: allDates.map(date => totalByDate[date] || null),
+                    borderColor: '#8b5cf6',
+                    backgroundColor: '#8b5cf620',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    borderWidth: 3,
+                    borderDash: []
+                });
+
+                // Destroy existing chart
+                if (vaDetailChart) {
+                    vaDetailChart.destroy();
+                }
+
+                // Create chart
+                const ctx = canvas.getContext('2d');
+                vaDetailChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: allDates.map(d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })),
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: { weight: '600', size: 11 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 12 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                title: { display: true, text: 'Subs' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+
+                // Update table
+                updateVADetailTable(accountInfo, todayByAccount, yesterdayByAccount, last7DaysByAccount);
+
+            } catch (error) {
+                console.error('Error updating VA detail chart:', error);
+            }
+        }
+
+        function updateVADetailTable(accountInfo, todayByAccount, yesterdayByAccount, last7DaysByAccount) {
+            const tbody = document.getElementById('va-detail-table-body');
+            if (!tbody) return;
+
+            const rows = Object.entries(accountInfo).map(([accId, username]) => {
+                const todaySubs = todayByAccount[accId] || 0;
+                const yesterdaySubs = yesterdayByAccount[accId] || 0;
+                const growth = todaySubs - yesterdaySubs;
+                const total7Days = last7DaysByAccount[accId] || 0;
+
+                const growthClass = growth >= 0 ? 'growth-positive' : 'growth-negative';
+                const growthIcon = growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+
+                return `
+                    <tr>
+                        <td class="account-name">
+                            <i class="fab fa-twitter" style="color: #1da1f2; margin-right: 0.5rem;"></i>
+                            @${username.replace('@', '')}
+                        </td>
+                        <td><strong>${todaySubs.toLocaleString()}</strong></td>
+                        <td>${yesterdaySubs.toLocaleString()}</td>
+                        <td class="${growthClass}">
+                            <i class="fas ${growthIcon}" style="font-size: 0.7rem;"></i>
+                            ${growth >= 0 ? '+' : ''}${growth}
+                        </td>
+                        <td><strong>${total7Days.toLocaleString()}</strong></td>
+                    </tr>
+                `;
+            });
+
+            // Add total row
+            const totalToday = Object.values(todayByAccount).reduce((a, b) => a + b, 0);
+            const totalYesterday = Object.values(yesterdayByAccount).reduce((a, b) => a + b, 0);
+            const totalGrowth = totalToday - totalYesterday;
+            const total7Days = Object.values(last7DaysByAccount).reduce((a, b) => a + b, 0);
+            const totalGrowthClass = totalGrowth >= 0 ? 'growth-positive' : 'growth-negative';
+
+            rows.push(`
+                <tr style="background: linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(236,72,153,0.1) 100%); font-weight: 700;">
+                    <td style="color: #8b5cf6;">
+                        <i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>
+                        TOTAL
+                    </td>
+                    <td><strong>${totalToday.toLocaleString()}</strong></td>
+                    <td>${totalYesterday.toLocaleString()}</td>
+                    <td class="${totalGrowthClass}">
+                        ${totalGrowth >= 0 ? '+' : ''}${totalGrowth}
+                    </td>
+                    <td><strong>${total7Days.toLocaleString()}</strong></td>
+                </tr>
+            `);
+
+            tbody.innerHTML = rows.join('');
         }
 
         async function updateSubsHistory() {
