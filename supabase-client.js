@@ -2619,6 +2619,138 @@ async function bulkSaveCreatorSubsTracking(entries, date) {
 }
 
 // ============================================================================
+// VA SUBS TRACKING FUNCTIONS (Subs par VA - Tracking Links)
+// ============================================================================
+
+/**
+ * Get all VA subs tracking data for current organization
+ * @param {number} days - Number of days to fetch (default 30)
+ * @returns {Promise<Array>}
+ */
+async function getVASubsTracking(days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('va_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    console.log(`✅ Retrieved ${(data || []).length} VA subs tracking entries`);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting VA subs tracking:', error);
+    return [];
+  }
+}
+
+/**
+ * Get VA subs tracking for a specific VA
+ * @param {string} vaId
+ * @param {number} days - Number of days to fetch
+ * @returns {Promise<Array>}
+ */
+async function getVASubsByVAId(vaId, days = 30) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('va_subs_tracking')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('va_id', vaId)
+      .gte('date', startDateStr)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error getting VA subs by VA ID:', error);
+    return [];
+  }
+}
+
+/**
+ * Upsert (insert or update) VA subs tracking
+ * @param {Object} trackingData - { va_id, date, subs }
+ * @returns {Promise<Object>}
+ */
+async function upsertVASubsTracking(trackingData) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const { data, error } = await supabase
+      .from('va_subs_tracking')
+      .upsert({
+        organization_id: organizationId,
+        va_id: trackingData.va_id,
+        date: trackingData.date,
+        subs: trackingData.subs,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'va_id,date,organization_id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✅ VA subs tracking upserted:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Error upserting VA subs tracking:', error);
+    throw error;
+  }
+}
+
+/**
+ * Bulk save VA subs tracking for a specific date
+ * @param {Array} entries - Array of { va_id, subs }
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {Promise<boolean>}
+ */
+async function bulkSaveVASubsTracking(entries, date) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    const records = entries.map(entry => ({
+      organization_id: organizationId,
+      va_id: entry.va_id,
+      date: date,
+      subs: entry.subs,
+      updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('va_subs_tracking')
+      .upsert(records, {
+        onConflict: 'va_id,date,organization_id'
+      });
+
+    if (error) throw error;
+
+    console.log(`✅ Bulk saved ${entries.length} VA subs tracking entries`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error bulk saving VA subs tracking:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // INSTAGRAM STATS FUNCTIONS
 // ============================================================================
 
@@ -4372,7 +4504,13 @@ if (typeof module !== 'undefined' && module.exports) {
     getCreatorSubsTracking,
     getCreatorSubsByCreatorId,
     upsertCreatorSubsTracking,
-    bulkSaveCreatorSubsTracking
+    bulkSaveCreatorSubsTracking,
+
+    // VA Subs Tracking (Tracking Links)
+    getVASubsTracking,
+    getVASubsByVAId,
+    upsertVASubsTracking,
+    bulkSaveVASubsTracking
   };
 
   // Export to both window.SupabaseClient AND window directly

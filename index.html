@@ -5486,15 +5486,15 @@
                     </div>
                     <div class="st-summary-info">
                         <span class="st-summary-value" id="st-accounts-count">0</span>
-                        <span class="st-summary-label">Créatrices Actives</span>
+                        <span class="st-summary-label">VAs Actifs</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Bulk Entry Form by Creator -->
+            <!-- Bulk Entry Form by VA -->
             <div class="st-bulk-section">
                 <h3 class="st-section-title">
-                    <i class="fas fa-heart"></i> Saisie des Subs par Créatrice
+                    <i class="fas fa-user-tie"></i> Saisie des Subs par VA
                 </h3>
                 <div id="subs-bulk-form" class="st-bulk-form">
                     <!-- Will be populated by JS with account cards -->
@@ -22149,7 +22149,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             a.click();
         }
 
-        // ========== SUBS COMPETITION FUNCTIONS (Par Créatrice avec Calcul par VA) ==========
+        // ========== SUBS COMPETITION FUNCTIONS (Subs par VA - Tracking Links) ==========
 
         let subsChart = null;
         let subsTrackingData = [];
@@ -22170,65 +22170,54 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                console.log('🔄 [SUBS] Loading subs tracking data by CREATOR...');
+                console.log('🔄 [SUBS] Loading subs tracking data by VA...');
 
-                // Get all creators
-                const allCreators = [];
+                // Get all VAs
+                const allVAs = [];
 
-                if (data.creators && data.creators.length > 0) {
-                    data.creators.forEach(creator => {
-                        // Get VA names for this creator
-                        let vaNames = [];
-                        if (creator.vaIds && creator.vaIds.length > 0 && data.vas) {
-                            vaNames = creator.vaIds.map(vaId => {
-                                const va = data.vas.find(v => v.id === vaId);
-                                return va ? va.name : null;
-                            }).filter(Boolean);
-                        }
-
-                        allCreators.push({
-                            id: creator.id,
-                            name: creator.name,
-                            image: creator.image || creator.photo_url,
-                            vaIds: creator.vaIds || [],
-                            vaNames: vaNames
+                if (data.vas && data.vas.length > 0) {
+                    data.vas.forEach(va => {
+                        allVAs.push({
+                            id: va.id,
+                            name: va.name,
+                            image: va.image || va.photo_url
                         });
                     });
                 }
 
-                console.log('🔄 [SUBS] Found creators:', allCreators.length);
+                console.log('🔄 [SUBS] Found VAs:', allVAs.length);
 
-                if (allCreators.length === 0) {
+                if (allVAs.length === 0) {
                     container.innerHTML = `
                         <div class="st-loading">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Aucune créatrice trouvée</p>
-                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des créatrices depuis le dashboard</p>
+                            <p>Aucun VA trouvé</p>
+                            <p style="font-size: 0.875rem; color: #94a3b8;">Ajoutez des VAs depuis le dashboard</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Fetch latest subs data for all creators
-                const subsData = await window.getCreatorSubsTracking(30);
-                const latestSubsByCreatorId = {};
-                const yesterdaySubsByCreatorId = {};
+                // Fetch latest subs data for all VAs
+                const subsData = await window.getVASubsTracking(30);
+                const latestSubsByVAId = {};
+                const yesterdaySubsByVAId = {};
 
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
                 subsData.forEach(entry => {
-                    const creatorId = entry.creator_id;
+                    const vaId = entry.va_id;
                     if (entry.date === today) {
-                        latestSubsByCreatorId[creatorId] = entry.subs;
+                        latestSubsByVAId[vaId] = entry.subs;
                     }
                     if (entry.date === yesterday) {
-                        yesterdaySubsByCreatorId[creatorId] = entry.subs;
+                        yesterdaySubsByVAId[vaId] = entry.subs;
                     }
                     // Keep track of last known value
-                    if (!latestSubsByCreatorId[creatorId] && entry.date < today) {
-                        if (!yesterdaySubsByCreatorId[creatorId]) {
-                            yesterdaySubsByCreatorId[creatorId] = entry.subs;
+                    if (!latestSubsByVAId[vaId] && entry.date < today) {
+                        if (!yesterdaySubsByVAId[vaId]) {
+                            yesterdaySubsByVAId[vaId] = entry.subs;
                         }
                     }
                 });
@@ -22237,20 +22226,20 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 let html = '';
                 let totalSubs = 0;
                 let totalGrowth = 0;
-                let creatorsWithData = 0;
+                let vasWithData = 0;
 
-                // Sort creators by name
-                allCreators.sort((a, b) => a.name.localeCompare(b.name));
+                // Sort VAs by name
+                allVAs.sort((a, b) => a.name.localeCompare(b.name));
 
-                allCreators.forEach((creator, index) => {
-                    const currentSubs = latestSubsByCreatorId[creator.id] || 0;
-                    const previousSubs = yesterdaySubsByCreatorId[creator.id] || 0;
+                allVAs.forEach((va, index) => {
+                    const currentSubs = latestSubsByVAId[va.id] || 0;
+                    const previousSubs = yesterdaySubsByVAId[va.id] || 0;
                     const growth = currentSubs - previousSubs;
 
                     totalSubs += currentSubs;
                     if (currentSubs > 0) {
                         totalGrowth += growth;
-                        creatorsWithData++;
+                        vasWithData++;
                     }
 
                     const hasValue = currentSubs > 0;
@@ -22266,36 +22255,34 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     }
 
                     html += `
-                        <div class="st-account-card ${cardClass}" data-creator-id="${creator.id}">
+                        <div class="st-account-card ${cardClass}" data-va-id="${va.id}">
                             <div class="st-status-badge ${badgeClass}">
                                 <i class="fas ${badgeIcon}"></i>
                             </div>
                             <div class="st-card-header">
                                 <div class="st-creator-info">
-                                    <div class="st-creator-avatar">
-                                        ${creator.image ?
-                                            `<img src="${creator.image}" alt="${creator.name}">` :
-                                            `<i class="fas fa-user"></i>`
+                                    <div class="st-creator-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">
+                                        ${va.image ?
+                                            `<img src="${va.image}" alt="${va.name}">` :
+                                            `<i class="fas fa-user-tie" style="color: white;"></i>`
                                         }
                                     </div>
                                     <div style="display: flex; flex-direction: column;">
-                                        <span class="st-creator-name">${creator.name}</span>
-                                        ${creator.vaNames.length > 0 ?
-                                            `<span style="font-size: 0.7rem; color: #8b5cf6; opacity: 0.8;">
-                                                <i class="fas fa-user-tie"></i> ${creator.vaNames.join(', ')}
-                                            </span>` : ''
-                                        }
+                                        <span class="st-creator-name" style="font-size: 1.1rem; font-weight: 700;">${va.name}</span>
+                                        <span style="font-size: 0.7rem; color: #8b5cf6; opacity: 0.8;">
+                                            <i class="fas fa-link"></i> Tracking Link
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="st-input-area">
-                                <label class="st-input-label">Total Subs Plateforme</label>
+                                <label class="st-input-label">Total Subs</label>
                                 <div class="st-input-wrapper">
                                     <i class="fas fa-heart st-input-icon" style="color: #ec4899;"></i>
                                     <input type="number"
                                            class="st-subs-input"
-                                           data-creator-id="${creator.id}"
-                                           data-creator-name="${creator.name}"
+                                           data-va-id="${va.id}"
+                                           data-va-name="${va.name}"
                                            data-index="${index}"
                                            value="${currentSubs || ''}"
                                            placeholder="0"
@@ -22319,18 +22306,18 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 // Update summary cards
                 document.getElementById('st-total-subs').textContent = totalSubs.toLocaleString();
                 document.getElementById('st-total-growth').textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toLocaleString();
-                document.getElementById('st-accounts-count').textContent = creatorsWithData;
+                document.getElementById('st-accounts-count').textContent = vasWithData;
 
-                // Find best performer (creator with best growth)
+                // Find best performer (VA with best growth)
                 let bestPerformer = '-';
                 let bestGrowth = 0;
-                allCreators.forEach(creator => {
-                    const current = latestSubsByCreatorId[creator.id] || 0;
-                    const previous = yesterdaySubsByCreatorId[creator.id] || 0;
+                allVAs.forEach(va => {
+                    const current = latestSubsByVAId[va.id] || 0;
+                    const previous = yesterdaySubsByVAId[va.id] || 0;
                     const growth = current - previous;
                     if (growth > bestGrowth) {
                         bestGrowth = growth;
-                        bestPerformer = creator.name;
+                        bestPerformer = va.name;
                     }
                 });
                 document.getElementById('st-best-performer').textContent = bestPerformer;
@@ -22372,10 +22359,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
             const entries = [];
             inputs.forEach(input => {
-                const creatorId = input.dataset.creatorId;
+                const vaId = input.dataset.vaId;
                 const subs = parseInt(input.value) || 0;
-                if (subs > 0 && creatorId) {
-                    entries.push({ creator_id: creatorId, subs });
+                if (subs > 0 && vaId) {
+                    entries.push({ va_id: vaId, subs });
                 }
             });
 
@@ -22392,9 +22379,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     saveBtn.disabled = true;
                 }
 
-                await window.bulkSaveCreatorSubsTracking(entries, date);
+                await window.bulkSaveVASubsTracking(entries, date);
 
-                showSuccess(`${entries.length} créatrices enregistrées avec succès!`);
+                showSuccess(`${entries.length} VAs enregistrés avec succès!`);
 
                 // Reload the data
                 await loadSubsTrackingData();
@@ -22416,59 +22403,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
         }
 
-        // Calculate subs per VA from creator subs
-        function calculateSubsByVA(subsData, forDate = null) {
-            const subsByVA = {};
-
-            // Initialize all VAs with 0
-            if (data.vas) {
-                data.vas.forEach(va => {
-                    subsByVA[va.id] = {
-                        id: va.id,
-                        name: va.name,
-                        totalSubs: 0,
-                        creators: []
-                    };
-                });
-            }
-
-            // For each creator, add their subs to their VAs
-            if (data.creators) {
-                data.creators.forEach(creator => {
-                    // Find subs for this creator
-                    let creatorSubs = 0;
-                    if (forDate) {
-                        const entry = subsData.find(s => s.creator_id === creator.id && s.date === forDate);
-                        creatorSubs = entry ? entry.subs : 0;
-                    } else {
-                        // Get latest subs
-                        const creatorEntries = subsData.filter(s => s.creator_id === creator.id);
-                        if (creatorEntries.length > 0) {
-                            creatorEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-                            creatorSubs = creatorEntries[0].subs;
-                        }
-                    }
-
-                    // Add subs to each VA managing this creator
-                    if (creator.vaIds && creator.vaIds.length > 0) {
-                        // Split subs equally among VAs if multiple
-                        const subsPerVA = Math.round(creatorSubs / creator.vaIds.length);
-                        creator.vaIds.forEach(vaId => {
-                            if (subsByVA[vaId]) {
-                                subsByVA[vaId].totalSubs += subsPerVA;
-                                subsByVA[vaId].creators.push({
-                                    name: creator.name,
-                                    subs: subsPerVA
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-            return subsByVA;
-        }
-
         async function updateSubsChart(days = 7) {
             await updateSubsChartByVA(days);
         }
@@ -22480,7 +22414,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             });
 
             try {
-                const subsData = await window.getCreatorSubsTracking(days);
+                const subsData = await window.getVASubsTracking(days);
                 const canvas = document.getElementById('subs-growth-chart');
                 if (!canvas) return;
 
@@ -22496,24 +22430,22 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     return;
                 }
 
-                // Calculate subs by VA for each date
+                // Group data by VA
                 const dataByVA = {};
                 if (data.vas) {
                     data.vas.forEach(va => {
                         dataByVA[va.id] = {
                             name: va.name,
-                            data: []
+                            dataByDate: {}
                         };
                     });
                 }
 
-                allDates.forEach(date => {
-                    const vaStats = calculateSubsByVA(subsData, date);
-                    Object.keys(vaStats).forEach(vaId => {
-                        if (dataByVA[vaId]) {
-                            dataByVA[vaId].data.push(vaStats[vaId].totalSubs);
-                        }
-                    });
+                // Fill in data
+                subsData.forEach(entry => {
+                    if (dataByVA[entry.va_id]) {
+                        dataByVA[entry.va_id].dataByDate[entry.date] = entry.subs;
+                    }
                 });
 
                 // Generate colors for each VA
@@ -22523,10 +22455,10 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 ];
 
                 const datasets = Object.values(dataByVA)
-                    .filter(va => va.data.some(d => d > 0))
+                    .filter(va => Object.keys(va.dataByDate).length > 0)
                     .map((va, index) => ({
                         label: va.name,
-                        data: va.data,
+                        data: allDates.map(date => va.dataByDate[date] || null),
                         borderColor: colors[index % colors.length],
                         backgroundColor: colors[index % colors.length] + '20',
                         fill: false,
@@ -22600,29 +22532,39 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                const subsData = await window.getCreatorSubsTracking(30);
+                const subsData = await window.getVASubsTracking(30);
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-                // Calculate subs by VA for today and yesterday
-                const todayStats = calculateSubsByVA(subsData, today);
-                const yesterdayStats = calculateSubsByVA(subsData, yesterday);
+                // Get today and yesterday subs for each VA
+                const todaySubsByVA = {};
+                const yesterdaySubsByVA = {};
 
-                // Calculate growth per VA
-                const vaPerformance = [];
-                Object.keys(todayStats).forEach(vaId => {
-                    const todaySubs = todayStats[vaId].totalSubs;
-                    const yesterdaySubs = yesterdayStats[vaId] ? yesterdayStats[vaId].totalSubs : 0;
-                    const growth = todaySubs - yesterdaySubs;
-
-                    vaPerformance.push({
-                        id: vaId,
-                        name: todayStats[vaId].name,
-                        totalSubs: todaySubs,
-                        growth: growth,
-                        creators: todayStats[vaId].creators
-                    });
+                subsData.forEach(entry => {
+                    if (entry.date === today) {
+                        todaySubsByVA[entry.va_id] = entry.subs;
+                    }
+                    if (entry.date === yesterday) {
+                        yesterdaySubsByVA[entry.va_id] = entry.subs;
+                    }
                 });
+
+                // Calculate performance per VA
+                const vaPerformance = [];
+                if (data.vas) {
+                    data.vas.forEach(va => {
+                        const todaySubs = todaySubsByVA[va.id] || 0;
+                        const yesterdaySubs = yesterdaySubsByVA[va.id] || 0;
+                        const growth = todaySubs - yesterdaySubs;
+
+                        vaPerformance.push({
+                            id: va.id,
+                            name: va.name,
+                            totalSubs: todaySubs,
+                            growth: growth
+                        });
+                    });
+                }
 
                 // Sort by total subs (or by growth)
                 vaPerformance.sort((a, b) => b.totalSubs - a.totalSubs);
@@ -22655,7 +22597,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                     <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 0.5rem;"></i>${va.name}
                                 </div>
                                 <div class="st-performer-username" style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
-                                    ${va.creators.length} créatrice${va.creators.length > 1 ? 's' : ''} -
                                     Total: <strong>${va.totalSubs.toLocaleString()}</strong> subs
                                 </div>
                             </div>
@@ -22676,7 +22617,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                const subsData = await window.getCreatorSubsTracking(30);
+                const subsData = await window.getVASubsTracking(30);
 
                 if (subsData.length === 0) {
                     container.innerHTML = `
@@ -22694,9 +22635,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     if (!dataByDate[entry.date]) {
                         dataByDate[entry.date] = [];
                     }
-                    // Find creator name
-                    const creator = data.creators ? data.creators.find(c => c.id === entry.creator_id) : null;
-                    entry.creatorName = creator ? creator.name : 'Inconnu';
+                    // Find VA name
+                    const va = data.vas ? data.vas.find(v => v.id === entry.va_id) : null;
+                    entry.vaName = va ? va.name : 'Inconnu';
                     dataByDate[entry.date].push(entry);
                 });
 
@@ -22708,7 +22649,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         <thead>
                             <tr style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
                                 <th style="padding: 0.75rem; text-align: left;">Date</th>
-                                <th style="padding: 0.75rem; text-align: left;">Créatrice</th>
+                                <th style="padding: 0.75rem; text-align: left;">VA</th>
                                 <th style="padding: 0.75rem; text-align: right;">Total Subs</th>
                                 <th style="padding: 0.75rem; text-align: right;">Croissance</th>
                             </tr>
@@ -22723,7 +22664,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     dataByDate[date].forEach((entry, idx) => {
                         // Find previous day value for growth calculation
                         const prevDate = new Date(new Date(date) - 86400000).toISOString().split('T')[0];
-                        const prevEntry = subsData.find(e => e.creator_id === entry.creator_id && e.date === prevDate);
+                        const prevEntry = subsData.find(e => e.va_id === entry.va_id && e.date === prevDate);
                         const growth = prevEntry ? entry.subs - prevEntry.subs : 0;
                         const growthClass = growth > 0 ? 'color: #10b981;' : growth < 0 ? 'color: #ef4444;' : 'color: #94a3b8;';
                         const growthIcon = growth > 0 ? 'fa-arrow-up' : growth < 0 ? 'fa-arrow-down' : '';
@@ -22731,7 +22672,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         html += `
                             <tr style="border-bottom: 1px solid #e5e7eb;">
                                 <td style="padding: 0.75rem;">${idx === 0 ? new Date(date).toLocaleDateString('fr-FR') : ''}</td>
-                                <td style="padding: 0.75rem;"><strong>${entry.creatorName}</strong></td>
+                                <td style="padding: 0.75rem;"><strong><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 0.5rem;"></i>${entry.vaName}</strong></td>
                                 <td style="padding: 0.75rem; text-align: right; font-weight: 600;">${entry.subs.toLocaleString()}</td>
                                 <td style="padding: 0.75rem; text-align: right; font-weight: 600; ${growthClass}">
                                     ${growth !== 0 ? `<i class="fas ${growthIcon}"></i> ${growth > 0 ? '+' : ''}${growth}` : '-'}
