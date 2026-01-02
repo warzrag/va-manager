@@ -23033,15 +23033,29 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 document.getElementById('st-total-growth').textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toLocaleString();
                 document.getElementById('st-accounts-count').textContent = accountsWithData;
 
-                // Find best performer (VA with best growth)
+                // Find best performer (VA with best growth or highest total)
                 let bestPerformer = '-';
-                let bestGrowth = 0;
+                let bestGrowth = -Infinity;
+                let bestTotal = 0;
+                let topByTotal = '-';
+
                 Object.values(vaTotals).forEach(va => {
+                    // Track best growth
                     if (va.growth > bestGrowth) {
                         bestGrowth = va.growth;
                         bestPerformer = va.name;
                     }
+                    // Track highest total as fallback
+                    if (va.total > bestTotal) {
+                        bestTotal = va.total;
+                        topByTotal = va.name;
+                    }
                 });
+
+                // Use growth winner, or fall back to total winner
+                if (bestPerformer === '-' || bestGrowth <= 0) {
+                    bestPerformer = topByTotal;
+                }
                 document.getElementById('st-best-performer').textContent = bestPerformer;
 
                 // Update chart and leaderboard
