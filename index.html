@@ -22177,10 +22177,14 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                 if (data.vas && data.vas.length > 0) {
                     data.vas.forEach(va => {
+                        // Find Twitter accounts managed by this VA
+                        const vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.va_id === va.id);
+
                         allVAs.push({
                             id: va.id,
                             name: va.name,
-                            image: va.image || va.photo_url
+                            image: va.image || va.photo_url,
+                            twitterAccounts: vaTwitterAccounts.map(acc => acc.username)
                         });
                     });
                 }
@@ -22269,9 +22273,14 @@ Tapez "SUPPRIMER" pour confirmer :`;
                                     </div>
                                     <div style="display: flex; flex-direction: column;">
                                         <span class="st-creator-name" style="font-size: 1.1rem; font-weight: 700;">${va.name}</span>
-                                        <span style="font-size: 0.7rem; color: #8b5cf6; opacity: 0.8;">
-                                            <i class="fas fa-link"></i> Tracking Link
-                                        </span>
+                                        ${va.twitterAccounts && va.twitterAccounts.length > 0 ?
+                                            `<span style="font-size: 0.75rem; color: #1da1f2;">
+                                                <i class="fab fa-twitter"></i> ${va.twitterAccounts.map(u => '@' + u.replace('@', '')).join(', ')}
+                                            </span>` :
+                                            `<span style="font-size: 0.7rem; color: #94a3b8; opacity: 0.8;">
+                                                <i class="fas fa-link"></i> Aucun compte Twitter
+                                            </span>`
+                                        }
                                     </div>
                                 </div>
                             </div>
