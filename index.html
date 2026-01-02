@@ -22178,7 +22178,21 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 if (data.vas && data.vas.length > 0) {
                     data.vas.forEach(va => {
                         // Find Twitter accounts managed by this VA
-                        const vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.va_id === va.id);
+                        // Method 1: Direct va_id on twitter accounts
+                        let vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.va_id === va.id);
+
+                        // Method 2: Via creators managed by this VA
+                        if (vaTwitterAccounts.length === 0 && data.creators) {
+                            // Find creators managed by this VA
+                            const vaCreatorIds = data.creators
+                                .filter(c => c.vaIds && c.vaIds.includes(va.id))
+                                .map(c => c.id);
+
+                            // Find Twitter accounts of these creators
+                            vaTwitterAccounts = (data.twitterAccounts || []).filter(acc =>
+                                vaCreatorIds.includes(acc.creator_id)
+                            );
+                        }
 
                         allVAs.push({
                             id: va.id,
