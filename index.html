@@ -22738,20 +22738,36 @@ Tapez "SUPPRIMER" pour confirmer :`;
             if (!container) return;
 
             try {
-                // Get all Twitter accounts from data
+                console.log('🔄 [SUBS] Loading subs tracking data...');
+
+                // Get all Twitter accounts from data.twitterAccounts
                 const allAccounts = [];
-                data.vas.forEach(va => {
-                    va.creators.forEach(creator => {
-                        creator.accounts.forEach(account => {
-                            allAccounts.push({
-                                username: account.username,
-                                creatorName: creator.name,
-                                creatorImage: creator.image,
-                                vaName: va.name
+
+                // Use data.twitterAccounts directly
+                if (data.twitterAccounts && data.twitterAccounts.length > 0) {
+                    data.twitterAccounts.forEach(account => {
+                        // Find creator for this account
+                        let creatorName = 'Inconnu';
+                        let creatorImage = null;
+
+                        if (data.creators) {
+                            data.creators.forEach(creator => {
+                                if (creator.accounts && creator.accounts.some(a => a.id === account.id || a.username === account.username)) {
+                                    creatorName = creator.name;
+                                    creatorImage = creator.image;
+                                }
                             });
+                        }
+
+                        allAccounts.push({
+                            username: account.username,
+                            creatorName: creatorName,
+                            creatorImage: creatorImage
                         });
                     });
-                });
+                }
+
+                console.log('🔄 [SUBS] Found accounts:', allAccounts.length);
 
                 if (allAccounts.length === 0) {
                     container.innerHTML = `
