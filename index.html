@@ -22178,8 +22178,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 if (data.vas && data.vas.length > 0) {
                     data.vas.forEach(va => {
                         // Find Twitter accounts managed by this VA
-                        // Method 1: Direct va_id on twitter accounts
-                        let vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.va_id === va.id);
+                        // Method 1: Direct vaId on twitter accounts
+                        let vaTwitterAccounts = (data.twitterAccounts || []).filter(acc => acc.vaId === va.id);
 
                         // Method 2: Via creators managed by this VA
                         if (vaTwitterAccounts.length === 0 && data.creators) {
@@ -22190,7 +22190,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                             // Find Twitter accounts of these creators
                             vaTwitterAccounts = (data.twitterAccounts || []).filter(acc =>
-                                vaCreatorIds.includes(acc.creator_id)
+                                vaCreatorIds.includes(acc.creatorId)
                             );
                         }
 
