@@ -6649,6 +6649,8 @@
         // Initialize Supabase on page load
         async function initializeApp() {
             try {
+                console.log('🔄 [AUTH] Starting app initialization...');
+
                 // Initialize Supabase client
                 initSupabase();
 
@@ -6656,9 +6658,12 @@
                 loadDarkModePreference();
 
                 // Check authentication
+                console.log('🔄 [AUTH] Checking authentication...');
                 const authenticated = await isAuthenticated();
+                console.log('🔄 [AUTH] Authenticated:', authenticated);
+
                 if (!authenticated) {
-                    console.log('❌ User not authenticated, showing login form...');
+                    console.log('❌ [AUTH] User not authenticated, showing login form...');
                     hideLoadingOverlay();
                     showLoginForm();
                     return;
@@ -6666,10 +6671,13 @@
 
                 // Get current user
                 currentUser = await getCurrentUser();
+                console.log('🔄 [AUTH] Current user:', currentUser ? currentUser.email : 'null');
+
                 if (currentUser) {
-                    console.log('✅ User authenticated:', currentUser.email);
+                    console.log('✅ [AUTH] User authenticated:', currentUser.email);
 
                     // OPTIMIZED: Check VA and Manager status in parallel
+                    console.log('🔄 [AUTH] Checking VA and Manager status...');
                     const [vaResult, managerResult] = await Promise.all([
                         supabase
                             .from('vas')
@@ -6683,8 +6691,11 @@
                             .maybeSingle()
                     ]);
 
+                    console.log('🔄 [AUTH] VA result:', vaResult.data, vaResult.error);
+                    console.log('🔄 [AUTH] Manager result:', managerResult.data, managerResult.error);
+
                     if (vaResult.data) {
-                        console.log('✅ User is a VA, redirecting to VA dashboard...');
+                        console.log('✅ [AUTH] User is a VA, redirecting to VA dashboard...');
                         window.location.href = 'va-dashboard.html';
                         return;
                     }
@@ -6727,10 +6738,12 @@
                         }
                     }).catch(e => console.warn('⚠️ Backup creation failed:', e));
                 } else {
+                    console.log('❌ [AUTH] currentUser is null after auth check, showing login form');
                     showLoginForm();
                 }
             } catch (error) {
-                console.error('❌ Failed to initialize app:', error);
+                console.error('❌ [AUTH] Failed to initialize app:', error);
+                console.error('❌ [AUTH] Error stack:', error.stack);
                 showError('Erreur d\'initialisation. Vérifiez votre connexion.');
                 showLoginForm();
             }
@@ -7110,6 +7123,8 @@
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
 
+            console.log('🔄 [LOGIN] Starting login for:', email);
+
             try {
                 errorDiv.style.display = 'none';
 
@@ -7119,6 +7134,7 @@
                     throw new Error('Supabase non disponible. Veuillez rafraîchir la page.');
                 }
 
+                console.log('🔄 [LOGIN] Calling signInWithPassword...');
                 const { data: authData, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
@@ -7126,11 +7142,16 @@
 
                 if (error) throw error;
 
+                console.log('✅ [LOGIN] Login successful, user:', authData.user?.email);
+                console.log('✅ [LOGIN] Session:', authData.session ? 'exists' : 'null');
+
                 // Hide login overlay and reinitialize app
                 document.getElementById('login-overlay').style.display = 'none';
                 document.querySelector('.header')?.style.setProperty('display', 'block');
                 document.querySelector('.nav-bar')?.style.setProperty('display', 'flex');
+                console.log('🔄 [LOGIN] Calling initializeApp...');
                 await initializeApp();
+                console.log('✅ [LOGIN] initializeApp completed');
             } catch (error) {
                 console.error('Login error:', error);
                 const errorSpan = errorDiv.querySelector('span');
