@@ -8013,7 +8013,6 @@
             initUrgentFollowersReminder();
 
             setupDragAndDrop();
-            setupSubsTracking();
             setupRevenueTracking();
             startAutoSave();
 
@@ -12362,7 +12361,7 @@
                 }
 
                 // Récupérer les stats de followers d'aujourd'hui
-                const { data: todayStats, error } = await supabaseClient
+                const { data: todayStats, error } = await supabase
                     .from('twitter_followers_history')
                     .select('id')
                     .eq('date', today)
