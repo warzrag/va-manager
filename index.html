@@ -13133,11 +13133,15 @@
                 const allStats = await getTwitterStats() || [];
                 const statsByUsername = {};
                 allStats.forEach(stat => {
-                    if (!statsByUsername[stat.username]) {
-                        statsByUsername[stat.username] = [];
+                    // Normalize username to lowercase without @
+                    const normalizedUsername = (stat.username || '').replace('@', '').toLowerCase();
+                    if (!statsByUsername[normalizedUsername]) {
+                        statsByUsername[normalizedUsername] = [];
                     }
-                    statsByUsername[stat.username].push(stat);
+                    statsByUsername[normalizedUsername].push(stat);
                 });
+
+                console.log('📊 Stats loaded, usernames:', Object.keys(statsByUsername));
 
                 // Sort stats by date for each username
                 Object.keys(statsByUsername).forEach(username => {
@@ -13153,13 +13157,20 @@
                                 photo: creator.photo_url,
                                 accounts: creator.accounts.map(acc => {
                                     const username = acc.username;
-                                    const stats = statsByUsername[username] || statsByUsername[username.replace('@', '')] || [];
+                                    // Normalize username for lookup (lowercase, no @)
+                                    const normalizedUsername = (username || '').replace('@', '').toLowerCase();
+                                    const stats = statsByUsername[normalizedUsername] || [];
                                     const latestStat = stats.length > 0 ? stats[stats.length - 1] : null;
                                     const yesterdayStat = stats.length > 1 ? stats[stats.length - 2] : null;
 
-                                    const currentFollowers = latestStat ? latestStat.followers_count : 0;
-                                    const yesterdayFollowers = yesterdayStat ? yesterdayStat.followers_count : currentFollowers;
+                                    // Use 'followers' field (the actual DB column name)
+                                    const currentFollowers = latestStat ? (latestStat.followers || latestStat.followers_count || 0) : 0;
+                                    const yesterdayFollowers = yesterdayStat ? (yesterdayStat.followers || yesterdayStat.followers_count || 0) : currentFollowers;
                                     const dailyGrowth = currentFollowers - yesterdayFollowers;
+
+                                    if (stats.length > 0) {
+                                        console.log(`📊 ${normalizedUsername}: ${stats.length} stats, latest=${currentFollowers} on ${latestStat?.date}`);
+                                    }
 
                                     totalFollowers += currentFollowers;
                                     totalGrowth += dailyGrowth;

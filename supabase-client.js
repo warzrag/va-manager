@@ -2111,13 +2111,21 @@ async function getTwitterStats() {
     if (error) throw error;
 
     // Normaliser les données (followers -> followers_count pour compatibilité)
+    // Also normalize username to lowercase without @
     const normalizedData = (data || []).map(stat => ({
       ...stat,
+      username: (stat.username || '').replace('@', '').toLowerCase(),
       followers_count: stat.followers_count || stat.followers,
       followers: stat.followers || stat.followers_count
     }));
 
-    console.log(`✅ Retrieved ${normalizedData.length} Twitter stats`);
+    // Log first few entries for debugging
+    if (normalizedData.length > 0) {
+      console.log(`✅ Retrieved ${normalizedData.length} Twitter stats, sample:`,
+        normalizedData.slice(0, 3).map(s => `${s.username}: ${s.followers} on ${s.date}`));
+    } else {
+      console.log(`✅ Retrieved 0 Twitter stats`);
+    }
     return normalizedData;
   } catch (error) {
     console.error('❌ Error getting Twitter stats:', error);
@@ -2239,10 +2247,12 @@ async function bulkUpsertTwitterStats(entries) {
     const records = entries.map(entry => ({
       organization_id: organizationId,
       user_id: userId,
-      username: entry.username.replace('@', ''),
+      username: entry.username.replace('@', '').toLowerCase(),
       date: entry.date,
-      followers: entry.followers || entry.followers_count
+      followers: parseInt(entry.followers || entry.followers_count) || 0
     }));
+
+    console.log('📤 Upserting records:', JSON.stringify(records.slice(0, 3), null, 2));
 
     // Use upsert with on_conflict to handle duplicates
     const { data, error } = await supabase
@@ -2250,12 +2260,16 @@ async function bulkUpsertTwitterStats(entries) {
       .upsert(records, {
         onConflict: 'username,date,organization_id',
         ignoreDuplicates: false
-      });
+      })
+      .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Upsert error details:', error);
+      throw error;
+    }
 
-    console.log(`✅ Bulk upserted ${records.length} Twitter stats`);
-    return { success: true, count: records.length };
+    console.log(`✅ Bulk upserted ${records.length} Twitter stats, returned:`, data?.length || 0);
+    return { success: true, count: records.length, data };
   } catch (error) {
     console.error('❌ Error bulk upserting Twitter stats:', error);
     throw error;
