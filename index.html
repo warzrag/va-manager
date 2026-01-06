@@ -16976,19 +16976,32 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     return;
                 }
 
-                // Charger les stats pour tous les comptes
-                allFollowersData = await Promise.all(allTwitterAccounts.map(async (account) => {
-                    let stats = [];
-                    try {
-                        if (typeof getTwitterStatsByUsername === 'function') {
-                            const cleanUsername = account.username.replace('@', '');
-                            stats = await getTwitterStatsByUsername(cleanUsername);
+                // ⚡ OPTIMIZED: Single query to get ALL stats instead of N queries
+                const allStats = await getTwitterStats() || [];
+
+                // Group stats by username for fast lookup
+                const statsByUsername = {};
+                allStats.forEach(stat => {
+                    const username = stat.username?.replace('@', '').toLowerCase();
+                    if (username) {
+                        if (!statsByUsername[username]) {
+                            statsByUsername[username] = [];
                         }
-                    } catch (e) {
-                        console.log('Erreur chargement stats:', e);
+                        statsByUsername[username].push(stat);
                     }
+                });
+
+                // Sort each user's stats by date (newest first)
+                Object.keys(statsByUsername).forEach(username => {
+                    statsByUsername[username].sort((a, b) => new Date(b.date) - new Date(a.date));
+                });
+
+                // Map accounts with their stats (no additional queries!)
+                allFollowersData = allTwitterAccounts.map(account => {
+                    const cleanUsername = account.username?.replace('@', '').toLowerCase();
+                    const stats = statsByUsername[cleanUsername] || [];
                     return { ...account, stats };
-                }));
+                });
 
                 // Calculer les totaux
                 let totalFollowers = 0;
