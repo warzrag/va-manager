@@ -16978,6 +16978,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                 // ⚡ OPTIMIZED: Single query to get ALL stats instead of N queries
                 const allStats = await getTwitterStats() || [];
+                console.log('📊 All stats loaded:', allStats.length, 'entries');
 
                 // Group stats by username for fast lookup
                 const statsByUsername = {};
@@ -16991,6 +16992,8 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     }
                 });
 
+                console.log('📊 Stats grouped by username:', Object.keys(statsByUsername));
+
                 // Sort each user's stats by date (newest first)
                 Object.keys(statsByUsername).forEach(username => {
                     statsByUsername[username].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -17000,6 +17003,9 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 allFollowersData = allTwitterAccounts.map(account => {
                     const cleanUsername = account.username?.replace('@', '').toLowerCase();
                     const stats = statsByUsername[cleanUsername] || [];
+                    if (stats.length > 0) {
+                        console.log(`📊 ${cleanUsername}: ${stats.length} stats, latest: ${stats[0].followers} on ${stats[0].date}`);
+                    }
                     return { ...account, stats };
                 });
 
