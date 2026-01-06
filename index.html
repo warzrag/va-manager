@@ -13620,9 +13620,7 @@
                     entries.push({
                         username: input.dataset.username,
                         followers: value,
-                        followers_count: value,
-                        date: date,
-                        creator_id: input.dataset.creatorId
+                        date: date
                     });
                 }
             });
@@ -13636,33 +13634,32 @@
                 // Set loading state
                 setButtonLoading(button, true);
 
-                let savedCount = 0;
-                for (const entry of entries) {
-                    // Check if stat already exists for this date
-                    const existingStats = await getTwitterStatsByUsername(entry.username);
-                    const existingForDate = existingStats.find(s => s.date === entry.date);
+                // ⚡ OPTIMIZED: Single bulk upsert instead of N queries
+                const result = await window.bulkUpsertTwitterStats(entries);
 
-                    if (existingForDate) {
-                        // Update existing
-                        await updateTwitterStat(existingForDate.id, { followers: entry.followers });
-                    } else {
-                        // Create new
-                        await createTwitterStat(entry);
+                showSuccess(`✅ ${entries.length} entrée(s) enregistrée(s) !`);
+
+                // ⚡ OPTIMIZED: Update local display without full reload
+                // Update the card styles to show they're saved
+                inputs.forEach(input => {
+                    const value = parseInt(input.value);
+                    if (value && value > 0) {
+                        const card = input.closest('.ft-account-card');
+                        if (card) {
+                            card.classList.remove('ft-card-pending');
+                            card.classList.add('ft-card-updated');
+                            const badge = card.querySelector('.ft-status-badge');
+                            if (badge) {
+                                badge.classList.remove('ft-status-todo');
+                                badge.classList.add('ft-status-done');
+                                badge.innerHTML = '<i class="fas fa-check"></i>';
+                            }
+                        }
                     }
-                    savedCount++;
-                }
+                });
 
-                showSuccess(`✅ ${savedCount} entrée(s) enregistrée(s) !`);
-
-                // Refresh displays
-                await loadFollowersTrackingData();
+                // Only refresh the chart (lightweight update)
                 await updateFollowersChart(7);
-                await updateFollowersTopPerformers();
-                await updateFollowersHistory();
-
-                // Refresh dashboard section
-                await updateFollowersDashboardSection();
-                await updateTwitterTopAccounts();
 
             } catch (error) {
                 console.error('❌ Error saving followers stats:', error);

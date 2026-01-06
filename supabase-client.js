@@ -2222,6 +2222,47 @@ async function createTwitterStat(statsData) {
 }
 
 /**
+ * Bulk upsert Twitter stats (optimized - single query)
+ * @param {Array} entries - Array of { username, date, followers }
+ * @returns {Promise<Object>}
+ */
+async function bulkUpsertTwitterStats(entries) {
+  try {
+    const organizationId = await getOrganizationId();
+    const userId = await getUserId();
+
+    if (!entries || entries.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    // Prepare all records
+    const records = entries.map(entry => ({
+      organization_id: organizationId,
+      user_id: userId,
+      username: entry.username.replace('@', ''),
+      date: entry.date,
+      followers: entry.followers || entry.followers_count
+    }));
+
+    // Use upsert with on_conflict to handle duplicates
+    const { data, error } = await supabase
+      .from('twitter_stats')
+      .upsert(records, {
+        onConflict: 'username,date,organization_id',
+        ignoreDuplicates: false
+      });
+
+    if (error) throw error;
+
+    console.log(`✅ Bulk upserted ${records.length} Twitter stats`);
+    return { success: true, count: records.length };
+  } catch (error) {
+    console.error('❌ Error bulk upserting Twitter stats:', error);
+    throw error;
+  }
+}
+
+/**
  * Update a Twitter stat
  * @param {string} statId
  * @param {Object} updates
@@ -4394,6 +4435,7 @@ if (typeof module !== 'undefined' && module.exports) {
     createTwitterStat,
     updateTwitterStat,
     deleteTwitterStat,
+    bulkUpsertTwitterStats,
 
     // Instagram Stats
     getAllInstagramStats,
@@ -4525,6 +4567,7 @@ if (typeof module !== 'undefined' && module.exports) {
     createTwitterStat,
     updateTwitterStat,
     deleteTwitterStat,
+    bulkUpsertTwitterStats,
 
     // Instagram Stats
     getAllInstagramStats,
