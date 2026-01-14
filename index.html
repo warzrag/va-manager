@@ -13224,6 +13224,7 @@
                                     return {
                                         id: acc.id,
                                         username: username,
+                                        vaId: acc.va_id || acc.vaId,
                                         currentFollowers,
                                         yesterdayFollowers,
                                         dailyGrowth,
@@ -13270,17 +13271,24 @@
                 // Créer une liste plate de tous les comptes pour un affichage simplifié
                 const allAccounts = [];
                 Object.entries(accountsByCreator).forEach(([creatorId, creatorData]) => {
-                    // Trouver le VA associé à cette créatrice
-                    const creator = data.creators.find(c => c.id === creatorId);
-                    let vaName = 'Non assigné';
-                    let vaId = null;
-                    if (creator && creator.vaIds && creator.vaIds.length > 0) {
-                        vaId = creator.vaIds[0];
-                        const va = (data.vas || []).find(v => v.id === vaId);
-                        if (va) vaName = va.name;
-                    }
-
                     creatorData.accounts.forEach(acc => {
+                        // Trouver le VA associé à CE compte (pas à la créatrice)
+                        let vaName = 'Non assigné';
+                        let vaId = acc.vaId || null;
+
+                        if (vaId) {
+                            const va = (data.vas || []).find(v => v.id === vaId);
+                            if (va) vaName = va.name;
+                        } else {
+                            // Fallback: chercher via la créatrice
+                            const creator = data.creators.find(c => c.id === creatorId);
+                            if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                                vaId = creator.vaIds[0];
+                                const va = (data.vas || []).find(v => v.id === vaId);
+                                if (va) vaName = va.name;
+                            }
+                        }
+
                         allAccounts.push({
                             ...acc,
                             creatorId,
