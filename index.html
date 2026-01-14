@@ -5148,97 +5148,45 @@
                 </div>
             </div>
 
-            <!-- Twitter Accounts - Pro Dashboard -->
-            <div class="dash-section dash-twitter-pro-section">
+            <!-- Twitter Stats - Simple Dashboard -->
+            <div class="dash-section" id="twitter-simple-section">
                 <div class="dash-section-header">
                     <h3 class="dash-section-title">
-                        <i class="fab fa-twitter"></i>
-                        Suivi Twitter Pro
+                        <i class="fab fa-twitter" style="color: #1da1f2;"></i>
+                        Followers Twitter
                     </h3>
-                    <div class="dash-twitter-header-actions">
-                        <span id="twitter-count-badge" class="dash-section-badge">
-                            <i class="fas fa-circle" style="font-size: 0.5rem; color: #1da1f2;"></i>
-                            0 comptes
-                        </span>
-                        <button onclick="navigateToPage('followers-tracking')" class="dash-action-btn primary" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
-                            <i class="fas fa-plus"></i> Ajouter stats
-                        </button>
-                    </div>
-                </div>
-
-                <!-- KPIs Twitter Globaux -->
-                <div class="dash-twitter-kpis" id="twitter-global-kpis">
-                    <div class="dash-twitter-kpi">
-                        <div class="dash-twitter-kpi-icon twitter">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="dash-twitter-kpi-content">
-                            <div class="dash-twitter-kpi-value" id="twitter-kpi-total">0</div>
-                            <div class="dash-twitter-kpi-label">Total Followers</div>
-                        </div>
-                    </div>
-                    <div class="dash-twitter-kpi">
-                        <div class="dash-twitter-kpi-icon success">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="dash-twitter-kpi-content">
-                            <div class="dash-twitter-kpi-value" id="twitter-kpi-today">+0</div>
-                            <div class="dash-twitter-kpi-label">Aujourd'hui</div>
-                        </div>
-                    </div>
-                    <div class="dash-twitter-kpi">
-                        <div class="dash-twitter-kpi-icon purple">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="dash-twitter-kpi-content">
-                            <div class="dash-twitter-kpi-value" id="twitter-kpi-week">+0</div>
-                            <div class="dash-twitter-kpi-label">Cette semaine</div>
-                        </div>
-                    </div>
-                    <div class="dash-twitter-kpi">
-                        <div class="dash-twitter-kpi-icon warning">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="dash-twitter-kpi-content">
-                            <div class="dash-twitter-kpi-value" id="twitter-kpi-avg">0%</div>
-                            <div class="dash-twitter-kpi-label">Croissance moy.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filtres par créatrice -->
-                <div id="twitter-creator-tabs" class="dash-tabs">
-                    <!-- Tabs will be generated here -->
-                </div>
-
-                <!-- Tableau de classement Pro -->
-                <div class="dash-twitter-leaderboard" id="twitter-leaderboard">
-                    <div class="dash-twitter-leaderboard-header">
-                        <div class="dash-twitter-col-rank">#</div>
-                        <div class="dash-twitter-col-account">Compte</div>
-                        <div class="dash-twitter-col-followers">Followers</div>
-                        <div class="dash-twitter-col-growth">Croissance</div>
-                        <div class="dash-twitter-col-trend">Tendance 7j</div>
-                        <div class="dash-twitter-col-va">VA</div>
-                    </div>
-                    <div class="dash-twitter-leaderboard-body" id="twitter-leaderboard-body">
-                        <!-- Rows will be generated here -->
-                    </div>
-                </div>
-
-                <!-- Vue grille (cachée par défaut) -->
-                <div id="twitter-top-accounts" class="dash-accounts-grid" style="display: none;">
-                    <!-- Les cartes seront générées ici -->
-                </div>
-
-                <!-- Toggle vue -->
-                <div class="dash-twitter-view-toggle">
-                    <button class="dash-view-btn active" onclick="setTwitterView('table')" id="twitter-view-table">
-                        <i class="fas fa-list"></i> Tableau
+                    <button onclick="navigateToPage('followers-tracking')" class="dash-action-btn primary">
+                        <i class="fas fa-edit"></i> Gérer
                     </button>
-                    <button class="dash-view-btn" onclick="setTwitterView('grid')" id="twitter-view-grid">
-                        <i class="fas fa-th-large"></i> Grille
-                    </button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div id="twitter-simple-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
+                        <div style="font-size: 1.75rem; font-weight: 800;" id="twitter-simple-total">0</div>
+                        <div style="font-size: 0.8125rem; opacity: 0.9;">Total Followers</div>
+                    </div>
+                    <div id="twitter-simple-today-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
+                        <div style="font-size: 1.75rem; font-weight: 800;" id="twitter-simple-today">+0</div>
+                        <div style="font-size: 0.8125rem; opacity: 0.9;">Aujourd'hui</div>
+                    </div>
+                    <div id="twitter-simple-week-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
+                        <div style="font-size: 1.75rem; font-weight: 800;" id="twitter-simple-week">+0</div>
+                        <div style="font-size: 0.8125rem; opacity: 0.9;">Cette semaine</div>
+                    </div>
+                </div>
+
+                <!-- Top Performers -->
+                <div style="background: var(--dash-card-bg, #f8fafc); border-radius: 12px; padding: 1rem;">
+                    <div style="font-weight: 600; color: var(--dash-text, #1f2937); margin-bottom: 0.75rem; font-size: 0.875rem;">
+                        <i class="fas fa-trophy" style="color: #f59e0b;"></i> Top Performers (aujourd'hui)
+                    </div>
+                    <div id="twitter-simple-top" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <!-- Will be populated by JS -->
+                        <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 1rem;">
+                            Chargement...
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -11534,312 +11482,135 @@
             }
         }
 
-        // Update Twitter Top Accounts on Dashboard - PRO VERSION
-        let currentTwitterFilter = 'all';
-        let currentTwitterView = 'table';
-
-        // Toggle between table and grid view
-        function setTwitterView(view) {
-            currentTwitterView = view;
-            const tableBtn = document.getElementById('twitter-view-table');
-            const gridBtn = document.getElementById('twitter-view-grid');
-            const leaderboard = document.getElementById('twitter-leaderboard');
-            const gridContainer = document.getElementById('twitter-top-accounts');
-
-            if (view === 'table') {
-                tableBtn.classList.add('active');
-                gridBtn.classList.remove('active');
-                leaderboard.style.display = 'block';
-                gridContainer.style.display = 'none';
-            } else {
-                tableBtn.classList.remove('active');
-                gridBtn.classList.add('active');
-                leaderboard.style.display = 'none';
-                gridContainer.style.display = 'grid';
-            }
-        }
-
-        async function updateTwitterTopAccounts(filterCreator = 'all') {
-            const container = document.getElementById('twitter-top-accounts');
-            const leaderboardBody = document.getElementById('twitter-leaderboard-body');
-            const tabsContainer = document.getElementById('twitter-creator-tabs');
-            const badge = document.getElementById('twitter-count-badge');
+        // Update Twitter Stats on Dashboard - SIMPLE VERSION
+        async function updateTwitterTopAccounts() {
+            const totalEl = document.getElementById('twitter-simple-total');
+            const todayEl = document.getElementById('twitter-simple-today');
+            const weekEl = document.getElementById('twitter-simple-week');
+            const topContainer = document.getElementById('twitter-simple-top');
+            const todayCard = document.getElementById('twitter-simple-today-card');
+            const weekCard = document.getElementById('twitter-simple-week-card');
             const isDarkMode = document.body.classList.contains('dark-mode');
 
-            currentTwitterFilter = filterCreator;
+            if (!totalEl || !topContainer) return;
 
             try {
-                // Récupérer tous les comptes Twitter
-                const allTwitterAccounts = data.twitterAccounts || [];
+                // Get all stats using the already loaded data
+                const allStats = await getTwitterStats() || [];
 
-                if (!allTwitterAccounts || allTwitterAccounts.length === 0) {
-                    leaderboardBody.innerHTML = `
-                        <div style="text-align: center; padding: 3rem; color: var(--dash-text-muted);">
-                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; display: block;"></i>
-                            <p style="font-size: 1.125rem;">Aucun compte Twitter disponible</p>
-                            <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.7;">Ajoutez des comptes Twitter pour voir le classement</p>
+                if (allStats.length === 0) {
+                    totalEl.textContent = '0';
+                    todayEl.textContent = '+0';
+                    weekEl.textContent = '+0';
+                    topContainer.innerHTML = `
+                        <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 1rem;">
+                            Aucune donnée. <a href="#" onclick="navigateToPage('followers-tracking'); return false;" style="color: #1da1f2;">Ajouter des stats</a>
                         </div>
                     `;
-                    badge.textContent = '0 comptes';
-                    if (tabsContainer) tabsContainer.innerHTML = '';
-                    // Reset KPIs
-                    document.getElementById('twitter-kpi-total').textContent = '0';
-                    document.getElementById('twitter-kpi-today').textContent = '+0';
-                    document.getElementById('twitter-kpi-week').textContent = '+0';
-                    document.getElementById('twitter-kpi-avg').textContent = '0%';
                     return;
                 }
 
-                // Grouper par créatrice
-                const accountsByCreator = new Map();
-                allTwitterAccounts.forEach(account => {
-                    const creator = data.creators.find(c => c.id === account.creatorId);
-                    const creatorName = creator ? creator.name : 'Sans créatrice';
-
-                    if (!accountsByCreator.has(creatorName)) {
-                        accountsByCreator.set(creatorName, []);
+                // Group stats by username
+                const statsByUsername = {};
+                allStats.forEach(stat => {
+                    const username = (stat.username || '').replace('@', '').toLowerCase();
+                    if (!statsByUsername[username]) {
+                        statsByUsername[username] = [];
                     }
-                    accountsByCreator.get(creatorName).push(account);
+                    statsByUsername[username].push(stat);
                 });
 
-                // Générer les tabs de filtres avec classes CSS
-                let tabsHtml = `
-                    <button class="dash-tab twitter ${filterCreator === 'all' ? 'active' : ''}" onclick="updateTwitterTopAccounts('all')">
-                        Tous (${allTwitterAccounts.length})
-                    </button>
-                `;
-
-                accountsByCreator.forEach((accounts, creatorName) => {
-                    tabsHtml += `
-                        <button class="dash-tab twitter ${filterCreator === creatorName ? 'active' : ''}" onclick="updateTwitterTopAccounts('${creatorName.replace(/'/g, "\\'")}')">
-                            ${creatorName} (${accounts.length})
-                        </button>
-                    `;
+                // Sort each username's stats by date
+                Object.keys(statsByUsername).forEach(username => {
+                    statsByUsername[username].sort((a, b) => new Date(b.date) - new Date(a.date));
                 });
 
-                if (tabsContainer) tabsContainer.innerHTML = tabsHtml;
-
-                // Filtrer les comptes selon le filtre actif
-                const filteredAccounts = filterCreator === 'all'
-                    ? allTwitterAccounts
-                    : allTwitterAccounts.filter(account => {
-                        const creator = data.creators.find(c => c.id === account.creatorId);
-                        const creatorName = creator ? creator.name : 'Sans créatrice';
-                        return creatorName === filterCreator;
-                    });
-
-                badge.textContent = `${filteredAccounts.length} compte${filteredAccounts.length > 1 ? 's' : ''}`;
-
-                // Charger les stats de followers pour chaque compte
-                const accountsWithStats = await Promise.all(filteredAccounts.slice(0, 20).map(async (account) => {
-                    let followerStats = [];
-                    let latestFollowers = null;
-                    let todayGrowth = null;
-                    let weekGrowth = null;
-
-                    try {
-                        if (typeof getTwitterStatsByUsername === 'function') {
-                            const cleanUsername = account.username.replace('@', '');
-                            followerStats = await getTwitterStatsByUsername(cleanUsername);
-
-                            if (followerStats && followerStats.length > 0) {
-                                latestFollowers = followerStats[0].followers;
-
-                                if (followerStats.length > 1) {
-                                    todayGrowth = followerStats[0].followers - followerStats[1].followers;
-                                }
-
-                                // Calcul croissance semaine (7 jours)
-                                if (followerStats.length >= 7) {
-                                    weekGrowth = followerStats[0].followers - followerStats[6].followers;
-                                } else if (followerStats.length > 1) {
-                                    weekGrowth = followerStats[0].followers - followerStats[followerStats.length - 1].followers;
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        console.log('Erreur chargement stats followers dashboard:', e);
-                    }
-
-                    return { ...account, followerStats, latestFollowers, todayGrowth, weekGrowth };
-                }));
-
-                // Trier par nombre de followers (décroissant)
-                accountsWithStats.sort((a, b) => (b.latestFollowers || 0) - (a.latestFollowers || 0));
-
-                // === CALCUL DES KPIs GLOBAUX ===
+                // Calculate totals
                 let totalFollowers = 0;
                 let totalTodayGrowth = 0;
                 let totalWeekGrowth = 0;
-                let accountsWithData = 0;
+                const performers = [];
 
-                accountsWithStats.forEach(account => {
-                    if (account.latestFollowers) {
-                        totalFollowers += account.latestFollowers;
-                        accountsWithData++;
-                    }
-                    if (account.todayGrowth) totalTodayGrowth += account.todayGrowth;
-                    if (account.weekGrowth) totalWeekGrowth += account.weekGrowth;
-                });
+                Object.entries(statsByUsername).forEach(([username, stats]) => {
+                    if (stats.length > 0) {
+                        const latest = stats[0].followers || 0;
+                        const yesterday = stats.length > 1 ? (stats[1].followers || 0) : latest;
+                        const weekAgo = stats.length >= 7 ? (stats[6].followers || 0) : (stats[stats.length - 1]?.followers || latest);
 
-                // Calcul croissance moyenne en %
-                let avgGrowthPercent = 0;
-                if (totalFollowers > 0 && totalWeekGrowth !== 0) {
-                    avgGrowthPercent = ((totalWeekGrowth / (totalFollowers - totalWeekGrowth)) * 100).toFixed(1);
-                }
+                        const todayGrowth = latest - yesterday;
+                        const weekGrowth = latest - weekAgo;
 
-                // Mise à jour des KPIs
-                document.getElementById('twitter-kpi-total').textContent = totalFollowers.toLocaleString();
-                document.getElementById('twitter-kpi-today').textContent = (totalTodayGrowth >= 0 ? '+' : '') + totalTodayGrowth.toLocaleString();
-                document.getElementById('twitter-kpi-week').textContent = (totalWeekGrowth >= 0 ? '+' : '') + totalWeekGrowth.toLocaleString();
-                document.getElementById('twitter-kpi-avg').textContent = avgGrowthPercent + '%';
+                        totalFollowers += latest;
+                        totalTodayGrowth += todayGrowth;
+                        totalWeekGrowth += weekGrowth;
 
-                // === GÉNÉRATION DU TABLEAU LEADERBOARD ===
-                let tableHtml = '';
-                accountsWithStats.forEach((account, index) => {
-                    const rank = index + 1;
-                    const creator = data.creators.find(c => c.id === account.creatorId);
-                    const creatorName = creator ? creator.name : 'Sans creatrice';
-                    const creatorPhoto = creator ? creator.photo_url : null;
-
-                    const vaId = account.vaId || account.assignedVaId;
-                    const va = vaId ? data.vas.find(v => v.id === vaId) : null;
-                    const vaName = va ? va.name : 'Non assigne';
-
-                    // Classe de rang
-                    let rankClass = 'default';
-                    let rankContent = rank;
-                    if (rank === 1) { rankClass = 'gold'; rankContent = '<i class="fas fa-crown"></i>'; }
-                    else if (rank === 2) { rankClass = 'silver'; }
-                    else if (rank === 3) { rankClass = 'bronze'; }
-
-                    // Classe de croissance
-                    const growthClass = (account.todayGrowth || 0) > 0 ? 'positive' : (account.todayGrowth || 0) < 0 ? 'negative' : 'neutral';
-                    const growthIcon = (account.todayGrowth || 0) > 0 ? 'arrow-up' : (account.todayGrowth || 0) < 0 ? 'arrow-down' : 'minus';
-
-                    tableHtml += `
-                        <div class="dash-twitter-row" onclick="openTwitterAccountDetail('${account.username.replace('@', '').replace(/'/g, "\\'")}')">
-                            <div class="dash-twitter-col-rank">
-                                <div class="dash-twitter-rank ${rankClass}">${rankContent}</div>
-                            </div>
-                            <div class="dash-twitter-account">
-                                <div class="dash-twitter-avatar">
-                                    ${creatorPhoto
-                                        ? `<img src="${creatorPhoto}" alt="${creatorName}">`
-                                        : `<i class="fab fa-twitter"></i>`
-                                    }
-                                </div>
-                                <div class="dash-twitter-account-info">
-                                    <a href="https://x.com/${account.username}" target="_blank" class="dash-twitter-username" onclick="event.stopPropagation()">
-                                        @${account.username}
-                                        <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                    <div class="dash-twitter-creator">${creatorName}</div>
-                                </div>
-                            </div>
-                            <div class="dash-twitter-followers">${account.latestFollowers ? account.latestFollowers.toLocaleString() : '-'}</div>
-                            <div class="dash-twitter-growth ${growthClass}">
-                                <i class="fas fa-${growthIcon}"></i>
-                                <span>${account.todayGrowth !== null ? ((account.todayGrowth >= 0 ? '+' : '') + account.todayGrowth) : '-'}</span>
-                            </div>
-                            <div class="dash-twitter-trend">
-                                <canvas id="table-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}"></canvas>
-                            </div>
-                            <div class="dash-twitter-va">
-                                <span class="dash-twitter-va-badge">${vaName}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                if (tableHtml === '') {
-                    tableHtml = `
-                        <div style="text-align: center; padding: 3rem; color: var(--dash-text-muted);">
-                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; display: block;"></i>
-                            <p style="font-size: 1.125rem;">Aucun compte pour cette creatrice</p>
-                        </div>
-                    `;
-                }
-
-                leaderboardBody.innerHTML = tableHtml;
-
-                // === GÉNÉRATION DES CARTES (pour vue grille) ===
-                let gridHtml = '';
-                accountsWithStats.forEach((account, index) => {
-                    const rank = index + 1;
-                    const creator = data.creators.find(c => c.id === account.creatorId);
-                    const creatorName = creator ? creator.name : 'Sans creatrice';
-                    const creatorPhoto = creator ? creator.photo_url : null;
-
-                    const vaId = account.vaId || account.assignedVaId;
-                    const va = vaId ? data.vas.find(v => v.id === vaId) : null;
-                    const vaName = va ? va.name : 'Non assigne';
-
-                    let rankBadge = '';
-                    if (rank === 1) {
-                        rankBadge = `<div class="dash-rank-badge gold"><i class="fas fa-crown"></i></div>`;
-                    } else if (rank === 2) {
-                        rankBadge = `<div class="dash-rank-badge silver">2</div>`;
-                    } else if (rank === 3) {
-                        rankBadge = `<div class="dash-rank-badge bronze">3</div>`;
-                    }
-
-                    gridHtml += `
-                        <div class="dash-account-card twitter" onclick="openTwitterAccountDetail('${account.username.replace('@', '').replace(/'/g, "\\'")}')">
-                            ${rankBadge}
-                            <div class="dash-account-header">
-                                <div class="dash-account-avatar twitter">
-                                    ${creatorPhoto
-                                        ? `<img src="${creatorPhoto}" alt="${creatorName}">`
-                                        : `<i class="fab fa-twitter"></i>`
-                                    }
-                                </div>
-                                <div class="dash-account-info">
-                                    <a href="https://x.com/${account.username}" target="_blank" class="dash-account-username" onclick="event.stopPropagation()">
-                                        @${account.username}
-                                        <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                    <div class="dash-account-creator">${creatorName}</div>
-                                </div>
-                            </div>
-                            <div class="dash-account-meta">
-                                <span class="dash-account-meta-label"><i class="fas fa-users"></i> Followers</span>
-                                <span class="dash-account-meta-value">${account.latestFollowers ? account.latestFollowers.toLocaleString() : '-'}</span>
-                            </div>
-                            <div class="dash-account-meta" style="margin-top: 0.5rem;">
-                                <span class="dash-account-meta-label"><i class="fas fa-chart-line"></i> Aujourd'hui</span>
-                                <span class="dash-account-meta-value" style="color: ${(account.todayGrowth || 0) >= 0 ? '#10b981' : '#ef4444'}">
-                                    ${account.todayGrowth !== null ? ((account.todayGrowth >= 0 ? '+' : '') + account.todayGrowth) : '-'}
-                                </span>
-                            </div>
-                            <div class="dash-account-meta" style="margin-top: 0.5rem;">
-                                <span class="dash-account-meta-label"><i class="fas fa-user-tie"></i> VA</span>
-                                <span class="dash-account-meta-value">${vaName}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = gridHtml;
-
-                // Initialiser les mini-sparklines du tableau
-                setTimeout(() => {
-                    accountsWithStats.forEach(account => {
-                        if (account.followerStats && account.followerStats.length > 1) {
-                            const canvasId = `table-sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}`;
-                            createMiniSparkline(canvasId, account.followerStats, isDarkMode);
+                        // Find VA name for this account
+                        const account = data.twitterAccounts?.find(a => a.username?.toLowerCase().replace('@', '') === username);
+                        let vaName = null;
+                        if (account) {
+                            const vaId = account.vaId || account.assignedVaId;
+                            if (vaId) {
+                                const va = data.vas?.find(v => v.id === vaId);
+                                if (va) vaName = va.name;
+                            }
+                            if (!vaName && account.creatorId) {
+                                const creator = data.creators?.find(c => c.id === account.creatorId);
+                                if (creator?.vaIds?.length > 0) {
+                                    const va = data.vas?.find(v => v.id === creator.vaIds[0]);
+                                    if (va) vaName = va.name;
+                                }
+                            }
                         }
-                    });
-                }, 100);
 
+                        if (todayGrowth > 0) {
+                            performers.push({ username, growth: todayGrowth, vaName });
+                        }
+                    }
+                });
+
+                // Update stats
+                totalEl.textContent = totalFollowers.toLocaleString();
+                todayEl.textContent = (totalTodayGrowth >= 0 ? '+' : '') + totalTodayGrowth.toLocaleString();
+                weekEl.textContent = (totalWeekGrowth >= 0 ? '+' : '') + totalWeekGrowth.toLocaleString();
+
+                // Update card colors
+                if (todayCard) {
+                    todayCard.style.background = totalTodayGrowth >= 0
+                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                        : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                }
+                if (weekCard) {
+                    weekCard.style.background = totalWeekGrowth >= 0
+                        ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+                        : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                }
+
+                // Show top performers
+                performers.sort((a, b) => b.growth - a.growth);
+                const top5 = performers.slice(0, 5);
+
+                if (top5.length === 0) {
+                    topContainer.innerHTML = `
+                        <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 0.5rem;">
+                            Pas de croissance aujourd'hui
+                        </div>
+                    `;
+                } else {
+                    topContainer.innerHTML = top5.map((p, i) => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; background: ${isDarkMode ? '#1f2937' : 'white'}; border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="font-size: 1rem;">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '•'}</span>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dash-text, #1f2937); font-size: 0.875rem;">@${p.username}</div>
+                                    ${p.vaName ? `<div style="font-size: 0.75rem; color: var(--dash-text-muted, #64748b);">${p.vaName}</div>` : ''}
+                                </div>
+                            </div>
+                            <div style="font-weight: 700; color: #10b981;">+${p.growth}</div>
+                        </div>
+                    `).join('');
+                }
             } catch (error) {
-                console.error('Error updating Twitter top accounts:', error);
-                leaderboardBody.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: #ef4444;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                        <p>Erreur lors du chargement des comptes Twitter</p>
-                    </div>
-                `;
+                console.error('Error updating Twitter stats:', error);
             }
         }
 
@@ -13919,8 +13690,13 @@
                     }
                 });
 
-                // Only refresh the chart (lightweight update)
+                // Refresh the chart (lightweight update)
                 await updateFollowersChart(7);
+
+                // Also update the dashboard Twitter section if it exists
+                if (document.getElementById('twitter-simple-section')) {
+                    await updateTwitterTopAccounts();
+                }
 
             } catch (error) {
                 console.error('❌ Error saving followers stats:', error);
