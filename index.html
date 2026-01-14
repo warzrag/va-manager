@@ -18622,7 +18622,15 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
             try {
                 // Delete from Supabase (CASCADE will delete associated records)
-                await window.deleteVA(vaId);
+                const organizationId = await getOrganizationId();
+                const { error } = await supabase
+                    .from('vas')
+                    .delete()
+                    .eq('id', vaId)
+                    .eq('organization_id', organizationId);
+
+                if (error) throw error;
+                console.log('✅ VA deleted from Supabase:', vaId);
 
                 // Remove from local data
                 data.vas = data.vas.filter(v => v.id !== vaId);
