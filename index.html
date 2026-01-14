@@ -7137,7 +7137,7 @@
 
     <!-- Transfer Twitter Account Modal -->
     <div id="transfer-twitter-modal" class="modal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                 <h2 style="color: white;"><i class="fas fa-exchange-alt"></i> Transférer le compte</h2>
                 <button class="close-btn" onclick="closeTransferModal()" style="color: white;">×</button>
@@ -7145,8 +7145,10 @@
             <div class="modal-body" style="padding: 1.5rem;">
                 <input type="hidden" id="transfer-twitter-id">
                 <input type="hidden" id="transfer-twitter-username">
-                <input type="hidden" id="transfer-from-creator">
+                <input type="hidden" id="transfer-from-va-id">
+                <input type="hidden" id="transfer-from-creator-id">
 
+                <!-- Account Info -->
                 <div class="transfer-account-info" style="background: #f8fafc; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); display: flex; align-items: center; justify-content: center;">
@@ -7154,26 +7156,52 @@
                         </div>
                         <div>
                             <div id="transfer-username-display" style="font-weight: 600; color: #1e293b;">@username</div>
-                            <div id="transfer-from-display" style="font-size: 0.875rem; color: #64748b;">Actuellement géré par: <span style="font-weight: 500;"></span></div>
+                            <div id="transfer-from-display" style="font-size: 0.875rem; color: #64748b;"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">
-                        <i class="fas fa-arrow-right" style="color: #f59e0b; margin-right: 0.5rem;"></i>
-                        Transférer vers quel VA ?
-                    </label>
-                    <select id="transfer-to-va" class="form-control" style="padding: 0.75rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem;">
-                        <option value="">-- Sélectionner un VA --</option>
-                    </select>
+                <!-- Tabs -->
+                <div class="transfer-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <button type="button" id="tab-transfer-va" onclick="switchTransferTab('va')" class="transfer-tab active" style="flex: 1; padding: 0.75rem; border: 2px solid #f59e0b; background: #f59e0b; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <i class="fas fa-user-tie"></i> Vers un VA
+                    </button>
+                    <button type="button" id="tab-transfer-creator" onclick="switchTransferTab('creator')" class="transfer-tab" style="flex: 1; padding: 0.75rem; border: 2px solid #8b5cf6; background: white; color: #8b5cf6; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <i class="fas fa-user"></i> Vers une Créatrice
+                    </button>
+                </div>
+
+                <!-- VA Transfer Panel -->
+                <div id="transfer-panel-va" class="transfer-panel">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">
+                            <i class="fas fa-arrow-right" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                            Transférer vers quel VA ?
+                        </label>
+                        <select id="transfer-to-va" class="form-control" style="padding: 0.75rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem;">
+                            <option value="">-- Sélectionner un VA --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Creator Transfer Panel -->
+                <div id="transfer-panel-creator" class="transfer-panel" style="display: none;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">
+                            <i class="fas fa-arrow-right" style="color: #8b5cf6; margin-right: 0.5rem;"></i>
+                            Transférer vers quelle Créatrice ?
+                        </label>
+                        <select id="transfer-to-creator" class="form-control" style="padding: 0.75rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem;">
+                            <option value="">-- Sélectionner une Créatrice --</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="modal-footer" style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
                     <button type="button" class="btn" onclick="closeTransferModal()" style="flex: 1; background: #e5e7eb; color: #374151; padding: 0.75rem;">
                         <i class="fas fa-times"></i> Annuler
                     </button>
-                    <button type="button" class="btn" onclick="performTransfer()" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.75rem;">
+                    <button type="button" id="transfer-submit-btn" class="btn" onclick="performTransfer()" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.75rem;">
                         <i class="fas fa-exchange-alt"></i> Transférer
                     </button>
                 </div>
@@ -13328,7 +13356,7 @@
                                     </button>
 
                                     <!-- Transfer Button -->
-                                    <button class="ft-transfer-btn" onclick="openTransferModal('${acc.id}', '${acc.username}', '${acc.vaName}', '${acc.vaId || ''}')" title="Transférer ce compte">
+                                    <button class="ft-transfer-btn" onclick="openTransferModal('${acc.id}', '${acc.username}', '${acc.vaName}', '${acc.vaId || ''}', '${acc.creatorId || ''}', '${acc.creatorName || ''}')" title="Transférer ce compte">
                                         <i class="fas fa-exchange-alt"></i>
                                     </button>
 
@@ -17753,25 +17781,64 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // TRANSFER TWITTER ACCOUNT MODAL FUNCTIONS
         // ============================================================================
 
+        // Current transfer tab
+        let currentTransferTab = 'va';
+
+        // Switch between VA and Creator tabs
+        function switchTransferTab(tab) {
+            currentTransferTab = tab;
+
+            // Update tab styles
+            const vaTab = document.getElementById('tab-transfer-va');
+            const creatorTab = document.getElementById('tab-transfer-creator');
+            const vaPanel = document.getElementById('transfer-panel-va');
+            const creatorPanel = document.getElementById('transfer-panel-creator');
+            const submitBtn = document.getElementById('transfer-submit-btn');
+
+            if (tab === 'va') {
+                vaTab.style.background = '#f59e0b';
+                vaTab.style.color = 'white';
+                creatorTab.style.background = 'white';
+                creatorTab.style.color = '#8b5cf6';
+                vaPanel.style.display = 'block';
+                creatorPanel.style.display = 'none';
+                submitBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            } else {
+                vaTab.style.background = 'white';
+                vaTab.style.color = '#f59e0b';
+                creatorTab.style.background = '#8b5cf6';
+                creatorTab.style.color = 'white';
+                vaPanel.style.display = 'none';
+                creatorPanel.style.display = 'block';
+                submitBtn.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+            }
+        }
+
         // Open transfer modal
-        function openTransferModal(accountId, username, currentVaName, currentVaId) {
-            console.log('📤 Opening transfer modal for:', username, 'current VA:', currentVaName);
+        function openTransferModal(accountId, username, currentVaName, currentVaId, currentCreatorId, currentCreatorName) {
+            console.log('📤 Opening transfer modal for:', username, 'VA:', currentVaName, 'Creator:', currentCreatorName);
 
             // Set hidden fields
             document.getElementById('transfer-twitter-id').value = accountId;
             document.getElementById('transfer-twitter-username').value = username;
-            document.getElementById('transfer-from-creator').value = currentVaId || '';
+            document.getElementById('transfer-from-va-id').value = currentVaId || '';
+            document.getElementById('transfer-from-creator-id').value = currentCreatorId || '';
 
             // Update display
             document.getElementById('transfer-username-display').textContent = '@' + username.replace('@', '');
-            document.getElementById('transfer-from-display').innerHTML =
-                `Actuellement géré par: <span style="font-weight: 500; color: #8b5cf6;">${currentVaName}</span>`;
+            let displayText = '';
+            if (currentVaName && currentVaName !== 'Non assigné') {
+                displayText += `VA: <span style="font-weight: 500; color: #f59e0b;">${currentVaName}</span>`;
+            }
+            if (currentCreatorName) {
+                if (displayText) displayText += ' · ';
+                displayText += `Créatrice: <span style="font-weight: 500; color: #8b5cf6;">${currentCreatorName}</span>`;
+            }
+            document.getElementById('transfer-from-display').innerHTML = displayText || 'Non assigné';
 
             // Populate VA dropdown (exclude current VA)
             const vaSelect = document.getElementById('transfer-to-va');
             vaSelect.innerHTML = '<option value="">-- Sélectionner un VA --</option>';
-
-            // Get all VAs except the current one
             const vas = data.vas || [];
             vas.forEach(va => {
                 if (va.id !== currentVaId) {
@@ -17782,6 +17849,22 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 }
             });
 
+            // Populate Creator dropdown (exclude current creator)
+            const creatorSelect = document.getElementById('transfer-to-creator');
+            creatorSelect.innerHTML = '<option value="">-- Sélectionner une Créatrice --</option>';
+            const creators = data.creators || [];
+            creators.forEach(creator => {
+                if (creator.id !== currentCreatorId) {
+                    const option = document.createElement('option');
+                    option.value = creator.id;
+                    option.textContent = creator.name;
+                    creatorSelect.appendChild(option);
+                }
+            });
+
+            // Reset to VA tab
+            switchTransferTab('va');
+
             // Show modal
             document.getElementById('transfer-twitter-modal').classList.add('show');
         }
@@ -17790,42 +17873,66 @@ Tapez "SUPPRIMER" pour confirmer :`;
         function closeTransferModal() {
             document.getElementById('transfer-twitter-modal').classList.remove('show');
             document.getElementById('transfer-to-va').value = '';
+            document.getElementById('transfer-to-creator').value = '';
         }
 
         // Perform the transfer
         async function performTransfer() {
             const accountId = document.getElementById('transfer-twitter-id').value;
             const username = document.getElementById('transfer-twitter-username').value;
-            const fromVaId = document.getElementById('transfer-from-creator').value;
-            const toVaId = document.getElementById('transfer-to-va').value;
-
-            if (!toVaId) {
-                showError('Veuillez sélectionner un VA destinataire');
-                return;
-            }
 
             try {
-                console.log(`📤 Transferring @${username} from VA ${fromVaId} to VA ${toVaId}`);
-
-                // Call Supabase directly to update va_id
                 const organizationId = await getOrganizationId();
-                const { error } = await supabase
-                    .from('twitter_accounts')
-                    .update({
-                        va_id: toVaId,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', accountId)
-                    .eq('organization_id', organizationId);
 
-                if (error) throw error;
-                console.log(`✅ Twitter account ${accountId} transferred to VA ${toVaId}`);
+                if (currentTransferTab === 'va') {
+                    // Transfer to another VA
+                    const toVaId = document.getElementById('transfer-to-va').value;
+                    if (!toVaId) {
+                        showError('Veuillez sélectionner un VA destinataire');
+                        return;
+                    }
 
-                // Find the name of the new VA
-                const newVa = data.vas.find(v => v.id === toVaId);
-                const newVaName = newVa ? newVa.name : 'nouveau VA';
+                    console.log(`📤 Transferring @${username} to VA ${toVaId}`);
 
-                showSuccess(`✅ @${username} transféré vers ${newVaName}`);
+                    const { error } = await supabase
+                        .from('twitter_accounts')
+                        .update({
+                            va_id: toVaId,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', accountId)
+                        .eq('organization_id', organizationId);
+
+                    if (error) throw error;
+
+                    const newVa = data.vas.find(v => v.id === toVaId);
+                    showSuccess(`✅ @${username} transféré vers ${newVa?.name || 'nouveau VA'}`);
+
+                } else {
+                    // Transfer to another Creator
+                    const toCreatorId = document.getElementById('transfer-to-creator').value;
+                    if (!toCreatorId) {
+                        showError('Veuillez sélectionner une Créatrice destinataire');
+                        return;
+                    }
+
+                    console.log(`📤 Transferring @${username} to Creator ${toCreatorId}`);
+
+                    const { error } = await supabase
+                        .from('twitter_accounts')
+                        .update({
+                            creator_id: toCreatorId,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', accountId)
+                        .eq('organization_id', organizationId);
+
+                    if (error) throw error;
+
+                    const newCreator = data.creators.find(c => c.id === toCreatorId);
+                    showSuccess(`✅ @${username} transféré vers ${newCreator?.name || 'nouvelle créatrice'}`);
+                }
+
                 closeTransferModal();
 
                 // Reload data to reflect changes
