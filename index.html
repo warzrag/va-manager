@@ -5176,15 +5176,34 @@
                     </div>
                 </div>
 
-                <!-- Top Performers -->
-                <div style="background: var(--dash-card-bg, #f8fafc); border-radius: 12px; padding: 1rem;">
-                    <div style="font-weight: 600; color: var(--dash-text, #1f2937); margin-bottom: 0.75rem; font-size: 0.875rem;">
-                        <i class="fas fa-trophy" style="color: #f59e0b;"></i> Top Performers (aujourd'hui)
+                <!-- Chart + Top Performers Grid -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <!-- Chart -->
+                    <div style="background: var(--dash-card-bg, white); border-radius: 12px; padding: 1rem; border: 1px solid var(--dash-border, #e2e8f0);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div style="font-weight: 600; color: var(--dash-text, #1f2937); font-size: 0.875rem;">
+                                <i class="fas fa-chart-line" style="color: #1da1f2;"></i> Évolution
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button onclick="updateDashboardTwitterChart(7)" class="dash-twitter-chart-btn active" data-period="7" style="padding: 0.375rem 0.75rem; border-radius: 6px; border: none; background: #1da1f2; color: white; font-size: 0.75rem; font-weight: 600; cursor: pointer;">7j</button>
+                                <button onclick="updateDashboardTwitterChart(14)" class="dash-twitter-chart-btn" data-period="14" style="padding: 0.375rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: transparent; color: var(--dash-text-muted, #64748b); font-size: 0.75rem; font-weight: 600; cursor: pointer;">14j</button>
+                                <button onclick="updateDashboardTwitterChart(30)" class="dash-twitter-chart-btn" data-period="30" style="padding: 0.375rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: transparent; color: var(--dash-text-muted, #64748b); font-size: 0.75rem; font-weight: 600; cursor: pointer;">30j</button>
+                            </div>
+                        </div>
+                        <div style="height: 200px;">
+                            <canvas id="dashboard-twitter-chart"></canvas>
+                        </div>
                     </div>
-                    <div id="twitter-simple-top" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <!-- Will be populated by JS -->
-                        <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 1rem;">
-                            Chargement...
+
+                    <!-- Top Performers -->
+                    <div style="background: var(--dash-card-bg, white); border-radius: 12px; padding: 1rem; border: 1px solid var(--dash-border, #e2e8f0);">
+                        <div style="font-weight: 600; color: var(--dash-text, #1f2937); margin-bottom: 0.75rem; font-size: 0.875rem;">
+                            <i class="fas fa-trophy" style="color: #f59e0b;"></i> Top du jour
+                        </div>
+                        <div id="twitter-simple-top" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 1rem;">
+                                Chargement...
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -11611,6 +11630,107 @@
                 }
             } catch (error) {
                 console.error('Error updating Twitter stats:', error);
+            }
+
+            // Initialize chart
+            updateDashboardTwitterChart(7);
+        }
+
+        // Dashboard Twitter Chart
+        let dashboardTwitterChart = null;
+
+        async function updateDashboardTwitterChart(days = 7) {
+            const canvas = document.getElementById('dashboard-twitter-chart');
+            if (!canvas) return;
+
+            // Update button styles
+            document.querySelectorAll('.dash-twitter-chart-btn').forEach(btn => {
+                if (parseInt(btn.dataset.period) === days) {
+                    btn.style.background = '#1da1f2';
+                    btn.style.color = 'white';
+                    btn.style.border = 'none';
+                } else {
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'var(--dash-text-muted, #64748b)';
+                    btn.style.border = '1px solid #e2e8f0';
+                }
+            });
+
+            try {
+                const allStats = await getTwitterStats() || [];
+                const isDarkMode = document.body.classList.contains('dark-mode');
+
+                // Group by date and sum followers
+                const statsByDate = {};
+                allStats.forEach(stat => {
+                    if (!statsByDate[stat.date]) {
+                        statsByDate[stat.date] = 0;
+                    }
+                    statsByDate[stat.date] += (stat.followers || 0);
+                });
+
+                // Sort dates and take last N days
+                const sortedDates = Object.keys(statsByDate).sort();
+                const recentDates = sortedDates.slice(-days);
+
+                const labels = recentDates.map(d => {
+                    const date = new Date(d);
+                    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+                });
+                const values = recentDates.map(d => statsByDate[d]);
+
+                // Destroy previous chart
+                if (dashboardTwitterChart) {
+                    dashboardTwitterChart.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
+                dashboardTwitterChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Followers',
+                            data: values,
+                            borderColor: '#1da1f2',
+                            backgroundColor: 'rgba(29, 161, 242, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#1da1f2'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: isDarkMode ? '#9ca3af' : '#6b7280',
+                                    font: { size: 10 }
+                                }
+                            },
+                            y: {
+                                grid: { color: isDarkMode ? '#374151' : '#f3f4f6' },
+                                ticks: {
+                                    color: isDarkMode ? '#9ca3af' : '#6b7280',
+                                    font: { size: 10 },
+                                    callback: function(value) {
+                                        if (value >= 1000) return (value / 1000).toFixed(0) + 'k';
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error updating dashboard Twitter chart:', error);
             }
         }
 
