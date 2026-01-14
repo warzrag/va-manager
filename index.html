@@ -6336,10 +6336,25 @@
                 <!-- Will be populated by JS -->
             </div>
 
-            <!-- Bulk Entry Form by Creator -->
-            <div class="ft-bulk-section">
+            <!-- Creator Selection Container -->
+            <div id="followers-creator-selection" class="ft-creator-selection">
                 <h3 class="ft-section-title">
-                    <i class="fab fa-twitter"></i> Saisie rapide par créatrice
+                    <i class="fas fa-user"></i> Sélectionnez une créatrice
+                </h3>
+                <div id="followers-creator-grid" class="ft-creator-grid">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Bulk Entry Form by Creator (hidden initially) -->
+            <div class="ft-bulk-section" id="followers-bulk-section" style="display: none;">
+                <!-- Back Button -->
+                <button onclick="backToCreatorSelection()" class="ft-back-btn" style="margin-bottom: 1rem; background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                    <i class="fas fa-arrow-left"></i> Retour aux créatrices
+                </button>
+
+                <h3 class="ft-section-title" id="followers-creator-title">
+                    <i class="fab fa-twitter"></i> Comptes Twitter
                 </h3>
                 <div id="followers-bulk-form" class="ft-bulk-form">
                     <!-- Will be populated by JS with creator groups -->
@@ -13189,6 +13204,22 @@
             }
         }
 
+        // Selected creator for followers tracking
+        let selectedFollowersCreatorId = null;
+
+        // Back to creator selection
+        function backToCreatorSelection() {
+            selectedFollowersCreatorId = null;
+            document.getElementById('followers-creator-selection').style.display = 'block';
+            document.getElementById('followers-bulk-section').style.display = 'none';
+        }
+
+        // Select a creator to view their accounts
+        function selectCreatorForFollowers(creatorId) {
+            selectedFollowersCreatorId = creatorId;
+            loadFollowersTrackingData();
+        }
+
         // Load followers tracking data and populate the bulk form
         async function loadFollowersTrackingData() {
             const formContainer = document.getElementById('followers-bulk-form');
@@ -13284,57 +13315,151 @@
                     </div>
                 `;
 
-                // Build the bulk entry form grouped by creator
+                // Check if no creators
                 if (Object.keys(accountsByCreator).length === 0) {
-                    formContainer.innerHTML = `
-                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
-                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p style="margin-top: 1rem;">Aucun compte Twitter trouvé</p>
-                            <p style="font-size: 0.875rem;">Ajoutez des comptes Twitter à vos créatrices pour commencer le suivi</p>
+                    document.getElementById('followers-creator-selection').style.display = 'block';
+                    document.getElementById('followers-bulk-section').style.display = 'none';
+                    document.getElementById('followers-creator-grid').innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8; grid-column: 1 / -1;">
+                            <i class="fas fa-user" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">Aucune créatrice trouvée</p>
+                            <p style="font-size: 0.875rem;">Ajoutez des créatrices avec des comptes Twitter</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Créer une liste plate de tous les comptes pour un affichage simplifié
-                const allAccounts = [];
-                Object.entries(accountsByCreator).forEach(([creatorId, creatorData]) => {
-                    creatorData.accounts.forEach(acc => {
-                        // Trouver le VA associé à CE compte (pas à la créatrice)
-                        let vaName = 'Non assigné';
-                        let vaId = acc.vaId || null;
+                // If no creator selected, show creator selection
+                if (!selectedFollowersCreatorId) {
+                    document.getElementById('followers-creator-selection').style.display = 'block';
+                    document.getElementById('followers-bulk-section').style.display = 'none';
 
-                        if (vaId) {
+                    // Build creator cards
+                    const creatorGrid = document.getElementById('followers-creator-grid');
+                    creatorGrid.innerHTML = Object.entries(accountsByCreator).map(([creatorId, creatorData]) => {
+                        const accountCount = creatorData.accounts.length;
+                        const totalCreatorFollowers = creatorData.accounts.reduce((sum, acc) => sum + (acc.currentFollowers || 0), 0);
+                        const totalCreatorGrowth = creatorData.accounts.reduce((sum, acc) => sum + (acc.dailyGrowth || 0), 0);
+
+                        return `
+                            <div class="ft-creator-card" onclick="selectCreatorForFollowers('${creatorId}')" style="
+                                background: ${isDarkMode ? '#1f2937' : 'white'};
+                                border: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};
+                                border-radius: 1rem;
+                                padding: 1.5rem;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                text-align: center;
+                            " onmouseover="this.style.borderColor='#8b5cf6'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 30px rgba(139, 92, 246, 0.2)';"
+                               onmouseout="this.style.borderColor='${isDarkMode ? '#374151' : '#e2e8f0'}'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; overflow: hidden; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center;">
+                                    ${creatorData.photo
+                                        ? `<img src="${creatorData.photo}" alt="${creatorData.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+                                        : `<i class="fas fa-user" style="font-size: 2rem; color: white;"></i>`
+                                    }
+                                </div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; margin-bottom: 0.5rem;">${creatorData.name}</h3>
+                                <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Comptes</div>
+                                        <div style="font-size: 1.25rem; font-weight: 700; color: #1da1f2;">${accountCount}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Followers</div>
+                                        <div style="font-size: 1.25rem; font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${totalCreatorFollowers.toLocaleString()}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Hier</div>
+                                        <div style="font-size: 1.25rem; font-weight: 700; color: ${totalCreatorGrowth >= 0 ? '#10b981' : '#ef4444'};">${totalCreatorGrowth >= 0 ? '+' : ''}${totalCreatorGrowth}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Add styles for creator grid
+                    if (!document.getElementById('ft-creator-grid-styles')) {
+                        const styleEl = document.createElement('style');
+                        styleEl.id = 'ft-creator-grid-styles';
+                        styleEl.textContent = `
+                            .ft-creator-grid {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                                gap: 1.5rem;
+                                padding: 1rem 0;
+                            }
+                            .ft-creator-selection {
+                                margin-bottom: 2rem;
+                            }
+                        `;
+                        document.head.appendChild(styleEl);
+                    }
+
+                    return;
+                }
+
+                // Creator is selected - show their accounts
+                document.getElementById('followers-creator-selection').style.display = 'none';
+                document.getElementById('followers-bulk-section').style.display = 'block';
+
+                // Get selected creator data
+                const selectedCreator = accountsByCreator[selectedFollowersCreatorId];
+                if (!selectedCreator) {
+                    backToCreatorSelection();
+                    return;
+                }
+
+                // Update title with creator name
+                document.getElementById('followers-creator-title').innerHTML = `
+                    <i class="fab fa-twitter"></i> ${selectedCreator.name} - Comptes Twitter
+                `;
+
+                // Build the bulk entry form for selected creator only
+                if (selectedCreator.accounts.length === 0) {
+                    formContainer.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">Aucun compte Twitter pour ${selectedCreator.name}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Créer une liste des comptes de la créatrice sélectionnée
+                const allAccounts = [];
+                const creatorId = selectedFollowersCreatorId;
+                const creatorData = selectedCreator;
+
+                creatorData.accounts.forEach(acc => {
+                    // Trouver le VA associé à CE compte (pas à la créatrice)
+                    let vaName = 'Non assigné';
+                    let vaId = acc.vaId || null;
+
+                    if (vaId) {
+                        const va = (data.vas || []).find(v => v.id === vaId);
+                        if (va) vaName = va.name;
+                    } else {
+                        // Fallback: chercher via la créatrice
+                        const creator = data.creators.find(c => c.id === creatorId);
+                        if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                            vaId = creator.vaIds[0];
                             const va = (data.vas || []).find(v => v.id === vaId);
                             if (va) vaName = va.name;
-                        } else {
-                            // Fallback: chercher via la créatrice
-                            const creator = data.creators.find(c => c.id === creatorId);
-                            if (creator && creator.vaIds && creator.vaIds.length > 0) {
-                                vaId = creator.vaIds[0];
-                                const va = (data.vas || []).find(v => v.id === vaId);
-                                if (va) vaName = va.name;
-                            }
                         }
+                    }
 
-                        allAccounts.push({
-                            ...acc,
-                            creatorId,
-                            creatorName: creatorData.name,
-                            creatorPhoto: creatorData.photo,
-                            vaName: vaName,
-                            vaId: vaId
-                        });
+                    allAccounts.push({
+                        ...acc,
+                        creatorId,
+                        creatorName: creatorData.name,
+                        creatorPhoto: creatorData.photo,
+                        vaName: vaName,
+                        vaId: vaId
                     });
                 });
 
-                // Trier par nom de créatrice puis par username
-                allAccounts.sort((a, b) => {
-                    if (a.creatorName !== b.creatorName) {
-                        return a.creatorName.localeCompare(b.creatorName);
-                    }
-                    return a.username.localeCompare(b.username);
-                });
+                // Trier par username
+                allAccounts.sort((a, b) => a.username.localeCompare(b.username));
 
                 formContainer.innerHTML = `
                     <div class="ft-intuitive-grid">
