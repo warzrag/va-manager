@@ -3889,6 +3889,43 @@
             }
         }
 
+        /* Followers Tracking Responsive */
+        @media (max-width: 1024px) {
+            .ft-growth-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #followers-tracking-page > div[style*="grid-template-columns: 1fr 380px"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ft-growth-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            .ft-growth-chart-header {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+            }
+
+            .ft-period-btns-container {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #followers-tracking-page .followers-period-btn {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.75rem !important;
+            }
+        }
+
         /* ========== MOBILE RESPONSIVE DESIGN ========== */
         
         /* Menu burger pour mobile */
@@ -6338,42 +6375,66 @@
                 </button>
             </div>
 
-            <!-- Growth Dashboard -->
-            <div class="ft-dashboard-grid">
-                <!-- Growth Chart -->
-                <div class="ft-card">
-                    <div class="ft-card-header">
-                        <h3 class="ft-card-title">
-                            <i class="fas fa-chart-line"></i> Croissance
-                        </h3>
-                        <div class="ft-period-btns">
-                            <button onclick="updateFollowersChart(7)" class="followers-period-btn active" data-period="7">7j</button>
-                            <button onclick="updateFollowersChart(30)" class="followers-period-btn" data-period="30">30j</button>
-                            <button onclick="updateFollowersChart(90)" class="followers-period-btn" data-period="90">90j</button>
+            <!-- Section Titre Croissance -->
+            <div style="background: linear-gradient(135deg, #1da1f2 0%, #0a66c2 50%, #0d47a1 100%); border-radius: 1.25rem; padding: 1.5rem 2rem; margin-bottom: 1.5rem; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -30px; right: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -40px; left: 20%; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+                <div style="position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-line" style="font-size: 1.5rem; color: white;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: white;">Croissance</h3>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: rgba(255,255,255,0.8);">Analyse de l'évolution des followers</p>
                         </div>
                     </div>
-                    <div class="ft-chart-container">
+                    <div style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.15); padding: 0.375rem; border-radius: 0.75rem; backdrop-filter: blur(10px);">
+                        <button onclick="updateFollowersChart(7)" class="followers-period-btn active" data-period="7" style="padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; background: white; color: #1da1f2; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">7 jours</button>
+                        <button onclick="updateFollowersChart(30)" class="followers-period-btn" data-period="30" style="padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; background: transparent; color: white; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">30 jours</button>
+                        <button onclick="updateFollowersChart(90)" class="followers-period-btn" data-period="90" style="padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; background: transparent; color: white; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">90 jours</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique + Top Performers Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <!-- Graphique Principal -->
+                <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+                    <div style="height: 320px; position: relative;">
                         <canvas id="followers-growth-chart"></canvas>
                     </div>
                 </div>
 
-                <!-- Top Performers -->
-                <div class="ft-card">
-                    <h3 class="ft-card-title">
-                        <i class="fas fa-trophy"></i> Top Performers (hier)
-                    </h3>
-                    <div id="followers-top-performers" class="ft-top-performers">
+                <!-- Top Performers Sidebar -->
+                <div style="background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%); border-radius: 1.25rem; padding: 1.5rem; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.15); border: 2px solid #fde047;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+                        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);">
+                            <i class="fas fa-trophy" style="font-size: 1.25rem; color: white;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: #92400e;">Top Performers</h4>
+                            <p style="margin: 0; font-size: 0.75rem; color: #a16207;">Meilleures progressions</p>
+                        </div>
+                    </div>
+                    <div id="followers-top-performers" style="display: flex; flex-direction: column; gap: 0.625rem;">
                         <!-- Will be populated by JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- Daily History Table -->
-            <div class="ft-card ft-history-card">
-                <h3 class="ft-card-title">
-                    <i class="fas fa-history"></i> Historique par créatrice
-                </h3>
-                <div id="followers-history-table" class="ft-history-table">
+            <!-- Historique Tableau -->
+            <div style="background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1); border: 2px solid #e9d5ff;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);">
+                        <i class="fas fa-table" style="font-size: 1.25rem; color: white;"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: #5b21b6;">Historique Détaillé</h4>
+                        <p style="margin: 0; font-size: 0.75rem; color: #7c3aed;">Évolution jour par jour</p>
+                    </div>
+                </div>
+                <div id="followers-history-table" style="overflow-x: auto; background: white; border-radius: 0.75rem; padding: 0.5rem;">
                     <!-- Will be populated by JS -->
                 </div>
             </div>
@@ -13832,14 +13893,18 @@
             const canvas = document.getElementById('followers-growth-chart');
             if (!canvas) return;
 
-            // Update period buttons
+            // Update period buttons styling (new design)
             document.querySelectorAll('.followers-period-btn').forEach(btn => {
                 if (parseInt(btn.dataset.period) === days) {
-                    btn.style.background = '#1da1f2';
-                    btn.style.color = 'white';
-                } else {
                     btn.style.background = 'white';
-                    btn.style.color = '#64748b';
+                    btn.style.color = '#1da1f2';
+                    btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                    btn.style.fontWeight = '700';
+                } else {
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'white';
+                    btn.style.boxShadow = 'none';
+                    btn.style.fontWeight = '600';
                 }
             });
 
@@ -13988,18 +14053,22 @@
                     return;
                 }
 
-                const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                const medals = ['🥇', '🥈', '🥉'];
 
                 container.innerHTML = sorted.map(([username, data], i) => `
-                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc'}; border-radius: 0.75rem;">
-                        <span style="font-size: 1.25rem;">${medals[i]}</span>
-                        <div style="flex: 1;">
-                            <a href="https://twitter.com/${username.replace('@', '')}" target="_blank" style="color: #1da1f2; font-weight: 600; text-decoration: none;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: white; border-radius: 0.75rem; border: 1px solid #fde68a; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(245,158,11,0.2)'; this.style.borderColor='#f59e0b';" onmouseout="this.style.transform='none'; this.style.boxShadow='none'; this.style.borderColor='#fde68a';">
+                        <div style="width: 32px; height: 32px; border-radius: 8px; background: ${i < 3 ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; font-size: ${i < 3 ? '1rem' : '0.8125rem'}; font-weight: 700; color: #92400e;">
+                            ${i < 3 ? medals[i] : (i + 1)}
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <a href="https://twitter.com/${username.replace('@', '')}" target="_blank" style="color: #1da1f2; font-weight: 700; text-decoration: none; font-size: 0.875rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="event.stopPropagation();">
                                 ${username}
                             </a>
-                            <div style="font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">${data.current.toLocaleString()} followers</div>
+                            <div style="font-size: 0.6875rem; color: #64748b;">
+                                ${data.current.toLocaleString()} followers
+                            </div>
                         </div>
-                        <div style="font-weight: 700; color: ${data.growth >= 0 ? '#10b981' : '#ef4444'};">
+                        <div style="background: ${data.growth >= 0 ? '#dcfce7' : '#fee2e2'}; color: ${data.growth >= 0 ? '#16a34a' : '#dc2626'}; padding: 0.375rem 0.625rem; border-radius: 6px; font-weight: 800; font-size: 0.8125rem;">
                             ${data.growth >= 0 ? '+' : ''}${data.growth}
                         </div>
                     </div>
@@ -14036,20 +14105,38 @@
                 });
 
                 container.innerHTML = `
+                    <style>
+                        .ft-history-row:hover {
+                            background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(29, 161, 242, 0.05)'} !important;
+                        }
+                    </style>
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
                         <thead>
-                            <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc'};">
-                                <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">Compte</th>
-                                ${dates.map(date => `<th style="padding: 0.75rem; text-align: center; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">${new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</th>`).join('')}
+                            <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'};">
+                                <th style="padding: 1rem; text-align: left; font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; white-space: nowrap;">
+                                    <i class="fab fa-twitter" style="color: #1da1f2; margin-right: 0.5rem;"></i>Compte
+                                </th>
+                                ${dates.map(date => `<th style="padding: 1rem; text-align: center; font-weight: 600; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; font-size: 0.8125rem;">${new Date(date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit' })}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
-                            ${usernames.map(username => `
-                                <tr style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
-                                    <td style="padding: 0.75rem; color: #1da1f2; font-weight: 600;">${username}</td>
-                                    ${dates.map(date => {
+                            ${usernames.map((username, idx) => `
+                                <tr class="ft-history-row" style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; transition: background 0.2s;">
+                                    <td style="padding: 0.875rem 1rem;">
+                                        <a href="https://twitter.com/${username.replace('@', '')}" target="_blank" style="color: #1da1f2; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="background: ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1da1f2; font-weight: 700;">${idx + 1}</span>
+                                            ${username}
+                                        </a>
+                                    </td>
+                                    ${dates.map((date, dateIdx) => {
                                         const value = statsLookup[`${username}_${date}`];
-                                        return `<td style="padding: 0.75rem; text-align: center; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${value ? value.toLocaleString() : '-'}</td>`;
+                                        const prevDate = dates[dateIdx + 1];
+                                        const prevValue = prevDate ? statsLookup[`${username}_${prevDate}`] : null;
+                                        const growth = value && prevValue ? value - prevValue : null;
+                                        return `<td style="padding: 0.875rem; text-align: center;">
+                                            <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${value ? value.toLocaleString() : '-'}</div>
+                                            ${growth !== null && growth !== 0 ? `<div style="font-size: 0.6875rem; color: ${growth > 0 ? '#10b981' : '#ef4444'}; font-weight: 600;">${growth > 0 ? '+' : ''}${growth}</div>` : ''}
+                                        </td>`;
                                     }).join('')}
                                 </tr>
                             `).join('')}
