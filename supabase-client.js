@@ -4656,7 +4656,97 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // ============================================================================
-// BACKUP SYSTEM - Automatic Data Protection
+// TWITTER ACCOUNT TRANSFER
+// ============================================================================
+
+/**
+ * Transfer a Twitter account from one creator/VA to another
+ * @param {string} twitterAccountId - The ID of the Twitter account to transfer
+ * @param {string} newCreatorId - The ID of the new creator
+ * @returns {Promise<Object>} - Updated Twitter account
+ */
+async function transferTwitterAccount(twitterAccountId, newCreatorId) {
+  try {
+    const organizationId = await getOrganizationId();
+
+    // Get the VA associated with the new creator
+    const { data: vaCreator, error: vaError } = await supabase
+      .from('va_creators')
+      .select('va_id')
+      .eq('creator_id', newCreatorId)
+      .maybeSingle();
+
+    if (vaError) throw vaError;
+
+    const newVaId = vaCreator?.va_id || null;
+
+    // Update the Twitter account
+    const { data, error } = await supabase
+      .from('twitter_accounts')
+      .update({
+        creator_id: newCreatorId,
+        va_id: newVaId,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', twitterAccountId)
+      .eq('organization_id', organizationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log(`✅ Twitter account ${twitterAccountId} transferred to creator ${newCreatorId}`);
+    return data;
+  } catch (error) {
+    console.error('❌ Error transferring Twitter account:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get all creators for transfer selection
+ * @returns {Promise<Array>} - Array of creators with their VA info
+ */
+async function getCreatorsForTransfer() {
+  try {
+    const organizationId = await getOrganizationId();
+
+    // Get all creators with their VA associations
+    const { data: creators, error } = await supabase
+      .from('creators')
+      .select(`
+        id,
+        name,
+        photo_url,
+        va_creators (
+          va_id,
+          vas (
+            id,
+            name
+          )
+        )
+      `)
+      .eq('organization_id', organizationId)
+      .order('name');
+
+    if (error) throw error;
+
+    // Format the data
+    return creators.map(c => ({
+      id: c.id,
+      name: c.name,
+      photo_url: c.photo_url,
+      vaId: c.va_creators?.[0]?.va_id || null,
+      vaName: c.va_creators?.[0]?.vas?.name || 'Non assigné'
+    }));
+  } catch (error) {
+    console.error('❌ Error getting creators for transfer:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// AUTOMATIC BACKUP SYSTEM
 // ============================================================================
 
 /**

@@ -7135,6 +7135,52 @@
         </div>
     </div>
 
+    <!-- Transfer Twitter Account Modal -->
+    <div id="transfer-twitter-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <h2 style="color: white;"><i class="fas fa-exchange-alt"></i> Transférer le compte</h2>
+                <button class="close-btn" onclick="closeTransferModal()" style="color: white;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <input type="hidden" id="transfer-twitter-id">
+                <input type="hidden" id="transfer-twitter-username">
+                <input type="hidden" id="transfer-from-creator">
+
+                <div class="transfer-account-info" style="background: #f8fafc; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); display: flex; align-items: center; justify-content: center;">
+                            <i class="fab fa-twitter" style="color: white;"></i>
+                        </div>
+                        <div>
+                            <div id="transfer-username-display" style="font-weight: 600; color: #1e293b;">@username</div>
+                            <div id="transfer-from-display" style="font-size: 0.875rem; color: #64748b;">Actuellement géré par: <span style="font-weight: 500;"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">
+                        <i class="fas fa-arrow-right" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                        Transférer vers quel VA ?
+                    </label>
+                    <select id="transfer-to-va" class="form-control" style="padding: 0.75rem; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 1rem;">
+                        <option value="">-- Sélectionner un VA --</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer" style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
+                    <button type="button" class="btn" onclick="closeTransferModal()" style="flex: 1; background: #e5e7eb; color: #374151; padding: 0.75rem;">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="button" class="btn" onclick="performTransfer()" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.75rem;">
+                        <i class="fas fa-exchange-alt"></i> Transférer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================================================
         // SUPABASE INITIALIZATION & AUTHENTICATION
@@ -13176,6 +13222,7 @@
                                     totalGrowth += dailyGrowth;
 
                                     return {
+                                        id: acc.id,
                                         username: username,
                                         currentFollowers,
                                         yesterdayFollowers,
@@ -13258,6 +13305,11 @@
                                     <!-- Chart Button -->
                                     <button class="ft-chart-btn" onclick="openTwitterAccountDetail('${acc.username}')" title="Voir l'évolution">
                                         <i class="fas fa-chart-line"></i>
+                                    </button>
+
+                                    <!-- Transfer Button -->
+                                    <button class="ft-transfer-btn" onclick="openTransferModal('${acc.id}', '${acc.username}', '${acc.creatorName}')" title="Transférer ce compte">
+                                        <i class="fas fa-exchange-alt"></i>
                                     </button>
 
                                     <!-- Header: Creator + Twitter -->
@@ -13396,6 +13448,31 @@
                         .ft-chart-btn:hover {
                             transform: scale(1.15);
                             box-shadow: 0 4px 12px rgba(29, 161, 242, 0.5);
+                        }
+
+                        .ft-transfer-btn {
+                            position: absolute;
+                            top: -8px;
+                            right: -8px;
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                            border: none;
+                            color: white;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.75rem;
+                            transition: all 0.2s ease;
+                            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+                            z-index: 10;
+                        }
+
+                        .ft-transfer-btn:hover {
+                            transform: scale(1.15);
+                            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
                         }
 
                         .ft-card-header-info {
@@ -17649,6 +17726,84 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 input.type = 'password';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
+            }
+        }
+
+        // ============================================================================
+        // TRANSFER TWITTER ACCOUNT MODAL FUNCTIONS
+        // ============================================================================
+
+        // Open transfer modal
+        function openTransferModal(accountId, username, currentCreatorName) {
+            console.log('📤 Opening transfer modal for:', username);
+
+            // Set hidden fields
+            document.getElementById('transfer-twitter-id').value = accountId;
+            document.getElementById('transfer-twitter-username').value = username;
+            document.getElementById('transfer-from-creator').value = currentCreatorName;
+
+            // Update display
+            document.getElementById('transfer-username-display').textContent = '@' + username.replace('@', '');
+            document.getElementById('transfer-from-display').innerHTML =
+                `Actuellement géré par: <span style="font-weight: 500; color: #8b5cf6;">${currentCreatorName}</span>`;
+
+            // Populate VA dropdown (exclude current VA)
+            const vaSelect = document.getElementById('transfer-to-va');
+            vaSelect.innerHTML = '<option value="">-- Sélectionner un VA --</option>';
+
+            // Get all creators (VAs) except the current one
+            const creators = data.creators || [];
+            creators.forEach(creator => {
+                if (creator.name !== currentCreatorName) {
+                    const option = document.createElement('option');
+                    option.value = creator.id;
+                    option.textContent = creator.name;
+                    vaSelect.appendChild(option);
+                }
+            });
+
+            // Show modal
+            document.getElementById('transfer-twitter-modal').classList.add('show');
+        }
+
+        // Close transfer modal
+        function closeTransferModal() {
+            document.getElementById('transfer-twitter-modal').classList.remove('show');
+            document.getElementById('transfer-to-va').value = '';
+        }
+
+        // Perform the transfer
+        async function performTransfer() {
+            const accountId = document.getElementById('transfer-twitter-id').value;
+            const username = document.getElementById('transfer-twitter-username').value;
+            const fromCreator = document.getElementById('transfer-from-creator').value;
+            const toVaId = document.getElementById('transfer-to-va').value;
+
+            if (!toVaId) {
+                showError('Veuillez sélectionner un VA destinataire');
+                return;
+            }
+
+            try {
+                console.log(`📤 Transferring @${username} from ${fromCreator} to VA ID: ${toVaId}`);
+
+                // Call the transfer function
+                await transferTwitterAccount(accountId, toVaId);
+
+                // Find the name of the new VA
+                const newVa = data.creators.find(c => c.id === toVaId);
+                const newVaName = newVa ? newVa.name : 'nouveau VA';
+
+                showSuccess(`✅ @${username} transféré vers ${newVaName}`);
+                closeTransferModal();
+
+                // Reload data to reflect changes
+                await loadAllData();
+                updateDisplay();
+
+            } catch (error) {
+                console.error('❌ Error transferring account:', error);
+                showError('Erreur lors du transfert: ' + error.message);
             }
         }
 
