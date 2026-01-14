@@ -17807,8 +17807,19 @@ Tapez "SUPPRIMER" pour confirmer :`;
             try {
                 console.log(`📤 Transferring @${username} from VA ${fromVaId} to VA ${toVaId}`);
 
-                // Call the transfer function
-                await transferTwitterAccount(accountId, toVaId);
+                // Call Supabase directly to update va_id
+                const organizationId = await getOrganizationId();
+                const { error } = await supabase
+                    .from('twitter_accounts')
+                    .update({
+                        va_id: toVaId,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', accountId)
+                    .eq('organization_id', organizationId);
+
+                if (error) throw error;
+                console.log(`✅ Twitter account ${accountId} transferred to VA ${toVaId}`);
 
                 // Find the name of the new VA
                 const newVa = data.vas.find(v => v.id === toVaId);
