@@ -6398,10 +6398,17 @@
             </div>
 
             <!-- Graphique + Top Performers Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem; margin-bottom: 1.5rem;">
                 <!-- Graphique Principal -->
-                <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
-                    <div style="height: 320px; position: relative;">
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #1da1f2, #8b5cf6, #ec4899);"></div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #1da1f2 0%, #0ea5e9 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-area" style="font-size: 1rem; color: white;"></i>
+                        </div>
+                        <h4 style="margin: 0; font-size: 1rem; font-weight: 700; color: white;">Évolution des Followers</h4>
+                    </div>
+                    <div style="height: 300px; position: relative;">
                         <canvas id="followers-growth-chart"></canvas>
                     </div>
                 </div>
@@ -6424,18 +6431,22 @@
             </div>
 
             <!-- Historique Tableau -->
-            <div style="background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1); border: 2px solid #e9d5ff;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);">
-                        <i class="fas fa-table" style="font-size: 1.25rem; color: white;"></i>
+            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(139, 92, 246, 0.25); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -30px; left: 10%; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <div style="width: 44px; height: 44px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-table" style="font-size: 1.25rem; color: white;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: white;">Historique Détaillé</h4>
+                            <p style="margin: 0; font-size: 0.8125rem; color: rgba(255,255,255,0.8);">Évolution jour par jour</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 style="margin: 0; font-size: 1.125rem; font-weight: 800; color: #5b21b6;">Historique Détaillé</h4>
-                        <p style="margin: 0; font-size: 0.75rem; color: #7c3aed;">Évolution jour par jour</p>
+                    <div id="followers-history-table" style="overflow-x: auto; background: rgba(255,255,255,0.95); border-radius: 1rem; padding: 1rem; backdrop-filter: blur(10px);">
+                        <!-- Will be populated by JS -->
                     </div>
-                </div>
-                <div id="followers-history-table" style="overflow-x: auto; background: white; border-radius: 0.75rem; padding: 0.5rem;">
-                    <!-- Will be populated by JS -->
                 </div>
             </div>
         </div>
@@ -14107,24 +14118,27 @@
                 container.innerHTML = `
                     <style>
                         .ft-history-row:hover {
-                            background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(29, 161, 242, 0.05)'} !important;
+                            background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.03) 100%) !important;
+                        }
+                        .ft-history-row:hover td:first-child {
+                            border-left: 3px solid #8b5cf6;
                         }
                     </style>
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
                         <thead>
-                            <tr style="background: ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'};">
-                                <th style="padding: 1rem; text-align: left; font-weight: 700; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; white-space: nowrap;">
-                                    <i class="fab fa-twitter" style="color: #1da1f2; margin-right: 0.5rem;"></i>Compte
+                            <tr style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <th style="padding: 1rem 1.25rem; text-align: left; font-weight: 700; color: white; white-space: nowrap; border-radius: 0.5rem 0 0 0;">
+                                    <i class="fab fa-twitter" style="margin-right: 0.5rem;"></i>Compte
                                 </th>
-                                ${dates.map(date => `<th style="padding: 1rem; text-align: center; font-weight: 600; color: ${isDarkMode ? '#94a3b8' : '#64748b'}; border-bottom: 2px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; font-size: 0.8125rem;">${new Date(date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit' })}</th>`).join('')}
+                                ${dates.map((date, i) => `<th style="padding: 1rem; text-align: center; font-weight: 600; color: rgba(255,255,255,0.9); font-size: 0.8125rem; ${i === dates.length - 1 ? 'border-radius: 0 0.5rem 0 0;' : ''}">${new Date(date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit' })}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
                             ${usernames.map((username, idx) => `
-                                <tr class="ft-history-row" style="border-bottom: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'}; transition: background 0.2s;">
-                                    <td style="padding: 0.875rem 1rem;">
-                                        <a href="https://twitter.com/${username.replace('@', '')}" target="_blank" style="color: #1da1f2; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
-                                            <span style="background: ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.1)'}; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1da1f2; font-weight: 700;">${idx + 1}</span>
+                                <tr class="ft-history-row" style="border-bottom: 1px solid #f1f5f9; transition: all 0.2s; border-left: 3px solid transparent;">
+                                    <td style="padding: 1rem 1.25rem; background: ${idx % 2 === 0 ? '#faf5ff' : 'white'};">
+                                        <a href="https://twitter.com/${username.replace('@', '')}" target="_blank" style="color: #7c3aed; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.625rem;">
+                                            <span style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; font-weight: 700; box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);">${idx + 1}</span>
                                             ${username}
                                         </a>
                                     </td>
@@ -14133,9 +14147,9 @@
                                         const prevDate = dates[dateIdx + 1];
                                         const prevValue = prevDate ? statsLookup[`${username}_${prevDate}`] : null;
                                         const growth = value && prevValue ? value - prevValue : null;
-                                        return `<td style="padding: 0.875rem; text-align: center;">
-                                            <div style="font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">${value ? value.toLocaleString() : '-'}</div>
-                                            ${growth !== null && growth !== 0 ? `<div style="font-size: 0.6875rem; color: ${growth > 0 ? '#10b981' : '#ef4444'}; font-weight: 600;">${growth > 0 ? '+' : ''}${growth}</div>` : ''}
+                                        return `<td style="padding: 0.875rem; text-align: center; background: ${idx % 2 === 0 ? '#faf5ff' : 'white'};">
+                                            <div style="font-weight: 700; color: #1f2937; font-size: 0.9375rem;">${value ? value.toLocaleString() : '-'}</div>
+                                            ${growth !== null && growth !== 0 ? `<div style="font-size: 0.6875rem; color: white; font-weight: 700; background: ${growth > 0 ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'}; padding: 0.125rem 0.5rem; border-radius: 1rem; display: inline-block; margin-top: 0.25rem;">${growth > 0 ? '+' : ''}${growth}</div>` : ''}
                                         </td>`;
                                     }).join('')}
                                 </tr>
