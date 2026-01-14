@@ -13270,12 +13270,24 @@
                 // Créer une liste plate de tous les comptes pour un affichage simplifié
                 const allAccounts = [];
                 Object.entries(accountsByCreator).forEach(([creatorId, creatorData]) => {
+                    // Trouver le VA associé à cette créatrice
+                    const creator = data.creators.find(c => c.id === creatorId);
+                    let vaName = 'Non assigné';
+                    let vaId = null;
+                    if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                        vaId = creator.vaIds[0];
+                        const va = (data.vas || []).find(v => v.id === vaId);
+                        if (va) vaName = va.name;
+                    }
+
                     creatorData.accounts.forEach(acc => {
                         allAccounts.push({
                             ...acc,
                             creatorId,
                             creatorName: creatorData.name,
-                            creatorPhoto: creatorData.photo
+                            creatorPhoto: creatorData.photo,
+                            vaName: vaName,
+                            vaId: vaId
                         });
                     });
                 });
@@ -13308,7 +13320,7 @@
                                     </button>
 
                                     <!-- Transfer Button -->
-                                    <button class="ft-transfer-btn" onclick="openTransferModal('${acc.id}', '${acc.username}', '${acc.creatorName}')" title="Transférer ce compte">
+                                    <button class="ft-transfer-btn" onclick="openTransferModal('${acc.id}', '${acc.username}', '${acc.vaName}', '${acc.vaId || ''}')" title="Transférer ce compte">
                                         <i class="fas fa-exchange-alt"></i>
                                     </button>
 
@@ -17734,30 +17746,30 @@ Tapez "SUPPRIMER" pour confirmer :`;
         // ============================================================================
 
         // Open transfer modal
-        function openTransferModal(accountId, username, currentCreatorName) {
-            console.log('📤 Opening transfer modal for:', username);
+        function openTransferModal(accountId, username, currentVaName, currentVaId) {
+            console.log('📤 Opening transfer modal for:', username, 'current VA:', currentVaName);
 
             // Set hidden fields
             document.getElementById('transfer-twitter-id').value = accountId;
             document.getElementById('transfer-twitter-username').value = username;
-            document.getElementById('transfer-from-creator').value = currentCreatorName;
+            document.getElementById('transfer-from-creator').value = currentVaId || '';
 
             // Update display
             document.getElementById('transfer-username-display').textContent = '@' + username.replace('@', '');
             document.getElementById('transfer-from-display').innerHTML =
-                `Actuellement géré par: <span style="font-weight: 500; color: #8b5cf6;">${currentCreatorName}</span>`;
+                `Actuellement géré par: <span style="font-weight: 500; color: #8b5cf6;">${currentVaName}</span>`;
 
             // Populate VA dropdown (exclude current VA)
             const vaSelect = document.getElementById('transfer-to-va');
             vaSelect.innerHTML = '<option value="">-- Sélectionner un VA --</option>';
 
-            // Get all creators (VAs) except the current one
-            const creators = data.creators || [];
-            creators.forEach(creator => {
-                if (creator.name !== currentCreatorName) {
+            // Get all VAs except the current one
+            const vas = data.vas || [];
+            vas.forEach(va => {
+                if (va.id !== currentVaId) {
                     const option = document.createElement('option');
-                    option.value = creator.id;
-                    option.textContent = creator.name;
+                    option.value = va.id;
+                    option.textContent = va.name;
                     vaSelect.appendChild(option);
                 }
             });
@@ -17776,7 +17788,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
         async function performTransfer() {
             const accountId = document.getElementById('transfer-twitter-id').value;
             const username = document.getElementById('transfer-twitter-username').value;
-            const fromCreator = document.getElementById('transfer-from-creator').value;
+            const fromVaId = document.getElementById('transfer-from-creator').value;
             const toVaId = document.getElementById('transfer-to-va').value;
 
             if (!toVaId) {
@@ -17785,13 +17797,13 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
 
             try {
-                console.log(`📤 Transferring @${username} from ${fromCreator} to VA ID: ${toVaId}`);
+                console.log(`📤 Transferring @${username} from VA ${fromVaId} to VA ${toVaId}`);
 
                 // Call the transfer function
                 await transferTwitterAccount(accountId, toVaId);
 
                 // Find the name of the new VA
-                const newVa = data.creators.find(c => c.id === toVaId);
+                const newVa = data.vas.find(v => v.id === toVaId);
                 const newVaName = newVa ? newVa.name : 'nouveau VA';
 
                 showSuccess(`✅ @${username} transféré vers ${newVaName}`);

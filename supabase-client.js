@@ -4660,31 +4660,19 @@ if (typeof module !== 'undefined' && module.exports) {
 // ============================================================================
 
 /**
- * Transfer a Twitter account from one creator/VA to another
+ * Transfer a Twitter account from one VA to another
  * @param {string} twitterAccountId - The ID of the Twitter account to transfer
- * @param {string} newCreatorId - The ID of the new creator
+ * @param {string} newVaId - The ID of the new VA
  * @returns {Promise<Object>} - Updated Twitter account
  */
-async function transferTwitterAccount(twitterAccountId, newCreatorId) {
+async function transferTwitterAccount(twitterAccountId, newVaId) {
   try {
     const organizationId = await getOrganizationId();
 
-    // Get the VA associated with the new creator
-    const { data: vaCreator, error: vaError } = await supabase
-      .from('va_creators')
-      .select('va_id')
-      .eq('creator_id', newCreatorId)
-      .maybeSingle();
-
-    if (vaError) throw vaError;
-
-    const newVaId = vaCreator?.va_id || null;
-
-    // Update the Twitter account
+    // Update the Twitter account's VA assignment
     const { data, error } = await supabase
       .from('twitter_accounts')
       .update({
-        creator_id: newCreatorId,
         va_id: newVaId,
         updated_at: new Date().toISOString()
       })
@@ -4695,7 +4683,7 @@ async function transferTwitterAccount(twitterAccountId, newCreatorId) {
 
     if (error) throw error;
 
-    console.log(`✅ Twitter account ${twitterAccountId} transferred to creator ${newCreatorId}`);
+    console.log(`✅ Twitter account ${twitterAccountId} transferred to VA ${newVaId}`);
     return data;
   } catch (error) {
     console.error('❌ Error transferring Twitter account:', error);
