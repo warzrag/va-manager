@@ -5185,6 +5185,94 @@
                 </div>
             </div>
 
+            <!-- VAs Section - Pro Dashboard -->
+            <div class="dash-section dash-va-pro-section">
+                <div class="dash-section-header">
+                    <h3 class="dash-section-title">
+                        <i class="fas fa-user-tie"></i>
+                        Equipe VAs
+                    </h3>
+                    <div class="dash-va-header-actions">
+                        <span id="va-grid-count-badge" class="dash-section-badge">
+                            <i class="fas fa-circle" style="font-size: 0.5rem; color: #10b981;"></i>
+                            0 VAs
+                        </span>
+                        <button onclick="navigateToPage('add-va-page')" class="dash-action-btn success" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
+                            <i class="fas fa-plus"></i> Ajouter VA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs VAs Globaux -->
+                <div class="dash-va-kpis" id="va-global-kpis">
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-total">0</div>
+                            <div class="dash-va-kpi-label">VAs Actifs</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon twitter">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-twitter">0</div>
+                            <div class="dash-va-kpi-label">Comptes Twitter</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon instagram">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-instagram">0</div>
+                            <div class="dash-va-kpi-label">Comptes Instagram</div>
+                        </div>
+                    </div>
+                    <div class="dash-va-kpi">
+                        <div class="dash-va-kpi-icon warning">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="dash-va-kpi-content">
+                            <div class="dash-va-kpi-value" id="va-kpi-avg">0</div>
+                            <div class="dash-va-kpi-label">Comptes/VA moy.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau de classement VAs Pro -->
+                <div class="dash-va-leaderboard" id="va-leaderboard">
+                    <div class="dash-va-leaderboard-header">
+                        <div class="dash-va-col-rank">#</div>
+                        <div class="dash-va-col-name">Virtual Assistant</div>
+                        <div class="dash-va-col-accounts">Comptes Twitter</div>
+                        <div class="dash-va-col-total">Total</div>
+                        <div class="dash-va-col-actions">Actions</div>
+                    </div>
+                    <div class="dash-va-leaderboard-body" id="va-leaderboard-body">
+                        <!-- Rows will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Vue grille (cachée par défaut) -->
+                <div class="dash-va-grid" id="va-grid" style="display: none;">
+                    <!-- VA cards will be dynamically inserted here -->
+                </div>
+
+                <!-- Toggle vue -->
+                <div class="dash-va-view-toggle">
+                    <button class="dash-view-btn active" onclick="setVAView('table')" id="va-view-table">
+                        <i class="fas fa-list"></i> Tableau
+                    </button>
+                    <button class="dash-view-btn" onclick="setVAView('grid')" id="va-view-grid">
+                        <i class="fas fa-th-large"></i> Grille
+                    </button>
+                </div>
+            </div>
+
             <!-- Twitter Stats - Simple Dashboard -->
             <div class="dash-section" id="twitter-simple-section">
                 <div class="dash-section-header">
@@ -5284,94 +5372,6 @@
                             Chargement...
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- VAs Section - Pro Dashboard -->
-            <div class="dash-section dash-va-pro-section">
-                <div class="dash-section-header">
-                    <h3 class="dash-section-title">
-                        <i class="fas fa-user-tie"></i>
-                        Equipe VAs
-                    </h3>
-                    <div class="dash-va-header-actions">
-                        <span id="va-grid-count-badge" class="dash-section-badge">
-                            <i class="fas fa-circle" style="font-size: 0.5rem; color: #10b981;"></i>
-                            0 VAs
-                        </span>
-                        <button onclick="navigateToPage('add-va-page')" class="dash-action-btn success" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
-                            <i class="fas fa-plus"></i> Ajouter VA
-                        </button>
-                    </div>
-                </div>
-
-                <!-- KPIs VAs Globaux -->
-                <div class="dash-va-kpis" id="va-global-kpis">
-                    <div class="dash-va-kpi">
-                        <div class="dash-va-kpi-icon primary">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="dash-va-kpi-content">
-                            <div class="dash-va-kpi-value" id="va-kpi-total">0</div>
-                            <div class="dash-va-kpi-label">VAs Actifs</div>
-                        </div>
-                    </div>
-                    <div class="dash-va-kpi">
-                        <div class="dash-va-kpi-icon twitter">
-                            <i class="fab fa-twitter"></i>
-                        </div>
-                        <div class="dash-va-kpi-content">
-                            <div class="dash-va-kpi-value" id="va-kpi-twitter">0</div>
-                            <div class="dash-va-kpi-label">Comptes Twitter</div>
-                        </div>
-                    </div>
-                    <div class="dash-va-kpi">
-                        <div class="dash-va-kpi-icon instagram">
-                            <i class="fab fa-instagram"></i>
-                        </div>
-                        <div class="dash-va-kpi-content">
-                            <div class="dash-va-kpi-value" id="va-kpi-instagram">0</div>
-                            <div class="dash-va-kpi-label">Comptes Instagram</div>
-                        </div>
-                    </div>
-                    <div class="dash-va-kpi">
-                        <div class="dash-va-kpi-icon warning">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="dash-va-kpi-content">
-                            <div class="dash-va-kpi-value" id="va-kpi-avg">0</div>
-                            <div class="dash-va-kpi-label">Comptes/VA moy.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tableau de classement VAs Pro -->
-                <div class="dash-va-leaderboard" id="va-leaderboard">
-                    <div class="dash-va-leaderboard-header">
-                        <div class="dash-va-col-rank">#</div>
-                        <div class="dash-va-col-name">Virtual Assistant</div>
-                        <div class="dash-va-col-accounts">Comptes Twitter</div>
-                        <div class="dash-va-col-total">Total</div>
-                        <div class="dash-va-col-actions">Actions</div>
-                    </div>
-                    <div class="dash-va-leaderboard-body" id="va-leaderboard-body">
-                        <!-- Rows will be generated here -->
-                    </div>
-                </div>
-
-                <!-- Vue grille (cachée par défaut) -->
-                <div class="dash-va-grid" id="va-grid" style="display: none;">
-                    <!-- VA cards will be dynamically inserted here -->
-                </div>
-
-                <!-- Toggle vue -->
-                <div class="dash-va-view-toggle">
-                    <button class="dash-view-btn active" onclick="setVAView('table')" id="va-view-table">
-                        <i class="fas fa-list"></i> Tableau
-                    </button>
-                    <button class="dash-view-btn" onclick="setVAView('grid')" id="va-view-grid">
-                        <i class="fas fa-th-large"></i> Grille
-                    </button>
                 </div>
             </div>
 
