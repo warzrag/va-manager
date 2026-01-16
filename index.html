@@ -16017,15 +16017,28 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     // Initiale du VA
                     const initial = va.name.charAt(0).toUpperCase();
 
-                    // Générer les liens Twitter cliquables
+                    // Générer les liens Twitter cliquables avec couleur statut
                     let twitterLinksHtml = '';
                     if (va.twitterAccounts.length > 0) {
                         twitterLinksHtml = '<div class="dash-va-twitter-list">';
                         va.twitterAccounts.forEach(acc => {
                             const username = acc.username.replace('@', '');
+                            const status = acc.status || 'active';
+                            let statusColor = '#1da1f2'; // Bleu Twitter par défaut (actif)
+                            let statusIcon = 'fa-twitter';
+                            let statusTitle = 'Actif';
+                            if (status === 'banned') {
+                                statusColor = '#ef4444'; // Rouge
+                                statusIcon = 'fa-ban';
+                                statusTitle = 'Banni';
+                            } else if (status === 'shadowban') {
+                                statusColor = '#f59e0b'; // Orange
+                                statusIcon = 'fa-ghost';
+                                statusTitle = 'Shadowban';
+                            }
                             twitterLinksHtml += `
-                                <a href="https://x.com/${username}" target="_blank" class="dash-va-twitter-link" onclick="event.stopPropagation()">
-                                    <i class="fab fa-twitter"></i>
+                                <a href="https://x.com/${username}" target="_blank" class="dash-va-twitter-link" style="background: ${statusColor}15; border-color: ${statusColor}; color: ${statusColor};" onclick="event.stopPropagation()" title="${statusTitle}">
+                                    <i class="fab ${status === 'active' ? 'fa-twitter' : ''} ${status === 'banned' ? 'fas fa-ban' : ''} ${status === 'shadowban' ? 'fas fa-ghost' : ''}"></i>
                                     @${username}
                                 </a>
                             `;
@@ -18998,7 +19011,138 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 setButtonLoading(submitBtn, false, originalText);
             }
         }
-        
+
+        // Edit VA - Modal pour modifier le statut des comptes Twitter
+        async function editVA(vaId) {
+            const va = data.vas.find(v => v.id === vaId);
+            if (!va) return;
+
+            // Trouver tous les comptes Twitter de ce VA
+            const twitterAccounts = [];
+            if (data.creators) {
+                data.creators.forEach(creator => {
+                    if (creator.vaIds && creator.vaIds.includes(vaId)) {
+                        if (creator.accounts) {
+                            creator.accounts.forEach(acc => {
+                                // Si créatrice a plusieurs VAs, vérifier assignedVaId
+                                if (creator.vaIds.length === 1 || acc.assignedVaId === vaId) {
+                                    twitterAccounts.push({
+                                        ...acc,
+                                        creatorName: creator.name,
+                                        creatorId: creator.id
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (twitterAccounts.length === 0) {
+                showError('Aucun compte Twitter associé à ce VA');
+                return;
+            }
+
+            // Créer le contenu du modal
+            const accountsHtml = twitterAccounts.map(acc => {
+                const username = acc.username.replace('@', '');
+                const currentStatus = acc.status || 'active';
+                return `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--card-bg, #f8fafc); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-primary, #1f2937);">@${username}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted, #64748b);">${acc.creatorName}</div>
+                        </div>
+                        <select id="status-${acc.id}" data-account-id="${acc.id}" data-creator-id="${acc.creatorId}" class="account-status-select" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color, #e2e8f0); font-size: 0.875rem; cursor: pointer;">
+                            <option value="active" ${currentStatus === 'active' ? 'selected' : ''}>✅ Actif</option>
+                            <option value="banned" ${currentStatus === 'banned' ? 'selected' : ''}>🚫 Banni</option>
+                            <option value="shadowban" ${currentStatus === 'shadowban' ? 'selected' : ''}>👻 Shadowban</option>
+                        </select>
+                    </div>
+                `;
+            }).join('');
+
+            // Afficher le modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'edit-va-modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-edit" style="color: #3b82f6;"></i>
+                            Modifier les comptes de ${va.name}
+                        </h3>
+                        <button onclick="closeEditVAModal()" class="modal-close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <p style="color: var(--text-muted, #64748b); font-size: 0.875rem; margin-bottom: 1rem;">
+                            Modifiez le statut de chaque compte Twitter :
+                        </p>
+                        ${accountsHtml}
+                    </div>
+                    <div class="modal-footer" style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color, #e2e8f0);">
+                        <button onclick="closeEditVAModal()" class="btn btn-secondary">Annuler</button>
+                        <button onclick="saveAccountStatuses('${vaId}')" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+        }
+
+        function closeEditVAModal() {
+            const modal = document.getElementById('edit-va-modal');
+            if (modal) modal.remove();
+        }
+
+        async function saveAccountStatuses(vaId) {
+            const selects = document.querySelectorAll('.account-status-select');
+            const updates = [];
+
+            selects.forEach(select => {
+                updates.push({
+                    accountId: select.dataset.accountId,
+                    creatorId: select.dataset.creatorId,
+                    status: select.value
+                });
+            });
+
+            try {
+                // Grouper par créatrice pour mise à jour
+                const updatesByCreator = {};
+                updates.forEach(u => {
+                    if (!updatesByCreator[u.creatorId]) {
+                        updatesByCreator[u.creatorId] = [];
+                    }
+                    updatesByCreator[u.creatorId].push({ id: u.accountId, status: u.status });
+                });
+
+                // Mettre à jour chaque créatrice
+                for (const [creatorId, accountUpdates] of Object.entries(updatesByCreator)) {
+                    const creator = data.creators.find(c => c.id === creatorId);
+                    if (creator && creator.accounts) {
+                        accountUpdates.forEach(update => {
+                            const acc = creator.accounts.find(a => a.id === update.id);
+                            if (acc) acc.status = update.status;
+                        });
+                        // Sauvegarder en base
+                        await window.updateCreator(creatorId, { accounts: creator.accounts });
+                    }
+                }
+
+                showSuccess('Statuts mis à jour');
+                closeEditVAModal();
+                updateVAGrid();
+                updateBannedAccountsAlert();
+            } catch (error) {
+                console.error('Error updating statuses:', error);
+                showError('Erreur lors de la mise à jour');
+            }
+        }
+
         // Delete VA - SUPABASE VERSION
         async function deleteVA(vaId) {
             const va = data.vas.find(v => v.id === vaId);
