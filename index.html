@@ -23804,22 +23804,38 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 // === AGGREGATE SUBS BY VA ===
                 // Get all twitter accounts to find VA assignments
                 const allTwitterAccounts = data.twitterAccounts || [];
+                console.log('📊 Twitter accounts for VA aggregation:', allTwitterAccounts.length);
+
                 const subsByVa = {};
 
                 entries.forEach(entry => {
                     // Find the twitter account
                     const twitterAccount = allTwitterAccounts.find(acc => acc.id === entry.twitter_account_id);
                     if (twitterAccount) {
-                        // Get VA ID from the account (vaId, va_id, or assignedVaId)
+                        // Get VA ID from the account - check all possible field names
                         const vaId = twitterAccount.vaId || twitterAccount.va_id || twitterAccount.assignedVaId;
+                        console.log(`📌 Account ${twitterAccount.username}: vaId=${vaId}, subs=${entry.subs}`, twitterAccount);
                         if (vaId) {
                             if (!subsByVa[vaId]) {
                                 subsByVa[vaId] = 0;
                             }
                             subsByVa[vaId] += entry.subs;
+                        } else {
+                            // Try to get VA via creator
+                            const creator = (data.creators || []).find(c => c.id === twitterAccount.creatorId);
+                            if (creator && creator.vaIds && creator.vaIds.length > 0) {
+                                const fallbackVaId = creator.vaIds[0];
+                                console.log(`📌 Using creator's VA: ${fallbackVaId}`);
+                                if (!subsByVa[fallbackVaId]) {
+                                    subsByVa[fallbackVaId] = 0;
+                                }
+                                subsByVa[fallbackVaId] += entry.subs;
+                            }
                         }
                     }
                 });
+
+                console.log('📊 Subs by VA:', subsByVa);
 
                 // Save aggregated subs per VA
                 const vaEntries = Object.entries(subsByVa).map(([va_id, subs]) => ({
@@ -23827,9 +23843,17 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     subs
                 }));
 
-                if (vaEntries.length > 0 && typeof window.bulkSaveVASubsTracking === 'function') {
-                    await window.bulkSaveVASubsTracking(vaEntries, date);
-                    console.log('✅ VA subs tracking updated:', vaEntries);
+                console.log('📊 VA entries to save:', vaEntries);
+
+                if (vaEntries.length > 0) {
+                    if (typeof window.bulkSaveVASubsTracking === 'function') {
+                        await window.bulkSaveVASubsTracking(vaEntries, date);
+                        console.log('✅ VA subs tracking saved successfully!');
+                    } else {
+                        console.error('❌ bulkSaveVASubsTracking function not found on window');
+                    }
+                } else {
+                    console.warn('⚠️ No VA entries to save - accounts may not have VA assignments');
                 }
                 // === END AGGREGATE ===
 
