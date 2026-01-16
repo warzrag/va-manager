@@ -19366,31 +19366,28 @@ Tapez "SUPPRIMER" pour confirmer :`;
             cards.forEach(card => {
                 updates.push({
                     accountId: card.dataset.accountId,
-                    creatorId: card.dataset.creatorId,
                     status: card.dataset.status
                 });
             });
 
             try {
-                // Grouper par créatrice pour mise à jour
-                const updatesByCreator = {};
-                updates.forEach(u => {
-                    if (!updatesByCreator[u.creatorId]) {
-                        updatesByCreator[u.creatorId] = [];
-                    }
-                    updatesByCreator[u.creatorId].push({ id: u.accountId, status: u.status });
-                });
+                // Mettre à jour chaque compte Twitter directement
+                for (const update of updates) {
+                    await window.updateTwitterAccount(update.accountId, { status: update.status });
 
-                // Mettre à jour chaque créatrice
-                for (const [creatorId, accountUpdates] of Object.entries(updatesByCreator)) {
-                    const creator = data.creators.find(c => c.id === creatorId);
-                    if (creator && creator.accounts) {
-                        accountUpdates.forEach(update => {
-                            const acc = creator.accounts.find(a => a.id === update.id);
-                            if (acc) acc.status = update.status;
+                    // Mettre à jour aussi dans le cache local
+                    if (data.twitterAccounts) {
+                        const acc = data.twitterAccounts.find(a => a.id === update.accountId);
+                        if (acc) acc.status = update.status;
+                    }
+                    // Et dans les créatrices
+                    if (data.creators) {
+                        data.creators.forEach(creator => {
+                            if (creator.accounts) {
+                                const acc = creator.accounts.find(a => a.id === update.accountId);
+                                if (acc) acc.status = update.status;
+                            }
                         });
-                        // Sauvegarder en base
-                        await window.updateCreator(creatorId, { accounts: creator.accounts });
                     }
                 }
 
