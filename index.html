@@ -19012,7 +19012,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
             }
         }
 
-        // Edit VA - Modal pour modifier le statut des comptes Twitter
+        // Edit VA - Overlay design pour modifier le statut des comptes Twitter
         async function editVA(vaId) {
             const va = data.vas.find(v => v.id === vaId);
             if (!va) return;
@@ -19024,7 +19024,6 @@ Tapez "SUPPRIMER" pour confirmer :`;
                     if (creator.vaIds && creator.vaIds.includes(vaId)) {
                         if (creator.accounts) {
                             creator.accounts.forEach(acc => {
-                                // Si créatrice a plusieurs VAs, vérifier assignedVaId
                                 if (creator.vaIds.length === 1 || acc.assignedVaId === vaId) {
                                     twitterAccounts.push({
                                         ...acc,
@@ -19043,70 +19042,332 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 return;
             }
 
-            // Créer le contenu du modal
+            // Générer les cards des comptes
             const accountsHtml = twitterAccounts.map(acc => {
                 const username = acc.username.replace('@', '');
                 const currentStatus = acc.status || 'active';
+                const statusColors = {
+                    active: { bg: '#10b981', icon: 'fa-check-circle', label: 'Actif' },
+                    banned: { bg: '#ef4444', icon: 'fa-ban', label: 'Banni' },
+                    shadowban: { bg: '#f59e0b', icon: 'fa-ghost', label: 'Shadowban' }
+                };
+                const status = statusColors[currentStatus];
+
                 return `
-                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--card-bg, #f8fafc); border-radius: 0.5rem; margin-bottom: 0.5rem;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; color: var(--text-primary, #1f2937);">@${username}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted, #64748b);">${acc.creatorName}</div>
+                    <div class="edit-va-account-card" data-account-id="${acc.id}" data-creator-id="${acc.creatorId}" data-status="${currentStatus}">
+                        <div class="edit-va-account-info">
+                            <div class="edit-va-account-avatar" style="background: ${status.bg};">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div class="edit-va-account-details">
+                                <div class="edit-va-account-username">@${username}</div>
+                                <div class="edit-va-account-creator">${acc.creatorName}</div>
+                            </div>
                         </div>
-                        <select id="status-${acc.id}" data-account-id="${acc.id}" data-creator-id="${acc.creatorId}" class="account-status-select" style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color, #e2e8f0); font-size: 0.875rem; cursor: pointer;">
-                            <option value="active" ${currentStatus === 'active' ? 'selected' : ''}>✅ Actif</option>
-                            <option value="banned" ${currentStatus === 'banned' ? 'selected' : ''}>🚫 Banni</option>
-                            <option value="shadowban" ${currentStatus === 'shadowban' ? 'selected' : ''}>👻 Shadowban</option>
-                        </select>
+                        <div class="edit-va-status-buttons">
+                            <button type="button" class="edit-va-status-btn ${currentStatus === 'active' ? 'active' : ''}" data-status="active" onclick="setAccountStatus(this, 'active')">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Actif</span>
+                            </button>
+                            <button type="button" class="edit-va-status-btn ${currentStatus === 'banned' ? 'active' : ''}" data-status="banned" onclick="setAccountStatus(this, 'banned')">
+                                <i class="fas fa-ban"></i>
+                                <span>Banni</span>
+                            </button>
+                            <button type="button" class="edit-va-status-btn ${currentStatus === 'shadowban' ? 'active' : ''}" data-status="shadowban" onclick="setAccountStatus(this, 'shadowban')">
+                                <i class="fas fa-ghost"></i>
+                                <span>Shadow</span>
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
 
-            // Afficher le modal
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.id = 'edit-va-modal';
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px;">
-                    <div class="modal-header">
-                        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-edit" style="color: #3b82f6;"></i>
-                            Modifier les comptes de ${va.name}
-                        </h3>
-                        <button onclick="closeEditVAModal()" class="modal-close-btn">&times;</button>
+            // Créer l'overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'edit-va-overlay';
+            overlay.innerHTML = `
+                <style>
+                    #edit-va-overlay {
+                        position: fixed;
+                        inset: 0;
+                        background: rgba(15, 23, 42, 0.8);
+                        backdrop-filter: blur(8px);
+                        z-index: 9999;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 1rem;
+                        animation: overlayFadeIn 0.2s ease-out;
+                    }
+                    @keyframes overlayFadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes modalSlideIn {
+                        from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+                        to { opacity: 1; transform: scale(1) translateY(0); }
+                    }
+                    .edit-va-modal {
+                        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                        border-radius: 1.5rem;
+                        width: 100%;
+                        max-width: 480px;
+                        max-height: 85vh;
+                        overflow: hidden;
+                        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                        animation: modalSlideIn 0.3s ease-out;
+                        border: 1px solid rgba(255,255,255,0.1);
+                    }
+                    .edit-va-header {
+                        padding: 1.5rem;
+                        border-bottom: 1px solid rgba(255,255,255,0.1);
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    }
+                    .edit-va-header-left {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    .edit-va-header-icon {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 12px;
+                        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.25rem;
+                        color: white;
+                    }
+                    .edit-va-header-text h3 {
+                        margin: 0;
+                        color: #f1f5f9;
+                        font-size: 1.125rem;
+                        font-weight: 700;
+                    }
+                    .edit-va-header-text p {
+                        margin: 0.25rem 0 0;
+                        color: #64748b;
+                        font-size: 0.8125rem;
+                    }
+                    .edit-va-close {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 10px;
+                        background: rgba(255,255,255,0.05);
+                        border: none;
+                        color: #94a3b8;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.25rem;
+                        transition: all 0.2s;
+                    }
+                    .edit-va-close:hover {
+                        background: rgba(239, 68, 68, 0.2);
+                        color: #ef4444;
+                    }
+                    .edit-va-body {
+                        padding: 1rem 1.5rem;
+                        max-height: 400px;
+                        overflow-y: auto;
+                    }
+                    .edit-va-body::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    .edit-va-body::-webkit-scrollbar-track {
+                        background: rgba(255,255,255,0.05);
+                        border-radius: 3px;
+                    }
+                    .edit-va-body::-webkit-scrollbar-thumb {
+                        background: rgba(255,255,255,0.2);
+                        border-radius: 3px;
+                    }
+                    .edit-va-account-card {
+                        background: rgba(255,255,255,0.03);
+                        border: 1px solid rgba(255,255,255,0.08);
+                        border-radius: 0.75rem;
+                        padding: 1rem;
+                        margin-bottom: 0.75rem;
+                        transition: all 0.2s;
+                    }
+                    .edit-va-account-card:hover {
+                        background: rgba(255,255,255,0.05);
+                        border-color: rgba(255,255,255,0.12);
+                    }
+                    .edit-va-account-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        margin-bottom: 0.75rem;
+                    }
+                    .edit-va-account-avatar {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 1rem;
+                    }
+                    .edit-va-account-username {
+                        color: #f1f5f9;
+                        font-weight: 600;
+                        font-size: 0.9375rem;
+                    }
+                    .edit-va-account-creator {
+                        color: #64748b;
+                        font-size: 0.75rem;
+                    }
+                    .edit-va-status-buttons {
+                        display: flex;
+                        gap: 0.5rem;
+                    }
+                    .edit-va-status-btn {
+                        flex: 1;
+                        padding: 0.5rem;
+                        border-radius: 0.5rem;
+                        border: 1px solid rgba(255,255,255,0.1);
+                        background: rgba(255,255,255,0.03);
+                        color: #94a3b8;
+                        cursor: pointer;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.25rem;
+                        font-size: 0.6875rem;
+                        transition: all 0.2s;
+                    }
+                    .edit-va-status-btn i {
+                        font-size: 1rem;
+                    }
+                    .edit-va-status-btn:hover {
+                        background: rgba(255,255,255,0.08);
+                    }
+                    .edit-va-status-btn.active[data-status="active"] {
+                        background: rgba(16, 185, 129, 0.2);
+                        border-color: #10b981;
+                        color: #10b981;
+                    }
+                    .edit-va-status-btn.active[data-status="banned"] {
+                        background: rgba(239, 68, 68, 0.2);
+                        border-color: #ef4444;
+                        color: #ef4444;
+                    }
+                    .edit-va-status-btn.active[data-status="shadowban"] {
+                        background: rgba(245, 158, 11, 0.2);
+                        border-color: #f59e0b;
+                        color: #f59e0b;
+                    }
+                    .edit-va-footer {
+                        padding: 1rem 1.5rem 1.5rem;
+                        display: flex;
+                        gap: 0.75rem;
+                    }
+                    .edit-va-btn {
+                        flex: 1;
+                        padding: 0.875rem 1.5rem;
+                        border-radius: 0.75rem;
+                        font-weight: 600;
+                        font-size: 0.9375rem;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.5rem;
+                    }
+                    .edit-va-btn-cancel {
+                        background: rgba(255,255,255,0.05);
+                        border: 1px solid rgba(255,255,255,0.1);
+                        color: #94a3b8;
+                    }
+                    .edit-va-btn-cancel:hover {
+                        background: rgba(255,255,255,0.1);
+                        color: #f1f5f9;
+                    }
+                    .edit-va-btn-save {
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        border: none;
+                        color: white;
+                        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                    }
+                    .edit-va-btn-save:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+                    }
+                </style>
+                <div class="edit-va-modal">
+                    <div class="edit-va-header">
+                        <div class="edit-va-header-left">
+                            <div class="edit-va-header-icon">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <div class="edit-va-header-text">
+                                <h3>${va.name}</h3>
+                                <p>${twitterAccounts.length} compte${twitterAccounts.length > 1 ? 's' : ''} Twitter</p>
+                            </div>
+                        </div>
+                        <button class="edit-va-close" onclick="closeEditVAModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        <p style="color: var(--text-muted, #64748b); font-size: 0.875rem; margin-bottom: 1rem;">
-                            Modifiez le statut de chaque compte Twitter :
-                        </p>
+                    <div class="edit-va-body">
                         ${accountsHtml}
                     </div>
-                    <div class="modal-footer" style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color, #e2e8f0);">
-                        <button onclick="closeEditVAModal()" class="btn btn-secondary">Annuler</button>
-                        <button onclick="saveAccountStatuses('${vaId}')" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer
+                    <div class="edit-va-footer">
+                        <button class="edit-va-btn edit-va-btn-cancel" onclick="closeEditVAModal()">
+                            Annuler
+                        </button>
+                        <button class="edit-va-btn edit-va-btn-save" onclick="saveAccountStatuses('${vaId}')">
+                            <i class="fas fa-check"></i>
+                            Enregistrer
                         </button>
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-            modal.style.display = 'flex';
+            document.body.appendChild(overlay);
+
+            // Fermer en cliquant sur le fond
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeEditVAModal();
+            });
+        }
+
+        function setAccountStatus(btn, status) {
+            const card = btn.closest('.edit-va-account-card');
+            const buttons = card.querySelectorAll('.edit-va-status-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            card.dataset.status = status;
+
+            // Changer la couleur de l'avatar
+            const avatar = card.querySelector('.edit-va-account-avatar');
+            const colors = { active: '#10b981', banned: '#ef4444', shadowban: '#f59e0b' };
+            avatar.style.background = colors[status];
         }
 
         function closeEditVAModal() {
-            const modal = document.getElementById('edit-va-modal');
-            if (modal) modal.remove();
+            const overlay = document.getElementById('edit-va-overlay');
+            if (overlay) {
+                overlay.style.animation = 'overlayFadeIn 0.2s ease-out reverse';
+                setTimeout(() => overlay.remove(), 150);
+            }
         }
 
         async function saveAccountStatuses(vaId) {
-            const selects = document.querySelectorAll('.account-status-select');
+            const cards = document.querySelectorAll('.edit-va-account-card');
             const updates = [];
 
-            selects.forEach(select => {
+            cards.forEach(card => {
                 updates.push({
-                    accountId: select.dataset.accountId,
-                    creatorId: select.dataset.creatorId,
-                    status: select.value
+                    accountId: card.dataset.accountId,
+                    creatorId: card.dataset.creatorId,
+                    status: card.dataset.status
                 });
             });
 
