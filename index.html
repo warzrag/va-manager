@@ -23801,10 +23801,47 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                 await window.bulkSaveTwitterSubsTracking(entries, date);
 
+                // === AGGREGATE SUBS BY VA ===
+                // Get all twitter accounts to find VA assignments
+                const allTwitterAccounts = data.twitterAccounts || [];
+                const subsByVa = {};
+
+                entries.forEach(entry => {
+                    // Find the twitter account
+                    const twitterAccount = allTwitterAccounts.find(acc => acc.id === entry.twitter_account_id);
+                    if (twitterAccount) {
+                        // Get VA ID from the account (vaId, va_id, or assignedVaId)
+                        const vaId = twitterAccount.vaId || twitterAccount.va_id || twitterAccount.assignedVaId;
+                        if (vaId) {
+                            if (!subsByVa[vaId]) {
+                                subsByVa[vaId] = 0;
+                            }
+                            subsByVa[vaId] += entry.subs;
+                        }
+                    }
+                });
+
+                // Save aggregated subs per VA
+                const vaEntries = Object.entries(subsByVa).map(([va_id, subs]) => ({
+                    va_id,
+                    subs
+                }));
+
+                if (vaEntries.length > 0 && typeof window.bulkSaveVASubsTracking === 'function') {
+                    await window.bulkSaveVASubsTracking(vaEntries, date);
+                    console.log('✅ VA subs tracking updated:', vaEntries);
+                }
+                // === END AGGREGATE ===
+
                 showSuccess(`${entries.length} comptes enregistrés avec succès!`);
 
                 // Reload the data
                 await loadSubsTrackingData();
+
+                // Update dashboard VA subs ranking if visible
+                if (typeof updateVASubsRanking === 'function') {
+                    await updateVASubsRanking();
+                }
 
                 // Reset save button
                 if (saveBtn) {
