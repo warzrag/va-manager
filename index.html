@@ -5338,34 +5338,37 @@
             <div class="dash-section" id="va-subs-ranking-section">
                 <div class="dash-section-header">
                     <h3 class="dash-section-title">
-                        <i class="fas fa-trophy" style="color: #8b5cf6;"></i>
+                        <i class="fas fa-trophy" style="color: #6366f1;"></i>
                         Top VAs par SUBs
                     </h3>
-                    <button onclick="navigateToPage('subs-tracking')" class="dash-action-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+                    <button onclick="navigateToPage('subs-tracking')" class="dash-action-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white;">
                         <i class="fas fa-chart-bar"></i> Détails
                     </button>
                 </div>
 
                 <!-- Stats Cards -->
                 <div id="va-subs-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
-                        <div style="font-size: 1.75rem; font-weight: 800;" id="va-subs-total-today">0</div>
-                        <div style="font-size: 0.8125rem; opacity: 0.9;">SUBs Aujourd'hui</div>
+                    <div style="background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; margin-bottom: 0.25rem;">Aujourd'hui</div>
+                        <div style="font-size: 2rem; font-weight: 800;" id="va-subs-total-today">0</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8;">SUBs</div>
                     </div>
-                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
-                        <div style="font-size: 1.75rem; font-weight: 800;" id="va-subs-total-week">0</div>
-                        <div style="font-size: 0.8125rem; opacity: 0.9;">SUBs cette semaine</div>
+                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; margin-bottom: 0.25rem;">Cette semaine</div>
+                        <div style="font-size: 2rem; font-weight: 800;" id="va-subs-total-week">0</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8;">SUBs</div>
                     </div>
-                    <div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center;">
-                        <div style="font-size: 1.75rem; font-weight: 800;" id="va-subs-best-va">-</div>
-                        <div style="font-size: 0.8125rem; opacity: 0.9;">Meilleur VA</div>
+                    <div style="background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); border-radius: 12px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; margin-bottom: 0.25rem;">Meilleur VA</div>
+                        <div style="font-size: 1.25rem; font-weight: 800;" id="va-subs-best-va">-</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8;"><i class="fas fa-crown" style="font-size: 0.625rem;"></i> Top performer</div>
                     </div>
                 </div>
 
                 <!-- Ranking -->
-                <div style="background: var(--dash-card-bg, white); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--dash-border, #e2e8f0);">
+                <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.05) 100%); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(99, 102, 241, 0.15);">
                     <div style="font-weight: 600; color: var(--dash-text, #1f2937); margin-bottom: 1rem; font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-medal" style="color: #8b5cf6;"></i> Classement SUBs (7 derniers jours)
+                        <i class="fas fa-medal" style="color: #6366f1;"></i> Classement SUBs (7 derniers jours)
                     </div>
                     <div id="va-subs-ranking" style="display: flex; flex-direction: column; gap: 0.625rem;">
                         <div style="color: var(--dash-text-muted, #64748b); font-size: 0.875rem; text-align: center; padding: 1rem;">
@@ -11918,23 +11921,23 @@
                 // Render ranking
                 const medals = ['🥇', '🥈', '🥉'];
                 rankingContainer.innerHTML = ranking.slice(0, 5).map((va, i) => `
-                    <div style="display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1rem; background: ${i === 0 ? 'linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)' : 'var(--dash-card-bg, #f8fafc)'}; border-radius: 0.75rem; border: ${i === 0 ? '2px solid #8b5cf6' : '1px solid var(--dash-border, #e2e8f0)'}; transition: all 0.2s;" onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
-                        <div style="width: 36px; height: 36px; border-radius: 10px; background: ${i < 3 ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; font-size: ${i < 3 ? '1.125rem' : '0.875rem'}; font-weight: 700; color: ${i < 3 ? 'white' : '#64748b'}; box-shadow: ${i < 3 ? '0 2px 8px rgba(139, 92, 246, 0.3)' : 'none'};">
+                    <div style="display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1rem; background: ${i === 0 ? 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)' : 'var(--dash-card-bg, #f8fafc)'}; border-radius: 0.75rem; border: ${i === 0 ? '2px solid #6366f1' : '1px solid var(--dash-border, #e2e8f0)'}; transition: all 0.2s;" onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(99,102,241,0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                        <div style="width: 36px; height: 36px; border-radius: 10px; background: ${i < 3 ? 'linear-gradient(135deg, #818cf8 0%, #6366f1 100%)' : '#e2e8f0'}; display: flex; align-items: center; justify-content: center; font-size: ${i < 3 ? '1.125rem' : '0.875rem'}; font-weight: 700; color: ${i < 3 ? 'white' : '#64748b'}; box-shadow: ${i < 3 ? '0 2px 8px rgba(99, 102, 241, 0.3)' : 'none'};">
                             ${i < 3 ? medals[i] : (i + 1)}
                         </div>
-                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             ${va.photo
                                 ? `<img src="${va.photo}" alt="${va.name}" style="width: 100%; height: 100%; object-fit: cover;">`
                                 : `<i class="fas fa-user" style="color: white; font-size: 1rem;"></i>`
                             }
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; color: ${i === 0 ? '#1f2937' : 'var(--dash-text, #1f2937)'}; font-size: 0.9375rem;">${va.name}</div>
-                            <div style="font-size: 0.75rem; color: ${i === 0 ? '#6b7280' : 'var(--dash-text-muted, #64748b)'};">
-                                ${va.today > 0 ? `+${va.today} aujourd'hui` : 'Pas de SUBs aujourd\'hui'}
+                            <div style="font-weight: 700; color: ${i === 0 ? '#1e1b4b' : 'var(--dash-text, #1f2937)'}; font-size: 0.9375rem;">${va.name}</div>
+                            <div style="font-size: 0.75rem; color: ${i === 0 ? '#4338ca' : 'var(--dash-text-muted, #64748b)'};">
+                                ${va.today > 0 ? `<i class="fas fa-arrow-up" style="font-size: 0.625rem;"></i> +${va.today} aujourd'hui` : 'Pas de SUBs aujourd\'hui'}
                             </div>
                         </div>
-                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.5rem 0.875rem; border-radius: 0.5rem; font-weight: 800; font-size: 0.9375rem; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">
+                        <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 0.5rem 0.875rem; border-radius: 0.5rem; font-weight: 800; font-size: 0.9375rem; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);">
                             ${va.total} <span style="font-size: 0.6875rem; font-weight: 600; opacity: 0.9;">SUBs</span>
                         </div>
                     </div>
