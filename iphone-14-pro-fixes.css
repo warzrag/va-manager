@@ -1385,3 +1385,37 @@ body.dark-mode .ft-date-input {
         margin-bottom: 1rem !important;
     }
 }
+
+/* ============================================================================
+   16. ANTI-ZOOM & FOND - Empêcher le dézoom et le fond noir
+   ============================================================================ */
+
+/* Empêcher le overscroll qui montre le fond */
+html, body {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Fond qui couvre tout même en cas de bounce scroll */
+html {
+    background: var(--bg-color, #f8fafc);
+    min-height: 100%;
+    min-height: -webkit-fill-available;
+}
+
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+body.dark-mode {
+    background: #0a0b0d;
+}
+
+/* Empêcher le double-tap zoom sur iOS */
+@media (max-width: 768px) {
+    * {
+        touch-action: manipulation;
+    }
+}
