@@ -2,6 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>VA Manager Pro - Application</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -4818,7 +4823,7 @@
         <div class="header-content">
             <!-- Brand -->
             <div class="header-brand">
-                <div class="header-logo">📊</div>
+                <div class="header-logo"><i class="fas fa-bolt"></i></div>
                 <div class="header-title">
                     <h1>VA Manager Pro</h1>
                     <p>Gestion des Virtual Assistants</p>
@@ -4883,6 +4888,18 @@
                         <div class="header-stat-label">Comptes</div>
                     </div>
                 </div>
+                <!-- Navigation secondaire mobile -->
+                <div class="header-mobile-nav-section" style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; padding: 0 0.25rem;">Pages</div>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=add-va]').click(); toggleHeaderMenu();"><i class="fas fa-user-plus"></i><span>Ajouter VA</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=add-creator]').click(); toggleHeaderMenu();"><i class="fas fa-user-friends"></i><span>Créatrices</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=gmail-accounts]').click(); toggleHeaderMenu();"><i class="fas fa-envelope"></i><span>Gmail</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=financial-overview]').click(); toggleHeaderMenu();"><i class="fas fa-coins"></i><span>Finance</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=subs-tracking]').click(); toggleHeaderMenu();"><i class="fas fa-chart-bar"></i><span>Suivi Subs</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=instagram-warmup]').click(); toggleHeaderMenu();"><i class="fas fa-fire"></i><span>Warm-up</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=search]').click(); toggleHeaderMenu();"><i class="fas fa-search"></i><span>Rechercher</span></button>
+                    <button class="header-btn" onclick="document.querySelector('[data-page=import]').click(); toggleHeaderMenu();"><i class="fas fa-file-import"></i><span>Import</span></button>
+                </div>
                 <button class="header-btn" onclick="toggleDarkMode(); toggleHeaderMenu();">
                     <i class="fas fa-moon"></i>
                     <span>Mode Nuit</span>
@@ -4926,13 +4943,13 @@
             <button class="nav-btn" data-page="financial-overview">
                 <i class="fas fa-coins"></i> Finance
             </button>
-            <button class="nav-btn" data-page="followers-tracking" style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); color: white; font-weight: 600; border: 2px solid rgba(29, 161, 242, 0.3); box-shadow: 0 4px 15px rgba(29, 161, 242, 0.2);">
+            <button class="nav-btn" data-page="followers-tracking">
                 <i class="fas fa-users"></i> Suivi Followers
             </button>
-            <button class="nav-btn" data-page="subs-tracking" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; font-weight: 600; border: 2px solid rgba(139, 92, 246, 0.3); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);">
+            <button class="nav-btn" data-page="subs-tracking">
                 <i class="fas fa-chart-bar"></i> Suivi Subs
             </button>
-            <button class="nav-btn" data-page="instagram-warmup" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-weight: 600; border: 2px solid rgba(245, 158, 11, 0.3); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);">
+            <button class="nav-btn" data-page="instagram-warmup">
                 <i class="fas fa-fire"></i> Warm-up
             </button>
             <button class="nav-btn" data-page="search">
@@ -4942,7 +4959,7 @@
                 <i class="fas fa-file-import"></i> Import
             </button>
             <!-- Admin Button - Only visible for organization owners -->
-            <button class="nav-btn" data-page="admin" id="admin-nav-btn" style="display: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 600; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+            <button class="nav-btn" data-page="admin" id="admin-nav-btn" style="display: none;">
                 <i class="fas fa-shield-alt"></i> Admin
             </button>
         </div>

@@ -1419,3 +1419,274 @@ body.dark-mode {
         touch-action: manipulation;
     }
 }
+
+/* ============================================================================
+   17. BOTTOM TAB BAR MOBILE - Navigation pro style iOS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Cacher la nav scrollable classique */
+    .nav {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        z-index: 1000 !important;
+        background: white !important;
+        border-top: 1px solid #e5e7eb !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        padding-bottom: env(safe-area-inset-bottom, 0) !important;
+    }
+
+    body.dark-mode .nav {
+        background: #111827 !important;
+        border-top-color: #1f2937 !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .nav-content {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        padding: 0 !important;
+        min-width: auto !important;
+        overflow: visible !important;
+        flex-wrap: nowrap !important;
+    }
+
+    /* Cacher tous les boutons par défaut */
+    .nav-btn {
+        display: none !important;
+    }
+
+    /* Afficher seulement les 5 principaux + le bouton "Plus" */
+    .nav-btn[data-page="dashboard"],
+    .nav-btn[data-page="team-management"],
+    .nav-btn[data-page="add-account"],
+    .nav-btn[data-page="followers-tracking"],
+    .nav-btn[data-page="revenue-tracking"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+        padding: 0.5rem 0.25rem !important;
+        min-height: 56px !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: #9ca3af !important;
+        font-size: 0.625rem !important;
+        font-weight: 500 !important;
+        gap: 0.25rem !important;
+        white-space: nowrap !important;
+        box-shadow: none !important;
+        transition: color 0.2s !important;
+        position: relative !important;
+    }
+
+    /* Icônes de la tab bar */
+    .nav-btn[data-page="dashboard"] i,
+    .nav-btn[data-page="team-management"] i,
+    .nav-btn[data-page="add-account"] i,
+    .nav-btn[data-page="followers-tracking"] i,
+    .nav-btn[data-page="revenue-tracking"] i {
+        font-size: 1.25rem !important;
+        margin: 0 !important;
+    }
+
+    /* État actif - tab bar */
+    .nav-btn.active[data-page="dashboard"],
+    .nav-btn.active[data-page="team-management"],
+    .nav-btn.active[data-page="add-account"],
+    .nav-btn.active[data-page="followers-tracking"],
+    .nav-btn.active[data-page="revenue-tracking"] {
+        color: #6366f1 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    body.dark-mode .nav-btn[data-page="dashboard"],
+    body.dark-mode .nav-btn[data-page="team-management"],
+    body.dark-mode .nav-btn[data-page="add-account"],
+    body.dark-mode .nav-btn[data-page="followers-tracking"],
+    body.dark-mode .nav-btn[data-page="revenue-tracking"] {
+        color: #6b7280 !important;
+    }
+
+    body.dark-mode .nav-btn.active[data-page="dashboard"],
+    body.dark-mode .nav-btn.active[data-page="team-management"],
+    body.dark-mode .nav-btn.active[data-page="add-account"],
+    body.dark-mode .nav-btn.active[data-page="followers-tracking"],
+    body.dark-mode .nav-btn.active[data-page="revenue-tracking"] {
+        color: #818cf8 !important;
+    }
+
+    /* Dot indicateur actif */
+    .nav-btn.active[data-page="dashboard"]::after,
+    .nav-btn.active[data-page="team-management"]::after,
+    .nav-btn.active[data-page="add-account"]::after,
+    .nav-btn.active[data-page="followers-tracking"]::after,
+    .nav-btn.active[data-page="revenue-tracking"]::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: 4px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 5px !important;
+        height: 5px !important;
+        background: #6366f1 !important;
+        border-radius: 50% !important;
+    }
+
+    body.dark-mode .nav-btn.active::after {
+        background: #818cf8 !important;
+    }
+
+    /* Padding bottom sur le contenu pour ne pas être caché par la tab bar */
+    .main-container,
+    main,
+    .container {
+        padding-bottom: 80px !important;
+    }
+}
+
+/* ============================================================================
+   18. ANIMATIONS - Calmer pour look pro
+   ============================================================================ */
+
+/* Désactiver l'animation de gradient sur le header */
+.header {
+    animation: none !important;
+    background-size: 100% 100% !important;
+}
+
+/* Désactiver le pulse du logo login */
+.login-logo {
+    animation: none !important;
+}
+
+/* Désactiver les formes flottantes du login background */
+.login-shape {
+    animation: none !important;
+}
+
+/* Réduire les hover lift à 2px max (pas 4px) */
+@media (max-width: 768px) {
+    *:hover {
+        transform: none !important;
+    }
+}
+
+/* Animations de cards : plus subtiles */
+.dash-stat-card,
+.dash-account-card,
+.dash-creator-card {
+    animation-duration: 0.3s !important;
+}
+
+/* Pas de hover transform sur mobile (pas de hover sur tactile) */
+@media (hover: none) {
+    .dash-stat-card:hover,
+    .dash-account-card:hover,
+    .dash-creator-card:hover,
+    .dash-action-btn:hover,
+    .header-btn:hover {
+        transform: none !important;
+    }
+}
+
+/* ============================================================================
+   19. HEADER - Plus propre et compact
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Header simplifié */
+    .header {
+        padding: 0.75rem 1rem !important;
+    }
+
+    /* Cacher le badge "Protégé" sur mobile */
+    .header-status {
+        display: none !important;
+    }
+
+    /* Menu mobile : style plus propre */
+    .header-mobile-menu {
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 0 1rem 1rem !important;
+        min-width: 100% !important;
+    }
+}
+
+/* ============================================================================
+   20. FAVICON & APP MANIFEST
+   ============================================================================ */
+/* (géré côté HTML, pas CSS) */
+
+/* ============================================================================
+   21. MENU HAMBURGER MOBILE - Style drawer pro
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Menu hamburger → full width drawer depuis le haut */
+    .header-mobile-menu {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(17, 24, 39, 0.98) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-radius: 0 !important;
+        padding: 1.5rem !important;
+        padding-top: max(1.5rem, env(safe-area-inset-top)) !important;
+        min-width: 100% !important;
+        max-height: 100vh !important;
+        overflow-y: auto !important;
+        z-index: 9999 !important;
+        margin: 0 !important;
+    }
+
+    .header-mobile-menu .header-btn {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 0.75rem !important;
+        padding: 0.875rem 1rem !important;
+        margin-bottom: 0.375rem !important;
+        font-size: 0.9375rem !important;
+        min-height: 48px !important;
+    }
+
+    .header-mobile-menu .header-btn:active {
+        background: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    /* Section nav secondaire dans le menu */
+    .header-mobile-nav-section .header-btn {
+        background: rgba(99, 102, 241, 0.08) !important;
+        border-color: rgba(99, 102, 241, 0.12) !important;
+    }
+
+    /* Stats dans le menu */
+    .header-mobile-stats {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-radius: 1rem !important;
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .header-mobile-stats .header-stat {
+        background: transparent !important;
+        border: none !important;
+    }
+}
