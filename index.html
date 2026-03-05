@@ -2254,6 +2254,353 @@
         }
 
         /* ============================================
+           ACCOUNTS PAGE - Clean Design
+           ============================================ */
+        .accounts-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        .accounts-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .accounts-page-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--gray-900);
+        }
+        body.dark-mode .accounts-page-title h2 {
+            color: #f3f4f6;
+        }
+        .accounts-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0.25rem 0 0 0;
+        }
+        .accounts-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .accounts-tab-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .accounts-tab-btn.active {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+        body.dark-mode .accounts-tab-btn {
+            background: #1a1d23;
+            border-color: rgba(255,255,255,0.1);
+            color: #9ca3af;
+        }
+        body.dark-mode .accounts-tab-btn.active {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+        .accounts-add-form {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        body.dark-mode .accounts-add-form {
+            background: #16181d;
+            border-color: rgba(255,255,255,0.05);
+        }
+        .accounts-form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .accounts-form-submit {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 0.5rem;
+        }
+        .accounts-form-submit .submit-btn {
+            width: auto;
+            padding: 0.625rem 1.5rem;
+        }
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon input {
+            padding-right: 2.5rem;
+        }
+        .input-icon-btn {
+            position: absolute;
+            right: 0.625rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-400);
+            padding: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .input-icon-btn:hover {
+            color: var(--primary-500);
+        }
+        .accounts-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .accounts-toolbar-btn {
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .accounts-toolbar-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+        body.dark-mode .accounts-toolbar-btn {
+            background: #1a1d23;
+            border-color: rgba(255,255,255,0.1);
+            color: #9ca3af;
+        }
+        body.dark-mode .accounts-toolbar-btn:hover {
+            background: #1f2128;
+        }
+        .accounts-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .accounts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        body.dark-mode .accounts-list {
+            background: #16181d;
+            border-color: rgba(255,255,255,0.05);
+        }
+        /* Account card items inside the list */
+        .account-item {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.1s ease;
+        }
+        .account-item:last-child {
+            border-bottom: none;
+        }
+        .account-item:hover {
+            background: var(--gray-50);
+        }
+        body.dark-mode .account-item {
+            border-bottom-color: rgba(255,255,255,0.04);
+        }
+        body.dark-mode .account-item:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .account-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e8f4fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #1da1f2;
+            font-size: 1rem;
+        }
+        body.dark-mode .account-avatar {
+            background: rgba(29, 161, 242, 0.15);
+        }
+        .account-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .account-username {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark-mode .account-username {
+            color: #e2e8f0;
+        }
+        .account-meta {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+            margin-top: 0.125rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem 0.75rem;
+        }
+        .account-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .account-followers {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            margin-right: 0.5rem;
+        }
+        .account-followers-count {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+        body.dark-mode .account-followers-count {
+            color: #e2e8f0;
+        }
+        .account-growth {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+        }
+        .account-growth.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+        .account-growth.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+        body.dark-mode .account-growth.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+        body.dark-mode .account-growth.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+        .account-actions {
+            display: flex;
+            gap: 0.375rem;
+            flex-shrink: 0;
+        }
+        .account-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.375rem;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.15s ease;
+        }
+        .account-action-btn:hover {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            border-color: var(--gray-300);
+        }
+        .account-action-btn.danger:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        .account-action-btn.copy-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+        body.dark-mode .account-action-btn {
+            background: #1a1d23;
+            border-color: rgba(255,255,255,0.1);
+            color: #6b7280;
+        }
+        body.dark-mode .account-action-btn:hover {
+            background: #1f2128;
+            color: #e2e8f0;
+        }
+        body.dark-mode .account-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .account-password-badge {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8125rem;
+            background: var(--gray-100);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+        }
+        body.dark-mode .account-password-badge {
+            background: rgba(255,255,255,0.05);
+            color: #9ca3af;
+            border-color: rgba(255,255,255,0.1);
+        }
+        .account-warning {
+            color: #f59e0b;
+            font-size: 0.8125rem;
+        }
+        @media (max-width: 768px) {
+            .accounts-page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .accounts-form-row {
+                grid-template-columns: 1fr;
+            }
+            .account-item {
+                flex-wrap: wrap;
+                padding: 0.875rem 1rem;
+            }
+            .account-followers {
+                margin-right: 0;
+            }
+            .account-actions {
+                width: 100%;
+                justify-content: flex-end;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--gray-100);
+                margin-top: 0.5rem;
+            }
+            body.dark-mode .account-actions {
+                border-top-color: rgba(255,255,255,0.04);
+            }
+        }
+
+        /* ============================================
            COMPETITION HEADER - Premium Design
            ============================================ */
         .competition-header {
@@ -5550,109 +5897,114 @@
 
         <!-- Add Account Page -->
         <div id="add-account-page" class="page">
-            <div style="display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto;">
-                <!-- Formulaire à gauche -->
-                <div class="form-container" style="flex: 1;">
-                    <h2 class="form-title">Ajouter un Compte Social</h2>
-
-                    <!-- Sélecteur de type de compte -->
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                        <button type="button" class="platform-btn active" data-platform="twitter" onclick="switchPlatform('twitter')" style="flex: 1; padding: 0.75rem; background: #1DA1F2; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+            <div class="accounts-page-container">
+                <!-- Header de la page -->
+                <div class="accounts-page-header">
+                    <div class="accounts-page-title">
+                        <h2>Comptes Sociaux</h2>
+                        <p class="accounts-subtitle" id="accounts-count-label">Gérez vos comptes Twitter et Instagram</p>
+                    </div>
+                    <div class="accounts-header-actions">
+                        <button type="button" class="accounts-tab-btn active" data-platform="twitter" onclick="switchPlatform('twitter')">
                             <i class="fab fa-twitter"></i> Twitter
                         </button>
-                        <button type="button" class="platform-btn" data-platform="instagram" onclick="switchPlatform('instagram')" style="flex: 1; padding: 0.75rem; background: #E4E7EB; color: #4B5563; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                        <button type="button" class="accounts-tab-btn" data-platform="instagram" onclick="switchPlatform('instagram')">
                             <i class="fab fa-instagram"></i> Instagram
                         </button>
                     </div>
+                </div>
 
-                    <form id="add-account-form">
+                <!-- Formulaire d'ajout compact -->
+                <div class="accounts-add-form">
+                    <form id="add-account-form" class="accounts-form-grid">
                         <!-- Twitter Fields -->
                         <div id="twitter-fields" class="platform-fields">
-                            <div class="form-group">
-                                <label for="twitter-username">Username Twitter</label>
-                                <input type="text" id="twitter-username" placeholder="@username" autofocus>
-                            </div>
-                            <div class="form-group">
-                                <label for="twitter-password">Mot de passe Twitter</label>
-                                <div style="position: relative;">
-                                    <input type="password" id="twitter-password" placeholder="••••••••" style="padding-right: 40px;">
-                                    <button type="button" onclick="togglePasswordVisibility('twitter-password')"
-                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-                                                   background: none; border: none; cursor: pointer; color: #667eea;"
-                                            title="Afficher/Masquer le mot de passe">
-                                        <i class="fas fa-eye" id="twitter-password-toggle"></i>
-                                    </button>
+                            <div class="accounts-form-row">
+                                <div class="form-group">
+                                    <label for="twitter-username">Username</label>
+                                    <input type="text" id="twitter-username" class="form-control" placeholder="@username" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <label for="twitter-password">Mot de passe</label>
+                                    <div class="input-with-icon">
+                                        <input type="password" id="twitter-password" class="form-control" placeholder="••••••••">
+                                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('twitter-password')" title="Afficher/Masquer">
+                                            <i class="fas fa-eye" id="twitter-password-toggle"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Instagram Fields -->
                         <div id="instagram-fields" class="platform-fields" style="display: none;">
-                            <div class="form-group">
-                                <label for="instagram-username">Username Instagram</label>
-                                <input type="text" id="instagram-username" placeholder="@username">
-                            </div>
-                            <div class="form-group">
-                                <label for="instagram-password">Mot de passe Instagram</label>
-                                <div style="position: relative;">
-                                    <input type="password" id="instagram-password" placeholder="••••••••" style="padding-right: 40px;">
-                                    <button type="button" onclick="togglePasswordVisibility('instagram-password')"
-                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-                                                   background: none; border: none; cursor: pointer; color: #667eea;"
-                                            title="Afficher/Masquer le mot de passe">
-                                        <i class="fas fa-eye" id="instagram-password-toggle"></i>
-                                    </button>
+                            <div class="accounts-form-row">
+                                <div class="form-group">
+                                    <label for="instagram-username">Username</label>
+                                    <input type="text" id="instagram-username" class="form-control" placeholder="@username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="instagram-password">Mot de passe</label>
+                                    <div class="input-with-icon">
+                                        <input type="password" id="instagram-password" class="form-control" placeholder="••••••••">
+                                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('instagram-password')" title="Afficher/Masquer">
+                                            <i class="fas fa-eye" id="instagram-password-toggle"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Common Fields -->
-                        <div class="form-group">
-                            <label for="account-creator">Créatrice</label>
-                            <select id="account-creator" class="form-control" required onchange="onCreatorChange()">
-                                <option value="">Sélectionner une créatrice</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="account-gmail">Compte Gmail</label>
-                            <select id="account-gmail" class="form-control" required>
-                                <option value="">Sélectionner un compte Gmail</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="account-va">Virtual Assistant</label>
-                            <select id="account-va" class="form-control" required>
-                                <option value="">Sélectionner un VA</option>
-                            </select>
-                            <div id="va-warning" class="va-warning" style="display: none;">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <strong>ATTENTION:</strong> Cette créatrice est sur plusieurs VAs. Vous DEVEZ choisir le VA pour ce compte.
+                        <div class="accounts-form-row">
+                            <div class="form-group">
+                                <label for="account-creator">Créatrice</label>
+                                <select id="account-creator" class="form-control" required onchange="onCreatorChange()">
+                                    <option value="">Sélectionner une créatrice</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="account-gmail">Compte Gmail</label>
+                                <select id="account-gmail" class="form-control" required>
+                                    <option value="">Sélectionner un Gmail</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="account-va">Virtual Assistant</label>
+                                <select id="account-va" class="form-control" required>
+                                    <option value="">Sélectionner un VA</option>
+                                </select>
+                                <div id="va-warning" class="va-warning" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>ATTENTION:</strong> Cette créatrice est sur plusieurs VAs.
+                                </div>
                             </div>
                         </div>
-                        <button type="submit" class="submit-btn" id="add-account-btn">
-                            <i class="fas fa-plus"></i> Ajouter Compte Twitter
-                        </button>
+                        <div class="accounts-form-submit">
+                            <button type="submit" class="submit-btn" id="add-account-btn">
+                                <i class="fas fa-plus"></i> Ajouter le compte
+                            </button>
+                        </div>
                     </form>
                 </div>
-                
-                <!-- Liste des comptes sociaux à droite -->
-                <div class="form-container" style="flex: 1.5; max-height: 600px; overflow-y: auto;">
-                    <h2 class="form-title" id="accounts-list-title">
-                        <i class="fab fa-twitter" style="color: #1da1f2;"></i> Comptes Twitter Existants
-                    </h2>
-                    <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button type="button" id="show-twitter-passwords-btn" onclick="showAllTwitterPasswords()" style="background: #1da1f2; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
-                            <i class="fas fa-key"></i> Voir tous les mots de passe Twitter
-                        </button>
-                        <button type="button" id="show-instagram-passwords-btn" onclick="showAllInstagramPasswords()" style="display: none; background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045); color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
-                            <i class="fas fa-key"></i> Voir tous les mots de passe Instagram
-                        </button>
+
+                <!-- Barre d'actions -->
+                <div class="accounts-toolbar">
+                    <button type="button" id="show-twitter-passwords-btn" onclick="showAllTwitterPasswords()" class="accounts-toolbar-btn">
+                        <i class="fas fa-key"></i> Afficher les mots de passe
+                    </button>
+                    <button type="button" id="show-instagram-passwords-btn" onclick="showAllInstagramPasswords()" class="accounts-toolbar-btn" style="display: none;">
+                        <i class="fas fa-key"></i> Afficher les mots de passe
+                    </button>
+                </div>
+
+                <!-- Liste des comptes -->
+                <div class="accounts-list-container">
+                    <div id="twitter-accounts-list" class="accounts-list">
+                        <!-- Généré dynamiquement -->
                     </div>
-                    <div id="twitter-accounts-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <!-- La liste Twitter sera générée dynamiquement ici -->
-                    </div>
-                    <div id="instagram-accounts-list" style="display: none; flex-direction: column; gap: 0.75rem;">
-                        <!-- La liste Instagram sera générée dynamiquement ici -->
+                    <div id="instagram-accounts-list" class="accounts-list" style="display: none;">
+                        <!-- Généré dynamiquement -->
                     </div>
                 </div>
             </div>
@@ -17702,11 +18054,16 @@ Tapez "SUPPRIMER" pour confirmer :`;
             
             console.log(`📊 Total comptes Twitter trouvés: ${allTwitterAccounts.length}`);
             
+            // Update count label
+            const countLabel = document.getElementById('accounts-count-label');
+            if (countLabel) countLabel.textContent = `${allTwitterAccounts.length} compte${allTwitterAccounts.length > 1 ? 's' : ''} Twitter`;
+
             if (allTwitterAccounts.length === 0) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: ${isDarkMode ? '#94a3b8' : '#6b7280'};">
-                        <i class="fab fa-twitter" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <p style="margin-top: 1rem;">Aucun compte Twitter ajouté</p>
+                    <div style="text-align: center; padding: 3rem 2rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
+                        <i class="fab fa-twitter" style="font-size: 2rem; opacity: 0.4; margin-bottom: 0.75rem; display: block;"></i>
+                        <p style="font-size: 0.9375rem; font-weight: 500;">Aucun compte Twitter</p>
+                        <p style="font-size: 0.8125rem; margin-top: 0.25rem;">Ajoutez votre premier compte via le formulaire ci-dessus</p>
                     </div>
                 `;
                 return;
@@ -17762,61 +18119,27 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
             // Afficher TOUS les comptes Twitter avec leurs associations
             container.innerHTML = accountsWithPasswords.map(account => {
-                // Pour les comptes venant des créatrices
                 let creator = null;
                 let gmail = null;
                 let va = null;
 
-                // Debug pour Laurabptss
-                if (account.username.toLowerCase().includes('laurabptss')) {
-                    console.log('🔍 Debug Laurabptss dans updateTwitterAccountsList:');
-                    console.log('Account:', account);
-                    console.log('Source:', account.source);
-                    console.log('GmailId dans account:', account.gmailId);
-                }
-
                 if (account.source === 'creator') {
                     creator = data.creators.find(c => c.id === account.creatorId);
-
-                    // Pour récupérer le compte réel depuis creator.accounts
                     let realAccount = null;
                     if (creator && creator.accounts) {
                         realAccount = creator.accounts.find(a =>
                             a.username.toLowerCase() === account.username.toLowerCase()
                         );
-
-                        if (account.username.toLowerCase().includes('laurabptss') && realAccount) {
-                            console.log('Real account trouvé:', realAccount);
-                            console.log('GmailId dans realAccount:', realAccount.gmailId);
-                        }
                     }
-
-                    // Trouver le Gmail associé via gmailId ou via assignedTwitterUsername
                     if (realAccount && realAccount.gmailId) {
                         gmail = data.gmailAccounts.find(g => g.id === realAccount.gmailId);
                     } else if (account.gmailId) {
                         gmail = data.gmailAccounts.find(g => g.id === account.gmailId);
                     } else {
-                        gmail = data.gmailAccounts.find(g => 
+                        gmail = data.gmailAccounts.find(g =>
                             g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === account.username.toLowerCase()
                         );
                     }
-                    
-                    if (account.username.toLowerCase().includes('laurabptss')) {
-                        console.log('Gmail trouvé:', gmail);
-                        console.log('Recherche du Gmail avec ID:', realAccount?.gmailId || account.gmailId);
-                        console.log('Tous les gmailAccounts:', data.gmailAccounts);
-                        if (data.gmailAccounts) {
-                            const gmailById = data.gmailAccounts.find(g => g.id === (realAccount?.gmailId || account.gmailId));
-                            console.log('Gmail trouvé par ID direct:', gmailById);
-                            const gmailByUsername = data.gmailAccounts.find(g => 
-                                g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === account.username.toLowerCase()
-                            );
-                            console.log('Gmail trouvé par username:', gmailByUsername);
-                        }
-                    }
-                    
-                    // Trouver le VA via les vaIds de la créatrice ou assignedVaId
                     if (realAccount && realAccount.assignedVaId) {
                         va = data.vas.find(v => v.id === realAccount.assignedVaId);
                     } else if (account.assignedVaId) {
@@ -17825,154 +18148,62 @@ Tapez "SUPPRIMER" pour confirmer :`;
                         va = data.vas.find(v => account.vaIds.includes(v.id));
                     }
                 } else {
-                    // Pour les comptes simples
                     creator = account.creatorId ? data.creators.find(c => c.id === account.creatorId) : null;
-                    
-                    // Chercher le Gmail par gmailId ou assignedTwitterUsername
-                    if (account.gmailId) {
-                        gmail = data.gmailAccounts.find(g => g.id === account.gmailId);
-                    }
-                    if (!gmail) {
-                        gmail = data.gmailAccounts.find(g => 
-                            g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === account.username.toLowerCase()
-                        );
-                    }
-                    
+                    if (account.gmailId) gmail = data.gmailAccounts.find(g => g.id === account.gmailId);
+                    if (!gmail) gmail = data.gmailAccounts.find(g =>
+                        g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === account.username.toLowerCase()
+                    );
                     va = account.vaId ? data.vas.find(v => v.id === account.vaId) : null;
                 }
-                
-                // Debug final pour Laurabptss
-                if (account.username.toLowerCase().includes('laurabptss')) {
-                    console.log('🎨 RENDU HTML pour Laurabptss:');
-                    console.log('  - creator:', creator);
-                    console.log('  - gmail:', gmail);
-                    console.log('  - va:', va);
-                    console.log('  - Condition !gmail:', !gmail);
-                    console.log('  - Triangle sera affiché:', !gmail);
-                }
-                
+
+                // Build meta items
+                const metaParts = [];
+                if (creator) metaParts.push(`<span><i class="fas fa-user" style="color: #8b5cf6;"></i> ${creator.name}</span>`);
+                if (gmail) metaParts.push(`<span><i class="fas fa-envelope" style="color: #ea4335;"></i> ${gmail.email}</span>`);
+                if (va) metaParts.push(`<span><i class="fas fa-user-tie" style="color: #6366f1;"></i> ${va.name}</span>`);
+                if (!gmail && creator) metaParts.push(`<span class="account-warning"><i class="fas fa-exclamation-triangle"></i> Pas de Gmail</span>`);
+
                 return `
-                <div style="
-                    padding: 1rem;
-                    background: ${isDarkMode ? 'rgba(29, 161, 242, 0.1)' : 'rgba(29, 161, 242, 0.05)'};
-                    border: 1px solid #1da1f2;
-                    border-radius: 0.5rem;
-                    transition: all 0.2s;
-                ">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <!-- Username avec bouton copier -->
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                                <i class="fab fa-twitter" style="color: #1da1f2; font-size: 1.25rem;"></i>
-                                <strong style="font-size: 1.1rem; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                    ${account.username}
-                                </strong>
-                                <button onclick="copyText('${account.username.replace('@', '')}', 'Username')"
-                                        style="background: #1da1f2; border: none; border-radius: 0.375rem; cursor: pointer; color: white; padding: 0.375rem 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;"
-                                        title="Copier le username">
-                                    <i class="fas fa-copy"></i> Copier
-                                </button>
-                                ${!gmail ? `
-                                    <i class="fas fa-exclamation-triangle"
-                                       style="color: #fbbf24; font-size: 0.9rem;"
-                                       title="Pas de Gmail associé"></i>
-                                ` : ''}
-                            </div>
-
-                            <!-- Mot de passe avec bouton copier -->
-                            <div style="background: ${isDarkMode ? 'rgba(29, 161, 242, 0.15)' : 'rgba(29, 161, 242, 0.08)'}; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="fas fa-key" style="color: #1da1f2;"></i>
-                                        <span style="font-size: 0.875rem; color: ${isDarkMode ? '#94a3b8' : '#64748b'};">Mot de passe:</span>
-                                        <code style="font-family: 'Courier New', monospace; font-size: 0.9rem; background: ${isDarkMode ? 'rgba(0,0,0,0.3)' : 'white'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'}; border: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
-                                            ${account.decryptedPassword || '(non défini)'}
-                                        </code>
-                                    </div>
-                                    <button onclick="copyText('${(account.decryptedPassword || '').replace(/'/g, "\\'")}', 'Mot de passe')"
-                                            style="background: #10b981; border: none; border-radius: 0.375rem; cursor: pointer; color: white; padding: 0.375rem 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;"
-                                            title="Copier le mot de passe">
-                                        <i class="fas fa-copy"></i> Copier MDP
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Infos associées -->
-                            <div style="font-size: 0.8125rem; color: ${isDarkMode ? '#cbd5e1' : '#475569'};">
-                                ${creator ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user" style="width: 18px; color: #8b5cf6;"></i> Créatrice: <strong>${creator.name}</strong></div>` : ''}
-                                ${gmail ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-envelope" style="width: 18px; color: #ea4335;"></i> Gmail: <strong>${gmail.email}</strong></div>` :
-                                  creator ? `<div style="margin-bottom: 0.25rem; color: #ef4444;"><i class="fas fa-envelope" style="width: 18px; opacity: 0.5;"></i> <em>Aucun Gmail associé</em></div>` : ''}
-                                ${va ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user-tie" style="width: 18px; color: #667eea;"></i> VA: <strong>${va.name}</strong></div>` : ''}
-                                ${!creator && !gmail && !va ? '<div style="color: #ef4444; font-style: italic;">Aucune association</div>' : ''}
-                                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: ${isDarkMode ? '#94a3b8' : '#6b7280'};">
-                                    ${account.source === 'creator' ? '<span style="color: #8b5cf6;">Depuis créatrice</span> • ' : ''}
-                                    Ajouté le ${new Date(account.created).toLocaleDateString('fr-FR')}
-                                </div>
-                            </div>
-
-                            <!-- Sparkline Followers -->
-                            ${account.followerStats && account.followerStats.length > 0 ? `
-                            <div style="margin-top: 0.75rem; padding: 0.75rem; background: ${isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.8)'}; border-radius: 0.5rem; border: 1px solid ${isDarkMode ? '#374151' : '#e2e8f0'};">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="fas fa-chart-line" style="color: #1da1f2;"></i>
-                                        <span style="font-size: 0.8125rem; font-weight: 600; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
-                                            ${account.latestFollowers ? account.latestFollowers.toLocaleString() : '0'} followers
-                                        </span>
-                                    </div>
-                                    ${account.todayGrowth !== null ? `
-                                        <span style="font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 9999px; background: ${account.todayGrowth >= 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}; color: ${account.todayGrowth >= 0 ? '#10b981' : '#ef4444'};">
-                                            ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth} aujourd'hui
-                                        </span>
-                                    ` : ''}
-                                </div>
-                                <div style="height: 40px; width: 100%;">
-                                    <canvas id="sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}" style="width: 100%; height: 100%;"></canvas>
-                                </div>
-                            </div>
-                            ` : `
-                            <div style="margin-top: 0.75rem; padding: 0.5rem; background: ${isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)'}; border-radius: 0.5rem; border: 1px dashed ${isDarkMode ? '#374151' : '#e2e8f0'}; text-align: center;">
-                                <span style="font-size: 0.75rem; color: ${isDarkMode ? '#6b7280' : '#9ca3af'};">
-                                    <i class="fas fa-chart-line" style="opacity: 0.5;"></i> Pas de données followers
-                                </span>
-                            </div>
-                            `}
+                <div class="account-item">
+                    <div class="account-avatar">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <div class="account-info">
+                        <div class="account-username">
+                            ${account.username}
+                            <code class="account-password-badge">${account.decryptedPassword || '—'}</code>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            ${!gmail && creator ? `
-                                <button class="action-btn" onclick="showAssignGmailModal('${account.creatorId}', '${account.username}')"
-                                        style="background: #ea4335;" title="Assigner un Gmail">
-                                    <i class="fas fa-envelope"></i> Gmail
-                                </button>
-                            ` : ''}
-                            ${!creator && !gmail && !va && account.id ? `
-                                <button class="action-btn" onclick="showReassignModal('${account.id}')"
-                                        style="background: #10b981;" title="Réassigner ce compte">
-                                    <i class="fas fa-user-plus"></i> Assigner
-                                </button>
-                            ` : ''}
-                            <button class="action-btn" onclick="showEditTwitterAccountModal('${account.id || ''}', '${account.username}', '${(account.decryptedPassword || '').replace(/'/g, "\\'")}', '${account.creatorId || ''}')"
-                                    style="background: #667eea;" title="Modifier ce compte">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" onclick="handleDeleteTwitterAccount('${account.id || account.username}')"
-                                    style="background: #ef4444;" title="Supprimer définitivement">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div class="account-meta">
+                            ${metaParts.join('')}
                         </div>
+                    </div>
+                    ${account.latestFollowers ? `
+                    <div class="account-followers">
+                        <span class="account-followers-count">${account.latestFollowers.toLocaleString()}</span>
+                        ${account.todayGrowth !== null ? `
+                            <span class="account-growth ${account.todayGrowth >= 0 ? 'positive' : 'negative'}">
+                                ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
+                            </span>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                    <div class="account-actions">
+                        <button class="account-action-btn copy-btn" onclick="copyText('${account.username.replace('@', '')}', 'Username')" title="Copier username">
+                            <i class="fas fa-at"></i>
+                        </button>
+                        <button class="account-action-btn copy-btn" onclick="copyText('${(account.decryptedPassword || '').replace(/'/g, "\\'")}', 'MDP')" title="Copier mot de passe">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        <button class="account-action-btn" onclick="showEditTwitterAccountModal('${account.id || ''}', '${account.username}', '${(account.decryptedPassword || '').replace(/'/g, "\\'")}', '${account.creatorId || ''}')" title="Modifier">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="account-action-btn danger" onclick="handleDeleteTwitterAccount('${account.id || account.username}')" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `}).join('');
 
-            // Initialiser les sparklines après le rendu
-            setTimeout(() => {
-                accountsWithPasswords.forEach(account => {
-                    if (account.followerStats && account.followerStats.length > 0) {
-                        const canvasId = `sparkline-${account.username.replace('@', '').replace(/[^a-zA-Z0-9]/g, '_')}`;
-                        createTwitterSparkline(canvasId, account.followerStats, isDarkMode);
-                    }
-                });
-            }, 100);
         }
 
         // Show edit Twitter account modal
@@ -20849,48 +21080,37 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
         // Platform switching function
         function switchPlatform(platform) {
-            const buttons = document.querySelectorAll('.platform-btn');
+            // Update tab buttons (both old .platform-btn and new .accounts-tab-btn)
+            document.querySelectorAll('.platform-btn, .accounts-tab-btn').forEach(btn => {
+                if (btn.dataset.platform === platform) {
+                    btn.classList.add('active');
+                    btn.style.background = '';
+                    btn.style.color = '';
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }
+            });
+
             const twitterFields = document.getElementById('twitter-fields');
             const instagramFields = document.getElementById('instagram-fields');
-            const accountsTitle = document.getElementById('accounts-list-title');
             const twitterList = document.getElementById('twitter-accounts-list');
             const instagramList = document.getElementById('instagram-accounts-list');
             const twitterPasswordBtn = document.getElementById('show-twitter-passwords-btn');
             const instagramPasswordBtn = document.getElementById('show-instagram-passwords-btn');
             const submitBtn = document.getElementById('add-account-btn');
+            const countLabel = document.getElementById('accounts-count-label');
 
-            // Update button states
-            buttons.forEach(btn => {
-                if (btn.dataset.platform === platform) {
-                    btn.classList.add('active');
-                    if (platform === 'twitter') {
-                        btn.style.background = '#1DA1F2';
-                        btn.style.color = 'white';
-                    } else {
-                        btn.style.background = 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)';
-                        btn.style.color = 'white';
-                    }
-                } else {
-                    btn.classList.remove('active');
-                    btn.style.background = '#E4E7EB';
-                    btn.style.color = '#4B5563';
-                }
-            });
-
-            // Switch form fields
             if (platform === 'twitter') {
                 twitterFields.style.display = 'block';
                 instagramFields.style.display = 'none';
-                submitBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter Compte Twitter';
-
-                // Update list display
-                accountsTitle.innerHTML = '<i class="fab fa-twitter" style="color: #1da1f2;"></i> Comptes Twitter Existants';
+                submitBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter le compte';
                 twitterList.style.display = 'flex';
                 instagramList.style.display = 'none';
-                twitterPasswordBtn.style.display = 'block';
+                twitterPasswordBtn.style.display = 'inline-flex';
                 instagramPasswordBtn.style.display = 'none';
 
-                // Clear Instagram fields
                 document.getElementById('instagram-username').value = '';
                 document.getElementById('instagram-password').value = '';
                 document.getElementById('instagram-username').removeAttribute('required');
@@ -20900,16 +21120,12 @@ Tapez "SUPPRIMER" pour confirmer :`;
             } else {
                 twitterFields.style.display = 'none';
                 instagramFields.style.display = 'block';
-                submitBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter Compte Instagram';
-
-                // Update list display
-                accountsTitle.innerHTML = '<i class="fab fa-instagram" style="background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> Comptes Instagram Existants';
+                submitBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter le compte';
                 twitterList.style.display = 'none';
                 instagramList.style.display = 'flex';
                 twitterPasswordBtn.style.display = 'none';
-                instagramPasswordBtn.style.display = 'block';
+                instagramPasswordBtn.style.display = 'inline-flex';
 
-                // Clear Twitter fields
                 document.getElementById('twitter-username').value = '';
                 document.getElementById('twitter-password').value = '';
                 document.getElementById('twitter-username').removeAttribute('required');
