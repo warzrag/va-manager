@@ -559,7 +559,7 @@ body.dark-mode .dash-reminder-close:hover {
 }
 
 .dash-stat-change i {
-    font-size: 0.625rem;
+    font-size: 0.75rem;
 }
 
 .dash-stat-period {
@@ -815,7 +815,7 @@ body.dark-mode .dash-section-badge {
 }
 
 .dash-account-username i.fa-external-link-alt {
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     opacity: 0;
     transition: var(--dash-transition);
 }
@@ -861,8 +861,8 @@ body.dark-mode .dash-account-meta {
     position: absolute;
     top: -6px;
     right: -6px;
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1006,7 +1006,7 @@ body.dark-mode .dash-account-meta {
 }
 
 .dash-creator-stat i {
-    font-size: 0.625rem;
+    font-size: 0.75rem;
 }
 
 .dash-creator-stat.twitter { color: var(--dash-twitter); }
@@ -1889,7 +1889,7 @@ body.dark-mode .dash-creator-action-btn {
 }
 
 .dash-twitter-username i {
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     opacity: 0;
     transition: var(--dash-transition);
 }
@@ -2487,8 +2487,8 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-va-action-btn {
-        width: 28px;
-        height: 28px;
+        width: 36px;
+        height: 36px;
         font-size: 0.75rem;
     }
 
@@ -2560,7 +2560,7 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-stat-label {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
         letter-spacing: 0.02em;
     }
 
@@ -2569,7 +2569,7 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-stat-change {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
         padding: 0.125rem 0.375rem;
     }
 
@@ -2596,8 +2596,8 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-section-title i {
-        width: 28px;
-        height: 28px;
+        width: 36px;
+        height: 36px;
         font-size: 0.875rem;
     }
 
@@ -2631,7 +2631,7 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-twitter-kpi-label {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
     }
 
     /* Twitter Leaderboard - iPhone */
@@ -2739,7 +2739,7 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-va-kpi-label {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
     }
 
     /* VA Leaderboard - iPhone - Design Card propre */
@@ -3088,7 +3088,7 @@ body.dark-mode .dash-creator-action-btn {
     }
 
     .dash-followers-stat-label {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
     }
 
     .dash-followers-stat-value {
@@ -3162,7 +3162,7 @@ body.dark-mode .dash-creator-action-btn {
     .dash-rank-badge {
         width: 24px;
         height: 24px;
-        font-size: 0.625rem;
+        font-size: 0.75rem;
         top: -4px;
         right: -4px;
     }

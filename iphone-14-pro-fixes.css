@@ -67,7 +67,7 @@
     }
 
     .stat-label {
-        font-size: 0.625rem !important;
+        font-size: 0.75rem !important;
         white-space: nowrap !important;
     }
 
@@ -86,7 +86,7 @@
     }
 
     #current-org-stats {
-        font-size: 0.625rem !important;
+        font-size: 0.75rem !important;
     }
 
     /* 1.6 - Organization dropdown mobile (bottom sheet) */
@@ -302,10 +302,10 @@
 
     .twitter-badge button,
     .instagram-badge button {
-        width: 28px !important;
-        height: 28px !important;
-        min-width: 28px !important;
-        font-size: 0.625rem !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        font-size: 0.75rem !important;
     }
 }
 
@@ -520,7 +520,8 @@
     /* 7.2 - Table compact */
     table {
         font-size: 0.75rem !important;
-        min-width: 500px !important;
+        min-width: auto !important;
+        width: 100% !important;
     }
 
     table th,
@@ -1158,4 +1159,53 @@ body.dark-mode .followers-period-btn.active {
 body.dark-mode .ft-date-input {
     background: rgba(255,255,255,0.15);
     border-color: rgba(255,255,255,0.2);
+}
+
+/* ============================================================================
+   13. SAFE AREA INSETS - Support iPhone X+, Dynamic Island
+   ============================================================================ */
+
+/* Header : ne pas être coupé par l'encoche */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .header {
+            padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
+            padding-left: max(1rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+
+        .nav {
+            padding-left: max(0.5rem, env(safe-area-inset-left)) !important;
+            padding-right: max(0.5rem, env(safe-area-inset-right)) !important;
+        }
+
+        /* Modales : padding bottom pour la barre home */
+        .modal-actions {
+            padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+        }
+
+        /* Messages fixes en bas */
+        .success-message,
+        .error-message {
+            bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+            left: max(1rem, env(safe-area-inset-left)) !important;
+            right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+
+        /* Bottom-sheet org dropdown */
+        #org-dropdown {
+            padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+
+        /* Container principal */
+        .container {
+            padding-left: max(0.75rem, env(safe-area-inset-left)) !important;
+            padding-right: max(0.75rem, env(safe-area-inset-right)) !important;
+        }
+
+        /* Boutons sticky en bas de page */
+        .ft-save-all-btn {
+            margin-bottom: env(safe-area-inset-bottom) !important;
+        }
+    }
 }
