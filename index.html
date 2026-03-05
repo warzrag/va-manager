@@ -8911,22 +8911,6 @@
         });
 
         // Close mobile nav when clicking a nav button
-        // Bloquer le pull-to-refresh Safari iOS
-        (function() {
-            let lastTouchY = 0;
-            document.addEventListener('touchstart', function(e) {
-                lastTouchY = e.touches[0].clientY;
-            }, { passive: true });
-            document.addEventListener('touchmove', function(e) {
-                const touchY = e.touches[0].clientY;
-                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-                // Si on est en haut de la page et on tire vers le bas → bloquer
-                if (scrollTop <= 0 && touchY > lastTouchY) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        })();
-
         document.addEventListener('DOMContentLoaded', function() {
             const navButtons = document.querySelectorAll('.nav-btn');
             navButtons.forEach(btn => {

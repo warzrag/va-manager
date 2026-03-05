@@ -1390,20 +1390,10 @@ body.dark-mode .ft-date-input {
    16. ANTI-ZOOM & FOND - Empêcher le dézoom et le fond noir
    ============================================================================ */
 
-/* Empêcher le overscroll qui montre le fond + pull-to-refresh Safari */
+/* Empêcher le débordement horizontal */
 html, body {
-    overscroll-behavior-y: none;
-    overscroll-behavior-x: none;
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
-}
-
-/* Bloquer le pull-to-refresh Safari iOS */
-@media (max-width: 768px) {
-    body {
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-    }
 }
 
 /* Fond qui couvre tout même en cas de bounce scroll */
