@@ -4874,6 +4874,9 @@
 
             <!-- Mobile dropdown menu -->
             <div class="header-mobile-menu" id="header-mobile-menu">
+                <button class="drawer-close-btn" onclick="toggleHeaderMenu()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.1); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <i class="fas fa-times"></i>
+                </button>
                 <div class="header-mobile-stats">
                     <div class="header-stat">
                         <div class="header-stat-value" id="mobile-total-vas">0</div>
@@ -4961,6 +4964,10 @@
             <!-- Admin Button - Only visible for organization owners -->
             <button class="nav-btn" data-page="admin" id="admin-nav-btn" style="display: none;">
                 <i class="fas fa-shield-alt"></i> Admin
+            </button>
+            <!-- Plus button - Mobile tab bar only -->
+            <button class="nav-btn nav-btn-more" onclick="toggleHeaderMenu()">
+                <i class="fas fa-ellipsis-h"></i> Plus
             </button>
         </div>
     </nav>

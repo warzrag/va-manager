@@ -1469,7 +1469,8 @@ body.dark-mode {
     .nav-btn[data-page="team-management"],
     .nav-btn[data-page="add-account"],
     .nav-btn[data-page="followers-tracking"],
-    .nav-btn[data-page="revenue-tracking"] {
+    .nav-btn[data-page="revenue-tracking"],
+    .nav-btn-more {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -1488,6 +1489,7 @@ body.dark-mode {
         box-shadow: none !important;
         transition: color 0.2s !important;
         position: relative !important;
+        cursor: pointer !important;
     }
 
     /* Icônes de la tab bar */
@@ -1495,7 +1497,8 @@ body.dark-mode {
     .nav-btn[data-page="team-management"] i,
     .nav-btn[data-page="add-account"] i,
     .nav-btn[data-page="followers-tracking"] i,
-    .nav-btn[data-page="revenue-tracking"] i {
+    .nav-btn[data-page="revenue-tracking"] i,
+    .nav-btn-more i {
         font-size: 1.25rem !important;
         margin: 0 !important;
     }
@@ -1515,7 +1518,8 @@ body.dark-mode {
     body.dark-mode .nav-btn[data-page="team-management"],
     body.dark-mode .nav-btn[data-page="add-account"],
     body.dark-mode .nav-btn[data-page="followers-tracking"],
-    body.dark-mode .nav-btn[data-page="revenue-tracking"] {
+    body.dark-mode .nav-btn[data-page="revenue-tracking"],
+    body.dark-mode .nav-btn-more {
         color: #6b7280 !important;
     }
 
@@ -1525,6 +1529,11 @@ body.dark-mode {
     body.dark-mode .nav-btn.active[data-page="followers-tracking"],
     body.dark-mode .nav-btn.active[data-page="revenue-tracking"] {
         color: #818cf8 !important;
+    }
+
+    /* Cacher le hamburger sur mobile - remplacé par "Plus" */
+    .header-mobile-toggle {
+        display: none !important;
     }
 
     /* Dot indicateur actif */
@@ -1546,6 +1555,11 @@ body.dark-mode {
 
     body.dark-mode .nav-btn.active::after {
         background: #818cf8 !important;
+    }
+
+    /* Cacher le bouton flottant mobile-menu-toggle (app.html) */
+    .mobile-menu-toggle {
+        display: none !important;
     }
 
     /* Padding bottom sur le contenu pour ne pas être caché par la tab bar */
