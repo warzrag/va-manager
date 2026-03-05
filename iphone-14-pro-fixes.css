@@ -1424,7 +1424,7 @@ body.dark-mode {
    ============================================================================ */
 
 @media (max-width: 768px) {
-    /* Cacher la nav scrollable classique */
+    /* ===== TAB BAR CONTAINER ===== */
     .nav {
         position: fixed !important;
         bottom: 0 !important;
@@ -1432,20 +1432,22 @@ body.dark-mode {
         right: 0 !important;
         top: auto !important;
         z-index: 1000 !important;
-        background: white !important;
-        border-top: 1px solid #e5e7eb !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        border-top: 0.5px solid rgba(0, 0, 0, 0.12) !important;
+        box-shadow: none !important;
         padding: 0 !important;
         overflow: visible !important;
         padding-bottom: env(safe-area-inset-bottom, 0) !important;
     }
 
     body.dark-mode .nav {
-        background: #111827 !important;
-        border-top-color: #1f2937 !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+        background: rgba(18, 18, 20, 0.88) !important;
+        border-top-color: rgba(255, 255, 255, 0.08) !important;
     }
 
+    /* ===== TAB BAR LAYOUT ===== */
     .nav-content {
         display: flex !important;
         flex-direction: row !important;
@@ -1456,14 +1458,16 @@ body.dark-mode {
         min-width: auto !important;
         overflow: visible !important;
         flex-wrap: nowrap !important;
+        max-width: 500px !important;
+        margin: 0 auto !important;
     }
 
-    /* Cacher tous les boutons par défaut */
+    /* ===== CACHER TOUS LES BOUTONS ===== */
     .nav-btn {
         display: none !important;
     }
 
-    /* Afficher seulement les 5 principaux + le bouton "Plus" */
+    /* ===== BOUTONS VISIBLES ===== */
     .nav-btn[data-page="dashboard"],
     .nav-btn[data-page="team-management"],
     .nav-btn[data-page="add-account"],
@@ -1475,23 +1479,25 @@ body.dark-mode {
         align-items: center !important;
         justify-content: center !important;
         flex: 1 !important;
-        padding: 0.5rem 0.25rem !important;
-        min-height: 56px !important;
+        padding: 6px 2px 2px !important;
+        min-height: 50px !important;
         border-radius: 0 !important;
         border: none !important;
         background: transparent !important;
-        color: #9ca3af !important;
+        color: #8e8e93 !important;
         font-size: 0.625rem !important;
         font-weight: 500 !important;
-        gap: 0.25rem !important;
+        letter-spacing: 0.01em !important;
+        gap: 2px !important;
         white-space: nowrap !important;
         box-shadow: none !important;
-        transition: color 0.2s !important;
+        transition: color 0.15s ease !important;
         position: relative !important;
         cursor: pointer !important;
+        -webkit-tap-highlight-color: transparent !important;
     }
 
-    /* Icônes de la tab bar */
+    /* ===== ICÔNES ===== */
     .nav-btn[data-page="dashboard"] i,
     .nav-btn[data-page="team-management"] i,
     .nav-btn[data-page="add-account"] i,
@@ -1500,26 +1506,28 @@ body.dark-mode {
     .nav-btn-more i {
         font-size: 1.25rem !important;
         margin: 0 !important;
+        line-height: 1 !important;
     }
 
-    /* État actif - tab bar */
+    /* ===== ÉTAT ACTIF ===== */
     .nav-btn.active[data-page="dashboard"],
     .nav-btn.active[data-page="team-management"],
     .nav-btn.active[data-page="add-account"],
     .nav-btn.active[data-page="followers-tracking"],
     .nav-btn.active[data-page="revenue-tracking"] {
-        color: #6366f1 !important;
+        color: #4f46e5 !important;
         background: transparent !important;
         box-shadow: none !important;
     }
 
+    /* ===== DARK MODE ===== */
     body.dark-mode .nav-btn[data-page="dashboard"],
     body.dark-mode .nav-btn[data-page="team-management"],
     body.dark-mode .nav-btn[data-page="add-account"],
     body.dark-mode .nav-btn[data-page="followers-tracking"],
     body.dark-mode .nav-btn[data-page="revenue-tracking"],
     body.dark-mode .nav-btn-more {
-        color: #6b7280 !important;
+        color: #636366 !important;
     }
 
     body.dark-mode .nav-btn.active[data-page="dashboard"],
@@ -1530,42 +1538,21 @@ body.dark-mode {
         color: #818cf8 !important;
     }
 
-    /* Cacher le hamburger sur mobile - remplacé par "Plus" */
+    /* ===== CACHER HAMBURGER ===== */
     .header-mobile-toggle {
         display: none !important;
     }
 
-    /* Dot indicateur actif */
-    .nav-btn.active[data-page="dashboard"]::after,
-    .nav-btn.active[data-page="team-management"]::after,
-    .nav-btn.active[data-page="add-account"]::after,
-    .nav-btn.active[data-page="followers-tracking"]::after,
-    .nav-btn.active[data-page="revenue-tracking"]::after {
-        content: '' !important;
-        position: absolute !important;
-        bottom: 4px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 5px !important;
-        height: 5px !important;
-        background: #6366f1 !important;
-        border-radius: 50% !important;
-    }
-
-    body.dark-mode .nav-btn.active::after {
-        background: #818cf8 !important;
-    }
-
-    /* Cacher le bouton flottant mobile-menu-toggle (app.html) */
+    /* ===== CACHER BOUTON FLOTTANT (app.html) ===== */
     .mobile-menu-toggle {
         display: none !important;
     }
 
-    /* Padding bottom sur le contenu pour ne pas être caché par la tab bar */
+    /* ===== PADDING POUR LE CONTENU ===== */
     .main-container,
     main,
     .container {
-        padding-bottom: 80px !important;
+        padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
     }
 }
 
