@@ -111,23 +111,10 @@
             scroll-behavior: smooth;
         }
 
-        @keyframes shimmer {
-            0% {
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.7);
-                transform: scale(1.05);
-            }
-            100% {
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
-            }
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -135,36 +122,9 @@
             }
         }
 
-        @keyframes pulse-ring {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-            background-attachment: fixed;
+            background: #f8f9fb;
             color: var(--gray-800);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -175,26 +135,13 @@
            HEADER - Modern Glassmorphism Design
            ============================================ */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6366f1 100%);
-            background-size: 200% 200%;
-            animation: gradient-shift 15s ease infinite;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
             color: white;
             padding: 1rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
@@ -216,16 +163,14 @@
         }
 
         .header-logo {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 1.25rem;
         }
 
         .header-title {
@@ -307,7 +252,6 @@
 
         .header-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
         }
 
         .header-btn i {
@@ -487,8 +431,8 @@
         }
         
         body.dark-mode .header {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
-            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.1);
+            background: linear-gradient(135deg, #1e1b4b 0%, #252262 100%) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
         }
         
         body.dark-mode .nav {
@@ -509,9 +453,9 @@
         }
         
         body.dark-mode .nav-btn.active {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: #4f46e5;
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: none;
         }
         
         body.dark-mode .card {
@@ -564,9 +508,7 @@
         }
         
         body.dark-mode .leaderboard-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.2);
         }
         
         body.dark-mode .period-tab {
@@ -602,8 +544,7 @@
         }
         
         body.dark-mode .submit-btn:hover {
-            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
-            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
         
         body.dark-mode .cancel-btn {
@@ -826,8 +767,7 @@
         }
 
         body.dark-mode .va-card:hover {
-            border-color: rgba(102, 126, 234, 0.3) !important;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+            border-color: rgba(99, 102, 241, 0.2) !important;
         }
 
         body.dark-mode .va-card h3 {
@@ -2317,9 +2257,7 @@
            COMPETITION HEADER - Premium Design
            ============================================ */
         .competition-header {
-            background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-purple) 50%, var(--primary-600) 100%);
-            background-size: 200% 200%;
-            animation: gradient-shift 10s ease infinite;
+            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-500) 100%);
             color: white;
             padding: var(--space-2xl);
             border-radius: var(--radius-2xl);
@@ -2327,18 +2265,7 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
-        }
-
-        .competition-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
         }
 
         @keyframes pulse {
@@ -7481,56 +7408,7 @@
                         }
 
                         .login-bg-shapes {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            overflow: hidden;
-                            pointer-events: none;
-                        }
-
-                        .login-shape {
-                            position: absolute;
-                            border-radius: 50%;
-                            filter: blur(80px);
-                            opacity: 0.5;
-                            animation: floatShape 20s ease-in-out infinite;
-                        }
-
-                        .login-shape-1 {
-                            width: 600px;
-                            height: 600px;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            top: -200px;
-                            right: -100px;
-                            animation-delay: 0s;
-                        }
-
-                        .login-shape-2 {
-                            width: 400px;
-                            height: 400px;
-                            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                            bottom: -150px;
-                            left: -100px;
-                            animation-delay: -5s;
-                        }
-
-                        .login-shape-3 {
-                            width: 300px;
-                            height: 300px;
-                            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            animation-delay: -10s;
-                        }
-
-                        @keyframes floatShape {
-                            0%, 100% { transform: translate(0, 0) scale(1); }
-                            25% { transform: translate(30px, -30px) scale(1.05); }
-                            50% { transform: translate(-20px, 20px) scale(0.95); }
-                            75% { transform: translate(20px, 10px) scale(1.02); }
+                            display: none;
                         }
 
                         .login-card {
@@ -7559,21 +7437,15 @@
                         }
 
                         .login-logo {
-                            width: 80px;
-                            height: 80px;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            border-radius: 1.5rem;
+                            width: 72px;
+                            height: 72px;
+                            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+                            border-radius: 1.25rem;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             margin: 0 auto 1.5rem;
-                            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-                            animation: logoPulse 3s ease-in-out infinite;
-                        }
-
-                        @keyframes logoPulse {
-                            0%, 100% { box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4); }
-                            50% { box-shadow: 0 15px 60px rgba(102, 126, 234, 0.6); }
+                            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
                         }
 
                         .login-logo i {
@@ -7672,30 +7544,28 @@
 
                         .login-btn {
                             width: 100%;
-                            padding: 1rem;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            padding: 0.875rem;
+                            background: #4f46e5;
                             color: white;
                             border: none;
-                            border-radius: 1rem;
-                            font-size: 1.1rem;
-                            font-weight: 700;
+                            border-radius: 0.75rem;
+                            font-size: 1rem;
+                            font-weight: 600;
                             cursor: pointer;
-                            transition: all 0.3s ease;
+                            transition: background 0.2s ease;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            gap: 0.75rem;
-                            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+                            gap: 0.5rem;
                             margin-top: 0.5rem;
                         }
 
                         .login-btn:hover {
-                            transform: translateY(-3px);
-                            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+                            background: #4338ca;
                         }
 
                         .login-btn:active {
-                            transform: translateY(-1px);
+                            background: #3730a3;
                         }
 
                         .login-footer {
