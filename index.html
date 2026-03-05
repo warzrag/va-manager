@@ -4894,14 +4894,14 @@
                 <!-- Navigation secondaire mobile -->
                 <div class="header-mobile-nav-section" style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; padding: 0 0.25rem;">Pages</div>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=add-va]').click(); toggleHeaderMenu();"><i class="fas fa-user-plus"></i><span>Ajouter VA</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=add-creator]').click(); toggleHeaderMenu();"><i class="fas fa-user-friends"></i><span>Créatrices</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=gmail-accounts]').click(); toggleHeaderMenu();"><i class="fas fa-envelope"></i><span>Gmail</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=financial-overview]').click(); toggleHeaderMenu();"><i class="fas fa-coins"></i><span>Finance</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=subs-tracking]').click(); toggleHeaderMenu();"><i class="fas fa-chart-bar"></i><span>Suivi Subs</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=instagram-warmup]').click(); toggleHeaderMenu();"><i class="fas fa-fire"></i><span>Warm-up</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=search]').click(); toggleHeaderMenu();"><i class="fas fa-search"></i><span>Rechercher</span></button>
-                    <button class="header-btn" onclick="document.querySelector('[data-page=import]').click(); toggleHeaderMenu();"><i class="fas fa-file-import"></i><span>Import</span></button>
+                    <button class="header-btn" onclick="navigateToPage('add-va'); toggleHeaderMenu();"><i class="fas fa-user-plus"></i><span>Ajouter VA</span></button>
+                    <button class="header-btn" onclick="navigateToPage('add-creator'); toggleHeaderMenu();"><i class="fas fa-user-friends"></i><span>Créatrices</span></button>
+                    <button class="header-btn" onclick="navigateToPage('gmail-accounts'); toggleHeaderMenu();"><i class="fas fa-envelope"></i><span>Gmail</span></button>
+                    <button class="header-btn" onclick="navigateToPage('financial-overview'); toggleHeaderMenu();"><i class="fas fa-coins"></i><span>Finance</span></button>
+                    <button class="header-btn" onclick="navigateToPage('subs-tracking'); toggleHeaderMenu();"><i class="fas fa-chart-bar"></i><span>Suivi Subs</span></button>
+                    <button class="header-btn" onclick="navigateToPage('instagram-warmup'); toggleHeaderMenu();"><i class="fas fa-fire"></i><span>Warm-up</span></button>
+                    <button class="header-btn" onclick="navigateToPage('search'); toggleHeaderMenu();"><i class="fas fa-search"></i><span>Rechercher</span></button>
+                    <button class="header-btn" onclick="navigateToPage('import'); toggleHeaderMenu();"><i class="fas fa-file-import"></i><span>Import</span></button>
                 </div>
                 <button class="header-btn" onclick="toggleDarkMode(); toggleHeaderMenu();">
                     <i class="fas fa-moon"></i>
