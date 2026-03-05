@@ -2254,7 +2254,7 @@
         }
 
         /* ============================================
-           ACCOUNTS PAGE - Clean Design
+           ACCOUNTS PAGE - Modern Card Design
            ============================================ */
         .accounts-page-container {
             max-width: 1200px;
@@ -2275,9 +2275,7 @@
             margin: 0;
             color: var(--gray-900);
         }
-        body.dark-mode .accounts-page-title h2 {
-            color: #f3f4f6;
-        }
+        body.dark-mode .accounts-page-title h2 { color: #f3f4f6; }
         .accounts-subtitle {
             font-size: 0.875rem;
             color: var(--gray-500);
@@ -2288,13 +2286,13 @@
             gap: 0.5rem;
         }
         .accounts-tab-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
             border: 1px solid var(--gray-200);
             background: white;
             color: var(--gray-600);
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.15s ease;
         }
@@ -2302,6 +2300,7 @@
             background: var(--primary-500);
             color: white;
             border-color: var(--primary-500);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
         }
         body.dark-mode .accounts-tab-btn {
             background: #1a1d23;
@@ -2313,31 +2312,36 @@
             color: white;
             border-color: var(--primary-500);
         }
+
+        /* Formulaire d'ajout */
         .accounts-add-form {
             background: white;
             border: 1px solid var(--gray-200);
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
         body.dark-mode .accounts-add-form {
             background: #16181d;
-            border-color: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: none;
         }
         .accounts-form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
         .accounts-form-submit {
             display: flex;
             justify-content: flex-end;
-            padding-top: 0.5rem;
+            padding-top: 0.25rem;
         }
         .accounts-form-submit .submit-btn {
             width: auto;
             padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
         }
         .input-with-icon {
             position: relative;
@@ -2357,9 +2361,9 @@
             padding: 0.25rem;
             font-size: 0.875rem;
         }
-        .input-icon-btn:hover {
-            color: var(--primary-500);
-        }
+        .input-icon-btn:hover { color: var(--primary-500); }
+
+        /* Toolbar */
         .accounts-toolbar {
             display: flex;
             gap: 0.5rem;
@@ -2385,62 +2389,62 @@
             border-color: rgba(255,255,255,0.1);
             color: #9ca3af;
         }
-        body.dark-mode .accounts-toolbar-btn:hover {
-            background: #1f2128;
-        }
+
+        /* Liste → grille de cartes */
         .accounts-list-container {
             display: flex;
             flex-direction: column;
-            gap: 0;
         }
         .accounts-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 0.75rem;
+        }
+
+        /* Carte de compte individuelle */
+        .account-item {
             background: white;
             border: 1px solid var(--gray-200);
             border-radius: 0.75rem;
-            overflow: hidden;
-        }
-        body.dark-mode .accounts-list {
-            background: #16181d;
-            border-color: rgba(255,255,255,0.05);
-        }
-        /* Account card items inside the list */
-        .account-item {
             padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--gray-100);
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: background 0.1s ease;
-        }
-        .account-item:last-child {
-            border-bottom: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .account-item:hover {
-            background: var(--gray-50);
+            border-color: var(--gray-300);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         body.dark-mode .account-item {
-            border-bottom-color: rgba(255,255,255,0.04);
+            background: #16181d;
+            border-color: rgba(255,255,255,0.06);
         }
         body.dark-mode .account-item:hover {
-            background: rgba(255,255,255,0.02);
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Header de la carte */
+        .account-item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
         .account-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e8f4fd;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1ecfc 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             color: #1da1f2;
-            font-size: 1rem;
+            font-size: 1.125rem;
         }
         body.dark-mode .account-avatar {
-            background: rgba(29, 161, 242, 0.15);
+            background: linear-gradient(135deg, rgba(29, 161, 242, 0.15) 0%, rgba(29, 161, 242, 0.08) 100%);
         }
         .account-info {
             flex: 1;
@@ -2453,37 +2457,70 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            overflow: hidden;
         }
-        body.dark-mode .account-username {
-            color: #e2e8f0;
+        body.dark-mode .account-username { color: #e2e8f0; }
+        .account-password-badge {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            background: var(--gray-100);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            color: var(--gray-500);
+            border: 1px solid var(--gray-200);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
         }
+        body.dark-mode .account-password-badge {
+            background: rgba(255,255,255,0.05);
+            color: #6b7280;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        /* Meta infos */
         .account-meta {
             font-size: 0.8125rem;
             color: var(--gray-500);
             margin-top: 0.125rem;
             display: flex;
             flex-wrap: wrap;
-            gap: 0.25rem 0.75rem;
+            gap: 0.125rem 0.625rem;
         }
         .account-meta span {
             display: flex;
             align-items: center;
             gap: 0.25rem;
         }
+        .account-warning { color: #f59e0b; }
+
+        /* Footer de la carte : followers + actions */
+        .account-item-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--gray-100);
+        }
+        body.dark-mode .account-item-footer {
+            border-top-color: rgba(255,255,255,0.05);
+        }
         .account-followers {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            flex-shrink: 0;
-            margin-right: 0.5rem;
         }
         .account-followers-count {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--gray-700);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: var(--gray-800);
         }
-        body.dark-mode .account-followers-count {
-            color: #e2e8f0;
+        body.dark-mode .account-followers-count { color: #e2e8f0; }
+        .account-followers-label {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            font-weight: 500;
         }
         .account-growth {
             font-size: 0.75rem;
@@ -2507,27 +2544,28 @@
             background: rgba(239, 68, 68, 0.15);
             color: #f87171;
         }
+
+        /* Boutons d'action */
         .account-actions {
             display: flex;
-            gap: 0.375rem;
-            flex-shrink: 0;
+            gap: 0.25rem;
         }
         .account-action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 0.375rem;
+            width: 34px;
+            height: 34px;
+            border-radius: 0.5rem;
             border: 1px solid var(--gray-200);
-            background: white;
+            background: var(--gray-50);
             color: var(--gray-500);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             transition: all 0.15s ease;
         }
         .account-action-btn:hover {
-            background: var(--gray-50);
+            background: white;
             color: var(--gray-700);
             border-color: var(--gray-300);
         }
@@ -2542,12 +2580,12 @@
             border-color: #bfdbfe;
         }
         body.dark-mode .account-action-btn {
-            background: #1a1d23;
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.08);
             color: #6b7280;
         }
         body.dark-mode .account-action-btn:hover {
-            background: #1f2128;
+            background: rgba(255,255,255,0.08);
             color: #e2e8f0;
         }
         body.dark-mode .account-action-btn.danger:hover {
@@ -2555,48 +2593,40 @@
             color: #f87171;
             border-color: rgba(239, 68, 68, 0.3);
         }
-        .account-password-badge {
-            font-family: 'Courier New', monospace;
-            font-size: 0.8125rem;
-            background: var(--gray-100);
-            padding: 0.125rem 0.5rem;
-            border-radius: 0.25rem;
-            color: var(--gray-600);
-            border: 1px solid var(--gray-200);
-        }
-        body.dark-mode .account-password-badge {
-            background: rgba(255,255,255,0.05);
-            color: #9ca3af;
-            border-color: rgba(255,255,255,0.1);
-        }
-        .account-warning {
-            color: #f59e0b;
-            font-size: 0.8125rem;
-        }
+
+        /* Responsive mobile */
         @media (max-width: 768px) {
+            .accounts-page-container {
+                padding: 1rem;
+            }
             .accounts-page-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+            .accounts-add-form {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
             .accounts-form-row {
                 grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            .accounts-form-submit {
+                justify-content: stretch;
+            }
+            .accounts-form-submit .submit-btn {
+                width: 100%;
+            }
+            .accounts-list {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
             }
             .account-item {
-                flex-wrap: wrap;
                 padding: 0.875rem 1rem;
             }
-            .account-followers {
-                margin-right: 0;
-            }
-            .account-actions {
-                width: 100%;
-                justify-content: flex-end;
-                padding-top: 0.5rem;
-                border-top: 1px solid var(--gray-100);
-                margin-top: 0.5rem;
-            }
-            body.dark-mode .account-actions {
-                border-top-color: rgba(255,255,255,0.04);
+            .account-action-btn {
+                width: 38px;
+                height: 38px;
             }
         }
 
@@ -18165,41 +18195,46 @@ Tapez "SUPPRIMER" pour confirmer :`;
 
                 return `
                 <div class="account-item">
-                    <div class="account-avatar">
-                        <i class="fab fa-twitter"></i>
-                    </div>
-                    <div class="account-info">
-                        <div class="account-username">
-                            ${account.username}
-                            <code class="account-password-badge">${account.decryptedPassword || '—'}</code>
+                    <div class="account-item-header">
+                        <div class="account-avatar">
+                            <i class="fab fa-twitter"></i>
                         </div>
-                        <div class="account-meta">
-                            ${metaParts.join('')}
+                        <div class="account-info">
+                            <div class="account-username">
+                                ${account.username}
+                                <code class="account-password-badge" title="${account.decryptedPassword || ''}">${account.decryptedPassword || '—'}</code>
+                            </div>
+                            <div class="account-meta">
+                                ${metaParts.join('')}
+                            </div>
                         </div>
                     </div>
-                    ${account.latestFollowers ? `
-                    <div class="account-followers">
-                        <span class="account-followers-count">${account.latestFollowers.toLocaleString()}</span>
-                        ${account.todayGrowth !== null ? `
-                            <span class="account-growth ${account.todayGrowth >= 0 ? 'positive' : 'negative'}">
-                                ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
-                            </span>
-                        ` : ''}
-                    </div>
-                    ` : ''}
-                    <div class="account-actions">
-                        <button class="account-action-btn copy-btn" onclick="copyText('${account.username.replace('@', '')}', 'Username')" title="Copier username">
-                            <i class="fas fa-at"></i>
-                        </button>
-                        <button class="account-action-btn copy-btn" onclick="copyText('${(account.decryptedPassword || '').replace(/'/g, "\\'")}', 'MDP')" title="Copier mot de passe">
-                            <i class="fas fa-key"></i>
-                        </button>
-                        <button class="account-action-btn" onclick="showEditTwitterAccountModal('${account.id || ''}', '${account.username}', '${(account.decryptedPassword || '').replace(/'/g, "\\'")}', '${account.creatorId || ''}')" title="Modifier">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="account-action-btn danger" onclick="handleDeleteTwitterAccount('${account.id || account.username}')" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div class="account-item-footer">
+                        <div class="account-followers">
+                            ${account.latestFollowers ? `
+                                <span class="account-followers-count">${account.latestFollowers.toLocaleString()}</span>
+                                <span class="account-followers-label">followers</span>
+                                ${account.todayGrowth !== null ? `
+                                    <span class="account-growth ${account.todayGrowth >= 0 ? 'positive' : 'negative'}">
+                                        ${account.todayGrowth >= 0 ? '+' : ''}${account.todayGrowth}
+                                    </span>
+                                ` : ''}
+                            ` : `<span class="account-followers-label">Pas de données</span>`}
+                        </div>
+                        <div class="account-actions">
+                            <button class="account-action-btn copy-btn" onclick="copyText('${account.username.replace('@', '')}', 'Username')" title="Copier username">
+                                <i class="fas fa-at"></i>
+                            </button>
+                            <button class="account-action-btn copy-btn" onclick="copyText('${(account.decryptedPassword || '').replace(/'/g, "\\'")}', 'MDP')" title="Copier mot de passe">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button class="account-action-btn" onclick="showEditTwitterAccountModal('${account.id || ''}', '${account.username}', '${(account.decryptedPassword || '').replace(/'/g, "\\'")}', '${account.creatorId || ''}')" title="Modifier">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="account-action-btn danger" onclick="handleDeleteTwitterAccount('${account.id || account.username}')" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `}).join('');
