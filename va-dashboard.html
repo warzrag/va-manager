@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>VA Dashboard - Personal Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="iphone-14-pro-fixes.css">
+
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #1a1a1a;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: #0f172a;
+            color: #e1e8ef;
+        }
+
+        body.dark-mode::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            z-index: 0;
+        }
+
+        body.dark-mode .login-card {
+            background: #1a1d23;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .logo p {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .form-group label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .form-control {
+            background: #0d0f13;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e1e8ef;
+        }
+
+        body.dark-mode .form-control:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        body.dark-mode .error-message {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: rgba(220, 38, 38, 0.3);
+            color: #fca5a5;
+        }
+
+        body.dark-mode .dashboard-container {
+            background: #0a0b0d;
+        }
+
+        body.dark-mode .dashboard-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+
+        body.dark-mode .welcome-card,
+        body.dark-mode .stat-card,
+        body.dark-mode .section-card {
+            background: #16181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .stat-card:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        body.dark-mode .stat-label,
+        body.dark-mode .welcome-card p {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .creator-item {
+            background: #1a1d23;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .creator-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        body.dark-mode .empty-state {
+            color: #94a3b8;
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            width: calc(100% - 2rem);
+            max-width: 440px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px) {
+            .login-card {
+                padding: 3rem 2.5rem;
+                width: 100%;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .logo p {
+            color: #475569;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.625rem;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: -0.01em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px; /* Empêche le zoom sur iOS */
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            background: #ffffff;
+            color: #1e293b;
+            box-sizing: border-box;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-control:hover {
+            border-color: #cbd5e1;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: #ffffff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem;
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.875rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-message i {
+            margin-right: 0.375rem;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 2rem 4rem;
+            box-shadow: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        body.dark-mode .dashboard-container {
+            background: #0f172a;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dashboard-content {
+            max-width: 1400px;
+            margin: -3rem auto 0;
+            padding: 0 1rem 2rem;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px) {
+            .dashboard-content {
+                padding: 0 2rem 2rem;
+            }
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 600px) {
+            .welcome-card {
+                padding: 2.5rem;
+            }
+        }
+
+        body.dark-mode .welcome-card {
+            background: #1e293b;
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card p {
+            color: #64748b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 600px) {
+            .section-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .section-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .section-card {
+            background: #1e293b;
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .section-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .creator-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .creator-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creator-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .creator-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .creator-item:hover::before {
+            opacity: 1;
+        }
+
+        body.dark-mode .creator-item {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .creator-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .creator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .creator-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .creator-accounts {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .account-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .instagram-badge {
+            background: linear-gradient(135deg, #833AB4, #E1306C);
+            color: white;
+        }
+
+        .twitter-badge {
+            background: #1DA1F2;
+            color: white;
+        }
+
+        .warmup-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .warmup-item {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 0;
+            margin-bottom: 1.5rem;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .warmup-item:hover {
+            border-color: #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .warmup-item {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .warmup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.75rem 1.25rem;
+        }
+
+        .warmup-account {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            letter-spacing: -0.01em;
+        }
+
+        body.dark-mode .warmup-account {
+            color: #f1f5f9;
+        }
+
+        .warmup-account i {
+            color: #e11d48;
+            font-size: 1.25rem;
+        }
+
+        .warmup-day {
+            background: #0f172a;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            letter-spacing: 0.01em;
+        }
+
+        body.dark-mode .warmup-day {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .warmup-progress-section {
+            padding: 0 1.75rem 1.5rem;
+        }
+
+        .warmup-progress {
+            background: #f1f5f9;
+            height: 8px;
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        body.dark-mode .warmup-progress {
+            background: #334155;
+        }
+
+        .warmup-progress-bar {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            height: 100%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 100px;
+            position: relative;
+        }
+
+        .warmup-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .warmup-progress-text {
+            font-size: 0.8125rem;
+            color: #64748b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        body.dark-mode .warmup-progress-text {
+            color: #94a3b8;
+        }
+
+        .warmup-tasks {
+            padding: 0 1.75rem 1.5rem;
+            border-top: 1px solid #f8fafc;
+            padding-top: 1.5rem;
+        }
+
+        body.dark-mode .warmup-tasks {
+            border-top-color: #1e293b;
+        }
+
+        .warmup-tasks-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        body.dark-mode .warmup-tasks-title {
+            color: #94a3b8;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 0;
+        }
+
+        .task-item:not(:last-child) {
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        body.dark-mode .task-item:not(:last-child) {
+            border-bottom-color: #1e293b;
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .task-text {
+            font-size: 0.9375rem;
+            color: #1e293b;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        body.dark-mode .task-text {
+            color: #cbd5e1;
+        }
+
+        .warmup-actions {
+            padding: 0 1.75rem 1.75rem;
+        }
+
+        .warmup-btn {
+            width: 100%;
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            letter-spacing: -0.01em;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+        }
+
+        .warmup-btn:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+        }
+
+        .warmup-btn:active {
+            transform: translateY(0);
+        }
+
+        .warmup-btn.complete {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        .warmup-btn.complete:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leaderboard-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .leaderboard-item:hover::before {
+            opacity: 1;
+        }
+
+        body.dark-mode .leaderboard-item {
+            background: rgba(30, 41, 59, 0.5);
+            color: #e1e8ef;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaderboard-item.is-me {
+            border-color: #10b981;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+            transform: scale(1.03);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05));
+        }
+
+        .leaderboard-item.is-me::before {
+            background: #10b981;
+            opacity: 1;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .leaderboard-rank.rank-1 { color: #ffd700; text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3); }
+        .leaderboard-rank.rank-2 { color: #c0c0c0; text-shadow: 0 2px 4px rgba(192, 192, 192, 0.3); }
+        .leaderboard-rank.rank-3 { color: #cd7f32; text-shadow: 0 2px 4px rgba(205, 127, 50, 0.3); }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        body.dark-mode .leaderboard-name {
+            color: #e1e8ef;
+        }
+
+        .leaderboard-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .ranking-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ranking-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .ranking-badge:hover::before {
+            left: 100%;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #92400e;
+            animation: pulse 2s infinite, glow 2s infinite;
+        }
+        .rank-2 {
+            background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%);
+            color: #475569;
+            border: 2px solid #c0c0c0;
+        }
+        .rank-3 {
+            background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+            color: white;
+        }
+        .rank-other {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4); }
+            50% { box-shadow: 0 10px 40px rgba(255, 215, 0, 0.8); }
+        }
+
+        /* Leaderboard Discret */
+        details[open] summary {
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode details summary {
+            color: #94a3b8;
+        }
+
+        body.dark-mode details div {
+            background: #1e293b !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 0 0.75rem 1.5rem;
+                margin: -2rem auto 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1.5rem 1rem;
+            }
+
+            .welcome-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .section-title {
+                font-size: 1.125rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-content {
+                margin: -1.5rem auto 0;
+            }
+
+            .welcome-card {
+                padding: 1.25rem;
+                border-radius: 1rem;
+            }
+
+            .section-card {
+                padding: 1.25rem;
+                border-radius: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .header-content h1 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Touch-friendly on mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .logout-btn,
+            .submit-btn,
+            button {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            /* Disable hover effects on touch devices */
+            .stat-card:hover,
+            .section-card:hover {
+                transform: none;
+            }
+
+            /* Add active state instead */
+            .stat-card:active {
+                transform: scale(0.98);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="login-screen">
+        <div class="login-card">
+            <div class="logo">
+                <h1>VA Dashboard</h1>
+                <p>Sign in to your workspace</p>
+            </div>
+
+            <div class="error-message" id="error-message">
+                <i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div class="dashboard-container" id="dashboard-screen">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 id="va-greeting">Welcome 👋</h1>
+                    <p>Your personal VA space</p>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <h2>Dashboard</h2>
+                <p id="period-info">Today's missions</p>
+            </div>
+
+            <!-- My Creators Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-user-friends"></i>
+                    My Creators (<span id="creator-count">0</span>)
+                </h3>
+                <div class="creator-list" id="creator-list">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No assigned creators</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warmup Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-fire"></i>
+                    Warm-up Accounts (<span id="warmup-count">0</span>)
+                </h3>
+                <div class="warmup-list" id="warmup-list">
+                    <div class="empty-state">
+                        <i class="fas fa-rocket"></i>
+                        <p>No accounts in warm-up</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section - Discret en bas -->
+            <div class="section-card" style="background: transparent; border: none; box-shadow: none; padding: 1.5rem; margin-top: 1rem;">
+                <details style="cursor: pointer;">
+                    <summary style="font-size: 0.875rem; color: #94a3b8; display: flex; align-items: center; gap: 0.5rem; list-style: none; user-select: none;">
+                        <i class="fas fa-trophy" style="font-size: 0.75rem;"></i>
+                        <span>View VA rankings</span>
+                        <span id="my-rank-quick" style="margin-left: auto; font-weight: 600;"></span>
+                    </summary>
+                    <div id="leaderboard-list" style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0;">
+                        <!-- Leaderboard sera inséré ici -->
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        // Using the same credentials as app.html
+        const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+
+        let supabase;
+
+        // Initialize Supabase
+        try {
+            if (SUPABASE_URL && SUPABASE_KEY) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase initialized for VA Dashboard');
+            } else {
+                console.log('⚠️ Running in fallback mode (localStorage only)');
+            }
+        } catch (e) {
+            console.error('❌ Supabase initialization failed:', e);
+            console.log('⚠️ Running in fallback mode (localStorage only)');
+        }
+
+        // Current session data
+        let currentVA = null;
+        let sessionData = {
+            vas: [],
+            creators: [],
+            revenues: [],
+            subs: [],
+            instagramAccounts: [],
+            twitterAccounts: [],
+            warmupProgress: {}
+        };
+
+        // === SYNCHRONISATION AUTOMATIQUE ENTRE ONGLETS ===
+        let syncChannel = null;
+        let lastDataHash = 0;
+
+        // Simple hash function pour détecter les changements
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        }
+
+        // Initialiser BroadcastChannel pour la synchronisation
+        try {
+            syncChannel = new BroadcastChannel('va_dashboard_sync');
+            console.log('✅ BroadcastChannel initialisé pour sync automatique');
+
+            // Écouter les messages de synchronisation
+            syncChannel.onmessage = (event) => {
+                console.log('📡 Mise à jour reçue depuis app.html:', event.data);
+
+                if (event.data.type === 'data_updated') {
+                    // Recharger les données depuis localStorage
+                    reloadDataFromLocalStorage();
+                }
+            };
+        } catch (e) {
+            console.warn('⚠️ BroadcastChannel non supporté, utilisation du fallback polling');
+            // Fallback: polling toutes les 5 secondes
+            setInterval(() => {
+                if (currentVA) {
+                    reloadDataFromLocalStorage();
+                }
+            }, 5000);
+        }
+
+        // Fonction pour recharger les données depuis localStorage
+        function reloadDataFromLocalStorage() {
+            try {
+                console.log('🔍 Vérification des changements dans localStorage...');
+
+                // Récupérer les nouvelles données
+                const localData = localStorage.getItem('vaManagerData');
+                const warmupData = localStorage.getItem('warmupProgress');
+
+                if (localData) {
+                    // Calculer le hash des données pour détecter les changements
+                    const dataString = localData + (warmupData || '');
+                    const newHash = simpleHash(dataString);
+
+                    console.log('📊 Ancien hash:', lastDataHash);
+                    console.log('📊 Nouveau hash:', newHash);
+
+                    if (newHash !== lastDataHash) {
+                        console.log('🔄 Nouvelles données détectées, mise à jour du dashboard...');
+                        lastDataHash = newHash;
+
+                        const parsed = JSON.parse(localData);
+
+                        // Log des changements
+                        console.log('📸 Instagram accounts avant:', sessionData.instagramAccounts.length);
+                        console.log('📸 Instagram accounts après:', (parsed.instagramAccounts || []).length);
+
+                        // Mettre à jour les données de session
+                        sessionData.vas = parsed.vas || [];
+                        sessionData.creators = parsed.creators || [];
+                        sessionData.revenues = parsed.revenues || [];
+                        sessionData.subs = parsed.subs || [];
+                        sessionData.instagramAccounts = parsed.instagramAccounts || [];
+                        sessionData.twitterAccounts = parsed.twitterAccounts || [];
+
+                        // Mettre à jour warmup progress - DÉSACTIVÉ, on utilise Supabase
+                        // if (warmupData) {
+                        //     sessionData.warmupProgress = JSON.parse(warmupData);
+                        // }
+                        console.log('⚠️ Warmup localStorage ignoré - utilise Supabase uniquement');
+
+                        // Rafraîchir l'affichage si l'utilisateur est connecté
+                        if (currentVA && document.getElementById('dashboard-screen').style.display === 'block') {
+                            loadDashboardData();
+                            console.log('✅ Dashboard mis à jour automatiquement');
+                        } else {
+                            console.log('⚠️ Dashboard pas visible ou utilisateur non connecté');
+                            console.log('   currentVA:', currentVA ? currentVA.name : 'null');
+                            console.log('   dashboard visible:', document.getElementById('dashboard-screen')?.style.display);
+                        }
+                    } else {
+                        console.log('ℹ️ Aucun changement détecté dans les données (hash identique)');
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de la synchronisation:', error);
+            }
+        }
+
+        // Nettoyer le channel lors de la fermeture
+        window.addEventListener('beforeunload', () => {
+            if (syncChannel) {
+                syncChannel.close();
+            }
+        });
+
+        // Auto Dark Mode based on time
+        function applyAutoDarkMode() {
+            const hour = new Date().getHours();
+            // Dark mode between 20h (8pm) and 7h (7am)
+            const isDarkTime = hour >= 20 || hour < 7;
+
+            if (isDarkTime) {
+                document.body.classList.add('dark-mode');
+                console.log('🌙 Mode sombre activé automatiquement (il est ' + hour + 'h)');
+            } else {
+                document.body.classList.remove('dark-mode');
+                console.log('☀️ Mode jour activé automatiquement (il est ' + hour + 'h)');
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Apply auto dark mode
+            applyAutoDarkMode();
+
+            // Check if user is already authenticated via Supabase
+            if (supabase) {
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+
+                    if (error) {
+                        console.error('❌ Error checking session:', error);
+                    }
+
+                    if (session && session.user) {
+                        console.log('✅ Supabase session found, auto-logging in...');
+                        // User is already authenticated, attempt auto-login
+                        await attemptAutoLogin(session.user.id, session.user.email);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('❌ Session check error:', e);
+                }
+            }
+
+            // Fallback to localStorage session (legacy)
+            const savedSession = localStorage.getItem('va_session');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    if (session.vaId && session.email) {
+                        // Auto-login
+                        autoLogin(session);
+                    }
+                } catch (e) {
+                    console.error('Invalid session data');
+                    localStorage.removeItem('va_session');
+                }
+            }
+        });
+
+        // Login Form Handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+
+            // Simple validation
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            // Mock authentication for now (will be replaced with real auth)
+            await attemptLogin(email, password);
+        });
+
+        async function attemptLogin(email, password) {
+            try {
+                console.log('🔐 Attempting Supabase Auth login for:', email);
+
+                if (!supabase) {
+                    showError('Connection error. Please try again.');
+                    return;
+                }
+
+                // 1. Use Supabase Auth to sign in
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) {
+                    console.error('❌ Auth error:', authError);
+                    showError('Email ou mot de passe incorrect');
+                    return;
+                }
+
+                if (!authData.user) {
+                    showError('Erreur de connexion');
+                    return;
+                }
+
+                console.log('✅ Auth successful:', authData.user.id);
+
+                // 2. Get VA record using auth user_id
+                const { data: vas, error: vaError } = await supabase
+                    .from('vas')
+                    .select('*')
+                    .eq('user_id', authData.user.id)
+                    .single();
+
+                if (vaError || !vas) {
+                    console.error('❌ VA not found for user:', authData.user.id, vaError);
+                    showError('Compte VA introuvable');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                console.log('✅ VA found:', vas.name);
+
+                // 3. Set current VA
+                currentVA = {
+                    id: vas.id,
+                    name: vas.name,
+                    email: authData.user.email,
+                    organizationId: vas.organization_id,
+                    userId: authData.user.id
+                };
+
+                console.log('✅ Login successful, organization:', currentVA.organizationId);
+
+                // 4. Save session
+                localStorage.setItem('va_session', JSON.stringify({
+                    vaId: vas.id,
+                    email: authData.user.email,
+                    name: vas.name,
+                    organizationId: vas.organization_id,
+                    userId: authData.user.id,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // 5. Load data for this organization
+                await loadData();
+
+                // 6. Show dashboard
+                showDashboard();
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showError('Erreur de connexion. Veuillez réessayer.');
+            }
+        }
+
+        async function attemptAutoLogin(userId, email) {
+            try {
+                console.log('🔄 Attempting auto-login for user:', userId);
+
+                // Get VA record using auth user_id
+                const { data: vas, error: vaError } = await supabase
+                    .from('vas')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (vaError || !vas) {
+                    console.error('❌ VA not found for user:', userId, vaError);
+                    showError('Compte VA introuvable');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                console.log('✅ VA found:', vas.name);
+
+                // Set current VA
+                currentVA = {
+                    id: vas.id,
+                    name: vas.name,
+                    email: email,
+                    organizationId: vas.organization_id,
+                    userId: userId
+                };
+
+                console.log('✅ Auto-login successful, organization:', currentVA.organizationId);
+
+                // Save session to localStorage
+                localStorage.setItem('va_session', JSON.stringify({
+                    vaId: vas.id,
+                    email: email,
+                    name: vas.name,
+                    organizationId: vas.organization_id,
+                    userId: userId,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // Load data for this organization
+                await loadData();
+
+                // Show dashboard
+                showDashboard();
+
+            } catch (error) {
+                console.error('❌ Auto-login error:', error);
+                showError('Erreur de connexion automatique');
+            }
+        }
+
+        async function autoLogin(session) {
+            try {
+                await loadData();
+                const va = sessionData.vas.find(v => v.id === session.vaId);
+
+                if (va) {
+                    currentVA = va;
+                    showDashboard();
+                } else {
+                    localStorage.removeItem('va_session');
+                }
+            } catch (error) {
+                console.error('Auto-login error:', error);
+                localStorage.removeItem('va_session');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'block';
+            document.body.style.background = '#f0f2f5';
+
+            // Update greeting
+            document.getElementById('va-greeting').textContent = `Welcome, ${currentVA.name} 👋`;
+
+            // Load dashboard data
+            loadDashboardData();
+        }
+
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                // Clear localStorage
+                localStorage.removeItem('va_session');
+                currentVA = null;
+
+                // Sign out from Supabase
+                if (supabase) {
+                    await supabase.auth.signOut();
+                }
+
+                // Redirect to main login page
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function getActiveOrganizationId() {
+            const activeOrgId = localStorage.getItem('activeOrganizationId');
+            if (activeOrgId) {
+                console.log('📂 Using organization from localStorage:', activeOrgId);
+                return activeOrgId;
+            }
+
+            // If not found, try to get the first organization (without auth)
+            if (supabase) {
+                try {
+                    const { data: orgs } = await supabase
+                        .from('organizations')
+                        .select('id')
+                        .limit(1);
+
+                    if (orgs && orgs.length > 0) {
+                        console.log('📂 Found organization:', orgs[0].id);
+                        return orgs[0].id;
+                    }
+                } catch (e) {
+                    console.error('Error fetching organization:', e);
+                }
+            }
+
+            console.warn('⚠️ No organization ID found');
+            return null;
+        }
+
+        async function loadData() {
+            // Load from Supabase using currentVA organization
+            if (supabase && currentVA && currentVA.organizationId) {
+                try {
+                    const orgId = currentVA.organizationId;
+                    console.log('📂 Loading data for organization:', orgId);
+
+                    // Load all data from Supabase tables including creator_vas junction table
+                    const [vasRes, creatorsRes, creatorVasRes, revenuesRes, subsRes, instagramRes, twitterRes, warmupRes] = await Promise.all([
+                        supabase.from('vas').select('*').eq('organization_id', orgId),
+                        supabase.from('creators').select('*').eq('organization_id', orgId),
+                        supabase.from('creator_vas').select('*').eq('organization_id', orgId),
+                        supabase.from('revenues').select('*').eq('organization_id', orgId),
+                        supabase.from('subscriptions').select('*').eq('organization_id', orgId),
+                        supabase.from('instagram_accounts').select('*').eq('organization_id', orgId),
+                        supabase.from('twitter_accounts').select('*').eq('organization_id', orgId),
+                        supabase.from('warmup_progress').select('*').eq('organization_id', orgId)
+                    ]);
+
+                    sessionData.vas = (vasRes.data || []).map(va => ({
+                        id: va.id,
+                        name: va.name,
+                        email: va.email,
+                        password: va.password,
+                        created: va.created_at
+                    }));
+
+                    // Build vaIds from creator_vas junction table
+                    const creatorVasMap = {};
+                    (creatorVasRes.data || []).forEach(cv => {
+                        if (!creatorVasMap[cv.creator_id]) {
+                            creatorVasMap[cv.creator_id] = [];
+                        }
+                        creatorVasMap[cv.creator_id].push(cv.va_id);
+                    });
+
+                    sessionData.creators = (creatorsRes.data || []).map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        created: c.created_at,
+                        vaIds: creatorVasMap[c.id] || [],
+                        accounts: [],
+                        instagramAccounts: []
+                    }));
+
+                    sessionData.revenues = revenuesRes.data || [];
+                    sessionData.subs = subsRes.data || [];
+
+                    sessionData.instagramAccounts = (instagramRes.data || []).map(acc => ({
+                        id: acc.id,
+                        username: acc.username,
+                        password: acc.password,
+                        creatorId: acc.creator_id,
+                        vaId: acc.va_id,
+                        gmailId: acc.gmail_id,
+                        created: acc.created_at
+                    }));
+
+                    sessionData.twitterAccounts = (twitterRes.data || []).map(acc => ({
+                        id: acc.id,
+                        username: acc.username,
+                        password: acc.password,
+                        creatorId: acc.creator_id,
+                        vaId: acc.va_id,
+                        gmailId: acc.gmail_id,
+                        created: acc.created_at
+                    }));
+
+                    // Build creator.instagramAccounts structure
+                    sessionData.creators.forEach(creator => {
+                        creator.instagramAccounts = sessionData.instagramAccounts.filter(acc =>
+                            acc.creatorId === creator.id
+                        ).map(acc => ({
+                            username: acc.username,
+                            password: acc.password,
+                            gmailId: acc.gmailId,
+                            assignedVaId: acc.vaId
+                        }));
+
+                        creator.accounts = sessionData.twitterAccounts.filter(acc =>
+                            acc.creatorId === creator.id
+                        ).map(acc => ({
+                            username: acc.username,
+                            password: acc.password,
+                            gmailId: acc.gmailId,
+                            assignedVaId: acc.vaId
+                        }));
+                    });
+
+                    // Load warmup progress from Supabase
+                    sessionData.warmupProgress = {};
+                    (warmupRes.data || []).forEach(w => {
+                        sessionData.warmupProgress[w.username] = {
+                            currentDay: w.current_day,
+                            completed: w.completed,
+                            startDate: w.start_date,
+                            completedDate: w.completed_date,
+                            lastUpdate: w.last_update
+                        };
+                    });
+
+                    console.log('✅ Data loaded from Supabase');
+                    console.log('📊 Creators:', sessionData.creators.length);
+                    console.log('📊 Instagram accounts:', sessionData.instagramAccounts.length);
+                    console.log('📊 Warmup accounts:', Object.keys(sessionData.warmupProgress).length);
+                    return;
+                } catch (e) {
+                    console.error('❌ Supabase load failed:', e);
+                    showError('Failed to load data. Please try again.');
+                }
+            }
+        }
+
+        function loadDashboardData() {
+            if (!currentVA) return;
+
+            // Load leaderboard
+            loadLeaderboard();
+
+            // Load creators
+            loadMyCreators();
+
+            // Load warmup accounts
+            loadWarmupAccounts();
+        }
+
+        // Calculate VA score
+        function calculateVAScore(vaId) {
+            let score = 0;
+
+            // Points for creators assigned (10 points each)
+            const creatorsCount = sessionData.creators.filter(c => c.assignedVaId === vaId).length;
+            score += creatorsCount * 10;
+
+            // Points for warmup in progress (5 points each)
+            const warmupInProgress = Object.entries(sessionData.warmupProgress).filter(([username, progress]) => {
+                const account = sessionData.instagramAccounts.find(acc => acc.username.replace('@', '') === username);
+                if (!account) return false;
+                const creator = sessionData.creators.find(c => c.id === account.creatorId);
+                return creator && creator.assignedVaId === vaId && !progress.completed;
+            }).length;
+            score += warmupInProgress * 5;
+
+            // Points for warmup completed (20 points each)
+            const warmupCompleted = Object.entries(sessionData.warmupProgress).filter(([username, progress]) => {
+                const account = sessionData.instagramAccounts.find(acc => acc.username.replace('@', '') === username);
+                if (!account) return false;
+                const creator = sessionData.creators.find(c => c.id === account.creatorId);
+                return creator && creator.assignedVaId === vaId && progress.completed;
+            }).length;
+            score += warmupCompleted * 20;
+
+            // Points for Instagram accounts managed (3 points each)
+            const instagramCount = sessionData.instagramAccounts.filter(acc => {
+                const creator = sessionData.creators.find(c => c.id === acc.creatorId);
+                return creator && creator.assignedVaId === vaId;
+            }).length;
+            score += instagramCount * 3;
+
+            // Points for Twitter accounts managed (3 points each)
+            const twitterCount = sessionData.twitterAccounts.filter(acc => {
+                const creator = sessionData.creators.find(c => c.id === acc.creatorId);
+                return creator && creator.assignedVaId === vaId;
+            }).length;
+            score += twitterCount * 3;
+
+            return score;
+        }
+
+        // Load leaderboard
+        function loadLeaderboard() {
+            // Calculate scores for all VAs
+            const vaScores = sessionData.vas.map(va => ({
+                id: va.id,
+                name: va.name,
+                score: calculateVAScore(va.id)
+            })).sort((a, b) => b.score - a.score);
+
+            // Display leaderboard
+            const container = document.getElementById('leaderboard-list');
+            if (vaScores.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: white;">No VAs found</p>';
+                return;
+            }
+
+            container.innerHTML = vaScores.map((va, index) => {
+                const rank = index + 1;
+                const isMe = va.id === currentVA.id;
+                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+
+                return `
+                    <div class="leaderboard-item ${isMe ? 'is-me' : ''}">
+                        <div class="leaderboard-rank ${rankClass}">
+                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank}
+                        </div>
+                        <div class="leaderboard-name">
+                            ${va.name} ${isMe ? '<strong style="color: #10b981;">(You)</strong>' : ''}
+                        </div>
+                        <div class="leaderboard-score">
+                            <div class="score-value">${va.score}</div>
+                            <div class="score-label">Points</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Display quick rank in summary
+            const myRank = vaScores.findIndex(va => va.id === currentVA.id) + 1;
+            const myScore = vaScores.find(va => va.id === currentVA.id)?.score || 0;
+
+            const rankEmoji = myRank === 1 ? '🥇' : myRank === 2 ? '🥈' : myRank === 3 ? '🥉' : '';
+            const rankElement = document.getElementById('my-rank-quick');
+            if (rankElement) {
+                rankElement.innerHTML = `${rankEmoji} #${myRank} · ${myScore} pts`;
+            }
+        }
+
+        function loadMyCreators() {
+            const vaId = currentVA.id;
+
+            // Get creators assigned to this VA (check if VA is in vaIds array)
+            const myCreators = sessionData.creators.filter(c =>
+                c.vaIds && c.vaIds.includes(vaId)
+            );
+
+            document.getElementById('creator-count').textContent = myCreators.length;
+
+            const container = document.getElementById('creator-list');
+
+            if (myCreators.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No assigned creators</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = myCreators.map(creator => {
+                // Get Instagram accounts from creator.instagramAccounts with assignedVaId matching
+                const instagramAccounts = (creator.instagramAccounts || []).filter(acc =>
+                    acc.assignedVaId === vaId
+                );
+
+                // Get Twitter accounts from creator.accounts with assignedVaId matching
+                const twitterAccounts = (creator.accounts || []).filter(acc =>
+                    acc.assignedVaId === vaId
+                );
+
+                return `
+                    <div class="creator-item">
+                        <div class="creator-header">
+                            <div>
+                                <div class="creator-name">👤 ${creator.name}</div>
+                            </div>
+                        </div>
+                        <div class="creator-accounts">
+                            ${instagramAccounts.map(acc => `
+                                <a href="https://instagram.com/${acc.username.replace('@', '')}"
+                                   target="_blank"
+                                   class="account-badge instagram-badge">
+                                    <i class="fab fa-instagram"></i> ${acc.username}
+                                </a>
+                            `).join('')}
+                            ${twitterAccounts.map(acc => `
+                                <a href="https://twitter.com/${acc.username.replace('@', '')}"
+                                   target="_blank"
+                                   class="account-badge twitter-badge">
+                                    <i class="fab fa-twitter"></i> ${acc.username}
+                                </a>
+                            `).join('')}
+                            ${instagramAccounts.length === 0 && twitterAccounts.length === 0 ? '<span style="color: #94a3b8; font-size: 0.875rem;">No social accounts</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Delete Instagram account
+        async function deleteInstagramAccount(creatorId, username) {
+            if (!confirm(`Are you sure you want to delete the account ${username}?`)) {
+                return;
+            }
+
+            try {
+                console.log(`🗑️ Suppression du compte Instagram: ${username}`);
+
+                // Find creator
+                const creator = sessionData.creators.find(c => c.id === creatorId);
+                if (!creator) {
+                    alert('Creator not found');
+                    return;
+                }
+
+                // Remove from creator.instagramAccounts
+                if (creator.instagramAccounts) {
+                    creator.instagramAccounts = creator.instagramAccounts.filter(acc =>
+                        acc.username !== username
+                    );
+                }
+
+                // Remove from sessionData.instagramAccounts
+                sessionData.instagramAccounts = sessionData.instagramAccounts.filter(acc =>
+                    acc.username !== username
+                );
+
+                // Update localStorage
+                const vaManagerData = {
+                    vas: sessionData.vas,
+                    creators: sessionData.creators,
+                    revenues: sessionData.revenues,
+                    subs: sessionData.subs,
+                    instagramAccounts: sessionData.instagramAccounts,
+                    twitterAccounts: sessionData.twitterAccounts,
+                    _timestamp: Date.now()
+                };
+                localStorage.setItem('vaManagerData', JSON.stringify(vaManagerData));
+
+                // Send notification via BroadcastChannel
+                if (syncChannel) {
+                    syncChannel.postMessage({
+                        type: 'account_deleted',
+                        platform: 'instagram',
+                        username: username,
+                        creatorId: creatorId,
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('📡 Notification de suppression envoyée à app.html');
+                }
+
+                // Refresh display
+                loadDashboardData();
+                console.log('✅ Compte Instagram supprimé:', username);
+            } catch (error) {
+                console.error('❌ Erreur lors de la suppression:', error);
+                alert('Error deleting account');
+            }
+        }
+
+        // Delete Twitter account
+        async function deleteTwitterAccount(creatorId, username) {
+            if (!confirm(`Are you sure you want to delete the account ${username}?`)) {
+                return;
+            }
+
+            try {
+                console.log(`🗑️ Suppression du compte Twitter: ${username}`);
+
+                // Find creator
+                const creator = sessionData.creators.find(c => c.id === creatorId);
+                if (!creator) {
+                    alert('Creator not found');
+                    return;
+                }
+
+                // Remove from creator.accounts
+                if (creator.accounts) {
+                    creator.accounts = creator.accounts.filter(acc =>
+                        acc.username !== username
+                    );
+                }
+
+                // Remove from sessionData.twitterAccounts
+                sessionData.twitterAccounts = sessionData.twitterAccounts.filter(acc =>
+                    acc.username !== username
+                );
+
+                // Update localStorage
+                const vaManagerData = {
+                    vas: sessionData.vas,
+                    creators: sessionData.creators,
+                    revenues: sessionData.revenues,
+                    subs: sessionData.subs,
+                    instagramAccounts: sessionData.instagramAccounts,
+                    twitterAccounts: sessionData.twitterAccounts,
+                    _timestamp: Date.now()
+                };
+                localStorage.setItem('vaManagerData', JSON.stringify(vaManagerData));
+
+                // Send notification via BroadcastChannel
+                if (syncChannel) {
+                    syncChannel.postMessage({
+                        type: 'account_deleted',
+                        platform: 'twitter',
+                        username: username,
+                        creatorId: creatorId,
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('📡 Notification de suppression envoyée à app.html');
+                }
+
+                // Refresh display
+                loadDashboardData();
+                console.log('✅ Compte Twitter supprimé:', username);
+            } catch (error) {
+                console.error('❌ Erreur lors de la suppression:', error);
+                alert('Error deleting account');
+            }
+        }
+
+        function loadWarmupAccounts() {
+            const vaId = currentVA.id;
+
+            console.log('🔍 Loading warmup accounts for VA:', currentVA.name, vaId);
+            console.log('📊 Total warmup in progress:', Object.keys(sessionData.warmupProgress).length);
+
+            // Get Instagram accounts in warmup assigned to this VA
+            const warmupAccounts = Object.entries(sessionData.warmupProgress)
+                .filter(([username, progress]) => {
+                    // Find the Instagram account from creators
+                    let foundAccount = null;
+                    let assignedToThisVA = false;
+
+                    // Check in each creator's instagramAccounts
+                    for (const creator of sessionData.creators) {
+                        if (creator.vaIds && creator.vaIds.includes(vaId)) {
+                            // This creator is assigned to this VA
+                            const account = (creator.instagramAccounts || []).find(acc =>
+                                acc.username.replace('@', '') === username
+                            );
+                            if (account) {
+                                console.log(`✅ Found warmup account: ${username} in creator ${creator.name}, assignedVaId: ${account.assignedVaId}, currentVA: ${vaId}, match: ${account.assignedVaId === vaId}`);
+                                // Match if account is assigned to this VA
+                                if (account.assignedVaId === vaId) {
+                                    foundAccount = account;
+                                    assignedToThisVA = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    return foundAccount && assignedToThisVA && !progress.completed;
+                });
+
+            document.getElementById('warmup-count').textContent = warmupAccounts.length;
+
+            const container = document.getElementById('warmup-list');
+
+            if (warmupAccounts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-rocket"></i>
+                        <p>No accounts in warm-up</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = warmupAccounts.map(([username, progress]) => {
+                const currentDay = progress.currentDay || 1;
+                const progressPercent = (currentDay / 6) * 100;
+
+                // Today's tasks
+                const tasks = getWarmupTasks(currentDay);
+
+                return `
+                    <div class="warmup-item">
+                        <div class="warmup-header">
+                            <div class="warmup-account">
+                                <i class="fab fa-instagram"></i> @${username}
+                            </div>
+                            <div class="warmup-day">Day ${currentDay}/6</div>
+                        </div>
+                        <div class="warmup-progress-section">
+                            <div class="warmup-progress">
+                                <div class="warmup-progress-bar" style="width: ${progressPercent}%"></div>
+                            </div>
+                            <div class="warmup-progress-text">Progress: ${progressPercent.toFixed(0)}%</div>
+                        </div>
+                        <div class="warmup-tasks">
+                            <div class="warmup-tasks-title">Today's tasks</div>
+                            ${tasks.map(task => `
+                                <div class="task-item">
+                                    <input type="checkbox" class="task-checkbox" disabled>
+                                    <span class="task-text">${task}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="warmup-actions">
+                            ${currentDay < 6 ? `
+                                <button onclick="advanceWarmupDay('${username}')" class="warmup-btn">
+                                    <i class="fas fa-arrow-right"></i> Next Day
+                                </button>
+                            ` : `
+                                <button onclick="completeWarmup('${username}')" class="warmup-btn complete">
+                                    <i class="fas fa-check-circle"></i> Complete Warm-up
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getWarmupTasks(day) {
+            switch(day) {
+                case 1:
+                    return [
+                        '📱 Add profile name',
+                        '❌ No profile picture',
+                        '👥 Follow recommended profiles',
+                        '⛔ Do nothing else'
+                    ];
+                case 2:
+                    return [
+                        '🔒 Set account to private',
+                        '📸 Add profile picture',
+                        '👀 Scroll slowly (10-15 min)',
+                        '❤️ Like 1 reel every 6-8 swipes',
+                        '💬 Comment 1 reel every 9-11 swipes',
+                        '👍 Like 5 comments every 14-16 swipes'
+                    ];
+                case 3:
+                    return [
+                        '📷 Post 1 carousel (2 photos)',
+                        '🎵 Add viral music',
+                        '📍 Add US location',
+                        '⭐ Subscribe to 5 OnlyFans models (US)',
+                        '🔗 Click their bio links to show interest'
+                    ];
+                case 4:
+                    return [
+                        '📷 Post 1 carousel (2 photos)',
+                        '🎵 Add viral music',
+                        '📍 Add US location',
+                        '👀 Scroll slowly',
+                        '❤️ Like 1 reel every 6-8 swipes',
+                        '💬 Comment 1 reel every 9-11 swipes',
+                        '👍 Like 5 comments every 14-16 swipes'
+                    ];
+                case 5:
+                    return [
+                        '📷 Post 1 carousel (2 photos)',
+                        '🎵 Add viral music',
+                        '📍 Add US location',
+                        '👀 Scroll slowly',
+                        '❤️ Like 1 reel every 4-6 swipes',
+                        '💬 Comment 1 reel every 6-8 swipes',
+                        '👍 Like 5 comments every 9-11 swipes'
+                    ];
+                case 6:
+                    return [
+                        '🌐 Make account public',
+                        '🔗 Add link in bio'
+                    ];
+                default:
+                    return [
+                        '✅ Warm-up complete'
+                    ];
+            }
+        }
+
+        // Advance warmup to next day
+        async function advanceWarmupDay(username) {
+            try {
+                console.log(`⏭️ Advancing warmup for ${username}`);
+
+                // Get current progress
+                const progress = sessionData.warmupProgress[username];
+                if (!progress) {
+                    alert('Error: progress not found');
+                    return;
+                }
+
+                // Advance to next day
+                const newDay = (progress.currentDay || 1) + 1;
+                const timestamp = new Date().toISOString();
+
+                progress.currentDay = newDay;
+                progress.lastUpdate = timestamp;
+
+                // Update Supabase
+                if (supabase && currentVA) {
+                    const cleanUsername = username.replace('@', '');
+                    const { error } = await supabase
+                        .from('warmup_progress')
+                        .upsert({
+                            username: cleanUsername,
+                            organization_id: currentVA.organizationId,
+                            current_day: newDay,
+                            completed: false,
+                            last_update: timestamp,
+                            start_date: progress.startDate || timestamp
+                        }, {
+                            onConflict: 'username,organization_id'
+                        });
+
+                    if (error) {
+                        console.error('❌ Supabase update error:', error);
+                        alert('Error saving progress. Please try again.');
+                        return;
+                    }
+
+                    console.log(`✅ Warmup advanced to day ${newDay}/6`);
+                }
+
+                // Update localStorage for local sync - DÉSACTIVÉ, Supabase est la source de vérité
+                // localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
+
+                // Send notification via BroadcastChannel for local tabs
+                if (syncChannel) {
+                    syncChannel.postMessage({
+                        type: 'warmup_updated',
+                        username: username,
+                        currentDay: newDay,
+                        completed: false,
+                        timestamp: timestamp
+                    });
+                }
+
+                // Refresh display
+                loadWarmupAccounts();
+            } catch (error) {
+                console.error('❌ Error advancing warmup:', error);
+                alert('Error advancing warmup');
+            }
+        }
+
+        // Complete warmup
+        async function completeWarmup(username) {
+            if (!confirm(`Congratulations! Complete warm-up for ${username}?`)) {
+                return;
+            }
+
+            try {
+                console.log(`🎉 Completing warmup for ${username}`);
+
+                // Mark as completed
+                const progress = sessionData.warmupProgress[username];
+                const timestamp = new Date().toISOString();
+
+                if (progress) {
+                    progress.completed = true;
+                    progress.completedDate = timestamp;
+                    progress.currentDay = 6;
+                    progress.lastUpdate = timestamp;
+                }
+
+                // Update Supabase
+                if (supabase && currentVA) {
+                    const cleanUsername = username.replace('@', '');
+                    const { error } = await supabase
+                        .from('warmup_progress')
+                        .upsert({
+                            username: cleanUsername,
+                            organization_id: currentVA.organizationId,
+                            current_day: 6,
+                            completed: true,
+                            completed_date: timestamp,
+                            last_update: timestamp,
+                            start_date: progress?.startDate || timestamp
+                        }, {
+                            onConflict: 'username,organization_id'
+                        });
+
+                    if (error) {
+                        console.error('❌ Supabase update error:', error);
+                        alert('Error saving completion. Please try again.');
+                        return;
+                    }
+
+                    console.log(`✅ Warmup completed for ${username}`);
+                }
+
+                // Update localStorage for local sync - DÉSACTIVÉ, Supabase est la source de vérité
+                // localStorage.setItem('warmupProgress', JSON.stringify(sessionData.warmupProgress));
+
+                // Send notification via BroadcastChannel for local tabs
+                if (syncChannel) {
+                    syncChannel.postMessage({
+                        type: 'warmup_updated',
+                        username: username,
+                        currentDay: 6,
+                        completed: true,
+                        timestamp: timestamp
+                    });
+                }
+
+                // Refresh display
+                loadWarmupAccounts();
+                alert(`🎉 Warm-up complete for ${username}!`);
+            } catch (error) {
+                console.error('❌ Error completing warmup:', error);
+                alert('Error completing warmup');
+            }
+        }
+    </script>
+</body>
+</html>

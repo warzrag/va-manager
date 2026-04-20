@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.svg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/keep-alive.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/shadowban.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/scan-shadowban.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/db.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/admin-users.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/keep-alive",
+      "dest": "/api/keep-alive.js"
+    },
+    {
+      "src": "/api/shadowban",
+      "dest": "/api/shadowban.js"
+    },
+    {
+      "src": "/api/scan-shadowban",
+      "dest": "/api/scan-shadowban.js"
+    },
+    {
+      "src": "/api/db",
+      "dest": "/api/db.js"
+    },
+    {
+      "src": "/api/admin-users",
+      "dest": "/api/admin-users.js"
+    },
+    {
+      "src": "/",
+      "dest": "/va_manager_pro.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/keep-alive",
+      "schedule": "0 8 */4 * *"
+    },
+    {
+      "path": "/api/scan-shadowban",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

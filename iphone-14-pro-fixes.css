@@ -1,0 +1,31 @@
+/* iPhone 14 Pro / Dynamic Island / Safe Area fixes */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .header, .top-bar, .navbar {
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
+  }
+
+  .bottom-nav, .mobile-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Fix iOS input zoom */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Fix iOS 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  .full-height {
+    min-height: -webkit-fill-available;
+  }
+}

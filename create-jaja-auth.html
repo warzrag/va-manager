@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer compte Auth pour JAJA</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .info { color: #00aaff; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Créer compte Auth pour JAJA</h1>
+
+        <p>Ce script va:</p>
+        <ul>
+            <li>Créer un compte Supabase Auth pour jaja@test.com</li>
+            <li>Lier ce compte au VA JAJA existant dans la base</li>
+            <li>Permettre la connexion avec jaja@test.com / jaja123</li>
+        </ul>
+
+        <button class="btn" onclick="createJajaAuth()">🚀 Créer le compte Auth</button>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<span class="${type}">[${timestamp}] ${message}</span>\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function createJajaAuth() {
+            log('🚀 Début de la création du compte Auth pour JAJA...', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+
+            try {
+                // Étape 1: Trouver le VA JAJA existant
+                log('📦 Étape 1: Recherche du VA JAJA dans la base', 'info');
+                const { data: va, error: vaError } = await supabase
+                    .from('vas')
+                    .select('*')
+                    .eq('email', 'jaja@test.com')
+                    .single();
+
+                if (vaError) {
+                    log('❌ Erreur VA: ' + vaError.message, 'error');
+                    return;
+                }
+
+                if (!va) {
+                    log('❌ VA JAJA non trouvé dans la base!', 'error');
+                    return;
+                }
+
+                log('✅ VA trouvé: ' + va.name + ' (ID: ' + va.id + ')', 'success');
+                log('   Email: ' + va.email, 'info');
+                log('   Organization: ' + va.organization_id, 'info');
+                log('   User ID actuel: ' + (va.user_id || 'NULL'), 'warning');
+
+                // Étape 2: Créer le compte Supabase Auth
+                log('', 'info');
+                log('👤 Étape 2: Création du compte Supabase Auth', 'info');
+
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: 'jaja@test.com',
+                    password: 'jaja123',
+                    options: {
+                        data: {
+                            name: 'JAJA',
+                            role: 'va'
+                        }
+                    }
+                });
+
+                if (authError) {
+                    if (authError.message.includes('already registered')) {
+                        log('⚠️  Le compte auth existe déjà!', 'warning');
+                        log('   Tentative de récupération du user_id...', 'info');
+
+                        // Se connecter pour récupérer le user_id
+                        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                            email: 'jaja@test.com',
+                            password: 'jaja123'
+                        });
+
+                        if (signInError) {
+                            log('❌ Impossible de se connecter: ' + signInError.message, 'error');
+                            log('💡 Le mot de passe est peut-être différent de jaja123', 'warning');
+                            return;
+                        }
+
+                        const userId = signInData.user.id;
+                        log('✅ User ID récupéré: ' + userId, 'success');
+
+                        // Lier au VA
+                        await linkUserToVA(va.id, userId);
+                        return;
+                    }
+
+                    log('❌ Erreur auth: ' + authError.message, 'error');
+                    return;
+                }
+
+                if (!authData.user) {
+                    log('❌ Erreur: compte auth non créé', 'error');
+                    return;
+                }
+
+                const userId = authData.user.id;
+                log('✅ Compte Auth créé avec succès!', 'success');
+                log('   User ID: ' + userId, 'info');
+                log('   Email: ' + authData.user.email, 'info');
+
+                // Étape 3: Lier le compte Auth au VA existant
+                await linkUserToVA(va.id, userId);
+
+            } catch (error) {
+                log('❌ ERREUR FATALE: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        async function linkUserToVA(vaId, userId) {
+            log('', 'info');
+            log('🔗 Étape 3: Liaison du compte Auth au VA', 'info');
+
+            const { error: updateError } = await supabase
+                .from('vas')
+                .update({ user_id: userId })
+                .eq('id', vaId);
+
+            if (updateError) {
+                log('❌ Erreur mise à jour: ' + updateError.message, 'error');
+                return;
+            }
+
+            log('✅ VA mis à jour avec le user_id!', 'success');
+
+            // Vérification finale
+            log('', 'info');
+            log('🔍 Vérification finale...', 'info');
+
+            const { data: updatedVA, error: checkError } = await supabase
+                .from('vas')
+                .select('id, name, email, user_id, organization_id')
+                .eq('id', vaId)
+                .single();
+
+            if (checkError) {
+                log('❌ Erreur vérification: ' + checkError.message, 'error');
+                return;
+            }
+
+            log('✅ Vérification réussie:', 'success');
+            log('   Nom: ' + updatedVA.name, 'info');
+            log('   Email: ' + updatedVA.email, 'info');
+            log('   User ID: ' + updatedVA.user_id, 'success');
+            log('   Organization: ' + updatedVA.organization_id, 'info');
+
+            log('', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+            log('🎉 TERMINÉ AVEC SUCCÈS!', 'success');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+            log('', 'info');
+            log('✅ Tu peux maintenant te connecter avec:', 'success');
+            log('   Email: jaja@test.com', 'success');
+            log('   Mot de passe: jaja123', 'success');
+            log('', 'info');
+        }
+    </script>
+</body>
+</html>

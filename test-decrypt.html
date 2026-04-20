@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Décryptage Mots de Passe</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+        }
+        .test {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #0f0;
+        }
+        button {
+            background: #0f0;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        input {
+            width: 400px;
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de Décryptage des Mots de Passe Gmail</h1>
+
+    <div class="test">
+        <h2>1. Test avec un mot de passe connu</h2>
+        <input type="text" id="testPassword" placeholder="Entrez un mot de passe de test" value="TestPassword123!">
+        <button onclick="testEncryption()">Tester Chiffrement/Déchiffrement</button>
+        <div id="result1"></div>
+    </div>
+
+    <div class="test">
+        <h2>2. Essayer de décrypter un mot de passe existant</h2>
+        <input type="text" id="encryptedPassword" placeholder="Collez un encrypted_password de la DB (52 chars)" value="">
+        <button onclick="tryDecrypt()">Essayer de Décrypter</button>
+        <div id="result2"></div>
+    </div>
+
+    <div class="test">
+        <h2>3. Vérifier la clé de chiffrement</h2>
+        <button onclick="checkKey()">Vérifier Clé</button>
+        <button onclick="generateNewKey()">Générer Nouvelle Clé</button>
+        <div id="result3"></div>
+    </div>
+
+    <script>
+        const ENCRYPTION_KEY_STORAGE = 'va_manager_encryption_key';
+
+        async function getEncryptionKey() {
+            const storedKey = localStorage.getItem(ENCRYPTION_KEY_STORAGE);
+
+            if (storedKey) {
+                const keyData = JSON.parse(storedKey);
+                return await crypto.subtle.importKey(
+                    'jwk',
+                    keyData,
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt', 'decrypt']
+                );
+            }
+
+            // Generate new key
+            const key = await crypto.subtle.generateKey(
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['encrypt', 'decrypt']
+            );
+
+            const exportedKey = await crypto.subtle.exportKey('jwk', key);
+            localStorage.setItem(ENCRYPTION_KEY_STORAGE, JSON.stringify(exportedKey));
+
+            return key;
+        }
+
+        async function encryptPassword(password) {
+            const key = await getEncryptionKey();
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const encodedPassword = new TextEncoder().encode(password);
+
+            const encryptedData = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                encodedPassword
+            );
+
+            const combined = new Uint8Array(iv.length + encryptedData.byteLength);
+            combined.set(iv, 0);
+            combined.set(new Uint8Array(encryptedData), iv.length);
+
+            return btoa(String.fromCharCode(...combined));
+        }
+
+        async function decryptPassword(encryptedPassword) {
+            try {
+                const key = await getEncryptionKey();
+                const combined = new Uint8Array(
+                    atob(encryptedPassword).split('').map(c => c.charCodeAt(0))
+                );
+
+                const iv = combined.slice(0, 12);
+                const encryptedData = combined.slice(12);
+
+                const decryptedData = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encryptedData
+                );
+
+                return new TextDecoder().decode(decryptedData);
+            } catch (error) {
+                return 'Erreur: ' + error.message;
+            }
+        }
+
+        function obfuscatePassword(password) {
+            return btoa(password).split('').reverse().join('');
+        }
+
+        function deobfuscatePassword(obfuscated) {
+            try {
+                return atob(obfuscated.split('').reverse().join(''));
+            } catch {
+                return obfuscated;
+            }
+        }
+
+        async function testEncryption() {
+            const password = document.getElementById('testPassword').value;
+            const result = document.getElementById('result1');
+
+            // Test AES-GCM
+            const encrypted = await encryptPassword(password);
+            const decrypted = await decryptPassword(encrypted);
+
+            // Test obfuscation
+            const obfuscated = obfuscatePassword(password);
+            const deobfuscated = deobfuscatePassword(obfuscated);
+
+            result.innerHTML = `
+                <h3>AES-GCM:</h3>
+                Original: ${password}<br>
+                Chiffré: ${encrypted}<br>
+                Longueur: ${encrypted.length} caractères<br>
+                Déchiffré: ${decrypted}<br>
+                Match: ${password === decrypted ? '✅' : '❌'}<br>
+                <br>
+                <h3>Obfuscation:</h3>
+                Obfusqué: ${obfuscated}<br>
+                Longueur: ${obfuscated.length} caractères<br>
+                Déobfusqué: ${deobfuscated}<br>
+                Match: ${password === deobfuscated ? '✅' : '❌'}
+            `;
+        }
+
+        async function tryDecrypt() {
+            const encrypted = document.getElementById('encryptedPassword').value;
+            const result = document.getElementById('result2');
+
+            if (!encrypted) {
+                result.innerHTML = 'Veuillez entrer un mot de passe chiffré';
+                return;
+            }
+
+            result.innerHTML = `
+                <h3>Analyse:</h3>
+                Longueur: ${encrypted.length} caractères<br>
+                <br>
+                <h3>Tentative AES-GCM:</h3>
+                ${await decryptPassword(encrypted)}<br>
+                <br>
+                <h3>Tentative Obfuscation:</h3>
+                ${deobfuscatePassword(encrypted)}
+            `;
+        }
+
+        async function checkKey() {
+            const result = document.getElementById('result3');
+            const storedKey = localStorage.getItem(ENCRYPTION_KEY_STORAGE);
+
+            if (storedKey) {
+                const keyData = JSON.parse(storedKey);
+                result.innerHTML = `
+                    <h3>Clé trouvée:</h3>
+                    Type: ${keyData.kty}<br>
+                    Algorithm: ${keyData.alg || 'AES-GCM'}<br>
+                    Key ID: ${keyData.k ? keyData.k.substring(0, 10) + '...' : 'N/A'}<br>
+                    Extractable: ${keyData.ext}
+                `;
+            } else {
+                result.innerHTML = '<h3>Aucune clé trouvée dans localStorage</h3>';
+            }
+        }
+
+        async function generateNewKey() {
+            const result = document.getElementById('result3');
+
+            if (confirm('Cela va remplacer la clé existante. Les anciens mots de passe ne pourront plus être déchiffrés. Continuer ?')) {
+                localStorage.removeItem(ENCRYPTION_KEY_STORAGE);
+                await getEncryptionKey();
+                result.innerHTML = '<h3>✅ Nouvelle clé générée</h3>';
+                checkKey();
+            }
+        }
+    </script>
+</body>
+</html>

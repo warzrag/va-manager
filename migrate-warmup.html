@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warmup Data Migration Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h3 {
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-box p {
+            color: #075985;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .status {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .status-value.success {
+            color: #10b981;
+        }
+
+        .status-value.error {
+            color: #ef4444;
+        }
+
+        .status-value.warning {
+            color: #f59e0b;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .log-container {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .log-container.visible {
+            display: block;
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+        }
+
+        .log-success {
+            color: #86efac;
+        }
+
+        .log-error {
+            color: #fca5a5;
+        }
+
+        .log-warning {
+            color: #fcd34d;
+        }
+
+        .log-info {
+            color: #93c5fd;
+        }
+
+        .summary {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .summary.visible {
+            display: block;
+        }
+
+        .summary.error {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .summary h3 {
+            color: #166534;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .summary.error h3 {
+            color: #991b1b;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .summary-stat {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .summary.error .summary-stat-value {
+            color: #991b1b;
+        }
+
+        .summary-stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Warmup Data Migration</h1>
+        <p class="subtitle">Migrate localStorage warmup data to Supabase</p>
+
+        <div class="info-box">
+            <h3>ℹ️ What this does</h3>
+            <p>This tool reads your warmup progress from browser localStorage and uploads it to your Supabase database. It's safe to run multiple times - it will only update records that have changed.</p>
+        </div>
+
+        <div class="status" id="status">
+            <div class="status-item">
+                <span class="status-label">Supabase Connection</span>
+                <span class="status-value" id="supabase-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Organization ID</span>
+                <span class="status-value" id="org-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">localStorage Data</span>
+                <span class="status-value" id="localstorage-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Migration Status</span>
+                <span class="status-value" id="migration-status">Not started</span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="migrate-btn" onclick="startMigration()">
+            🚀 Start Migration
+        </button>
+
+        <button class="btn btn-secondary" onclick="checkStatus()">
+            🔍 Check Status
+        </button>
+
+        <button class="btn btn-secondary" onclick="resetMigration()">
+            🔄 Reset Migration Flag
+        </button>
+
+        <div class="summary" id="summary">
+            <h3>Migration Complete!</h3>
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="stat-migrated">0</div>
+                    <div class="summary-stat-label">New Accounts</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="stat-updated">0</div>
+                    <div class="summary-stat-label">Updated</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="stat-skipped">0</div>
+                    <div class="summary-stat-label">Skipped</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="stat-errors">0</div>
+                    <div class="summary-stat-label">Errors</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-container" id="log">
+            <div class="log-entry log-info">Waiting to start migration...</div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration (same as app.html)
+        const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+
+        let supabase;
+        let logs = [];
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            initSupabase();
+            await checkStatus();
+        });
+
+        function initSupabase() {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                log('✅ Supabase client initialized', 'success');
+                updateStatus('supabase-status', 'Connected', 'success');
+            } catch (error) {
+                log('❌ Failed to initialize Supabase: ' + error.message, 'error');
+                updateStatus('supabase-status', 'Error', 'error');
+            }
+        }
+
+        async function checkStatus() {
+            log('🔍 Checking status...', 'info');
+
+            // Check organization ID
+            const orgId = await getOrganizationId();
+            if (orgId) {
+                updateStatus('org-status', orgId.substring(0, 8) + '...', 'success');
+            } else {
+                updateStatus('org-status', 'Not found', 'error');
+            }
+
+            // Check localStorage
+            const warmupData = loadLocalStorageWarmupData();
+            if (warmupData) {
+                const count = Object.keys(warmupData).length;
+                updateStatus('localstorage-status', `${count} accounts`, 'success');
+            } else {
+                updateStatus('localstorage-status', 'No data', 'warning');
+            }
+
+            // Check migration status
+            const migrationCompleted = localStorage.getItem('warmupMigrationCompleted');
+            if (migrationCompleted) {
+                const date = new Date(migrationCompleted).toLocaleDateString();
+                updateStatus('migration-status', `Completed ${date}`, 'success');
+            } else {
+                updateStatus('migration-status', 'Not completed', 'warning');
+            }
+
+            log('✅ Status check complete', 'success');
+        }
+
+        async function startMigration() {
+            const btn = document.getElementById('migrate-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Migrating...';
+
+            showLog();
+            hideSummary();
+            clearLogs();
+
+            log('🚀 Starting migration...', 'info');
+
+            try {
+                const result = await migrateWarmupToSupabase();
+
+                if (result.status === 'success') {
+                    showSummary(result, false);
+                } else if (result.status === 'partial') {
+                    showSummary(result, true);
+                } else {
+                    log('❌ Migration failed: ' + result.reason, 'error');
+                }
+            } catch (error) {
+                log('❌ Migration error: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Start Migration';
+                await checkStatus();
+            }
+        }
+
+        function resetMigration() {
+            localStorage.removeItem('warmupMigrationCompleted');
+            log('✅ Migration flag reset', 'success');
+            checkStatus();
+        }
+
+        function updateStatus(elementId, text, type) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = text;
+                el.className = 'status-value ' + type;
+            }
+        }
+
+        function log(message, type = 'info') {
+            console.log(message);
+            logs.push({ message, type, timestamp: new Date() });
+
+            const logContainer = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry log-' + type;
+            entry.textContent = message;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function showLog() {
+            document.getElementById('log').classList.add('visible');
+        }
+
+        function hideLog() {
+            document.getElementById('log').classList.remove('visible');
+        }
+
+        function showSummary(result, hasErrors) {
+            const summary = document.getElementById('summary');
+            summary.classList.add('visible');
+            if (hasErrors) {
+                summary.classList.add('error');
+            } else {
+                summary.classList.remove('error');
+            }
+
+            document.getElementById('stat-migrated').textContent = result.migrated || 0;
+            document.getElementById('stat-updated').textContent = result.updated || 0;
+            document.getElementById('stat-skipped').textContent = result.skipped || 0;
+            document.getElementById('stat-errors').textContent = result.errors || 0;
+        }
+
+        function hideSummary() {
+            document.getElementById('summary').classList.remove('visible');
+        }
+
+        // Migration functions (from warmup-migration.js)
+        async function getOrganizationId() {
+            const activeOrgId = localStorage.getItem('activeOrganizationId');
+            if (activeOrgId) {
+                return activeOrgId;
+            }
+
+            if (supabase) {
+                try {
+                    const { data: orgs, error } = await supabase
+                        .from('organizations')
+                        .select('id')
+                        .limit(1);
+
+                    if (!error && orgs && orgs.length > 0) {
+                        return orgs[0].id;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            return null;
+        }
+
+        function loadLocalStorageWarmupData() {
+            try {
+                const warmupDataStr = localStorage.getItem('warmupProgress');
+                if (!warmupDataStr) return null;
+                return JSON.parse(warmupDataStr);
+            } catch (error) {
+                log('❌ Error reading localStorage: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function checkAccountExistsInSupabase(username, organizationId) {
+            try {
+                const cleanUsername = username.replace('@', '');
+                const { data, error } = await supabase
+                    .from('warmup_progress')
+                    .select('username, current_day, completed')
+                    .eq('username', cleanUsername)
+                    .eq('organization_id', organizationId)
+                    .limit(1);
+
+                if (error) {
+                    return { exists: false, data: null };
+                }
+
+                return {
+                    exists: data && data.length > 0,
+                    data: data && data.length > 0 ? data[0] : null
+                };
+            } catch (error) {
+                return { exists: false, data: null };
+            }
+        }
+
+        async function upsertWarmupProgress(username, progress, organizationId) {
+            const cleanUsername = username.replace('@', '');
+
+            const warmupRecord = {
+                username: cleanUsername,
+                organization_id: organizationId,
+                current_day: progress.currentDay || 1,
+                completed: progress.completed || false,
+                start_date: progress.startDate || new Date().toISOString(),
+                last_update: progress.lastUpdate || new Date().toISOString(),
+                completed_date: progress.completedDate || null
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('warmup_progress')
+                    .upsert(warmupRecord, {
+                        onConflict: 'username,organization_id'
+                    });
+
+                if (error) {
+                    log(`❌ Error upserting ${username}: ${error.message}`, 'error');
+                    return { success: false, error };
+                }
+
+                log(`✅ Successfully migrated ${username}`, 'success');
+                return { success: true, data };
+            } catch (error) {
+                log(`❌ Exception upserting ${username}: ${error.message}`, 'error');
+                return { success: false, error };
+            }
+        }
+
+        async function migrateWarmupToSupabase() {
+            log('🔍 Checking prerequisites...', 'info');
+
+            // Check migration completed
+            const migrationCompleted = localStorage.getItem('warmupMigrationCompleted');
+            if (migrationCompleted) {
+                const rerun = confirm('Migration already completed. Run again?');
+                if (!rerun) {
+                    return { status: 'skipped', reason: 'Already completed' };
+                }
+            }
+
+            // Check Supabase
+            if (!supabase) {
+                log('❌ Supabase not available', 'error');
+                return { status: 'error', reason: 'Supabase not available' };
+            }
+
+            // Get organization
+            const organizationId = await getOrganizationId();
+            if (!organizationId) {
+                log('❌ No organization ID found', 'error');
+                return { status: 'error', reason: 'No organization ID' };
+            }
+            log(`✅ Using organization: ${organizationId}`, 'success');
+
+            // Load data
+            const warmupData = loadLocalStorageWarmupData();
+            if (!warmupData || Object.keys(warmupData).length === 0) {
+                log('ℹ️ No warmup data to migrate', 'warning');
+                return { status: 'success', migrated: 0, updated: 0, skipped: 0, errors: 0 };
+            }
+
+            const stats = {
+                total: Object.keys(warmupData).length,
+                migrated: 0,
+                updated: 0,
+                skipped: 0,
+                errors: 0
+            };
+
+            log(`📊 Found ${stats.total} accounts to migrate`, 'info');
+
+            // Process each account
+            for (const [username, progress] of Object.entries(warmupData)) {
+                log(`🔄 Processing ${username}...`, 'info');
+
+                const { exists, data: existingData } = await checkAccountExistsInSupabase(username, organizationId);
+
+                if (exists && existingData) {
+                    const shouldUpdate = progress.currentDay > existingData.current_day ||
+                                         (progress.completed && !existingData.completed);
+
+                    if (shouldUpdate) {
+                        log(`📝 Updating ${username}...`, 'info');
+                        const result = await upsertWarmupProgress(username, progress, organizationId);
+                        if (result.success) {
+                            stats.updated++;
+                        } else {
+                            stats.errors++;
+                        }
+                    } else {
+                        log(`⏭️ Skipping ${username} (already up-to-date)`, 'info');
+                        stats.skipped++;
+                    }
+                } else {
+                    log(`📥 Inserting ${username}...`, 'info');
+                    const result = await upsertWarmupProgress(username, progress, organizationId);
+                    if (result.success) {
+                        stats.migrated++;
+                    } else {
+                        stats.errors++;
+                    }
+                }
+            }
+
+            // Mark as completed
+            if (stats.errors === 0) {
+                localStorage.setItem('warmupMigrationCompleted', new Date().toISOString());
+                log('✅ Migration marked as completed', 'success');
+            }
+
+            log('🎉 Migration finished!', 'success');
+            log(`Total: ${stats.total}, Migrated: ${stats.migrated}, Updated: ${stats.updated}, Skipped: ${stats.skipped}, Errors: ${stats.errors}`, 'info');
+
+            return {
+                status: stats.errors === 0 ? 'success' : 'partial',
+                ...stats
+            };
+        }
+    </script>
+</body>
+</html>
