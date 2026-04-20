@@ -5156,21 +5156,16 @@
         
         // Rebuild VA creators for compatibility with old code
         function rebuildVACreators() {
-            console.log('    🏗️ RebuildVACreators - Début...');
             data.vas.forEach(va => {
-                console.log(`      - VA "${va.name}" (ID: ${va.id})`);
                 va.creators = [];
                 if (data.creators) {
                     data.creators.forEach(creator => {
                         if (creator.vaIds && creator.vaIds.includes(va.id)) {
                             va.creators.push(creator);
-                            console.log(`        ✓ Ajout créatrice "${creator.name}" avec ${creator.accounts?.length || 0} comptes`);
                         }
                     });
                 }
-                console.log(`        Total créatrices pour ${va.name}: ${va.creators.length}`);
             });
-            console.log('    🏗️ RebuildVACreators - Terminé');
         }
         
         // Fonction de récupération d'urgence pour les comptes Twitter perdus
@@ -5346,88 +5341,14 @@
             rebuildVACreators();
             
             // Compter le nombre total de créatrices
-            let totalCreators = data.creators ? data.creators.length : 0;
-            
-            // Diagnostic temporaire pour déboguer
-            console.log('📊 Diagnostic des données:');
-            console.log('Total créatrices:', totalCreators);
-            let totalAccounts = 0;
-            let accountsWithoutGmail = 0;
-            
-            // Vérifier la nouvelle structure
-            console.log('📂 Nouvelle structure (data.creators):');
-            data.creators?.forEach(creator => {
-                const accounts = creator.accounts ? creator.accounts.length : 0;
-                totalAccounts += accounts;
-                creator.accounts?.forEach(acc => {
-                    if (!acc.gmailId) accountsWithoutGmail++;
-                });
-                console.log(`  - ${creator.name}: ${accounts} comptes, VAs: [${creator.vaIds?.join(', ') || 'aucun'}]`);
-                if (accounts > 0) {
-                    creator.accounts.forEach(acc => {
-                        console.log(`    → ${acc.username}`);
-                    });
-                }
-            });
-            
-            // Vérifier l'ancienne structure
-            console.log('📂 Ancienne structure (va.creators):');
-            let oldStructureAccounts = 0;
-            data.vas?.forEach(va => {
-                if (va.creators && va.creators.length > 0) {
-                    console.log(`  VA: ${va.name}`);
-                    va.creators.forEach(creator => {
-                        const accounts = creator.accounts ? creator.accounts.length : 0;
-                        oldStructureAccounts += accounts;
-                        console.log(`    - ${creator.name}: ${accounts} comptes`);
-                        if (accounts > 0) {
-                            creator.accounts.forEach(acc => {
-                                console.log(`      → ${acc.username}`);
-                            });
-                        }
-                    });
-                }
-            });
-            
-            console.log(`⚠️ Total comptes dans nouvelle structure: ${totalAccounts}`);
-            console.log(`⚠️ Total comptes dans ancienne structure: ${oldStructureAccounts}`);
-            
-            // Vérifier directement dans localStorage
-            console.log('💾 Vérification localStorage brut:');
-            try {
-                const rawData = localStorage.getItem('vaManagerData');
-                if (rawData) {
-                    const storedData = JSON.parse(rawData);
-                    let localStorageAccounts = 0;
-                    storedData.vas?.forEach(va => {
-                        if (va.creators) {
-                            va.creators.forEach(creator => {
-                                localStorageAccounts += (creator.accounts ? creator.accounts.length : 0);
-                            });
-                        }
-                    });
-                    console.log(`  - Comptes dans localStorage (ancienne structure): ${localStorageAccounts}`);
-                }
-            } catch (e) {
-                console.error('Erreur lors de la lecture de localStorage:', e);
-            }
-            
-            console.log('✅ Données chargées:', {
-                vas: data.vas.length,
-                creators: totalCreators,
-                subs: data.subs.length,
-                revenues: data.revenues.length,
-                vaPayments: data.vaPayments.length,
-                gmailAccounts: data.gmailAccounts.length
-            });
-            
-            // Tenter de récupérer les comptes Twitter perdus
-            if (totalAccounts === 0 && oldStructureAccounts === 0) {
-                console.log('⚠️ Aucun compte Twitter détecté - lancement de la récupération...');
-                if (recoverLostTwitterAccounts()) {
-                    console.log('🔄 Rechargement de l\'interface...');
-                    updateDisplay();
-                }
+            const totalCreators = data.creators ? data.creators.length : 0;
+            const totalAccounts = (data.creators || []).reduce((n, c) => n + (c.accounts?.length || 0), 0);
+
+            console.log(`✅ Données: ${data.vas.length} VAs · ${totalCreators} créatrices · ${totalAccounts} comptes Twitter · ${data.gmailAccounts.length} Gmails`);
+
+            if (totalAccounts === 0) {
+                console.log('⚠️ Aucun compte Twitter détecté - tentative de récupération...');
+                if (recoverLostTwitterAccounts()) updateDisplay();
             }
         }
 
