@@ -8106,11 +8106,16 @@
         // Add VA - VERSION SIMPLE
         function addVA(e) {
             e.preventDefault();
-            
+
             const name = document.getElementById('va-name').value.trim();
-            
+
+            // UUID requis pour que la sync Supabase passe (la table vas exige un UUID)
+            const newId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'va_' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
             const newVA = {
-                id: 'va_' + Date.now(),
+                id: newId,
                 name: name
             };
 
@@ -8139,8 +8144,13 @@
                 data.creators = [];
             }
 
+            // UUID requis pour que la sync Supabase passe (la table creators exige un UUID)
+            const newCreatorId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'creator_' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
             const newCreator = {
-                id: 'creator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                id: newCreatorId,
                 name: creatorName,
                 vaIds: [], // Array vide pour les VAs assignés
                 accounts: [] // Array vide pour les comptes
@@ -8148,7 +8158,7 @@
 
             data.creators.push(newCreator);
             saveData();
-            
+
             e.target.reset();
             updateAllCreatorsTable(); // Mettre à jour le tableau
             showSuccess(`Créatrice "${creatorName}" ajoutée!`);
