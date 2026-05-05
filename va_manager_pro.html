@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="iphone-14-pro-fixes.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         /* Hide sensitive data for viewer role */
         body.role-viewer .password-protected { display: none !important; }
@@ -2468,6 +2469,7 @@
                                                    transform: translate(-50%, -50%) scale(0); opacity: 0;"></div>
                     </button>
                     <div style="display:flex; align-items:center; gap:0.5rem; margin-left:0.5rem;">
+                        <select id="org-switcher" onchange="switchViewOrg(this.value)" style="display:none; background:rgba(236,72,153,0.25); color:white; border:1px solid rgba(236,72,153,0.5); border-radius:0.5rem; padding:0.3rem 0.5rem; font-size:0.75rem; cursor:pointer; font-weight:600;" title="Super-admin : voir l'espace d'une autre org"></select>
                         <span id="user-badge" style="background:rgba(255,255,255,0.15); color:white; padding:0.25rem 0.75rem;
                                                       border-radius:1rem; font-size:0.75rem; font-weight:500;"></span>
                         <button class="admin-only-btn" onclick="navigateToPage('admin')" style="display:none; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none;
@@ -2575,6 +2577,9 @@
                 </div>
             </div>
             
+            <!-- Stats Shadowban -->
+            <div id="shadowban-stats" style="margin-bottom: 2rem;"></div>
+
             <!-- Récapitulatif Créatrices - Design Épuré -->
             <div style="margin-bottom: 2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
@@ -2595,6 +2600,9 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
                 <button onclick="exportData()" class="btn" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;">
                     <i class="fas fa-download"></i> Exporter données
+                </button>
+                <button onclick="exportAccountsCSV()" class="btn" style="background: #0ea5e9; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;">
+                    <i class="fas fa-file-csv"></i> Exporter CSV
                 </button>
                 <button onclick="createAutoBackup()" class="btn" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;">
                     <i class="fas fa-save"></i> Créer sauvegarde
@@ -3308,9 +3316,18 @@
                     <p style="margin-top:0.5rem; color:#64748b;">Gestion des utilisateurs et accès</p>
                 </div>
 
+                <!-- Super-admin : Organisations -->
+                <div id="super-admin-orgs" class="form-container" style="display:none; margin-bottom:1.5rem; border:2px solid rgba(99,102,241,0.3);">
+                    <h2 class="form-title"><i class="fas fa-building"></i> Organisations <span style="font-size:0.7rem; background:#6366f1; color:white; padding:0.2rem 0.5rem; border-radius:1rem; margin-left:0.5rem;">SUPER-ADMIN</span></h2>
+                    <div id="orgs-list" style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;"></div>
+                    <button type="button" onclick="showCreateOrgModal()" class="submit-btn" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                        <i class="fas fa-plus"></i> Créer une nouvelle organisation
+                    </button>
+                </div>
+
                 <!-- User list -->
                 <div class="form-container" style="margin-bottom:1.5rem;">
-                    <h2 class="form-title"><i class="fas fa-users"></i> Utilisateurs</h2>
+                    <h2 class="form-title"><i class="fas fa-users"></i> Utilisateurs <span id="admin-users-scope" style="font-size:0.75rem; opacity:0.7; font-weight:400; margin-left:0.5rem;"></span></h2>
                     <div id="admin-users-list" style="display:flex; flex-direction:column; gap:0.75rem;">
                         <p style="color:#94a3b8; text-align:center;">Chargement...</p>
                     </div>
@@ -3522,7 +3539,9 @@
             <!-- Graphique d'évolution -->
             <div id="followers-chart-container" style="margin-top: 2rem; display: none;">
                 <h4 style="margin-bottom: 1rem;">Évolution des Followers</h4>
-                <canvas id="followers-chart" width="400" height="200"></canvas>
+                <div style="position:relative; height:260px;">
+                    <canvas id="followers-chart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -3618,6 +3637,51 @@
             <span class="close-modal" onclick="closeModal()" style="cursor:pointer;">&times;</span>
             <h3>Détails du compte</h3>
             <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Create Organization Modal (super-admin) -->
+    <div id="create-org-modal" class="modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-building"></i> Nouvelle organisation</h2>
+                <button type="button" class="close-btn" onclick="closeModal()" style="cursor:pointer;font-size:1.5rem;background:none;border:none;color:inherit;">×</button>
+            </div>
+            <form onsubmit="superCreateOrg(event)" style="display:flex; flex-direction:column; gap:1rem;">
+                <div class="form-group">
+                    <label>Nom de l'organisation</label>
+                    <input type="text" id="new-org-name" class="form-control" required placeholder="Ex: Agence Antho">
+                </div>
+                <div style="border-top:1px solid rgba(127,127,127,0.2); padding-top:1rem; margin-top:0.5rem;">
+                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.75rem;">Premier admin de l'organisation</div>
+                </div>
+                <div class="form-group">
+                    <label>Email admin</label>
+                    <input type="email" id="new-org-admin-email" class="form-control" required placeholder="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe initial</label>
+                    <input type="text" id="new-org-admin-password" class="form-control" required placeholder="Mot de passe (l'admin pourra le changer)">
+                </div>
+                <div class="form-group">
+                    <label>Nom admin</label>
+                    <input type="text" id="new-org-admin-name" class="form-control" required placeholder="Prénom">
+                </div>
+                <button type="submit" class="submit-btn" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                    <i class="fas fa-check"></i> Créer l'organisation
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scan Results Modal -->
+    <div id="scan-results-modal" class="modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-shield-halved"></i> Résultats du scan</h2>
+                <button type="button" class="close-btn" onclick="closeModal()" style="cursor:pointer;font-size:1.5rem;background:none;border:none;color:inherit;">×</button>
+            </div>
+            <div id="scan-results-body" style="padding: 0 0 0.5rem 0;"></div>
         </div>
     </div>
 
@@ -3854,7 +3918,11 @@
         // SUPABASE_KEY conservé temporairement le temps de la migration complète
         // vers /api/db (toutes les écritures passent désormais par le proxy sécurisé)
         const SUPABASE_KEY = SUPABASE_ANON_KEY;
-        const ORG_ID = '97943916-59bf-476b-a089-0379c3806716';
+        // ORG_ID dynamique : défini à la connexion depuis user_metadata.organization_id
+        // (le proxy /api/db force aussi le scope serveur, ceci sert surtout à la cohérence locale)
+        let ORG_ID = null;
+        // Super-admin peut "voir" une autre org que la sienne via le switcher
+        let currentViewOrg = null; // null = son org par défaut
 
         // Auth state
         let currentUserRole = 'viewer'; // 'admin' or 'viewer'
@@ -3884,15 +3952,19 @@
                 const metadata = authData.user.user_metadata || {};
                 currentUserRole = metadata.role || 'viewer';
                 currentUserName = metadata.name || email;
+                ORG_ID = metadata.organization_id || null;
 
                 // Save session
                 localStorage.setItem('va_manager_session', JSON.stringify({
                     role: currentUserRole,
                     name: currentUserName,
-                    email: email
+                    email: email,
+                    organization_id: ORG_ID
                 }));
 
                 showApp();
+                // Recharge les données (utile si init a échoué avant login)
+                try { await loadData(); updateDisplay(); } catch(e) { console.warn('loadData post-login failed', e); }
             } catch (err) {
                 errorDiv.textContent = 'Email ou mot de passe incorrect';
                 errorDiv.style.display = 'block';
@@ -3906,10 +3978,15 @@
             document.getElementById('main-app').style.display = 'block';
             const badge = document.getElementById('user-badge');
             if (badge) {
-                badge.textContent = currentUserName + (currentUserRole === 'admin' ? ' (admin)' : '');
-                badge.style.background = currentUserRole === 'admin' ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.15)';
+                const tag = currentUserRole === 'super_admin' ? ' (super-admin)'
+                          : currentUserRole === 'admin' ? ' (admin)' : '';
+                badge.textContent = currentUserName + tag;
+                badge.style.background = currentUserRole === 'super_admin' ? 'rgba(236,72,153,0.3)'
+                                       : currentUserRole === 'admin' ? 'rgba(99,102,241,0.3)'
+                                       : 'rgba(255,255,255,0.15)';
             }
             applyRoleRestrictions();
+            if (isSuperAdmin()) setTimeout(() => populateOrgSwitcher(), 500);
         }
 
         function logout() {
@@ -3933,7 +4010,8 @@
             }
         }
 
-        function isAdmin() { return currentUserRole === 'admin'; }
+        function isAdmin() { return currentUserRole === 'admin' || currentUserRole === 'super_admin'; }
+        function isSuperAdmin() { return currentUserRole === 'super_admin'; }
 
         function closeNavDropdown() {
             const dd = document.getElementById('nav-dropdown');
@@ -3954,8 +4032,10 @@
                     // Verify session is still valid
                     const { data } = await authClient.auth.getSession();
                     if (data.session) {
-                        currentUserRole = session.role;
-                        currentUserName = session.name;
+                        const meta = data.session.user?.user_metadata || {};
+                        currentUserRole = meta.role || session.role;
+                        currentUserName = meta.name || session.name;
+                        ORG_ID = meta.organization_id || session.organization_id || null;
                         showApp();
                         return;
                     }
@@ -3980,6 +4060,11 @@
         // Debounce for Supabase saves (avoid overloading)
         let saveTimeout = null;
         function debouncedSupabaseSave() {
+            // Mode read-only : super-admin visualisant une autre org
+            if (currentViewOrg) {
+                console.log('⛔ sync bloqué (mode read-only : vue sur org ' + currentViewOrg.slice(0,8) + ')');
+                return;
+            }
             if (saveTimeout) clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => syncToSupabase(), 2000);
         }
@@ -3988,9 +4073,17 @@
         // PROXY SÉCURISÉ : toutes les écritures passent par /api/db
         // ============================================================================
         async function getAuthToken() {
+            // Attend que la session Supabase soit hydratée (jusqu'à 3s).
+            // Évite la race condition au démarrage où dbOp est appelé avant
+            // que le client Supabase ait restauré la session depuis localStorage.
             try {
-                const { data } = await authClient.auth.getSession();
-                return data?.session?.access_token || null;
+                for (let i = 0; i < 30; i++) {
+                    const { data } = await authClient.auth.getSession();
+                    const token = data?.session?.access_token;
+                    if (token) return token;
+                    await new Promise(r => setTimeout(r, 100));
+                }
+                return null;
             } catch { return null; }
         }
 
@@ -4020,6 +4113,11 @@
 
         async function syncToSupabase() {
             if (!useSupabase || !supabaseClient) return;
+            // Safety : super-admin en vue d'une autre org = read-only, pas de sync
+            if (currentViewOrg) {
+                console.warn('⛔ syncToSupabase annulé : vue sur org ' + currentViewOrg.slice(0,8));
+                return;
+            }
             try {
                 // Sync VAs (only UUID ids)
                 const vasToSync = data.vas.filter(va => va.id && va.id.includes('-')).map(va => ({
@@ -4102,11 +4200,15 @@
             if (!useSupabase || !supabaseClient) return null;
             try {
                 console.log('☁️ Loading data from Supabase...');
-                const _sel = (table) => dbSelect(table, [['organization_id', 'eq', ORG_ID]]);
-                const [vasRes, creatorsRes, twitterRes, igRes, subsRes, revenuesRes, warmupRes, gmailRes] = await Promise.all([
+                // Filtre org : super_admin peut cibler une autre org via currentViewOrg
+                // Sinon le proxy /api/db applique automatiquement l'org du user authentifié
+                const _sel = (table) => currentViewOrg
+                    ? dbSelect(table, [['organization_id', 'eq', currentViewOrg]])
+                    : dbSelect(table);
+                const [vasRes, creatorsRes, twitterRes, igRes, subsRes, revenuesRes, warmupRes, gmailRes, statsRes] = await Promise.all([
                     _sel('vas'), _sel('creators'), _sel('twitter_accounts'),
                     _sel('instagram_accounts'), _sel('subscriptions'), _sel('revenues'),
-                    _sel('warmup_progress'), _sel('gmail_accounts')
+                    _sel('warmup_progress'), _sel('gmail_accounts'), _sel('twitter_stats')
                 ]);
 
                 // Check if any table had an error
@@ -4248,7 +4350,13 @@
                     })),
                     payments: [],
                     vaPayments: [],
-                    twitterStats: []
+                    twitterStats: (statsRes?.data || []).map(s => ({
+                        id: s.id,
+                        username: s.username,
+                        followers: s.followers,
+                        date: s.date,
+                        created: s.created_at
+                    }))
                 };
             } catch (error) {
                 console.error('❌ Supabase load failed:', error);
@@ -6112,6 +6220,7 @@
             updateTwitterRankingTable();
             console.log('    - Mise à jour analyse Twitter...');
             updateTwitterAnalytics();
+            try { renderShadowbanStats(); } catch(e) { console.warn('renderShadowbanStats', e); }
             console.log('🎨 UPDATE DISPLAY - Terminé');
         }
 
@@ -6329,7 +6438,7 @@
                     
                     if (creator.accounts && creator.accounts.length > 0) {
                         creator.accounts.forEach(account => {
-                            creatorInfo.twitterAccounts.push(account.username);
+                            creatorInfo.twitterAccounts.push({ username: account.username, status: account.status || 'active' });
                             
                             // Trouver le VA
                             if (account.assignedVaId) {
@@ -6566,23 +6675,27 @@
                                         <i class="fab fa-twitter" style="color: #1da1f2;"></i> Comptes Twitter
                                     </div>
                                     <div style="display: flex; flex-wrap: wrap; gap: 0.375rem;">
-                                        ${creator.twitterAccounts.map(username => {
+                                        ${creator.twitterAccounts.map(acc => {
+                                            const username = typeof acc === 'string' ? acc : acc.username;
+                                            const status = (typeof acc === 'object' && acc.status) ? acc.status : 'active';
+                                            const colorMap = { active: '#1da1f2', shadowban: '#f59e0b', banned: '#ef4444' };
+                                            const c = colorMap[status] || colorMap.active;
                                             const twitterUrl = `https://twitter.com/${username.replace('@', '')}`;
                                             return `<a href="${twitterUrl}" target="_blank" style="
-                                                background: ${isDarkMode ? 'rgba(29, 161, 242, 0.1)' : 'rgba(29, 161, 242, 0.05)'};
-                                                color: #1da1f2;
+                                                background: ${c}15;
+                                                color: ${c};
                                                 padding: 0.375rem 0.625rem;
                                                 border-radius: 0.5rem;
                                                 font-size: 0.75rem;
                                                 text-decoration: none;
-                                                border: 1px solid ${isDarkMode ? 'rgba(29, 161, 242, 0.2)' : 'rgba(29, 161, 242, 0.15)'};
+                                                border: 1px solid ${c}40;
                                                 transition: all 0.2s ease;
                                                 display: inline-flex;
                                                 align-items: center;
                                                 gap: 0.25rem;
                                             "
-                                            onmouseover="this.style.background='rgba(29, 161, 242, 0.15)'"
-                                            onmouseout="this.style.background='${isDarkMode ? 'rgba(29, 161, 242, 0.1)' : 'rgba(29, 161, 242, 0.05)'}'">
+                                            onmouseover="this.style.background='${c}25'"
+                                            onmouseout="this.style.background='${c}15'">
                                                 <i class="fab fa-twitter"></i> ${username}
                                             </a>`;
                                         }).join('')}
@@ -6644,6 +6757,10 @@
 
         // Update Twitter Analytics
         function updateTwitterAnalytics() {
+            // Ne conserver que les stats des comptes présents dans l'org courante
+            const currentUsernames = new Set((data.twitterAccounts || []).map(a => (a.username || '').toLowerCase()));
+            data.twitterStats = (data.twitterStats || []).filter(s => currentUsernames.has((s.username || '').toLowerCase()));
+
             if (!data.twitterStats || data.twitterStats.length === 0) {
                 // Si pas de données, afficher un message vide
                 document.getElementById('total-followers').textContent = '0';
@@ -7048,7 +7165,7 @@
                             <i class="fas fa-users" style="font-size: 0.625rem;"></i> ${formatNumber(latestStats.followers)}
                         </span>` : '';
                     
-                    const paddingRight = hasGmail ? '7.5rem' : '10rem';
+                    const paddingRight = hasGmail ? '7rem' : '9.25rem';
                     
                     // Créer l'URL Twitter - enlever le @ du username
                     const twitterUrl = `https://twitter.com/${account.username.replace('@', '')}`;
@@ -7075,43 +7192,8 @@
                                style="color: #f59e0b; margin-left: 0.25rem; font-size: 0.75rem;" 
                                title="Pas de Gmail associé"></i>
                         ` : ''}
-                        ${!hasGmail ? `
-                            <button onclick="event.preventDefault(); event.stopPropagation(); showAssignGmailModal('${creator.id}', '${account.username}')" 
-                                    style="position: absolute; right: 5.5rem; top: 50%; transform: translateY(-50%); 
-                                           background: rgba(234, 67, 53, 0.2); border: none; border-radius: 50%; 
-                                           width: 28px; height: 28px; display: flex; align-items: center; 
-                                           justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                           transition: all 0.2s ease;"
-                                    onmouseover="this.style.background='rgba(234, 67, 53, 0.4)'"
-                                    onmouseout="this.style.background='rgba(234, 67, 53, 0.2)'"
-                                    title="Assigner un Gmail">
-                                <i class="fas fa-envelope"></i>
-                            </button>
-                        ` : ''}
-                        <button onclick="event.preventDefault(); event.stopPropagation(); showUpdateFollowersModal('${account.username}')" 
-                                style="position: absolute; right: ${hasGmail ? '5.5rem' : '8rem'}; top: 50%; transform: translateY(-50%); 
-                                       background: rgba(139, 92, 246, 0.2); border: none; border-radius: 50%; 
-                                       width: 28px; height: 28px; display: flex; align-items: center; 
-                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                       transition: all 0.2s ease;"
-                                onmouseover="this.style.background='rgba(139, 92, 246, 0.4)'"
-                                onmouseout="this.style.background='rgba(139, 92, 246, 0.2)'"
-                                title="Mettre à jour les followers">
-                            <i class="fas fa-users"></i>
-                        </button>
-                        <button onclick="event.preventDefault(); event.stopPropagation(); showTransferModal('${creator.id}', ${realIndex}, '${va.id}')" 
-                                style="position: absolute; right: 3rem; top: 50%; transform: translateY(-50%); 
-                                       background: rgba(59, 130, 246, 0.2); border: none; border-radius: 50%; 
-                                       width: 28px; height: 28px; display: flex; align-items: center; 
-                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
-                                       transition: all 0.2s ease;"
-                                onmouseover="this.style.background='rgba(59, 130, 246, 0.4)'"
-                                onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'"
-                                title="Transférer vers un autre VA">
-                            <i class="fas fa-exchange-alt"></i>
-                        </button>
                         <button onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})"
-                                style="position: absolute; right: 2.25rem; top: 50%; transform: translateY(-50%);
+                                style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
                                        background: rgba(239, 68, 68, 0.2); border: none; border-radius: 50%;
                                        width: 28px; height: 28px; display: flex; align-items: center;
                                        justify-content: center; cursor: pointer; font-size: 0.75rem;
@@ -7121,6 +7203,41 @@
                                 title="Retirer ce compte">
                             <i class="fas fa-times"></i>
                         </button>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); showTransferModal('${creator.id}', ${realIndex}, '${va.id}')"
+                                style="position: absolute; right: 2.75rem; top: 50%; transform: translateY(-50%);
+                                       background: rgba(59, 130, 246, 0.2); border: none; border-radius: 50%;
+                                       width: 28px; height: 28px; display: flex; align-items: center;
+                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='rgba(59, 130, 246, 0.4)'"
+                                onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'"
+                                title="Transférer vers un autre VA">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); showUpdateFollowersModal('${account.username}')"
+                                style="position: absolute; right: 5rem; top: 50%; transform: translateY(-50%);
+                                       background: rgba(139, 92, 246, 0.2); border: none; border-radius: 50%;
+                                       width: 28px; height: 28px; display: flex; align-items: center;
+                                       justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                       transition: all 0.2s ease;"
+                                onmouseover="this.style.background='rgba(139, 92, 246, 0.4)'"
+                                onmouseout="this.style.background='rgba(139, 92, 246, 0.2)'"
+                                title="Mettre à jour les followers">
+                            <i class="fas fa-users"></i>
+                        </button>
+                        ${!hasGmail ? `
+                            <button onclick="event.preventDefault(); event.stopPropagation(); showAssignGmailModal('${creator.id}', '${account.username}')"
+                                    style="position: absolute; right: 7.25rem; top: 50%; transform: translateY(-50%);
+                                           background: rgba(234, 67, 53, 0.2); border: none; border-radius: 50%;
+                                           width: 28px; height: 28px; display: flex; align-items: center;
+                                           justify-content: center; cursor: pointer; font-size: 0.75rem;
+                                           transition: all 0.2s ease;"
+                                    onmouseover="this.style.background='rgba(234, 67, 53, 0.4)'"
+                                    onmouseout="this.style.background='rgba(234, 67, 53, 0.2)'"
+                                    title="Assigner un Gmail">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                        ` : ''}
                     </a></div>`;
                 }).join('') : '';
 
@@ -8077,31 +8194,26 @@
             }
             
             try {
-                // Remove the VA
+                // Remove the VA (mémoire)
                 data.vas = data.vas.filter(v => v.id !== vaId);
-                
-                // Remove associated subs
-                if (data.subs) {
-                    data.subs = data.subs.filter(s => s.vaId !== vaId);
+                if (data.subs) data.subs = data.subs.filter(s => s.vaId !== vaId);
+                if (data.revenues) data.revenues = data.revenues.filter(r => r.vaId !== vaId);
+                if (data.vaPayments) data.vaPayments = data.vaPayments.filter(p => p.vaId !== vaId);
+                if (data.payments) data.payments = data.payments.filter(p => p.vaId !== vaId);
+
+                // Supprimer côté Supabase (seulement si UUID valide)
+                if (useSupabase && vaId && vaId.includes('-')) {
+                    // Détache les comptes twitter/instagram de ce VA (ne pas les supprimer, juste désassigner)
+                    dbUpdate('twitter_accounts', { va_id: null, assigned_va_id: null }, [['va_id', 'eq', vaId]]);
+                    dbUpdate('instagram_accounts', { va_id: null }, [['va_id', 'eq', vaId]]);
+                    // Supprime subs, revenues, puis le VA lui-même
+                    dbDelete('subscriptions', [['va_id', 'eq', vaId]]);
+                    dbDelete('revenues', [['va_id', 'eq', vaId]]);
+                    dbDelete('vas', [['id', 'eq', vaId]]);
                 }
-                
-                // Remove associated revenues
-                if (data.revenues) {
-                    data.revenues = data.revenues.filter(r => r.vaId !== vaId);
-                }
-                
-                // Remove associated payments
-                if (data.vaPayments) {
-                    data.vaPayments = data.vaPayments.filter(p => p.vaId !== vaId);
-                }
-                
-                // Remove old payments if they exist
-                if (data.payments) {
-                    data.payments = data.payments.filter(p => p.vaId !== vaId);
-                }
-                
+
                 saveData();
-                
+
                 showSuccess(`VA "${va.name}" et toutes ses données ont été supprimés.`);
                 
                 // Update all displays that might show VA data
@@ -8146,7 +8258,7 @@
             try {
                 // Supprimer la créatrice de la structure globale
                 data.creators.splice(creatorIndex, 1);
-                
+
                 // Retirer la référence du VA si elle existe
                 if (vaId) {
                     const va = data.vas.find(v => v.id === vaId);
@@ -8154,17 +8266,17 @@
                         va.creatorIds = va.creatorIds.filter(id => id !== creatorId);
                     }
                 }
-                
-                // Remove associated subs
-                if (data.subs) {
-                    data.subs = data.subs.filter(s => !(s.vaId === vaId && s.creatorId === creatorId));
+
+                if (data.subs) data.subs = data.subs.filter(s => !(s.vaId === vaId && s.creatorId === creatorId));
+                if (data.revenues) data.revenues = data.revenues.filter(r => !(r.vaId === vaId && r.creatorId === creatorId));
+
+                // PERSIST Supabase
+                if (useSupabase && creatorId && creatorId.includes('-')) {
+                    dbDelete('twitter_accounts', [['creator_id', 'eq', creatorId]]);
+                    dbDelete('instagram_accounts', [['creator_id', 'eq', creatorId]]);
+                    dbDelete('creators', [['id', 'eq', creatorId]]);
                 }
-                
-                // Remove associated revenues
-                if (data.revenues) {
-                    data.revenues = data.revenues.filter(r => !(r.vaId === vaId && r.creatorId === creatorId));
-                }
-                
+
                 saveData();
                 
                 showSuccess(`Créatrice "${creator.name}" et ses données ont été supprimées.`);
@@ -9007,10 +9119,66 @@
                 document.getElementById('followers-count').value = latest.followers;
             }
             
-            document.getElementById('followers-history').innerHTML = historyHtml || 
+            document.getElementById('followers-history').innerHTML = historyHtml ||
                 '<div style="color: #94a3b8;">Aucun historique disponible</div>';
-            
+
             document.getElementById('update-followers-modal').classList.add('show');
+
+            // Graphique d'évolution
+            renderFollowersChart(username, history);
+        }
+
+        let _followersChartInstance = null;
+        function renderFollowersChart(username, history) {
+            const container = document.getElementById('followers-chart-container');
+            const canvas = document.getElementById('followers-chart');
+            if (!container || !canvas || typeof Chart === 'undefined') return;
+
+            // Destruction graphique précédent
+            if (_followersChartInstance) { _followersChartInstance.destroy(); _followersChartInstance = null; }
+
+            if (!history || history.length < 2) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+
+            const sorted = [...history].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const labels = sorted.map(s => new Date(s.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }));
+            const values = sorted.map(s => s.followers);
+            const darkMode = document.body.classList.contains('dark-mode');
+            const textColor = darkMode ? '#e2e8f0' : '#1f2937';
+            const gridColor = darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+
+            _followersChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Followers',
+                        data: values,
+                        borderColor: '#1DA1F2',
+                        backgroundColor: 'rgba(29,161,242,0.15)',
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#1DA1F2',
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: '@' + username.replace(/^@/, ''), color: textColor }
+                    },
+                    scales: {
+                        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                    }
+                }
+            });
         }
         
         // Close update followers modal
@@ -9028,16 +9196,29 @@
             const date = document.getElementById('followers-date').value;
             
             if (!data.twitterStats) data.twitterStats = [];
-            
-            // Ajouter la nouvelle statistique
-            data.twitterStats.push({
-                id: generateId(),
+
+            const newId = (crypto.randomUUID && crypto.randomUUID()) || generateId();
+            const entry = {
+                id: newId,
                 username: username,
                 followers: followers,
                 date: date,
                 created: new Date().toISOString()
-            });
-            
+            };
+            data.twitterStats.push(entry);
+
+            // Insert dans Supabase (nouvelle rangée à chaque point d'historique)
+            if (useSupabase && newId.includes('-')) {
+                const acc = data.twitterAccounts?.find(a => a.username?.toLowerCase() === username.toLowerCase());
+                dbInsert('twitter_stats', [{
+                    id: newId,
+                    twitter_account_id: acc?.id || null,
+                    username: username,
+                    followers: followers,
+                    date: date
+                }]);
+            }
+
             saveData();
             updateDisplay();
             closeUpdateFollowersModal();
@@ -9512,12 +9693,13 @@
         function deleteInstagramAccount(accountId) {
             if (!confirm('Voulez-vous vraiment supprimer ce compte Instagram?')) return;
 
-            // Supprimer de data.instagramAccounts
+            // Retrouver l'id Supabase avant le filtrage
+            const target = (data.instagramAccounts || []).find(a => a.id === accountId || a.username === accountId);
+            const supabaseId = target?.id;
+
             if (data.instagramAccounts) {
                 data.instagramAccounts = data.instagramAccounts.filter(a => a.id !== accountId && a.username !== accountId);
             }
-
-            // Supprimer des créatrices
             if (data.creators) {
                 data.creators.forEach(creator => {
                     if (creator.instagramAccounts) {
@@ -9526,6 +9708,10 @@
                         );
                     }
                 });
+            }
+
+            if (useSupabase && supabaseId && String(supabaseId).includes('-')) {
+                dbDelete('instagram_accounts', [['id', 'eq', supabaseId]]);
             }
 
             saveData();
@@ -9538,17 +9724,18 @@
             if (!confirm(`Voulez-vous vraiment supprimer le compte Instagram ${username}?`)) return;
 
             const creator = data.creators.find(c => c.id === creatorId);
+            const target = (data.instagramAccounts || []).find(a => a.username === username);
+            const supabaseId = target?.id;
+
             if (creator && creator.instagramAccounts) {
-                creator.instagramAccounts = creator.instagramAccounts.filter(a =>
-                    a.username !== username
-                );
+                creator.instagramAccounts = creator.instagramAccounts.filter(a => a.username !== username);
+            }
+            if (data.instagramAccounts) {
+                data.instagramAccounts = data.instagramAccounts.filter(a => a.username !== username);
             }
 
-            // Supprimer aussi de data.instagramAccounts
-            if (data.instagramAccounts) {
-                data.instagramAccounts = data.instagramAccounts.filter(a =>
-                    a.username !== username
-                );
+            if (useSupabase && supabaseId && String(supabaseId).includes('-')) {
+                dbDelete('instagram_accounts', [['id', 'eq', supabaseId]]);
             }
 
             saveData();
@@ -10160,45 +10347,266 @@
         // ============================================================================
         // ADMIN FUNCTIONS
         // ============================================================================
+        function renderUserCard(u, opts = {}) {
+            const dk = document.body.classList.contains('dark-mode');
+            const role = u.user_metadata?.role || 'viewer';
+            const name = u.user_metadata?.name || u.email;
+            const orgId = u.user_metadata?.organization_id || '';
+
+            const roleColors = {
+                super_admin: { bg: 'rgba(236,72,153,0.15)', color: '#ec4899' },
+                admin:       { bg: 'rgba(99,102,241,0.15)',  color: '#6366f1' },
+                viewer:      { bg: 'rgba(34,197,94,0.15)',   color: '#22c55e' }
+            };
+            const rc = roleColors[role] || roleColors.viewer;
+            const cardBg = dk ? '#1e293b' : '#f8fafc';
+            const textColor = dk ? '#e2e8f0' : '#1f2937';
+            const subColor = dk ? '#94a3b8' : '#6b7280';
+
+            const wrap = document.createElement('div');
+            wrap.style.cssText = `display:flex; align-items:center; justify-content:space-between; padding:1rem; background:${cardBg}; border-radius:0.75rem; border:1px solid ${dk ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};`;
+
+            const left = document.createElement('div');
+            left.style.cssText = 'display:flex; align-items:center; gap:0.75rem;';
+            const avatar = document.createElement('div');
+            avatar.style.cssText = 'width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; color:white; font-weight:700;';
+            avatar.textContent = String(name).charAt(0).toUpperCase();
+            const info = document.createElement('div');
+            const nm = document.createElement('div');
+            nm.style.cssText = `font-weight:600; color:${textColor};`;
+            nm.textContent = name;
+            const em = document.createElement('div');
+            em.style.cssText = `font-size:0.8rem; color:${subColor};`;
+            em.textContent = u.email;
+            info.appendChild(nm); info.appendChild(em);
+            if (opts.showOrg && orgId) {
+                const og = document.createElement('div');
+                og.style.cssText = `font-size:0.7rem; color:${subColor}; font-family:monospace; margin-top:0.15rem; opacity:0.7;`;
+                og.textContent = 'org: ' + orgId.slice(0, 8);
+                info.appendChild(og);
+            }
+            left.appendChild(avatar); left.appendChild(info);
+
+            const right = document.createElement('div');
+            right.style.cssText = 'display:flex; align-items:center; gap:0.5rem;';
+            const badge = document.createElement('span');
+            badge.style.cssText = `padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.75rem; font-weight:600; background:${rc.bg}; color:${rc.color};`;
+            badge.textContent = role;
+            right.appendChild(badge);
+
+            const mkBtn = (title, bg, color, icon, onclick) => {
+                const b = document.createElement('button');
+                b.title = title;
+                b.style.cssText = `background:${bg}; color:${color}; border:none; border-radius:0.375rem; padding:0.375rem; cursor:pointer;`;
+                b.onclick = onclick;
+                const i = document.createElement('i');
+                i.className = 'fas ' + icon;
+                i.style.cssText = 'font-size:0.75rem;';
+                b.appendChild(i);
+                return b;
+            };
+            right.appendChild(mkBtn('Changer le rôle', 'rgba(99,102,241,0.1)', '#6366f1', 'fa-exchange-alt', () => adminToggleRole(u.id, role)));
+            right.appendChild(mkBtn('Changer le mot de passe', 'rgba(245,158,11,0.1)', '#f59e0b', 'fa-key', () => adminResetPassword(u.id, u.email)));
+            right.appendChild(mkBtn('Supprimer', 'rgba(239,68,68,0.1)', '#ef4444', 'fa-trash', () => adminDeleteUser(u.id, u.email)));
+
+            wrap.appendChild(left); wrap.appendChild(right);
+            return wrap;
+        }
+
         async function loadAdminUsers() {
             const container = document.getElementById('admin-users-list');
+            const scopeBadge = document.getElementById('admin-users-scope');
             if (!container || !isAdmin()) return;
 
+            // Toggle bloc super-admin orgs
+            const orgsSection = document.getElementById('super-admin-orgs');
+            if (orgsSection) orgsSection.style.display = isSuperAdmin() ? 'block' : 'none';
+            if (scopeBadge) scopeBadge.textContent = isSuperAdmin() ? '(toutes organisations)' : '(votre organisation)';
+
             try {
-                const data = await adminApi('list', { page: 1, perPage: 50 });
+                const data = await adminApi('list', { page: 1, perPage: 100 });
                 const users = (data?.users || []).filter(u => {
-                    const role = u.user_metadata?.role;
-                    return role === 'admin' || role === 'viewer';
+                    const r = u.user_metadata?.role;
+                    return r === 'admin' || r === 'viewer' || r === 'super_admin';
                 });
 
-                const dk = document.body.classList.contains('dark-mode');
-                container.innerHTML = users.map(u => {
-                    const role = u.user_metadata?.role || 'viewer';
-                    const name = u.user_metadata?.name || u.email;
-                    const roleBg = role === 'admin' ? 'rgba(99,102,241,0.15)' : 'rgba(34,197,94,0.15)';
-                    const roleColor = role === 'admin' ? '#6366f1' : '#22c55e';
-                    const cardBg = dk ? '#1e293b' : '#f8fafc';
-                    const textColor = dk ? '#e2e8f0' : '#1f2937';
-                    const subColor = dk ? '#94a3b8' : '#6b7280';
+                while (container.firstChild) container.removeChild(container.firstChild);
 
-                    return '<div style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:' + cardBg + '; border-radius:0.75rem; border:1px solid ' + (dk ? 'rgba(255,255,255,0.08)' : '#e5e7eb') + ';">' +
-                        '<div style="display:flex; align-items:center; gap:0.75rem;">' +
-                            '<div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; color:white; font-weight:700;">' + name.charAt(0).toUpperCase() + '</div>' +
-                            '<div>' +
-                                '<div style="font-weight:600; color:' + textColor + ';">' + name + '</div>' +
-                                '<div style="font-size:0.8rem; color:' + subColor + ';">' + u.email + '</div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:0.5rem;">' +
-                            '<span style="padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.75rem; font-weight:600; background:' + roleBg + '; color:' + roleColor + ';">' + role + '</span>' +
-                            '<button onclick="adminToggleRole(\'' + u.id + '\',\'' + role + '\')" style="background:rgba(99,102,241,0.1); color:#6366f1; border:none; border-radius:0.375rem; padding:0.375rem; cursor:pointer;" title="Changer le rôle"><i class="fas fa-exchange-alt" style="font-size:0.75rem;"></i></button>' +
-                            '<button onclick="adminResetPassword(\'' + u.id + '\',\'' + u.email + '\')" style="background:rgba(245,158,11,0.1); color:#f59e0b; border:none; border-radius:0.375rem; padding:0.375rem; cursor:pointer;" title="Changer le mot de passe"><i class="fas fa-key" style="font-size:0.75rem;"></i></button>' +
-                            '<button onclick="adminDeleteUser(\'' + u.id + '\',\'' + u.email + '\')" style="background:rgba(239,68,68,0.1); color:#ef4444; border:none; border-radius:0.375rem; padding:0.375rem; cursor:pointer;" title="Supprimer"><i class="fas fa-trash" style="font-size:0.75rem;"></i></button>' +
-                        '</div>' +
-                    '</div>';
-                }).join('') || '<p style="color:#94a3b8; text-align:center;">Aucun utilisateur</p>';
+                if (users.length === 0) {
+                    const p = document.createElement('p');
+                    p.style.cssText = 'color:#94a3b8; text-align:center;';
+                    p.textContent = 'Aucun utilisateur';
+                    container.appendChild(p);
+                    if (isSuperAdmin()) loadOrgsList(users);
+                    return;
+                }
+
+                if (isSuperAdmin()) {
+                    // Grouper par organization_id
+                    const groups = new Map();
+                    users.forEach(u => {
+                        const k = u.user_metadata?.organization_id || '(aucune org)';
+                        if (!groups.has(k)) groups.set(k, []);
+                        groups.get(k).push(u);
+                    });
+                    groups.forEach((list, orgId) => {
+                        const header = document.createElement('div');
+                        header.style.cssText = 'font-size:0.75rem; font-weight:700; text-transform:uppercase; opacity:0.6; margin:1rem 0 0.5rem; letter-spacing:0.05em;';
+                        header.textContent = 'Organisation : ' + (orgId.length > 8 ? orgId.slice(0, 8) + '…' : orgId);
+                        container.appendChild(header);
+                        list.forEach(u => container.appendChild(renderUserCard(u, { showOrg: false })));
+                    });
+                    loadOrgsList(users);
+                } else {
+                    users.forEach(u => container.appendChild(renderUserCard(u)));
+                }
             } catch (err) {
-                container.innerHTML = '<p style="color:#ef4444;">Erreur: ' + err.message + '</p>';
+                while (container.firstChild) container.removeChild(container.firstChild);
+                const p = document.createElement('p');
+                p.style.color = '#ef4444';
+                p.textContent = 'Erreur: ' + err.message;
+                container.appendChild(p);
+            }
+        }
+
+        function loadOrgsList(users) {
+            const list = document.getElementById('orgs-list');
+            if (!list) return;
+            while (list.firstChild) list.removeChild(list.firstChild);
+
+            const orgs = new Map();
+            users.forEach(u => {
+                const id = u.user_metadata?.organization_id;
+                if (!id) return;
+                if (!orgs.has(id)) orgs.set(id, { id, users: 0, admins: 0 });
+                const o = orgs.get(id);
+                o.users++;
+                if (u.user_metadata?.role === 'admin') o.admins++;
+            });
+
+            if (orgs.size === 0) {
+                const p = document.createElement('p');
+                p.style.cssText = 'color:#94a3b8; text-align:center; font-size:0.85rem;';
+                p.textContent = 'Aucune organisation';
+                list.appendChild(p);
+                return;
+            }
+
+            orgs.forEach(o => {
+                const dk = document.body.classList.contains('dark-mode');
+                const row = document.createElement('div');
+                row.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1rem; background:${dk ? '#1e293b' : '#f8fafc'}; border-radius:0.5rem; border:1px solid ${dk ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};`;
+                const info = document.createElement('div');
+                const idEl = document.createElement('div');
+                idEl.style.cssText = 'font-family:monospace; font-size:0.8rem; font-weight:600;';
+                idEl.textContent = o.id.slice(0, 8) + '…' + o.id.slice(-4);
+                const st = document.createElement('div');
+                st.style.cssText = 'font-size:0.75rem; opacity:0.7; margin-top:0.2rem;';
+                st.textContent = `${o.users} user(s) · ${o.admins} admin(s)`;
+                info.appendChild(idEl); info.appendChild(st);
+                row.appendChild(info);
+                list.appendChild(row);
+            });
+        }
+
+        function showCreateOrgModal() {
+            if (!isSuperAdmin()) return;
+            document.getElementById('create-org-modal').classList.add('show');
+        }
+
+        async function populateOrgSwitcher() {
+            const sel = document.getElementById('org-switcher');
+            if (!sel) return;
+            if (!isSuperAdmin()) { sel.style.display = 'none'; return; }
+            sel.style.display = 'inline-block';
+
+            try {
+                const data = await adminApi('list', { page: 1, perPage: 100 });
+                const users = data?.users || [];
+                const orgs = new Map();
+                users.forEach(u => {
+                    const id = u.user_metadata?.organization_id;
+                    const name = u.user_metadata?.organization_name || u.user_metadata?.name || '';
+                    if (!id) return;
+                    if (!orgs.has(id)) orgs.set(id, { id, label: null, userCount: 0 });
+                    orgs.get(id).userCount++;
+                    // Prend le nom de l'org si fourni, sinon le premier admin rencontré
+                    if (!orgs.get(id).label && u.user_metadata?.role === 'admin') {
+                        orgs.get(id).label = u.user_metadata?.name || '';
+                    }
+                });
+
+                while (sel.firstChild) sel.removeChild(sel.firstChild);
+                orgs.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.id;
+                    const isMine = o.id === ORG_ID;
+                    opt.textContent = '🏢 ' + (o.label || o.id.slice(0, 8)) + (isMine ? ' (moi)' : '');
+                    if ((currentViewOrg || ORG_ID) === o.id) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.warn('populateOrgSwitcher', e); }
+        }
+
+        async function switchViewOrg(orgId) {
+            if (!isSuperAdmin()) return;
+            currentViewOrg = (orgId === ORG_ID) ? null : orgId;
+            localStorage.removeItem('vaManagerProData');
+            localStorage.removeItem('vaManagerProData_backup');
+            // Vide l'état en mémoire
+            data.vas = []; data.creators = []; data.twitterAccounts = [];
+            data.instagramAccounts = []; data.gmailAccounts = [];
+            data.subs = []; data.revenues = []; data.vaPayments = []; data.twitterStats = [];
+            // Recharge via la même fonction que le démarrage (applique data + migrations)
+            await loadData();
+            updateDisplay();
+            // Badge read-only dans le header
+            const badge = document.getElementById('user-badge');
+            if (badge) {
+                if (currentViewOrg) {
+                    badge.textContent = currentUserName + ' (vue ' + currentViewOrg.slice(0,8) + ' • READ-ONLY)';
+                    badge.style.background = 'rgba(245,158,11,0.3)';
+                } else {
+                    badge.textContent = currentUserName + ' (super-admin)';
+                    badge.style.background = 'rgba(236,72,153,0.3)';
+                }
+            }
+            if (typeof showSuccess === 'function') {
+                const label = currentViewOrg ? 'org ' + currentViewOrg.slice(0, 8) + ' (lecture seule)' : 'votre org';
+                showSuccess('Vue changée → ' + label);
+            }
+        }
+
+        async function superCreateOrg(e) {
+            e.preventDefault();
+            if (!isSuperAdmin()) return;
+            const name = document.getElementById('new-org-name').value.trim();
+            const email = document.getElementById('new-org-admin-email').value.trim();
+            const password = document.getElementById('new-org-admin-password').value;
+            const adminName = document.getElementById('new-org-admin-name').value.trim();
+
+            const newOrgId = (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random().toString(36).slice(2));
+
+            try {
+                await adminApi('create', {
+                    payload: {
+                        email,
+                        password,
+                        email_confirm: true,
+                        user_metadata: {
+                            role: 'admin',
+                            name: adminName,
+                            organization_id: newOrgId,
+                            organization_name: name
+                        }
+                    }
+                });
+                showSuccess(`Organisation "${name}" créée, admin: ${email}`);
+                closeModal();
+                e.target.reset();
+                loadAdminUsers();
+            } catch (err) {
+                showError('Erreur: ' + err.message);
             }
         }
 
@@ -10449,66 +10857,64 @@
                 console.error('Compte non trouvé');
                 return;
             }
-            
+
             const account = creator.accounts[accountIndex];
-            
-            // Confirmer l'action
+
             if (!confirm(`Voulez-vous retirer le compte ${account.username} ?\n\nIl sera retiré de ${creator.name} et du VA.\nLe compte restera disponible pour être réassigné.`)) {
                 return;
             }
-            
-            // Retirer de la créatrice
+
+            // Retirer de la créatrice (mémoire)
             creator.accounts.splice(accountIndex, 1);
-            
-            // Retirer la créatrice du VA si elle n'a plus de comptes
-            if (creator.accounts.length === 0 && creator.vaIds) {
-                creator.vaIds = [];
-            }
-            
-            // Ajouter aux comptes Twitter non assignés s'il n'y est pas déjà
-            const existsInTwitterAccounts = data.twitterAccounts.some(ta => 
-                ta.username.toLowerCase() === account.username.toLowerCase()
+            if (creator.accounts.length === 0 && creator.vaIds) creator.vaIds = [];
+
+            // Met à jour data.twitterAccounts (désassigner)
+            const twAcc = data.twitterAccounts.find(ta =>
+                (account.id && ta.id === account.id) ||
+                ta.username?.toLowerCase() === account.username?.toLowerCase()
             );
-            
-            if (!existsInTwitterAccounts) {
+            if (twAcc) {
+                twAcc.creatorId = null;
+                twAcc.gmailId = null;
+                twAcc.vaId = null;
+                twAcc.assignedVaId = null;
+            } else {
                 data.twitterAccounts.push({
-                    id: 'tw_' + Date.now(),
+                    id: account.id || ('tw_' + Date.now()),
                     username: account.username,
                     password: account.password,
-                    creatorId: null,
-                    gmailId: null,
-                    vaId: null,
+                    creatorId: null, gmailId: null, vaId: null,
                     created: new Date().toISOString()
                 });
-            } else {
-                // Si le compte existe déjà, mettre à jour ses associations
-                const twitterAccount = data.twitterAccounts.find(ta => 
-                    ta.username.toLowerCase() === account.username.toLowerCase()
-                );
-                if (twitterAccount) {
-                    twitterAccount.creatorId = null;
-                    twitterAccount.gmailId = null;
-                    twitterAccount.vaId = null;
-                }
             }
-            
-            // Désassigner aussi le Gmail si nécessaire
-            const gmailWithThisTwitter = data.gmailAccounts.find(g => 
+
+            // Désassigner Gmail si présent
+            const gmailWithThisTwitter = data.gmailAccounts.find(g =>
                 g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === account.username.toLowerCase()
             );
             if (gmailWithThisTwitter) {
                 gmailWithThisTwitter.assignedTwitterUsername = null;
                 gmailWithThisTwitter.vaId = null;
             }
-            
-            // Si la créatrice n'a plus de comptes et n'est associée à aucun VA, proposer de la supprimer
+
+            // PERSISTER dans Supabase immédiatement
+            if (useSupabase && account.id && account.id.includes('-')) {
+                dbUpdate('twitter_accounts',
+                    { creator_id: null, va_id: null, assigned_va_id: null, gmail_id: null },
+                    [['id', 'eq', account.id]]
+                );
+            }
+
+            // Si la créatrice n'a plus aucun compte, proposer suppression
             if (creator.accounts.length === 0 && (!creator.vaIds || creator.vaIds.length === 0)) {
                 if (confirm(`${creator.name} n'a plus aucun compte. Voulez-vous supprimer la créatrice ?`)) {
                     data.creators = data.creators.filter(c => c.id !== creatorId);
+                    if (useSupabase && creatorId && creatorId.includes('-')) {
+                        dbDelete('creators', [['id', 'eq', creatorId]]);
+                    }
                 }
             }
-            
-            // Sauvegarder et mettre à jour
+
             saveData();
             updateDisplay();
             updateTwitterAccountsList();
@@ -11246,28 +11652,39 @@
             const creator = data.creators.find(c => c.id === creatorId);
             const account = creator?.accounts[accountIndex];
             if (!account) return;
-            
+
             const newVa = data.vas.find(v => v.id === newVaId);
-            
-            // Mettre à jour l'assignation
+
+            // Mémoire
             account.assignedVaId = newVaId;
-            
-            // Mettre à jour aussi dans twitterAccounts si existe
-            const twitterAccount = data.twitterAccounts.find(t => 
-                t.username === account.username || t.id === account.id
+            account.vaId = newVaId;
+
+            const twitterAccount = data.twitterAccounts.find(t =>
+                (account.id && t.id === account.id) || t.username === account.username
             );
             if (twitterAccount) {
                 twitterAccount.vaId = newVaId;
+                twitterAccount.assignedVaId = newVaId;
             }
-            
-            // S'assurer que la créatrice est associée au nouveau VA
+
             if (!creator.vaIds) creator.vaIds = [];
-            if (!creator.vaIds.includes(newVaId)) {
-                creator.vaIds.push(newVaId);
+            if (!creator.vaIds.includes(newVaId)) creator.vaIds.push(newVaId);
+
+            // PERSIST Supabase : update twitter_accounts + creators.va_ids
+            const accountId = account.id || twitterAccount?.id;
+            if (useSupabase && accountId && String(accountId).includes('-')) {
+                dbUpdate('twitter_accounts',
+                    { va_id: newVaId, assigned_va_id: newVaId },
+                    [['id', 'eq', accountId]]
+                );
             }
-            
+            if (useSupabase && creator.id && creator.id.includes('-')) {
+                dbUpdate('creators', { va_ids: creator.vaIds }, [['id', 'eq', creator.id]]);
+            }
+
             saveData();
             closeModal();
+            updateDisplay();
             showSuccess(`${account.username} transféré vers ${newVa?.name} !`);
         }
         
@@ -11307,6 +11724,20 @@
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem; color: ${fg}; font-weight: 600; font-size: 0.875rem;">
+                        <i class="fas fa-key"></i> Modifier le mot de passe
+                    </label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="input-password" value="${password || ''}" placeholder="Nouveau mot de passe..."
+                               style="flex: 1; padding: 0.5rem; border: 1px solid ${isDark ? '#475569' : '#e2e8f0'}; border-radius: 0.5rem;
+                                      background: ${isDark ? '#0f172a' : 'white'}; color: ${fg}; font-size: 0.875rem;">
+                        <button onclick="savePassword('${account.id || account.username}')"
+                                style="padding: 0.5rem 1rem; background: #1da1f2; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: ${fg}; font-weight: 600; font-size: 0.875rem;">
                         <i class="fas fa-shield-alt"></i> Modifier le code 2FA
                     </label>
                     <div style="display: flex; gap: 0.5rem;">
@@ -11324,6 +11755,34 @@
 
             document.getElementById('modal-content').innerHTML = modalContent;
             document.getElementById('password-modal').classList.add('show');
+        }
+
+        function savePassword(idOrUsername) {
+            const input = document.getElementById('input-password');
+            if (!input) return;
+            const newPwd = input.value.trim();
+
+            const account = findAccountByIdOrUsername(idOrUsername);
+            if (account) {
+                account.password = newPwd;
+                account.encryptedPassword = newPwd;
+            }
+            if (data.creators) {
+                data.creators.forEach(creator => {
+                    if (creator.accounts) {
+                        const ca = creator.accounts.find(a => a.id === idOrUsername || a.username === idOrUsername);
+                        if (ca) { ca.password = newPwd; ca.encryptedPassword = newPwd; }
+                    }
+                });
+            }
+
+            if (useSupabase && account && account.id && account.id.includes('-')) {
+                dbUpdate('twitter_accounts', { encrypted_password: newPwd }, [['id', 'eq', account.id]]);
+            }
+
+            saveData();
+            closeModal();
+            showSuccess('Mot de passe mis à jour');
         }
 
         function save2FA(idOrUsername) {
@@ -11754,7 +12213,7 @@
                 'title="Cliquer pour changer le statut">' + c.label + '</span>';
         }
 
-        function findAccountByIdOrUsername(idOrUsername) {
+        function findAccountRefs(idOrUsername) {
             let account = data.twitterAccounts.find(a => a.id === idOrUsername || a.username === idOrUsername);
             let creatorAccount = null;
             if (data.creators) {
@@ -11769,7 +12228,7 @@
         }
 
         function openStatusModal(idOrUsername) {
-            const { account, creatorAccount } = findAccountByIdOrUsername(idOrUsername);
+            const { account, creatorAccount } = findAccountRefs(idOrUsername);
             const current = (account?.status || creatorAccount?.status || 'active');
             const username = account?.username || creatorAccount?.username || idOrUsername;
 
@@ -11828,7 +12287,7 @@
         }
 
         function setAccountStatus(idOrUsername, newStatus) {
-            const { account, creatorAccount } = findAccountByIdOrUsername(idOrUsername);
+            const { account, creatorAccount } = findAccountRefs(idOrUsername);
 
             if (account) account.status = newStatus;
             if (creatorAccount) creatorAccount.status = newStatus;
@@ -11846,6 +12305,114 @@
 
         // Backward compat: any existing onclick using cycleAccountStatus opens the modal
         function cycleAccountStatus(idOrUsername) { openStatusModal(idOrUsername); }
+
+        // Stats globales shadowban + breakdown par créatrice
+        function renderShadowbanStats() {
+            const container = document.getElementById('shadowban-stats');
+            if (!container) return;
+            while (container.firstChild) container.removeChild(container.firstChild);
+
+            const accounts = data.twitterAccounts || [];
+            if (accounts.length === 0) return;
+
+            const counts = { active: 0, shadowban: 0, banned: 0 };
+            accounts.forEach(a => { counts[a.status || 'active'] = (counts[a.status || 'active'] || 0) + 1; });
+            const total = accounts.length;
+            const pct = (n) => total ? Math.round((n / total) * 100) : 0;
+
+            const header = document.createElement('div');
+            header.style.cssText = 'display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;';
+            const h3 = document.createElement('h3');
+            h3.style.cssText = 'margin:0; font-size:1.5rem; font-weight:600; display:flex; align-items:center; gap:0.5rem;';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-shield-halved';
+            icon.style.color = '#6366f1';
+            h3.appendChild(icon);
+            h3.appendChild(document.createTextNode(' Statuts des comptes'));
+            header.appendChild(h3);
+            container.appendChild(header);
+
+            // Cards stats globales
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.25rem;';
+            const card = (label, n, color, iconCls) => {
+                const c = document.createElement('div');
+                c.style.cssText = `background:${color}15; border:1px solid ${color}30; padding:1.25rem; border-radius:0.75rem;`;
+                const top = document.createElement('div');
+                top.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;';
+                const lab = document.createElement('span');
+                lab.style.cssText = `font-size:0.85rem; color:${color}; font-weight:600;`;
+                lab.textContent = label;
+                const ic = document.createElement('i');
+                ic.className = 'fas ' + iconCls;
+                ic.style.cssText = `color:${color}; font-size:1.1rem;`;
+                top.appendChild(lab); top.appendChild(ic);
+                const val = document.createElement('div');
+                val.style.cssText = 'font-size:1.75rem; font-weight:700;';
+                val.textContent = n + ' ';
+                const p = document.createElement('span');
+                p.style.cssText = 'font-size:0.9rem; opacity:0.6; font-weight:500;';
+                p.textContent = `(${pct(n)}%)`;
+                val.appendChild(p);
+                c.appendChild(top); c.appendChild(val);
+                return c;
+            };
+            grid.appendChild(card('Total comptes', total, '#6366f1', 'fa-hashtag'));
+            grid.appendChild(card('Actifs', counts.active, '#22c55e', 'fa-circle-check'));
+            grid.appendChild(card('Shadowban', counts.shadowban, '#f59e0b', 'fa-eye-slash'));
+            grid.appendChild(card('Bannis', counts.banned, '#ef4444', 'fa-ban'));
+            container.appendChild(grid);
+
+            // Breakdown par créatrice
+            const creators = (data.creators || []).map(c => {
+                const accs = (c.accounts || []);
+                const cs = { active: 0, shadowban: 0, banned: 0 };
+                accs.forEach(a => { cs[a.status || 'active'] = (cs[a.status || 'active'] || 0) + 1; });
+                return { name: c.name, total: accs.length, ...cs };
+            }).filter(x => x.total > 0).sort((a, b) => b.total - a.total);
+
+            if (creators.length === 0) return;
+
+            const section = document.createElement('div');
+            section.style.cssText = 'background:rgba(99,102,241,0.05); border:1px solid rgba(99,102,241,0.15); border-radius:0.75rem; padding:1.25rem;';
+            const sTitle = document.createElement('div');
+            sTitle.style.cssText = 'font-size:0.9rem; font-weight:600; margin-bottom:0.875rem; opacity:0.8;';
+            sTitle.textContent = 'Par créatrice';
+            section.appendChild(sTitle);
+
+            creators.forEach(c => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:grid; grid-template-columns:120px 1fr auto; gap:0.75rem; align-items:center; padding:0.5rem 0;';
+
+                const nm = document.createElement('div');
+                nm.style.cssText = 'font-weight:600; font-size:0.9rem;';
+                nm.textContent = c.name;
+
+                const bar = document.createElement('div');
+                bar.style.cssText = 'display:flex; height:22px; border-radius:0.375rem; overflow:hidden; background:rgba(127,127,127,0.1);';
+                const seg = (n, color, title) => {
+                    if (n === 0) return null;
+                    const s = document.createElement('div');
+                    s.style.cssText = `width:${(n / c.total) * 100}%; background:${color}; display:flex; align-items:center; justify-content:center; color:white; font-size:0.7rem; font-weight:700;`;
+                    s.title = title;
+                    if (n / c.total > 0.12) s.textContent = n;
+                    return s;
+                };
+                const a = seg(c.active,    '#22c55e', `${c.active} actifs`);
+                const sh = seg(c.shadowban, '#f59e0b', `${c.shadowban} shadowban`);
+                const b = seg(c.banned,   '#ef4444', `${c.banned} bannis`);
+                [a, sh, b].forEach(el => el && bar.appendChild(el));
+
+                const tot = document.createElement('div');
+                tot.style.cssText = 'font-size:0.85rem; opacity:0.7; white-space:nowrap;';
+                tot.textContent = `${c.total} compte${c.total > 1 ? 's' : ''}`;
+
+                row.appendChild(nm); row.appendChild(bar); row.appendChild(tot);
+                section.appendChild(row);
+            });
+
+            container.appendChild(section);
+        }
 
         // Charge et affiche les changements de statut non vus
         async function loadStatusChangesBanner() {
@@ -11940,10 +12507,10 @@
             try {
                 const res = await fetch('/api/scan-shadowban', { signal: AbortSignal.timeout(290000) });
                 const data = await res.json();
-                const msg = `Scan terminé : ${data.checked} vérifiés, ${data.changed} changement(s)`;
-                if (typeof showSuccess === 'function') showSuccess(msg); else alert(msg);
 
-                // Recharge la bannière (ne dépend pas de loadFromSupabase)
+                showScanResultsModal(data);
+
+                // Recharge la bannière
                 await loadStatusChangesBanner();
                 // Refresh UI si possible, sans bloquer
                 try { if (typeof loadFromSupabase === 'function') await loadFromSupabase(); } catch(e) {}
@@ -11958,9 +12525,85 @@
             }
         }
 
+        function showScanResultsModal(data) {
+            const body = document.getElementById('scan-results-body');
+            if (!body) return;
+            while (body.firstChild) body.removeChild(body.firstChild);
+
+            // Header stats
+            const stats = document.createElement('div');
+            stats.style.cssText = 'display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem; margin-bottom:1rem;';
+            const statCard = (label, n, color) => {
+                const c = document.createElement('div');
+                c.style.cssText = `background:${color}15; border:1px solid ${color}30; padding:0.75rem; border-radius:0.5rem; text-align:center;`;
+                const v = document.createElement('div');
+                v.style.cssText = `font-size:1.5rem; font-weight:700; color:${color};`;
+                v.textContent = n;
+                const l = document.createElement('div');
+                l.style.cssText = 'font-size:0.75rem; opacity:0.7; margin-top:0.15rem;';
+                l.textContent = label;
+                c.appendChild(v); c.appendChild(l);
+                return c;
+            };
+            stats.appendChild(statCard('Vérifiés', data.checked || 0, '#6366f1'));
+            stats.appendChild(statCard('Changements', data.changed || 0, '#f59e0b'));
+            stats.appendChild(statCard('Erreurs', data.errors || 0, data.errors ? '#ef4444' : '#22c55e'));
+            body.appendChild(stats);
+
+            const changes = data.changes || [];
+            if (changes.length === 0) {
+                const p = document.createElement('p');
+                p.style.cssText = 'text-align:center; padding:1.5rem; opacity:0.7; margin:0;';
+                p.innerHTML = '<i class="fas fa-check-circle" style="color:#22c55e; font-size:2rem; display:block; margin-bottom:0.5rem;"></i>Aucun changement. Tout est stable.';
+                body.appendChild(p);
+                document.getElementById('scan-results-modal').classList.add('show');
+                return;
+            }
+
+            // Group changes
+            const groups = {
+                active:    { title: '✅ Redevenus actifs (dispo)',  list: [], color: '#22c55e' },
+                shadowban: { title: '⚠️ Passés en shadowban',        list: [], color: '#f59e0b' },
+                banned:    { title: '🚫 Bannis / disparus',           list: [], color: '#ef4444' }
+            };
+            changes.forEach(c => {
+                if (groups[c.to]) groups[c.to].list.push(c);
+            });
+
+            Object.values(groups).forEach(g => {
+                if (g.list.length === 0) return;
+                const section = document.createElement('div');
+                section.style.cssText = `background:${g.color}10; border-left:3px solid ${g.color}; padding:0.875rem 1rem; border-radius:0.375rem; margin-bottom:0.75rem;`;
+
+                const title = document.createElement('div');
+                title.style.cssText = `font-weight:700; font-size:0.9rem; color:${g.color}; margin-bottom:0.5rem;`;
+                title.textContent = g.title + ' (' + g.list.length + ')';
+                section.appendChild(title);
+
+                g.list.forEach(c => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:0.375rem 0; font-size:0.85rem;';
+                    const left = document.createElement('div');
+                    left.style.cssText = 'font-weight:600;';
+                    left.textContent = c.username;
+                    const right = document.createElement('div');
+                    right.style.cssText = 'font-size:0.75rem; opacity:0.75;';
+                    const fromLabel = c.from === 'active' ? 'Actif' : c.from === 'shadowban' ? 'Shadowban' : c.from === 'banned' ? 'Banni' : c.from;
+                    const toLabel = c.to === 'active' ? 'Actif' : c.to === 'shadowban' ? 'Shadowban' : c.to === 'banned' ? 'Banni' : c.to;
+                    right.textContent = fromLabel + ' → ' + toLabel + (c.flags && c.to === 'shadowban' ? ' [' + c.flags + ']' : '');
+                    row.appendChild(left); row.appendChild(right);
+                    section.appendChild(row);
+                });
+
+                body.appendChild(section);
+            });
+
+            document.getElementById('scan-results-modal').classList.add('show');
+        }
+
         // 1-click shadowban check via /api/shadowban proxy
         async function checkShadowban(idOrUsername, btnEl) {
-            const { account, creatorAccount } = findAccountByIdOrUsername(idOrUsername);
+            const { account, creatorAccount } = findAccountRefs(idOrUsername);
             const username = (account?.username || creatorAccount?.username || idOrUsername).replace(/^@/, '');
             if (!username) return;
 
@@ -12339,6 +12982,47 @@
             saveData();
             showSuccess(`Import réussi! ${imported} comptes importés.`);
             navigateToPage('dashboard');
+        }
+
+        // Export CSV complet (tous les comptes Twitter avec statuts)
+        function exportAccountsCSV() {
+            const rows = [['Username', 'Statut', 'Créatrice', 'VA', 'Gmail', '2FA', 'Followers', 'Notes']];
+            const csvEscape = (v) => {
+                const s = (v === null || v === undefined) ? '' : String(v);
+                return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+            };
+
+            (data.twitterAccounts || []).forEach(acc => {
+                const creator = (data.creators || []).find(c => c.id === acc.creatorId);
+                const va = (data.vas || []).find(v => v.id === (acc.assignedVaId || acc.vaId));
+                const gmail = (data.gmailAccounts || []).find(g => g.id === acc.gmailId);
+                const has2FA = /\[2FA:/i.test(acc.notes || '');
+                const stats = typeof getLatestTwitterStats === 'function' ? getLatestTwitterStats(acc.username) : null;
+                const statusLabel = (typeof getStatusLabel === 'function') ? getStatusLabel(acc.status) : (acc.status || 'active');
+                rows.push([
+                    acc.username || '',
+                    statusLabel,
+                    creator?.name || '',
+                    va?.name || '',
+                    gmail?.email || '',
+                    has2FA ? 'oui' : 'non',
+                    stats?.followers ?? '',
+                    (acc.notes || '').replace(/\[2FA:[^\]]+\]/gi, '').trim()
+                ]);
+            });
+
+            const csv = '\uFEFF' + rows.map(r => r.map(csvEscape).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const ts = new Date().toISOString().slice(0, 10);
+            a.download = `va-manager-comptes-${ts}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            if (typeof showSuccess === 'function') showSuccess(`${rows.length - 1} comptes exportés`);
         }
 
         // Export data
@@ -12846,6 +13530,9 @@
         function deleteSub(subId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cette entrée?')) {
                 data.subs = data.subs.filter(sub => sub.id !== subId);
+                if (useSupabase && subId && String(subId).includes('-')) {
+                    dbDelete('subscriptions', [['id', 'eq', subId]]);
+                }
                 saveData();
                 updateCompetitionDisplay();
                 showSuccess('Entrée supprimée');
@@ -13577,6 +14264,9 @@
         function deleteRevenue(revenueId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cette entrée de revenus?')) {
                 data.revenues = data.revenues.filter(r => r.id !== revenueId);
+                if (useSupabase && revenueId && String(revenueId).includes('-')) {
+                    dbDelete('revenues', [['id', 'eq', revenueId]]);
+                }
                 saveData();
                 showSuccess('Revenu supprimé');
                 updateRevenueDisplay();
