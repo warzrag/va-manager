@@ -12686,10 +12686,14 @@
                 if (typeof showSuccess === 'function') showSuccess('@' + username + ' → ' + label);
             } catch (err) {
                 console.error('shadowban check failed', err);
+                const isInconclusive = String(err?.message || err).includes('inconclusive');
+                const msg = isInconclusive
+                    ? 'API shadowban (yuzurisa) temporairement indisponible pour @' + username + '. Réessaie dans 1-2 min — ce n\'est pas VA Manager qui plante, c\'est le service tiers.'
+                    : 'Erreur de vérification pour @' + username + ' : ' + (err?.message || 'inconnue');
                 if (typeof showError === 'function') {
-                    showError('Impossible de vérifier @' + username);
+                    showError(msg);
                 } else {
-                    alert('Impossible de vérifier @' + username);
+                    alert(msg);
                 }
                 if (btnEl && originalHTML !== null) {
                     btnEl.disabled = false;
