@@ -2910,6 +2910,20 @@
                     </code>
                 </div>
             </div>
+
+            <div class="form-container" style="margin-top: 2rem;">
+                <h2 class="form-title">Import rapide (Twitter + Email + 2FA + Token)</h2>
+                <p style="color:#64748b; margin-bottom:1rem;">
+                    Colle plusieurs comptes (un par ligne). Champs séparés par espaces ou tabulations, dans cet ordre :<br>
+                    <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;&nbsp;password&nbsp;&nbsp;email&nbsp;&nbsp;email_password&nbsp;&nbsp;2FA_secret&nbsp;&nbsp;auth_token</code>
+                </p>
+                <textarea id="bulk-import-input" placeholder="konnyalejandra    Dt7BOeZiu9Gb    KonnyEspinoza1@hotmail.com    h5YoxKIig4uI    JQ27BYLXGGSFORNB    1be8e091abffe089b055f8cdda01b1cc1814f9c2"
+                          style="width:100%; min-height:180px; font-family:monospace; font-size:0.85rem; padding:0.75rem; border:1px solid #cbd5e1; border-radius:0.5rem; resize:vertical;"></textarea>
+                <button onclick="bulkImportAccounts()" class="submit-btn" style="margin-top:1rem;">
+                    <i class="fas fa-bolt"></i> Importer
+                </button>
+                <div id="bulk-import-result" style="margin-top:1rem; font-size:0.9rem;"></div>
+            </div>
         </div>
 
         <!-- Search Page -->
@@ -8746,7 +8760,114 @@
             showSuccess(`Compte Gmail "${email}" ajouté!`);
             updateGmailAccountsList();
         }
-        
+
+        // Bulk import: paste multiple accounts (username password email email_pwd 2FA token)
+        async function bulkImportAccounts() {
+            const textarea = document.getElementById('bulk-import-input');
+            const resultDiv = document.getElementById('bulk-import-result');
+            const raw = (textarea?.value || '').trim();
+            if (!raw) {
+                resultDiv.innerHTML = '<span style="color:#ef4444;">Aucune donnée à importer.</span>';
+                return;
+            }
+            if (!useSupabase) {
+                resultDiv.innerHTML = '<span style="color:#ef4444;">Supabase indisponible — impossible d\'importer.</span>';
+                return;
+            }
+
+            const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (!data.gmailAccounts) data.gmailAccounts = [];
+            if (!data.twitterAccounts) data.twitterAccounts = [];
+
+            let okCount = 0;
+            const errors = [];
+            resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… 0/${lines.length}</span>`;
+
+            for (let i = 0; i < lines.length; i++) {
+                const fields = lines[i].split(/\s+/).filter(Boolean);
+                if (fields.length < 3) {
+                    errors.push(`Ligne ${i+1} : pas assez de champs (min 3 requis)`);
+                    continue;
+                }
+                const [username, password, email, emailPwd, twoFa, authToken] = fields;
+                const cleanUsername = username.replace(/^@/, '').toLowerCase();
+                const cleanEmail = (email || '').toLowerCase();
+
+                try {
+                    // 1) Crée le compte Gmail (si email fourni et pas déjà présent)
+                    let gmailId = null;
+                    if (cleanEmail) {
+                        const existing = data.gmailAccounts.find(g => g.email?.toLowerCase() === cleanEmail);
+                        if (existing && existing.id?.includes('-')) {
+                            gmailId = existing.id;
+                        } else {
+                            const ins = await dbInsert('gmail_accounts', {
+                                email: cleanEmail,
+                                encrypted_password: emailPwd || '',
+                                notes: '',
+                                va_id: null
+                            });
+                            if (ins.error) throw new Error('gmail: ' + JSON.stringify(ins.error));
+                            const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
+                            gmailId = created?.id;
+                            if (gmailId) {
+                                data.gmailAccounts.push({
+                                    id: gmailId, vaId: null, email: cleanEmail,
+                                    password: emailPwd || '', notes: '', created: created?.created_at
+                                });
+                            }
+                        }
+                    }
+
+                    // 2) Crée le compte Twitter (skip si username déjà existant)
+                    const twDup = data.twitterAccounts.find(t => t.username?.toLowerCase() === cleanUsername);
+                    if (twDup) {
+                        errors.push(`Ligne ${i+1} (@${cleanUsername}) : déjà existant, ignoré`);
+                    } else {
+                        const noteParts = [];
+                        if (twoFa) noteParts.push('[2FA:' + twoFa + ']');
+                        if (authToken) noteParts.push('[TOKEN:' + authToken + ']');
+                        const ins = await dbInsert('twitter_accounts', {
+                            username: cleanUsername,
+                            encrypted_password: password || '',
+                            creator_id: null, va_id: null, assigned_va_id: null,
+                            gmail_id: gmailId,
+                            status: 'active',
+                            notes: noteParts.join(' ') || null
+                        });
+                        if (ins.error) throw new Error('twitter: ' + JSON.stringify(ins.error));
+                        const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
+                        if (created?.id) {
+                            data.twitterAccounts.push({
+                                id: created.id, username: cleanUsername,
+                                password: password || '', encryptedPassword: password || '',
+                                creatorId: null, vaId: null, assignedVaId: null, gmailId: gmailId,
+                                status: 'active', notes: noteParts.join(' '),
+                                twoFaSecret: twoFa || '', created: created.created_at
+                            });
+                        }
+                        okCount++;
+                    }
+                } catch (e) {
+                    errors.push(`Ligne ${i+1} (@${cleanUsername}) : ${e?.message || e}`);
+                }
+                resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… ${i+1}/${lines.length}</span>`;
+            }
+
+            saveData();
+            updateDisplay();
+
+            const html = [];
+            html.push(`<div style="color:#22c55e; font-weight:600;">✅ ${okCount} compte(s) importé(s)</div>`);
+            if (errors.length) {
+                html.push(`<div style="color:#ef4444; margin-top:0.5rem;">⚠️ ${errors.length} erreur(s) :</div>`);
+                html.push('<ul style="margin-top:0.25rem; padding-left:1.25rem; color:#ef4444; font-size:0.8rem;">'
+                    + errors.map(e => '<li>' + e.replace(/</g,'&lt;') + '</li>').join('') + '</ul>');
+            }
+            resultDiv.innerHTML = html.join('');
+            if (okCount > 0) textarea.value = '';
+        }
+
         // Update Gmail accounts display
         function updateGmailAccountsDisplay() {
             const container = document.getElementById('gmail-accounts-container');
