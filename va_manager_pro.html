@@ -12625,9 +12625,28 @@
             }
 
             try {
-                const res = await fetch('/api/shadowban?username=' + encodeURIComponent(username));
-                const data = await res.json();
-                if (!res.ok) throw new Error(data?.error || 'api_error');
+                // L'API tierce yuzurisa est instable et renvoie souvent {"detail":"Internal error"}.
+                // On retente jusqu'à 3 fois avant d'abandonner, et on refuse les réponses
+                // incomplètes (sinon on marquerait à tort un compte shadowban comme "active").
+                let data = null;
+                let lastErr = null;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    try {
+                        const res = await fetch('/api/shadowban?username=' + encodeURIComponent(username));
+                        const json = await res.json();
+                        if (!res.ok) throw new Error(json?.error || 'api_error');
+                        // Réponse upstream invalide ou incomplète -> retry
+                        if (json?.detail === 'Internal error' || !json?.profile || !json?.tests) {
+                            throw new Error('upstream_inconclusive');
+                        }
+                        data = json;
+                        break;
+                    } catch (e) {
+                        lastErr = e;
+                        if (attempt < 2) await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
+                    }
+                }
+                if (!data) throw (lastErr || new Error('shadowban_failed'));
 
                 // Interprétation: normalise sur les drapeaux classiques de l'API yuzurisa/shadowban.eu
                 const p = data.profile || data || {};
