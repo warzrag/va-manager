@@ -40,7 +40,17 @@ export default async function handler(req, res) {
             return;
         }
 
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+        // Ne pas mettre en cache les réponses incomplètes (scraper Twitter
+        // temporairement bloqué, profil introuvable, tests manquants),
+        // sinon les retries reçoivent la même mauvaise réponse pendant 5 min.
+        const isInconclusive = !data || data.detail === 'Internal error'
+            || !data.profile || data.profile.exists === false
+            || !data.tests;
+        if (isInconclusive) {
+            res.setHeader('Cache-Control', 'no-store');
+        } else {
+            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+        }
         res.status(200).json(data);
     } catch (err) {
         res.status(502).json({ error: 'upstream_failed', message: String(err?.message || err) });
