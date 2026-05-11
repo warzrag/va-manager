@@ -8853,7 +8853,8 @@
                                 email: cleanEmail,
                                 encrypted_password: emailPwd || '',
                                 notes: '',
-                                va_id: null
+                                va_id: null,
+                                organization_id: ORG_ID
                             });
                             if (ins.error) throw new Error('gmail: ' + JSON.stringify(ins.error));
                             const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
@@ -8883,7 +8884,8 @@
                             assigned_va_id: vaId || null,
                             gmail_id: gmailId,
                             status: 'active',
-                            notes: noteParts.join(' ') || null
+                            notes: noteParts.join(' ') || null,
+                            organization_id: ORG_ID
                         });
                         if (ins.error) throw new Error('twitter: ' + JSON.stringify(ins.error));
                         const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
