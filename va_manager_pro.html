@@ -2917,8 +2917,26 @@
                     Colle plusieurs comptes (un par ligne). Champs séparés par espaces ou tabulations, dans cet ordre :<br>
                     <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;&nbsp;password&nbsp;&nbsp;email&nbsp;&nbsp;email_password&nbsp;&nbsp;2FA_secret&nbsp;&nbsp;auth_token</code>
                 </p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:600; margin-bottom:0.25rem; color:#475569;">Assigner à la créatrice (optionnel)</label>
+                        <select id="bulk-import-creator" style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:0.5rem;">
+                            <option value="">— Aucune —</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:600; margin-bottom:0.25rem; color:#475569;">Assigner au VA (optionnel)</label>
+                        <select id="bulk-import-va" style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:0.5rem;">
+                            <option value="">— Aucun —</option>
+                        </select>
+                    </div>
+                </div>
+
                 <textarea id="bulk-import-input" placeholder="konnyalejandra    Dt7BOeZiu9Gb    KonnyEspinoza1@hotmail.com    h5YoxKIig4uI    JQ27BYLXGGSFORNB    1be8e091abffe089b055f8cdda01b1cc1814f9c2"
+                          oninput="updateBulkImportCount()"
                           style="width:100%; min-height:180px; font-family:monospace; font-size:0.85rem; padding:0.75rem; border:1px solid #cbd5e1; border-radius:0.5rem; resize:vertical;"></textarea>
+                <div id="bulk-import-count" style="margin-top:0.5rem; color:#64748b; font-size:0.85rem;">0 ligne(s) détectée(s)</div>
                 <button onclick="bulkImportAccounts()" class="submit-btn" style="margin-top:1rem;">
                     <i class="fas fa-bolt"></i> Importer
                 </button>
@@ -5768,6 +5786,12 @@
             // Update existing creators list when navigating to add-creator page
             if (pageName === 'add-creator') {
                 updateAllCreatorsTable();
+            }
+
+            // Peuple les selects de l'import rapide à l'arrivée sur la page
+            if (pageName === 'import') {
+                if (typeof populateBulkImportSelects === 'function') populateBulkImportSelects();
+                if (typeof updateBulkImportCount === 'function') updateBulkImportCount();
             }
 
             // Load admin users when navigating to admin page
@@ -8761,10 +8785,34 @@
             updateGmailAccountsList();
         }
 
+        // Compte les lignes non vides dans le textarea (mis à jour en direct)
+        function updateBulkImportCount() {
+            const ta = document.getElementById('bulk-import-input');
+            const countDiv = document.getElementById('bulk-import-count');
+            if (!ta || !countDiv) return;
+            const n = (ta.value || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).length;
+            countDiv.textContent = n + ' ligne(s) détectée(s)';
+        }
+
+        // Remplit les selects créatrice/VA de la zone d'import rapide
+        function populateBulkImportSelects() {
+            const creatorSel = document.getElementById('bulk-import-creator');
+            const vaSel = document.getElementById('bulk-import-va');
+            if (!creatorSel || !vaSel) return;
+            const creators = [...(data.creators || [])].sort((a,b) => (a.name||'').localeCompare(b.name||''));
+            const vas = [...(data.vas || [])].sort((a,b) => (a.name||'').localeCompare(b.name||''));
+            creatorSel.innerHTML = '<option value="">— Aucune —</option>' +
+                creators.map(c => `<option value="${c.id}">${(c.name||'').replace(/</g,'&lt;')}</option>`).join('');
+            vaSel.innerHTML = '<option value="">— Aucun —</option>' +
+                vas.map(v => `<option value="${v.id}">${(v.name||'').replace(/</g,'&lt;')}</option>`).join('');
+        }
+
         // Bulk import: paste multiple accounts (username password email email_pwd 2FA token)
         async function bulkImportAccounts() {
             const textarea = document.getElementById('bulk-import-input');
             const resultDiv = document.getElementById('bulk-import-result');
+            const creatorId = document.getElementById('bulk-import-creator')?.value || null;
+            const vaId = document.getElementById('bulk-import-va')?.value || null;
             const raw = (textarea?.value || '').trim();
             if (!raw) {
                 resultDiv.innerHTML = '<span style="color:#ef4444;">Aucune donnée à importer.</span>';
@@ -8812,7 +8860,7 @@
                             gmailId = created?.id;
                             if (gmailId) {
                                 data.gmailAccounts.push({
-                                    id: gmailId, vaId: null, email: cleanEmail,
+                                    id: gmailId, vaId: vaId || null, email: cleanEmail,
                                     password: emailPwd || '', notes: '', created: created?.created_at
                                 });
                             }
@@ -8830,7 +8878,9 @@
                         const ins = await dbInsert('twitter_accounts', {
                             username: cleanUsername,
                             encrypted_password: password || '',
-                            creator_id: null, va_id: null, assigned_va_id: null,
+                            creator_id: creatorId || null,
+                            va_id: vaId || null,
+                            assigned_va_id: vaId || null,
                             gmail_id: gmailId,
                             status: 'active',
                             notes: noteParts.join(' ') || null
@@ -8841,10 +8891,23 @@
                             data.twitterAccounts.push({
                                 id: created.id, username: cleanUsername,
                                 password: password || '', encryptedPassword: password || '',
-                                creatorId: null, vaId: null, assignedVaId: null, gmailId: gmailId,
+                                creatorId: creatorId || null, vaId: vaId || null,
+                                assignedVaId: vaId || null, gmailId: gmailId,
                                 status: 'active', notes: noteParts.join(' '),
                                 twoFaSecret: twoFa || '', created: created.created_at
                             });
+                        }
+                        // Lien créatrice <-> compte (pour l'affichage côté UI)
+                        if (creatorId) {
+                            const creator = data.creators.find(c => c.id === creatorId);
+                            if (creator) {
+                                creator.accounts = creator.accounts || [];
+                                creator.accounts.push(data.twitterAccounts[data.twitterAccounts.length - 1]);
+                                if (vaId) {
+                                    creator.vaIds = creator.vaIds || [];
+                                    if (!creator.vaIds.includes(vaId)) creator.vaIds.push(vaId);
+                                }
+                            }
                         }
                         okCount++;
                     }
