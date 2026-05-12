@@ -2914,8 +2914,15 @@
             <div class="form-container" style="margin-top: 2rem;">
                 <h2 class="form-title">Import rapide (Twitter + Email + 2FA + Token)</h2>
                 <p style="color:#64748b; margin-bottom:1rem;">
-                    Colle plusieurs comptes (un par ligne). Champs séparés par espaces ou tabulations, dans cet ordre :<br>
-                    <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;&nbsp;password&nbsp;&nbsp;email&nbsp;&nbsp;email_password&nbsp;&nbsp;2FA_secret&nbsp;&nbsp;auth_token</code>
+                    Deux formats acceptés (détection auto) :<br>
+                    <strong>1) Une ligne par compte</strong> (espaces/tabs) :
+                    <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;password&nbsp;email&nbsp;email_password&nbsp;2FA&nbsp;auth_token</code><br>
+                    <strong>2) Clé:Valeur</strong> (multi-ligne, un bloc par compte, démarre par <code>User:</code>) :
+                    <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-top:0.25rem; white-space:pre;">User: name
+Pass: twitter_pwd
+Email: x@mail.com
+Pass: email_pwd
+2fa: ABC123</code>
                 </p>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
@@ -8785,13 +8792,65 @@
             updateGmailAccountsList();
         }
 
-        // Compte les lignes non vides dans le textarea (mis à jour en direct)
+        // Parse l'input du bulk import. Détecte automatiquement 2 formats :
+        // 1) Une ligne par compte (espaces/tabs): username password email email_pwd 2fa token
+        // 2) Multi-ligne clé/valeur:
+        //    User: name
+        //    Pass: twitter_password
+        //    Email: ...
+        //    Pass: email_password
+        //    2fa: ...
+        //    Token: ... (optionnel)
+        function parseBulkImport(raw) {
+            const trimmed = (raw || '').trim();
+            if (!trimmed) return [];
+            const isKeyValue = /^[ \t]*user[ \t]*:/im.test(trimmed);
+            if (isKeyValue) {
+                const accounts = [];
+                let current = null;
+                for (const line of trimmed.split(/\r?\n/)) {
+                    const m = line.match(/^\s*([A-Za-z0-9_]+)\s*:\s*(.+?)\s*$/);
+                    if (!m) continue;
+                    const key = m[1].toLowerCase();
+                    const val = m[2].trim();
+                    if (key === 'user' || key === 'username' || key === 'login') {
+                        if (current) accounts.push(current);
+                        current = { username: val };
+                    } else if (current) {
+                        if (key === 'pass' || key === 'password') {
+                            if (current.password === undefined) current.password = val;
+                            else current.emailPassword = val;
+                        } else if (key === 'email' || key === 'mail') {
+                            current.email = val;
+                        } else if (key === '2fa' || key === 'twofa' || key === 'totp') {
+                            current.twoFa = val;
+                        } else if (key === 'token' || key === 'authtoken' || key === 'auth_token') {
+                            current.token = val;
+                        } else if (key === 'emailpass' || key === 'email_pass' || key === 'emailpassword') {
+                            current.emailPassword = val;
+                        }
+                    }
+                }
+                if (current) accounts.push(current);
+                return accounts;
+            }
+            // Format ligne par ligne
+            return trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+                const f = l.split(/\s+/).filter(Boolean);
+                return {
+                    username: f[0], password: f[1], email: f[2],
+                    emailPassword: f[3], twoFa: f[4], token: f[5]
+                };
+            });
+        }
+
+        // Compte les comptes détectés dans le textarea (mis à jour en direct)
         function updateBulkImportCount() {
             const ta = document.getElementById('bulk-import-input');
             const countDiv = document.getElementById('bulk-import-count');
             if (!ta || !countDiv) return;
-            const n = (ta.value || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).length;
-            countDiv.textContent = n + ' ligne(s) détectée(s)';
+            const n = parseBulkImport(ta.value || '').length;
+            countDiv.textContent = n + ' compte(s) détecté(s)';
         }
 
         // Remplit les selects créatrice/VA de la zone d'import rapide
@@ -8823,21 +8882,26 @@
                 return;
             }
 
-            const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const parsedAccounts = parseBulkImport(raw);
             if (!data.gmailAccounts) data.gmailAccounts = [];
             if (!data.twitterAccounts) data.twitterAccounts = [];
 
             let okCount = 0;
             const errors = [];
-            resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… 0/${lines.length}</span>`;
+            resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… 0/${parsedAccounts.length}</span>`;
 
-            for (let i = 0; i < lines.length; i++) {
-                const fields = lines[i].split(/\s+/).filter(Boolean);
-                if (fields.length < 3) {
-                    errors.push(`Ligne ${i+1} : pas assez de champs (min 3 requis)`);
+            for (let i = 0; i < parsedAccounts.length; i++) {
+                const acc = parsedAccounts[i];
+                const username = acc.username || '';
+                const password = acc.password || '';
+                const email = acc.email || '';
+                const emailPwd = acc.emailPassword || '';
+                const twoFa = acc.twoFa || '';
+                const authToken = acc.token || '';
+                if (!username || !password) {
+                    errors.push(`Compte ${i+1} : username ou password manquant`);
                     continue;
                 }
-                const [username, password, email, emailPwd, twoFa, authToken] = fields;
                 const cleanUsername = username.replace(/^@/, '').toLowerCase();
                 const cleanEmail = (email || '').toLowerCase();
 
@@ -8871,7 +8935,7 @@
                     // 2) Crée le compte Twitter (skip si username déjà existant)
                     const twDup = data.twitterAccounts.find(t => t.username?.toLowerCase() === cleanUsername);
                     if (twDup) {
-                        errors.push(`Ligne ${i+1} (@${cleanUsername}) : déjà existant, ignoré`);
+                        errors.push(`Compte ${i+1} (@${cleanUsername}) : déjà existant, ignoré`);
                     } else {
                         const noteParts = [];
                         if (twoFa) noteParts.push('[2FA:' + twoFa + ']');
@@ -8914,9 +8978,9 @@
                         okCount++;
                     }
                 } catch (e) {
-                    errors.push(`Ligne ${i+1} (@${cleanUsername}) : ${e?.message || e}`);
+                    errors.push(`Compte ${i+1} (@${cleanUsername}) : ${e?.message || e}`);
                 }
-                resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… ${i+1}/${lines.length}</span>`;
+                resultDiv.innerHTML = `<span style="color:#64748b;">Import en cours… ${i+1}/${parsedAccounts.length}</span>`;
             }
 
             saveData();
