@@ -5417,9 +5417,10 @@ Pass: email_pwd
             });
         }
         
-        // Fonction de récupération d'urgence pour les comptes Twitter perdus
+        // Fonction de récupération legacy depuis d'anciennes sauvegardes locales.
+        // Ne doit jamais être lancée automatiquement après un chargement Supabase vide.
         function recoverLostTwitterAccounts() {
-            console.log('🚨 Tentative de récupération des comptes Twitter perdus...');
+            console.log('Tentative de récupération depuis les anciennes sauvegardes locales...');
             
             try {
                 // Essayer d'abord avec les données actuelles
@@ -5442,8 +5443,8 @@ Pass: email_pwd
                 }
                 
                 if (!rawData) {
-                    console.log('❌ Aucune donnée trouvée dans localStorage ni dans les sauvegardes');
-                    showError('Aucune donnée de sauvegarde trouvée. Les comptes Twitter semblent définitivement perdus.');
+                    console.log('Aucune ancienne sauvegarde locale trouvée.');
+                    showError('Aucune ancienne sauvegarde locale trouvée. Les comptes ne sont pas supprimés : rechargez les données Supabase ou reconnectez-vous.');
                     return false;
                 }
                 
@@ -5617,14 +5618,11 @@ Pass: email_pwd
             
             // Compter le nombre total de créatrices
             const totalCreators = data.creators ? data.creators.length : 0;
-            const totalAccounts = (data.creators || []).reduce((n, c) => n + (c.accounts?.length || 0), 0);
+            const linkedTwitterAccounts = (data.creators || []).reduce((n, c) => n + (c.accounts?.length || 0), 0);
+            const directTwitterAccounts = (data.twitterAccounts || []).length;
+            const totalAccounts = Math.max(linkedTwitterAccounts, directTwitterAccounts);
 
             console.log(`✅ Données: ${data.vas.length} VAs · ${totalCreators} créatrices · ${totalAccounts} comptes Twitter · ${data.gmailAccounts.length} Gmails`);
-
-            if (totalAccounts === 0) {
-                console.log('⚠️ Aucun compte Twitter détecté - tentative de récupération...');
-                if (recoverLostTwitterAccounts()) updateDisplay();
-            }
         }
 
         // Save data with new system
