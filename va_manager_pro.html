@@ -4137,14 +4137,25 @@ Pass: email_pwd
         }
 
         async function dbOp(payload) {
-            const token = await getAuthToken();
+            let token = await getAuthToken();
             if (!token) return { error: 'not_authenticated' };
             try {
-                const res = await fetch('/api/db', {
+                let res = await fetch('/api/db', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify(payload)
                 });
+                if (res.status === 401 && authClient?.auth?.refreshSession) {
+                    await authClient.auth.refreshSession();
+                    token = await getAuthToken();
+                    if (token) {
+                        res = await fetch('/api/db', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                            body: JSON.stringify(payload)
+                        });
+                    }
+                }
                 const json = await res.json();
                 if (!res.ok) return { error: json?.error || 'db_error', details: json };
                 return { data: json.data };
@@ -4721,8 +4732,14 @@ Pass: email_pwd
             // Vérifier et récupérer les données si nécessaire
             await checkAndRecoverData();
             
-            await loadData();  // Wait for data to load before updating display
-            updateDisplay();
+            try {
+                await loadData();  // Wait for data to load before updating display
+                updateDisplay();
+            } catch (error) {
+                console.error('Initial data load failed:', error);
+                showError('Impossible de charger les données. Déconnectez-vous puis reconnectez-vous pour obtenir une session fraîche.');
+                return;
+            }
             
             console.log('📋 Setting up event listeners...');
             setupEventListeners();
@@ -5525,18 +5542,7 @@ Pass: email_pwd
                 const isAuthenticated = Boolean(await getAuthToken());
                 if (isAuthenticated) {
                     showError('Impossible de charger les données depuis Supabase. Vérifiez votre connexion puis rechargez la page.');
-                    loadedData = {
-                        vas: [],
-                        subs: [],
-                        revenues: [],
-                        payments: [],
-                        vaPayments: [],
-                        gmailAccounts: [],
-                        creators: [],
-                        twitterAccounts: [],
-                        instagramAccounts: [],
-                        twitterStats: []
-                    };
+                    throw new Error('Supabase load failed while authenticated');
                 } else {
                     loadedData = fileDB.loadFromLocalStorage();
                 }
