@@ -3973,6 +3973,11 @@ Pass: email_pwd
         let currentUserName = '';
         let authClient = null;
 
+        function normalizeRole(role) {
+            const normalized = String(role || 'viewer').toLowerCase().replace(/-/g, '_');
+            return normalized === 'superadmin' ? 'super_admin' : normalized;
+        }
+
         // Initialize auth client (anon key for login)
         try {
             authClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -3994,7 +3999,7 @@ Pass: email_pwd
                 if (error) throw error;
 
                 const metadata = authData.user.user_metadata || {};
-                currentUserRole = metadata.role || 'viewer';
+                currentUserRole = normalizeRole(metadata.role);
                 currentUserName = metadata.name || email;
                 ORG_ID = metadata.organization_id || null;
 
@@ -4077,7 +4082,7 @@ Pass: email_pwd
                     const { data } = await authClient.auth.getSession();
                     if (data.session) {
                         const meta = data.session.user?.user_metadata || {};
-                        currentUserRole = meta.role || session.role;
+                        currentUserRole = normalizeRole(meta.role || session.role);
                         currentUserName = meta.name || session.name;
                         ORG_ID = meta.organization_id || session.organization_id || null;
                         showApp();

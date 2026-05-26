@@ -40,6 +40,11 @@ const ALLOWED_TABLES = new Set([
 const ALLOWED_ACTIONS = new Set(['select', 'insert', 'update', 'upsert', 'delete']);
 const ALLOWED_OPS = new Set(['eq', 'in', 'is', 'neq']);
 
+function normalizeRole(role) {
+    const normalized = String(role || 'viewer').toLowerCase().replace(/-/g, '_');
+    return normalized === 'superadmin' ? 'super_admin' : normalized;
+}
+
 async function verifyAuthToken(token) {
     if (!token) return null;
     try {
@@ -81,7 +86,7 @@ export default async function handler(req, res) {
     const user = await verifyAuthToken(token);
     if (!user) { res.status(401).json({ error: 'unauthorized' }); return; }
 
-    const role = user?.user_metadata?.role || 'viewer';
+    const role = normalizeRole(user?.user_metadata?.role);
     const orgId = user?.user_metadata?.organization_id;
     const isSuperAdmin = role === 'super_admin';
 
