@@ -1,9 +1,13 @@
 // Proxy sécurisé pour la gestion des utilisateurs admin Supabase
 // Nécessite un utilisateur authentifié avec role=admin dans user_metadata
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+function cleanEnv(value) {
+    return String(value || '').replace(/^\uFEFF/, '').trim().replace(/^["']|["']$/g, '');
+}
+
+const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
+const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+const SUPABASE_ANON_KEY = cleanEnv(process.env.SUPABASE_ANON_KEY);
 
 function applyCors(req, res) {
     const allowedOrigins = new Set([

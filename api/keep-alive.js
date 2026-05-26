@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const cleanEnv = (value) => String(value || '').replace(/^\uFEFF/, '').trim().replace(/^["']|["']$/g, '');
+  const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 
   if (!SUPABASE_URL) {
     return res.status(500).json({

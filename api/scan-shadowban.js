@@ -1,9 +1,13 @@
 // Cron job : scanne tous les comptes Twitter via l'API shadowban
 // Détecte les changements de statut et les stocke dans status_changes
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const CRON_SECRET = process.env.CRON_SECRET;
+function cleanEnv(value) {
+    return String(value || '').replace(/^\uFEFF/, '').trim().replace(/^["']|["']$/g, '');
+}
+
+const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
+const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+const CRON_SECRET = cleanEnv(process.env.CRON_SECRET);
 
 function hasSupabaseConfig() {
     return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY && CRON_SECRET);
