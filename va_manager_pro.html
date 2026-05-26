@@ -4255,8 +4255,21 @@ Pass: email_pwd
                     _sel('warmup_progress'), _sel('gmail_accounts'), _sel('twitter_stats')
                 ]);
 
-                // Check if any table had an error
-                if (vasRes.error) throw vasRes.error;
+                const tableErrors = [
+                    ['vas', vasRes],
+                    ['creators', creatorsRes],
+                    ['twitter_accounts', twitterRes],
+                    ['instagram_accounts', igRes],
+                    ['subscriptions', subsRes],
+                    ['revenues', revenuesRes],
+                    ['warmup_progress', warmupRes],
+                    ['gmail_accounts', gmailRes],
+                    ['twitter_stats', statsRes]
+                ].filter(([, result]) => result?.error);
+                if (tableErrors.length > 0) {
+                    const details = tableErrors.map(([table, result]) => `${table}: ${result.error}`).join('; ');
+                    throw new Error(`Supabase load failed (${details})`);
+                }
 
                 const vas = (vasRes.data || []).map(va => ({
                     id: va.id,
@@ -5498,9 +5511,30 @@ Pass: email_pwd
         async function loadData() {
             await fileDB.init();
 
-            // Try Supabase first, fallback to localStorage
+            // Try Supabase first, fallback to localStorage only when not authenticated.
             const supabaseData = await loadFromSupabase();
-            const loadedData = supabaseData || fileDB.loadFromLocalStorage();
+            let loadedData = supabaseData;
+
+            if (!loadedData) {
+                const isAuthenticated = Boolean(await getAuthToken());
+                if (isAuthenticated) {
+                    showError('Impossible de charger les données depuis Supabase. Vérifiez votre connexion puis rechargez la page.');
+                    loadedData = {
+                        vas: [],
+                        subs: [],
+                        revenues: [],
+                        payments: [],
+                        vaPayments: [],
+                        gmailAccounts: [],
+                        creators: [],
+                        twitterAccounts: [],
+                        instagramAccounts: [],
+                        twitterStats: []
+                    };
+                } else {
+                    loadedData = fileDB.loadFromLocalStorage();
+                }
+            }
 
             if (supabaseData) {
                 console.log('✅ Data loaded from Supabase');

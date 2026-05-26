@@ -113,7 +113,9 @@ export default async function handler(req, res) {
     const hasOrgFilter = clientFilters.some(f => Array.isArray(f) && f[0] === 'organization_id');
     let scopedFilters;
     if (isSuperAdmin) {
-        scopedFilters = hasOrgFilter ? clientFilters : [...clientFilters, ['organization_id', 'eq', orgId]];
+        scopedFilters = hasOrgFilter || orgId
+            ? (hasOrgFilter ? clientFilters : [...clientFilters, ['organization_id', 'eq', orgId]])
+            : clientFilters;
     } else {
         const stripped = clientFilters.filter(f => !(Array.isArray(f) && f[0] === 'organization_id'));
         scopedFilters = [...stripped, ['organization_id', 'eq', orgId]];
