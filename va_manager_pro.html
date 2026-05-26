@@ -2410,7 +2410,7 @@
                                    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);">
         <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1);
                     border-radius:1.5rem; padding:2.5rem; width:90%; max-width:380px; text-align:center;">
-            <div style="font-size:2.5rem; margin-bottom:0.5rem;">📊</div>
+            <img src="/favicon.svg" alt="VA Manager" style="width:72px; height:72px; margin-bottom:1rem; border-radius:18px; box-shadow:0 18px 45px rgba(20,184,166,0.25);">
             <h1 style="color:white; font-size:1.5rem; margin-bottom:0.25rem; font-family:Inter,sans-serif;">VA Manager Pro</h1>
             <p style="color:rgba(255,255,255,0.5); font-size:0.875rem; margin-bottom:2rem;">Connectez-vous pour continuer</p>
             <div id="login-error" style="display:none; background:rgba(239,68,68,0.15); color:#ef4444; padding:0.75rem; border-radius:0.5rem; margin-bottom:1rem; font-size:0.875rem;"></div>
@@ -2437,7 +2437,7 @@
     <header class="header">
         <div class="header-content">
             <div>
-                <h1>📊 VA Manager Pro</h1>
+                <h1><img src="/favicon.svg" alt="" style="width:34px; height:34px; vertical-align:-7px; margin-right:0.55rem; border-radius:9px;">VA Manager Pro</h1>
                 <p>Gestion des Virtual Assistants et Créatrices</p>
             </div>
             <div class="stats-header">
@@ -4093,7 +4093,7 @@ Pass: email_pwd
 
         try {
             if (window.supabase && SUPABASE_URL && SUPABASE_KEY) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                supabaseClient = authClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 useSupabase = true;
                 console.log('✅ Supabase client initialized for VA Manager Pro');
             }
