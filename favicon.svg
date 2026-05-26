@@ -1,10 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VA Manager">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea"/>
-      <stop offset="100%" style="stop-color:#764ba2"/>
+    <linearGradient id="bg" x1="80" y1="48" x2="432" y2="464" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="0.46" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
     </linearGradient>
+    <linearGradient id="mark" x1="157" y1="149" x2="360" y2="361" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#1e1b4b" flood-opacity="0.28"/>
+    </filter>
   </defs>
-  <rect width="100" height="100" rx="20" fill="url(#g)"/>
-  <text x="50" y="68" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold" font-size="48">VA</text>
+
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+  <rect x="34" y="34" width="444" height="444" rx="92" fill="url(#bg)"/>
+  <path d="M256 86c54 42 104 54 150 56v120c0 79-45 138-150 177-105-39-150-98-150-177V142c46-2 96-14 150-56Z" fill="#ffffff" opacity="0.16"/>
+  <path d="M256 114c44 33 86 44 124 47v98c0 66-36 113-124 148-88-35-124-82-124-148v-98c38-3 80-14 124-47Z" fill="#0f172a" opacity="0.18"/>
+
+  <g filter="url(#softShadow)">
+    <path d="M151 181c0-19 15-34 34-34h142c19 0 34 15 34 34v150c0 19-15 34-34 34H185c-19 0-34-15-34-34V181Z" fill="url(#mark)"/>
+    <path d="M197 259h44l-22-59-22 59Zm-56 68 60-150h37l60 150h-39l-12-33h-56l-12 33h-38Zm157 0V177h38v118h60v32h-98Z" fill="#1e1b4b"/>
+    <path d="M326 177h49c16 0 29 13 29 29v49h-78v-78Z" fill="#14b8a6"/>
+    <path d="m344 221 17 17 31-42" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M112 403h288" stroke="#ffffff" stroke-opacity="0.36" stroke-width="18" stroke-linecap="round"/>
 </svg>

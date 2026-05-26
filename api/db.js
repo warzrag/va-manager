@@ -6,15 +6,36 @@
 // filters: [[col, op, val], ...]  op = 'eq' | 'in' | 'is' | 'neq'
 // options: { columns, onConflict, order, limit, single }
 
-const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQyNDg5OCwiZXhwIjoyMDc2MDAwODk4fQ.NQtRBw8KSlPFrpvINev80X4A17BIMFnbQ2r_8FLRdYM';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+function applyCors(req, res) {
+    const allowedOrigins = new Set([
+        'https://va-manager-pro.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:8000',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:8000'
+    ]);
+    const origin = req.headers.origin || '';
+    if (allowedOrigins.has(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
+
+function hasSupabaseConfig() {
+    return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY && SUPABASE_ANON_KEY);
+}
 
 // Tables et actions autorisées (whitelist)
 const ALLOWED_TABLES = new Set([
     'vas', 'creators', 'twitter_accounts', 'instagram_accounts',
     'gmail_accounts', 'subscriptions', 'revenues', 'warmup_progress',
-    'status_changes'
+    'status_changes', 'twitter_stats'
 ]);
 const ALLOWED_ACTIONS = new Set(['select', 'insert', 'update', 'upsert', 'delete']);
 const ALLOWED_OPS = new Set(['eq', 'in', 'is', 'neq']);
@@ -49,11 +70,10 @@ function buildFilterQuery(filters) {
 }
 
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    applyCors(req, res);
     if (req.method === 'OPTIONS') { res.status(204).end(); return; }
     if (req.method !== 'POST') { res.status(405).json({ error: 'method_not_allowed' }); return; }
+    if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
 
     // Auth : requiert un utilisateur Supabase Auth valide
     const authHeader = req.headers.authorization || '';
@@ -62,6 +82,14 @@ export default async function handler(req, res) {
     if (!user) { res.status(401).json({ error: 'unauthorized' }); return; }
 
     const role = user?.user_metadata?.role || 'viewer';
+    const orgId = user?.user_metadata?.organization_id;
+    const isSuperAdmin = role === 'super_admin';
+
+    // Tous les comptes non super-admin doivent avoir un organization_id
+    if (!isSuperAdmin && !orgId) {
+        res.status(403).json({ error: 'no_organization', hint: 'user has no organization_id assigned' });
+        return;
+    }
 
     const { table, action, data, filters, options = {} } = req.body || {};
 
@@ -69,12 +97,42 @@ export default async function handler(req, res) {
     if (!ALLOWED_ACTIONS.has(action)) { res.status(400).json({ error: 'invalid_action' }); return; }
 
     // Rôle : viewer ne peut que lire
-    if (role !== 'admin' && action !== 'select') {
+    if (role === 'viewer' && action !== 'select') {
         res.status(403).json({ error: 'forbidden', hint: 'viewer role is read-only' });
         return;
     }
 
-    const filterQs = buildFilterQuery(filters);
+    // SCOPE ORG :
+    // - user standard : on ignore le filtre org du client, on force son org
+    // - super_admin   : on respecte le filtre du client ; s'il n'en fournit PAS,
+    //   on applique son propre org (pour qu'il voit son dashboard comme un admin normal).
+    //   Pour voir d'autres orgs, il doit passer un filtre explicite côté client.
+    // On filtre les filtres "organization_id" dont la valeur est vide/null (stale token)
+    const clientFilters = (Array.isArray(filters) ? filters : [])
+        .filter(f => !(Array.isArray(f) && f[0] === 'organization_id' && (f[2] === null || f[2] === undefined || f[2] === '')));
+    const hasOrgFilter = clientFilters.some(f => Array.isArray(f) && f[0] === 'organization_id');
+    let scopedFilters;
+    if (isSuperAdmin) {
+        scopedFilters = hasOrgFilter ? clientFilters : [...clientFilters, ['organization_id', 'eq', orgId]];
+    } else {
+        const stripped = clientFilters.filter(f => !(Array.isArray(f) && f[0] === 'organization_id'));
+        scopedFilters = [...stripped, ['organization_id', 'eq', orgId]];
+    }
+
+    // Pour INSERT/UPSERT : force org_id dans les données (sauf super_admin)
+    const applyOrgToData = (payload) => {
+        if (isSuperAdmin) return payload;
+        if (Array.isArray(payload)) return payload.map(r => ({ ...r, organization_id: orgId }));
+        if (payload && typeof payload === 'object') return { ...payload, organization_id: orgId };
+        return payload;
+    };
+    const scopedData = (action === 'insert' || action === 'upsert') ? applyOrgToData(data) : data;
+    // Pour UPDATE : empêcher le client de changer organization_id
+    const safeUpdateData = (action === 'update' && data && typeof data === 'object' && !isSuperAdmin)
+        ? Object.fromEntries(Object.entries(data).filter(([k]) => k !== 'organization_id'))
+        : data;
+
+    const filterQs = buildFilterQuery(scopedFilters);
     let url = `${SUPABASE_URL}/rest/v1/${table}`;
     const qsParts = [];
 
@@ -97,13 +155,13 @@ export default async function handler(req, res) {
 
     let method = 'GET';
     let body;
-    if (action === 'insert') { method = 'POST'; body = JSON.stringify(data); }
+    if (action === 'insert') { method = 'POST'; body = JSON.stringify(scopedData); }
     else if (action === 'upsert') {
-        method = 'POST'; body = JSON.stringify(data);
+        method = 'POST'; body = JSON.stringify(scopedData);
         if (options.onConflict) headers['Prefer'] += ',resolution=merge-duplicates';
         url += (url.includes('?') ? '&' : '?') + `on_conflict=${encodeURIComponent(options.onConflict || 'id')}`;
     }
-    else if (action === 'update') { method = 'PATCH'; body = JSON.stringify(data); }
+    else if (action === 'update') { method = 'PATCH'; body = JSON.stringify(safeUpdateData); }
     else if (action === 'delete') { method = 'DELETE'; }
 
     try {

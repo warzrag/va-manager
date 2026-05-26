@@ -2,6 +2,7 @@
 node_modules
 .env
 .env.local
+supabase/.temp
 *.log
 .DS_Store
 passwords_decoded.json

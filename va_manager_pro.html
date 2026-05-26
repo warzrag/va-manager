@@ -6,7 +6,12 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="VA Manager">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+    <link rel="apple-touch-startup-image" href="/icons/icon-512.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>VA Manager Pro - Gestion Créatrices</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -2560,8 +2565,8 @@
             <div id="status-changes-banner" style="display:none; margin-bottom:1.5rem;"></div>
             <!-- Bouton scan manuel -->
             <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
-                <button onclick="triggerShadowbanScan(this)" style="background:rgba(99,102,241,0.15); color:#6366f1; border:1px solid rgba(99,102,241,0.3); padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer; font-weight:600; font-size:0.85rem;">
-                    <i class="fas fa-shield-halved"></i> Scanner tous les comptes
+                <button onclick="triggerShadowbanScan(this)" title="Le scan global est execute automatiquement par le cron securise." style="background:rgba(99,102,241,0.10); color:#6366f1; border:1px solid rgba(99,102,241,0.25); padding:0.5rem 1rem; border-radius:0.5rem; cursor:pointer; font-weight:600; font-size:0.85rem;">
+                    <i class="fas fa-clock"></i> Scan auto securise
                 </button>
             </div>
             <!-- Statistiques principales -->
@@ -3953,7 +3958,7 @@ Pass: email_pwd
         // SUPABASE INITIALIZATION
         // ============================================================================
         const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk';
+        const SUPABASE_ANON_KEY = 'sb_publishable_kIgnmS0tIhEty9LiAhtkhA_luo1XGXG';
         // SUPABASE_KEY conservé temporairement le temps de la migration complète
         // vers /api/db (toutes les écritures passent désormais par le proxy sécurisé)
         const SUPABASE_KEY = SUPABASE_ANON_KEY;
@@ -4408,7 +4413,59 @@ Pass: email_pwd
             return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
         
-        // Simple obfuscation for passwords (NOT secure encryption, just basic protection)
+        const PASSWORD_ENCRYPTION_PREFIX = 'vmp1:';
+        const PASSWORD_KEY_STORAGE = 'va_manager_password_crypto_key';
+
+        function bytesToBase64(bytes) {
+            return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+        }
+
+        function base64ToBytes(base64) {
+            return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        }
+
+        async function getPasswordCryptoKey() {
+            const stored = localStorage.getItem(PASSWORD_KEY_STORAGE);
+            if (stored) {
+                return crypto.subtle.importKey('jwk', JSON.parse(stored), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+            }
+            const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+            const exported = await crypto.subtle.exportKey('jwk', key);
+            localStorage.setItem(PASSWORD_KEY_STORAGE, JSON.stringify(exported));
+            return key;
+        }
+
+        async function encryptStoredPassword(password) {
+            if (!password) return '';
+            if (String(password).startsWith(PASSWORD_ENCRYPTION_PREFIX)) return password;
+            const key = await getPasswordCryptoKey();
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(password));
+            const combined = new Uint8Array(iv.length + encrypted.byteLength);
+            combined.set(iv, 0);
+            combined.set(new Uint8Array(encrypted), iv.length);
+            return PASSWORD_ENCRYPTION_PREFIX + bytesToBase64(combined);
+        }
+
+        async function decryptStoredPassword(storedPassword) {
+            if (!storedPassword) return '';
+            if (String(storedPassword).startsWith(PASSWORD_ENCRYPTION_PREFIX)) {
+                try {
+                    const combined = base64ToBytes(String(storedPassword).slice(PASSWORD_ENCRYPTION_PREFIX.length));
+                    const iv = combined.slice(0, 12);
+                    const encrypted = combined.slice(12);
+                    const key = await getPasswordCryptoKey();
+                    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+                    return new TextDecoder().decode(decrypted);
+                } catch (error) {
+                    console.error('Password decrypt failed:', error);
+                    return '';
+                }
+            }
+            return deobfuscatePassword(storedPassword);
+        }
+
+        // Legacy obfuscation for passwords saved before AES-GCM encryption.
         function obfuscatePassword(password) {
             // Avertissement: Ceci n'est PAS une vraie sécurité!
             // Pour une vraie sécurité, utilisez un serveur backend
@@ -4428,6 +4485,38 @@ Pass: email_pwd
             } catch {}
             // Already plaintext or unknown format — return as-is
             return obfuscated;
+        }
+
+        async function migratePasswordsToEncryption() {
+            let changed = false;
+            const encryptField = async (obj, field) => {
+                if (!obj || !obj[field] || String(obj[field]).startsWith(PASSWORD_ENCRYPTION_PREFIX)) return;
+                obj[field] = await encryptStoredPassword(await decryptStoredPassword(obj[field]));
+                changed = true;
+            };
+
+            for (const account of (data.gmailAccounts || [])) {
+                await encryptField(account, 'password');
+            }
+            for (const account of (data.twitterAccounts || [])) {
+                await encryptField(account, 'password');
+                await encryptField(account, 'encryptedPassword');
+            }
+            for (const account of (data.instagramAccounts || [])) {
+                await encryptField(account, 'password');
+                await encryptField(account, 'encryptedPassword');
+            }
+            for (const creator of (data.creators || [])) {
+                for (const account of (creator.accounts || [])) {
+                    await encryptField(account, 'password');
+                    await encryptField(account, 'encryptedPassword');
+                }
+                for (const account of (creator.instagramAccounts || [])) {
+                    await encryptField(account, 'password');
+                    await encryptField(account, 'encryptedPassword');
+                }
+            }
+            return changed;
         }
         
         // Force all white backgrounds to be dark
@@ -5429,6 +5518,11 @@ Pass: email_pwd
             data.twitterAccounts = loadedData.twitterAccounts || [];
             data.instagramAccounts = loadedData.instagramAccounts || [];
             data.twitterStats = loadedData.twitterStats || [];
+
+            if (await migratePasswordsToEncryption()) {
+                console.log('Password storage migrated to AES-GCM');
+                await saveData();
+            }
 
             
             // Migration complète des créatrices vers la nouvelle structure
@@ -8419,6 +8513,8 @@ Pass: email_pwd
                 password = document.getElementById('instagram-password').value.trim();
             }
 
+            const storedPassword = await encryptStoredPassword(password);
+
             const creatorId = document.getElementById('account-creator').value;
             const gmailId = document.getElementById('account-gmail').value;
             const vaId = document.getElementById('account-va').value;
@@ -8459,7 +8555,7 @@ Pass: email_pwd
 
                         const newCreatorAccount = {
                             username: finalUsername,
-                            password: password,
+                            password: storedPassword,
                             vaId: vaId || null
                         };
 
@@ -8495,7 +8591,7 @@ Pass: email_pwd
                             .from('twitter_accounts')
                             .insert({
                                 username: finalUsername,
-                                encrypted_password: password,
+                                encrypted_password: storedPassword,
                                 creator_id: creatorId || null,
                                 gmail_id: gmailId || null,
                                 va_id: vaId || null,
@@ -8525,7 +8621,7 @@ Pass: email_pwd
                 const newAccount = {
                     id: newAccountId,
                     username: finalUsername,
-                    password: password,
+                    password: storedPassword,
                     twoFaSecret: twoFaSecret || '',
                     creatorId: creatorId || null,
                     gmailId: gmailId || null,
@@ -8566,7 +8662,7 @@ Pass: email_pwd
                         // Créer le nouveau compte avec assignedVaId si un VA est sélectionné
                         const newAccount = {
                             username: finalUsername,
-                            password: obfuscatePassword(password)
+                            password: storedPassword
                         };
 
                         // IMPORTANT: Assigner le compte spécifiquement à CE VA
@@ -8602,7 +8698,7 @@ Pass: email_pwd
                 const newAccount = {
                     id: 'ig_' + Date.now(),
                     username: finalUsername,
-                    password: obfuscatePassword(password),
+                    password: storedPassword,
                     creatorId: creatorId || null,
                     gmailId: gmailId || null,
                     vaId: vaId || null,
@@ -8621,7 +8717,7 @@ Pass: email_pwd
         }
 
         // Confirm add Twitter account
-        function confirmAddTwitterAccount(vaId, username, password) {
+        async function confirmAddTwitterAccount(vaId, username, password) {
             // IMPORTANT: Ne jamais modifier le username passé en paramètre
             console.log(`📌 Ajout du compte Twitter: ${username}`);
             
@@ -8694,7 +8790,7 @@ Pass: email_pwd
             const newAccount = {
                 id: 'tw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 username: finalUsername, // Utiliser le username exact
-                password: obfuscatePassword(password),
+                password: await encryptStoredPassword(password),
                 gmailId: null,
                 assignedVaId: vaId, // IMPORTANT: Assigner spécifiquement à CE VA
                 created: new Date().toISOString().split('T')[0]
@@ -8735,6 +8831,7 @@ Pass: email_pwd
 
             const email = document.getElementById('gmail-email').value.trim().toLowerCase();
             const password = document.getElementById('gmail-password').value.trim();
+            const storedPassword = await encryptStoredPassword(password);
 
             if (!data.gmailAccounts) data.gmailAccounts = [];
 
@@ -8753,7 +8850,7 @@ Pass: email_pwd
                     .from('gmail_accounts')
                     .insert({
                         email: email,
-                        encrypted_password: password,
+                        encrypted_password: storedPassword,
                         notes: '',
                         va_id: null,
                         organization_id: ORG_ID
@@ -8771,7 +8868,7 @@ Pass: email_pwd
                     id: inserted.id,
                     vaId: null,
                     email: email,
-                    password: password,
+                    password: storedPassword,
                     notes: '',
                     created: inserted.created_at
                 });
@@ -8780,7 +8877,7 @@ Pass: email_pwd
                     id: generateId(),
                     vaId: null,
                     email: email,
-                    password: obfuscatePassword(password),
+                    password: storedPassword,
                     notes: '',
                     created: new Date().toISOString()
                 });
@@ -8904,6 +9001,8 @@ Pass: email_pwd
                 }
                 const cleanUsername = username.replace(/^@/, '').toLowerCase();
                 const cleanEmail = (email || '').toLowerCase();
+                const storedTwitterPassword = await encryptStoredPassword(password || '');
+                const storedEmailPassword = await encryptStoredPassword(emailPwd || '');
 
                 try {
                     // 1) Crée le compte Gmail (si email fourni et pas déjà présent)
@@ -8915,7 +9014,7 @@ Pass: email_pwd
                         } else {
                             const ins = await dbInsert('gmail_accounts', {
                                 email: cleanEmail,
-                                encrypted_password: emailPwd || '',
+                                encrypted_password: storedEmailPassword,
                                 notes: '',
                                 va_id: null,
                                 organization_id: ORG_ID
@@ -8926,7 +9025,7 @@ Pass: email_pwd
                             if (gmailId) {
                                 data.gmailAccounts.push({
                                     id: gmailId, vaId: vaId || null, email: cleanEmail,
-                                    password: emailPwd || '', notes: '', created: created?.created_at
+                                    password: storedEmailPassword, notes: '', created: created?.created_at
                                 });
                             }
                         }
@@ -8942,7 +9041,7 @@ Pass: email_pwd
                         if (authToken) noteParts.push('[TOKEN:' + authToken + ']');
                         const ins = await dbInsert('twitter_accounts', {
                             username: cleanUsername,
-                            encrypted_password: password || '',
+                            encrypted_password: storedTwitterPassword,
                             creator_id: creatorId || null,
                             va_id: vaId || null,
                             assigned_va_id: vaId || null,
@@ -8956,7 +9055,7 @@ Pass: email_pwd
                         if (created?.id) {
                             data.twitterAccounts.push({
                                 id: created.id, username: cleanUsername,
-                                password: password || '', encryptedPassword: password || '',
+                                password: storedTwitterPassword, encryptedPassword: storedTwitterPassword,
                                 creatorId: creatorId || null, vaId: vaId || null,
                                 assignedVaId: vaId || null, gmailId: gmailId,
                                 status: 'active', notes: noteParts.join(' '),
@@ -9026,13 +9125,13 @@ Pass: email_pwd
                 };
             });
             
-            data.gmailAccounts.forEach(account => {
+            for (const account of data.gmailAccounts) {
                 if (account.vaId && accountsByVA[account.vaId]) {
                     accountsByVA[account.vaId].accounts.push(account);
                 } else {
                     accountsByVA['unassigned'].accounts.push(account);
                 }
-            });
+            }
             
             // Get used Gmail IDs from bidirectional assignment
             const usedGmailIds = [];
@@ -9221,7 +9320,7 @@ Pass: email_pwd
         // First deleteGmailAccount removed — unified version is defined below
         
         // Edit Gmail account
-        function editGmailAccount(gmailId) {
+        async function editGmailAccount(gmailId) {
             const gmail = data.gmailAccounts.find(g => g.id === gmailId);
             if (!gmail) return;
             
@@ -9230,7 +9329,7 @@ Pass: email_pwd
             document.getElementById('edit-gmail-email').value = gmail.email;
             
             // Décoder le mot de passe pour l'édition
-            const decodedPassword = deobfuscatePassword(gmail.password);
+            const decodedPassword = await decryptStoredPassword(gmail.password);
             document.getElementById('edit-gmail-password').value = decodedPassword;
             
             // Afficher la modal
@@ -9266,7 +9365,7 @@ Pass: email_pwd
         }
         
         // Save edited Gmail
-        function saveEditedGmail(e) {
+        async function saveEditedGmail(e) {
             e.preventDefault();
             
             const gmailId = document.getElementById('edit-gmail-id').value;
@@ -9289,7 +9388,7 @@ Pass: email_pwd
             // Mettre à jour les données
             const oldEmail = gmail.email;
             gmail.email = newEmail;
-            gmail.password = obfuscatePassword(newPassword);
+            gmail.password = await encryptStoredPassword(newPassword);
             
             // Log la modification
             console.log(`📧 Modification du compte Gmail:`);
@@ -9486,27 +9585,27 @@ Pass: email_pwd
         }
         
         // Show Gmail password
-        function showGmailPassword(emailOrId, password) {
+        async function showGmailPassword(emailOrId, password) {
             if (!isAdmin()) {
                 showError('Accès réservé aux administrateurs');
                 return;
             }
             // Si password est fourni, c'est la version simple (email + password)
             if (password) {
-                const decodedPassword = deobfuscatePassword(password);
+                const decodedPassword = await decryptStoredPassword(password);
                 alert(`Email: ${emailOrId}\nMot de passe: ${decodedPassword}`);
             } else {
                 // Sinon, emailOrId est un ID (version complexe)
                 const account = data.gmailAccounts.find(a => a.id === emailOrId);
                 if (account) {
-                    const decodedPassword = deobfuscatePassword(account.password);
+                    const decodedPassword = await decryptStoredPassword(account.password);
                     alert(`Email: ${account.email}\nMot de passe: ${decodedPassword}`);
                 }
             }
         }
         
         // Show all Gmail passwords
-        function showAllGmailPasswords() {
+        async function showAllGmailPasswords() {
             if (data.gmailAccounts.length === 0) {
                 alert('Aucun compte Gmail enregistré');
                 return;
@@ -9514,14 +9613,14 @@ Pass: email_pwd
             
             let passwordList = 'LISTE DES MOTS DE PASSE GMAIL\n' + '='.repeat(40) + '\n\n';
             
-            data.gmailAccounts.forEach(account => {
-                const decodedPassword = deobfuscatePassword(account.password);
+            for (const account of data.gmailAccounts) {
+                const decodedPassword = await decryptStoredPassword(account.password);
                 passwordList += `Email: ${account.email}\n`;
                 passwordList += `Mot de passe: ${decodedPassword}\n`;
                 passwordList += `VA: ${account.vaId ? data.vas.find(v => v.id === account.vaId)?.name || 'VA supprimé' : 'Non assigné'}\n`;
                 passwordList += `Twitter associé: ${account.assignedTwitterUsername || 'Aucun'}\n`;
                 passwordList += '-'.repeat(40) + '\n\n';
-            });
+            }
             
             // Créer une modal pour afficher les mots de passe
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -9556,7 +9655,7 @@ Pass: email_pwd
         }
         
         // Show all Twitter passwords
-        function showAllTwitterPasswords() {
+        async function showAllTwitterPasswords() {
             const allAccounts = [];
             
             // Collecter depuis la nouvelle structure
@@ -9612,11 +9711,11 @@ Pass: email_pwd
             
             let passwordList = 'LISTE DES MOTS DE PASSE TWITTER\n' + '='.repeat(40) + '\n\n';
             
-            allAccounts.forEach(account => {
+            for (const account of allAccounts) {
                 // Toujours essayer de décoder le mot de passe
                 let decodedPassword;
                 try {
-                    decodedPassword = deobfuscatePassword(account.password);
+                    decodedPassword = await decryptStoredPassword(account.password);
                 } catch (e) {
                     // Si le décodage échoue, utiliser le mot de passe tel quel
                     decodedPassword = account.password;
@@ -9628,7 +9727,7 @@ Pass: email_pwd
                 passwordList += `VA: ${account.vaNames}\n`;
                 passwordList += `Gmail associé: ${account.gmail}\n`;
                 passwordList += '-'.repeat(40) + '\n\n';
-            });
+            }
             
             // Créer une modal pour afficher les mots de passe
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -9849,13 +9948,13 @@ Pass: email_pwd
         }
 
         // Show Instagram password
-        function showInstagramPassword(username, password) {
-            const decodedPassword = deobfuscatePassword(password);
+        async function showInstagramPassword(username, password) {
+            const decodedPassword = await decryptStoredPassword(password);
             alert(`Instagram: ${username}\nMot de passe: ${decodedPassword}`);
         }
 
         // Show all Instagram passwords
-        function showAllInstagramPasswords() {
+        async function showAllInstagramPasswords() {
             const allAccounts = [];
 
             // Collecter depuis data.instagramAccounts
@@ -9910,10 +10009,10 @@ Pass: email_pwd
 
             let passwordList = 'LISTE DES MOTS DE PASSE INSTAGRAM\n' + '='.repeat(40) + '\n\n';
 
-            allAccounts.forEach(account => {
+            for (const account of allAccounts) {
                 let decodedPassword;
                 try {
-                    decodedPassword = deobfuscatePassword(account.password);
+                    decodedPassword = await decryptStoredPassword(account.password);
                 } catch (e) {
                     decodedPassword = account.password;
                 }
@@ -9924,7 +10023,7 @@ Pass: email_pwd
                 passwordList += `VA: ${account.vaNames}\n`;
                 passwordList += `Gmail associé: ${account.gmail}\n`;
                 passwordList += '-'.repeat(40) + '\n\n';
-            });
+            }
 
             // Créer une modal pour afficher les mots de passe
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -11962,14 +12061,14 @@ Pass: email_pwd
             return account;
         }
 
-        function showPasswordForAccount(idOrUsername) {
+        async function showPasswordForAccount(idOrUsername) {
             if (!isAdmin()) {
                 showError('Accès réservé aux administrateurs');
                 return;
             }
             const account = findAccountByIdOrUsername(idOrUsername);
             if (!account) return;
-            const password = deobfuscatePassword(account.password || account.encryptedPassword || '');
+            const password = await decryptStoredPassword(account.password || account.encryptedPassword || '');
             const twoFa = account.twoFaSecret || '';
             const isDark = document.body.classList.contains('dark-mode');
             const bg = isDark ? '#1e293b' : '#f3f4f6';
@@ -12017,27 +12116,28 @@ Pass: email_pwd
             document.getElementById('password-modal').classList.add('show');
         }
 
-        function savePassword(idOrUsername) {
+        async function savePassword(idOrUsername) {
             const input = document.getElementById('input-password');
             if (!input) return;
             const newPwd = input.value.trim();
+            const storedPassword = await encryptStoredPassword(newPwd);
 
             const account = findAccountByIdOrUsername(idOrUsername);
             if (account) {
-                account.password = newPwd;
-                account.encryptedPassword = newPwd;
+                account.password = storedPassword;
+                account.encryptedPassword = storedPassword;
             }
             if (data.creators) {
                 data.creators.forEach(creator => {
                     if (creator.accounts) {
                         const ca = creator.accounts.find(a => a.id === idOrUsername || a.username === idOrUsername);
-                        if (ca) { ca.password = newPwd; ca.encryptedPassword = newPwd; }
+                        if (ca) { ca.password = storedPassword; ca.encryptedPassword = storedPassword; }
                     }
                 });
             }
 
             if (useSupabase && account && account.id && account.id.includes('-')) {
-                dbUpdate('twitter_accounts', { encrypted_password: newPwd }, [['id', 'eq', account.id]]);
+                dbUpdate('twitter_accounts', { encrypted_password: storedPassword }, [['id', 'eq', account.id]]);
             }
 
             saveData();
@@ -12756,33 +12856,12 @@ Pass: email_pwd
             }
         }
 
-        // Déclenche un scan manuel (bouton)
+        // Le scan global est protege cote serveur et lance par Vercel Cron.
         async function triggerShadowbanScan(btnEl) {
-            let orig = null;
-            if (btnEl) {
-                orig = btnEl.innerHTML;
-                btnEl.disabled = true;
-                btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scan en cours (~30s)...';
-            }
-            try {
-                const res = await fetch('/api/scan-shadowban', { signal: AbortSignal.timeout(290000) });
-                const data = await res.json();
-
-                showScanResultsModal(data);
-
-                // Recharge la bannière
-                await loadStatusChangesBanner();
-                // Refresh UI si possible, sans bloquer
-                try { if (typeof loadFromSupabase === 'function') await loadFromSupabase(); } catch(e) {}
-                try { updateTwitterAccountsList?.(); } catch(e) {}
-                try { updateVAGrid?.(); } catch(e) {}
-            } catch (e) {
-                console.error('scan error', e);
-                if (typeof showError === 'function') showError('Échec du scan : ' + (e?.message || e));
-                else alert('Échec du scan');
-            } finally {
-                if (btnEl && orig !== null) { btnEl.disabled = false; btnEl.innerHTML = orig; }
-            }
+            const message = 'Le scan global est maintenant execute automatiquement par le cron securise. Pour verifier un compte precis, utilise le bouton bouclier sur la ligne du compte.';
+            if (typeof showInfo === 'function') showInfo(message);
+            else if (typeof showSuccess === 'function') showSuccess(message);
+            else alert(message);
         }
 
         function showScanResultsModal(data) {
@@ -13190,7 +13269,7 @@ Pass: email_pwd
             reader.readAsText(file, 'UTF-8');
         }
 
-        function parseCSV(csvText) {
+        async function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const dataMap = {};
 
@@ -13202,6 +13281,7 @@ Pass: email_pwd
                     const username = parts[2];
                     const email = parts[3];
                     const password = parts[4];
+                    const storedPassword = await encryptStoredPassword(password);
 
                     // Create VA structure
                     if (!dataMap[vaName]) {
@@ -13225,7 +13305,7 @@ Pass: email_pwd
                     dataMap[vaName].creators[creatorName].accounts.push({
                         username: username.startsWith('@') ? username : '@' + username,
                         email: email,
-                        password: password,
+                        password: storedPassword,
                         created: new Date().toISOString().split('T')[0]
                     });
                 }
@@ -16160,5 +16240,15 @@ Pass: email_pwd
         });
     </script>
     </div><!-- end main-app -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+                    console.warn('Service worker registration failed:', error);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
+

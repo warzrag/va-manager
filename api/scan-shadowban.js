@@ -1,8 +1,19 @@
 // Cron job : scanne tous les comptes Twitter via l'API shadowban
 // Détecte les changements de statut et les stocke dans status_changes
 
-const SUPABASE_URL = 'https://vjsovnhmjgehqawjmqxn.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQyNDg5OCwiZXhwIjoyMDc2MDAwODk4fQ.NQtRBw8KSlPFrpvINev80X4A17BIMFnbQ2r_8FLRdYM';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const CRON_SECRET = process.env.CRON_SECRET;
+
+function hasSupabaseConfig() {
+    return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY && CRON_SECRET);
+}
+
+function getCronToken(req) {
+    const authHeader = req.headers.authorization || '';
+    if (authHeader.startsWith('Bearer ')) return authHeader.slice(7);
+    return (req.headers['x-cron-secret'] || req.query?.secret || '').toString();
+}
 
 const sbHeaders = {
     'apikey': SUPABASE_SERVICE_KEY,
@@ -42,14 +53,31 @@ async function fetchShadowban(username) {
     try { return JSON.parse(text); } catch { return null; }
 }
 
+async function fetchFollowers(username) {
+    try {
+        const res = await fetch(`https://api.fxtwitter.com/${encodeURIComponent(username)}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; va-manager-pro/1.0)' },
+            signal: AbortSignal.timeout(8000)
+        });
+        const data = await res.json();
+        if (data?.code === 200 && typeof data?.user?.followers === 'number') {
+            return data.user.followers;
+        }
+    } catch {}
+    return null;
+}
+
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 export default async function handler(req, res) {
+    if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
+    if (getCronToken(req) !== CRON_SECRET) { res.status(401).json({ error: 'unauthorized' }); return; }
+
     const startedAt = Date.now();
     const results = { checked: 0, changed: 0, errors: 0, changes: [] };
 
     try {
-        const listRes = await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?select=id,username,status`, { headers: sbHeaders });
+        const listRes = await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?select=id,username,status,organization_id`, { headers: sbHeaders });
         const accounts = await listRes.json();
         if (!Array.isArray(accounts)) {
             res.status(500).json({ error: 'supabase_list_failed', data: accounts });
@@ -62,11 +90,30 @@ export default async function handler(req, res) {
             if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) continue;
 
             try {
-                const data = await fetchShadowban(username);
+                const [data, followers] = await Promise.all([
+                    fetchShadowban(username),
+                    fetchFollowers(username)
+                ]);
                 if (!data) { results.errors++; await sleep(400); continue; }
                 const { status: newStatus, flags } = interpretShadowban(data);
                 const oldStatus = acc.status || 'active';
                 results.checked++;
+
+                // Enregistre le count followers s'il a été récupéré (1 point par scan)
+                if (typeof followers === 'number') {
+                    const today = new Date().toISOString().slice(0, 10);
+                    await fetch(`${SUPABASE_URL}/rest/v1/twitter_stats`, {
+                        method: 'POST',
+                        headers: sbHeaders,
+                        body: JSON.stringify({
+                            twitter_account_id: acc.id,
+                            username: acc.username,
+                            followers: followers,
+                            date: today,
+                            organization_id: acc.organization_id
+                        })
+                    });
+                }
 
                 if (newStatus !== oldStatus) {
                     // Update account

@@ -1,10 +1,25 @@
 // Proxy vers l'API shadowban tierce (contourne CORS)
 // GET /api/shadowban?username=<twitter_handle>
 
-export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+function applyCors(req, res) {
+    const allowedOrigins = new Set([
+        'https://va-manager-pro.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:8000',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:8000'
+    ]);
+    const origin = req.headers.origin || '';
+    if (allowedOrigins.has(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+export default async function handler(req, res) {
+    applyCors(req, res);
 
     if (req.method === 'OPTIONS') {
         res.status(204).end();

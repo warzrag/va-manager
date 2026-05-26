@@ -1,81 +1,29 @@
 {
-  "version": 2,
-  "builds": [
+  "headers": [
     {
-      "src": "*.html",
-      "use": "@vercel/static"
+      "source": "/service-worker.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
     },
     {
-      "src": "*.js",
-      "use": "@vercel/static"
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }
+      ]
     },
     {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.json",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.svg",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/keep-alive.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/shadowban.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/scan-shadowban.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/db.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/admin-users.js",
-      "use": "@vercel/node"
+      "source": "/(.*).html",
+      "headers": [
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
+      ]
     }
   ],
-  "routes": [
-    {
-      "src": "/api/keep-alive",
-      "dest": "/api/keep-alive.js"
-    },
-    {
-      "src": "/api/shadowban",
-      "dest": "/api/shadowban.js"
-    },
-    {
-      "src": "/api/scan-shadowban",
-      "dest": "/api/scan-shadowban.js"
-    },
-    {
-      "src": "/api/db",
-      "dest": "/api/db.js"
-    },
-    {
-      "src": "/api/admin-users",
-      "dest": "/api/admin-users.js"
-    },
-    {
-      "src": "/",
-      "dest": "/va_manager_pro.html"
-    }
+  "rewrites": [
+    { "source": "/", "destination": "/va_manager_pro.html" }
   ],
   "crons": [
-    {
-      "path": "/api/keep-alive",
-      "schedule": "0 8 */4 * *"
-    },
-    {
-      "path": "/api/scan-shadowban",
-      "schedule": "0 9 * * *"
-    }
+    { "path": "/api/keep-alive", "schedule": "0 8 */4 * *" },
+    { "path": "/api/scan-shadowban", "schedule": "0 9 * * *" }
   ]
 }
