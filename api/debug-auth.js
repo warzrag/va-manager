@@ -20,7 +20,8 @@ async function verifyAuthToken(token) {
 }
 
 async function countTable(table, orgId, isSuperAdmin) {
-    const params = new URLSearchParams({ select: 'id' });
+    const params = new URLSearchParams();
+    params.set('select', 'id');
     if (!isSuperAdmin && orgId) {
         params.set('organization_id', `eq.${orgId}`);
     } else if (isSuperAdmin && orgId) {
