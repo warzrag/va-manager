@@ -1102,7 +1102,7 @@
         .twitter-account-chip {
             width: 100%;
             display: grid;
-            grid-template-columns: auto minmax(0, 1fr) auto auto;
+            grid-template-columns: 32px minmax(0, 1fr);
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem;
@@ -1112,6 +1112,9 @@
         }
 
         .twitter-account-link {
+            grid-column: 2;
+            grid-row: 1;
+            width: 100%;
             min-width: 0;
             color: white;
             padding: 0.55rem 0.75rem;
@@ -1157,14 +1160,20 @@
         }
 
         .twitter-chip-actions {
+            grid-column: 2;
+            grid-row: 2;
             display: flex;
             align-items: center;
+            justify-content: flex-end;
             gap: 0.35rem;
         }
 
         .twitter-chip-quick-actions {
+            grid-column: 2;
+            grid-row: 2;
             display: flex;
             align-items: center;
+            justify-content: flex-start;
             gap: 0.35rem;
         }
 
@@ -1210,6 +1219,8 @@
             cursor: pointer;
             padding: 0;
             flex-shrink: 0;
+            grid-column: 1;
+            grid-row: 1;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 6px 16px color-mix(in srgb, var(--status-color) 24%, transparent);
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
         }
@@ -8061,8 +8072,8 @@ Pass: email_pwd
                 else if (totalCount >= 10) badgeColor = '#dc2626'; // Rouge foncé si 10+
                 else if (totalCount >= 5) badgeColor = '#f59e0b'; // Orange si 5+
                 
-                // Sort priority: accounts needing attention first.
-                const statusOrder = { banned: 0, shadowban: 1, active: 2 };
+                // Sort accounts by status: active first, shadowban, then banned
+                const statusOrder = { active: 0, shadowban: 1, banned: 2 };
                 filteredAccounts.sort((a, b) => (statusOrder[a.status || 'active'] ?? 2) - (statusOrder[b.status || 'active'] ?? 2));
 
                 const accountsHtml = filteredAccounts.length > 0 ? filteredAccounts.map((account, index) => {
