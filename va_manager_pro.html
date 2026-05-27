@@ -16701,6 +16701,25 @@ Pass: email_pwd
             button.style.background = '#667eea';
             document.body.classList.remove('mobile-menu-open');
         }
+
+        function targetHasScrollableAncestor(target) {
+            let el = target;
+            while (el && el !== document.body && el !== document.documentElement) {
+                const style = window.getComputedStyle(el);
+                const canScrollY = /(auto|scroll)/.test(style.overflowY) && el.scrollHeight > el.clientHeight + 1;
+                if (canScrollY) return true;
+                el = el.parentElement;
+            }
+            return false;
+        }
+
+        window.addEventListener('wheel', function(e) {
+            if (window.innerWidth <= 768) return;
+            if (targetHasScrollableAncestor(e.target)) return;
+            if (document.documentElement.scrollHeight <= window.innerHeight + 1) return;
+            e.preventDefault();
+            window.scrollBy({ top: e.deltaY, left: 0, behavior: 'auto' });
+        }, { passive: false, capture: true });
         
         // Fermer le menu mobile lors de la navigation
         document.addEventListener('DOMContentLoaded', function() {
