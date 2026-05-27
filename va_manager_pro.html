@@ -8061,9 +8061,9 @@ Pass: email_pwd
                 else if (totalCount >= 10) badgeColor = '#dc2626'; // Rouge foncé si 10+
                 else if (totalCount >= 5) badgeColor = '#f59e0b'; // Orange si 5+
                 
-                // Sort accounts by status: active first, shadowban, then banned
-                const statusOrder = { active: 0, shadowban: 1, banned: 2 };
-                filteredAccounts.sort((a, b) => (statusOrder[a.status || 'active'] || 0) - (statusOrder[b.status || 'active'] || 0));
+                // Sort priority: accounts needing attention first.
+                const statusOrder = { banned: 0, shadowban: 1, active: 2 };
+                filteredAccounts.sort((a, b) => (statusOrder[a.status || 'active'] ?? 2) - (statusOrder[b.status || 'active'] ?? 2));
 
                 const accountsHtml = filteredAccounts.length > 0 ? filteredAccounts.map((account, index) => {
                     // Trouver l'index réel dans la liste complète des comptes
