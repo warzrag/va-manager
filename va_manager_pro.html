@@ -2173,6 +2173,213 @@
                 box-shadow: none;
             }
         }
+
+        /* iPhone-first layout fixes */
+        @media (max-width: 430px) {
+            html,
+            body {
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            .header-content {
+                align-items: stretch;
+            }
+
+            .header-content > div:first-child {
+                min-width: 0;
+            }
+
+            .header h1 {
+                line-height: 1.1;
+                overflow-wrap: anywhere;
+            }
+
+            .stats-header {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.5rem;
+            }
+
+            .stats-header > div:last-child {
+                grid-column: 1 / -1;
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.5rem !important;
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            .stats-header > div:last-child > * {
+                min-width: 0;
+                width: 100%;
+            }
+
+            #user-badge {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            .main-container {
+                width: 100%;
+                margin: 1rem auto;
+                padding: 0 0.75rem 6rem;
+            }
+
+            #dashboard-page > div[style*="justify-content:flex-end"] {
+                justify-content: stretch !important;
+            }
+
+            #dashboard-page > div[style*="justify-content:flex-end"] button {
+                width: 100%;
+            }
+
+            #creators-cards-grid,
+            #va-list-display,
+            .va-grid,
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+
+            #shadowban-stats h3 {
+                font-size: 1.2rem !important;
+                line-height: 1.2;
+            }
+
+            #shadowban-stats > div {
+                width: 100%;
+                min-width: 0;
+            }
+
+            #shadowban-stats div[style*="grid-template-columns:repeat(auto-fit"] {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.625rem !important;
+            }
+
+            #shadowban-stats div[style*="padding:1.25rem"] {
+                padding: 0.875rem !important;
+            }
+
+            #shadowban-stats div[style*="grid-template-columns:120px 1fr auto"] {
+                grid-template-columns: 1fr !important;
+                gap: 0.35rem !important;
+                align-items: stretch !important;
+            }
+
+            .va-header,
+            .creatrice-header {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: stretch;
+            }
+
+            .va-actions,
+            .creatrice-header .actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.5rem;
+            }
+
+            .creatrice-item {
+                padding: 0.875rem;
+                overflow: hidden;
+            }
+
+            .creatrice-name {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .twitter-accounts,
+            .instagram-accounts {
+                display: grid;
+                grid-template-columns: 1fr;
+                padding: 0.5rem;
+                overflow: visible;
+            }
+
+            .twitter-badge,
+            .instagram-badge {
+                width: 100%;
+                max-width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0.75rem !important;
+                padding: 0.65rem 0.75rem !important;
+                display: flex !important;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.45rem;
+                overflow: visible !important;
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            .twitter-badge button,
+            .instagram-badge button {
+                position: static !important;
+                transform: none !important;
+                flex: 0 0 32px;
+                width: 32px !important;
+                height: 32px !important;
+                margin-left: 0.125rem;
+            }
+
+            #twitter-accounts-list {
+                gap: 0.875rem !important;
+            }
+
+            .twitter-account-list-card {
+                padding: 0.875rem !important;
+                overflow: hidden;
+            }
+
+            .twitter-account-list-card > .twitter-account-row {
+                display: grid !important;
+                grid-template-columns: 1fr;
+                gap: 0.875rem;
+            }
+
+            .twitter-account-main {
+                min-width: 0;
+            }
+
+            .twitter-account-title {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.375rem;
+                align-items: center;
+                overflow-wrap: anywhere;
+            }
+
+            .twitter-account-meta {
+                overflow-wrap: anywhere;
+            }
+
+            .twitter-account-actions {
+                display: grid !important;
+                grid-template-columns: repeat(4, minmax(44px, 1fr));
+                gap: 0.5rem !important;
+                align-items: stretch !important;
+            }
+
+            .twitter-account-actions .action-btn {
+                width: 100%;
+                min-width: 0;
+                padding: 0.65rem 0.5rem;
+                justify-content: center;
+            }
+
+            .twitter-account-actions .action-btn i + i {
+                margin-left: 0.125rem !important;
+            }
+        }
         
         /* Ultra Table Styles */
         .ultra-table tr {
@@ -7621,7 +7828,7 @@ Pass: email_pwd
                 else if (isPartiallyAssigned) borderColor = '#f59e0b'; // Orange si partiellement assigné
 
                 return `
-                <div style="
+                <div class="twitter-account-list-card" style="
                     padding: 1rem;
                     background: ${isFullyAssigned ?
                         (isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)') :
@@ -8015,9 +8222,9 @@ Pass: email_pwd
                     border-radius: 0.5rem;
                     transition: all 0.2s;
                 ">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <strong style="font-size: 1.1rem; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
+                    <div class="twitter-account-row" style="display: flex; justify-content: space-between; align-items: start;">
+                        <div class="twitter-account-main" style="flex: 1;">
+                            <strong class="twitter-account-title" style="font-size: 1.1rem; color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};">
                                 ${account.username}
                                 ${!gmail ? `
                                     <i class="fas fa-exclamation-triangle"
@@ -8026,7 +8233,7 @@ Pass: email_pwd
                                 ` : ''}
                             </strong>
                             ${renderStatusBadge(account.status, account.id || account.username)}
-                            <div style="font-size: 0.875rem; color: ${isDarkMode ? '#cbd5e1' : '#475569'}; margin-top: 0.5rem;">
+                            <div class="twitter-account-meta" style="font-size: 0.875rem; color: ${isDarkMode ? '#cbd5e1' : '#475569'}; margin-top: 0.5rem;">
                                 ${creator ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-user" style="width: 20px; color: #8b5cf6;"></i> Créatrice: <strong>${creator.name}</strong></div>` : ''}
                                 ${gmail ? `<div style="margin-bottom: 0.25rem;"><i class="fas fa-envelope" style="width: 20px; color: #ea4335;"></i> Gmail: <strong>${gmail.email}</strong></div>` : 
                                   creator ? `<div style="margin-bottom: 0.25rem; color: #ef4444;"><i class="fas fa-envelope" style="width: 20px; opacity: 0.5;"></i> <em>Aucun Gmail associé</em></div>` : ''}
@@ -8038,7 +8245,7 @@ Pass: email_pwd
                                 </div>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <div class="twitter-account-actions" style="display: flex; gap: 0.5rem; align-items: center;">
                             ${!gmail && creator ? `
                                 <button class="action-btn" onclick="showAssignGmailModal('${account.creatorId}', '${account.username}')" 
                                         style="background: #ea4335;" title="Assigner un Gmail">
