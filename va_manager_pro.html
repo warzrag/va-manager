@@ -2250,6 +2250,74 @@
             .stat-number {
                 font-size: 1.5rem;
             }
+
+            .header-actions {
+                width: 100%;
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.55rem !important;
+                align-items: stretch !important;
+            }
+
+            .header-actions > .theme-toggle,
+            .header-actions > #save-status {
+                min-height: 42px;
+                width: 100%;
+                justify-content: center;
+                border-radius: 0.85rem !important;
+                padding: 0.55rem 0.75rem !important;
+                font-size: 0.82rem !important;
+            }
+
+            .header-actions > #save-status {
+                background: rgba(34, 197, 94, 0.16) !important;
+            }
+
+            .header-user-actions {
+                grid-column: 1 / -1;
+                margin-left: 0 !important;
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto auto;
+                gap: 0.5rem !important;
+                align-items: center !important;
+                width: 100%;
+            }
+
+            .header-user-actions #org-switcher,
+            .header-user-actions #user-badge {
+                min-height: 40px;
+                border-radius: 0.8rem !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .header-user-actions #user-badge {
+                padding: 0.45rem 0.65rem !important;
+                font-size: 0.82rem !important;
+                border: 1px solid rgba(255,255,255,0.18);
+                background: rgba(15,23,42,0.34) !important;
+            }
+
+            .header-user-actions .admin-only-btn,
+            .header-user-actions button[onclick="logout()"] {
+                min-width: 40px;
+                min-height: 40px;
+                border-radius: 999px !important;
+                padding: 0 !important;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .header-user-actions .admin-only-btn {
+                font-size: 0 !important;
+            }
+
+            .header-user-actions .admin-only-btn i,
+            .header-user-actions button[onclick="logout()"] i {
+                font-size: 0.85rem;
+            }
             
             /* Navigation mobile */
             .nav {
@@ -2313,7 +2381,7 @@
             }
             
             .header-content .theme-toggle span {
-                display: none;
+                display: inline;
             }
             
             #save-status {
@@ -2624,11 +2692,7 @@
 
             .stats-header > div:last-child {
                 grid-column: 1 / -1;
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 0.5rem !important;
-                margin-left: 0 !important;
-                width: 100%;
+                display: contents !important;
             }
 
             .stats-header > div:last-child > * {
@@ -3310,7 +3374,7 @@
                     <div class="stat-number" id="total-accounts">0</div>
                     <div class="stat-label">Comptes</div>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
                     <div id="save-status" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; 
                                                  background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); 
                                                  border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem;">
@@ -3330,7 +3394,7 @@
                                                    background: rgba(255,255,255,0.3); border-radius: 50%; 
                                                    transform: translate(-50%, -50%) scale(0); opacity: 0;"></div>
                     </button>
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-left:0.5rem;">
+                    <div class="header-user-actions" style="display:flex; align-items:center; gap:0.5rem; margin-left:0.5rem;">
                         <select id="org-switcher" onchange="switchViewOrg(this.value)" style="display:none; background:rgba(236,72,153,0.25); color:white; border:1px solid rgba(236,72,153,0.5); border-radius:0.5rem; padding:0.3rem 0.5rem; font-size:0.75rem; cursor:pointer; font-weight:600;" title="Super-admin : voir l'espace d'une autre org"></select>
                         <span id="user-badge" style="background:rgba(255,255,255,0.15); color:white; padding:0.25rem 0.75rem;
                                                       border-radius:1rem; font-size:0.75rem; font-weight:500;"></span>
