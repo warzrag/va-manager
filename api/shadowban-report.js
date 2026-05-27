@@ -32,25 +32,43 @@ function buildReport(accounts) {
         return acc;
     }, { total: 0, active: 0, shadowban: 0, banned: 0 });
 
-    const recentlyChanged = accounts
-        .filter(account => account.status && account.status !== 'active')
-        .slice(0, 12)
-        .map(account => `- @${escapeHtml(String(account.username || '').replace(/^@/, ''))} : ${escapeHtml(formatStatus(account.status))}`);
+    const percent = (value) => counts.total > 0 ? Math.round((value / counts.total) * 100) : 0;
+    const atRisk = counts.shadowban + counts.banned;
+    const bannedAccounts = accounts.filter(account => account.status === 'banned');
+    const shadowbanAccounts = accounts.filter(account => account.status === 'shadowban');
+
+    const formatAccountList = (items, max = 10) => {
+        const visible = items.slice(0, max).map(account => {
+            const username = escapeHtml(String(account.username || '').replace(/^@/, ''));
+            return `- @${username}`;
+        });
+        if (items.length > max) visible.push(`- et ${items.length - max} autres`);
+        return visible;
+    };
 
     const lines = [
-        'Rapport VA Manager - Shadowban',
-        `Total comptes : ${counts.total}`,
-        `Actifs : ${counts.active}`,
-        `Shadowban : ${counts.shadowban}`,
-        `Bannis : ${counts.banned}`
+        '<b>VA Manager - Rapport shadowban</b>',
+        `${counts.total} comptes surveilles`,
+        '',
+        `<b>Etat global</b>`,
+        `Actifs : ${counts.active} (${percent(counts.active)}%)`,
+        `Shadowban : ${counts.shadowban} (${percent(counts.shadowban)}%)`,
+        `Bannis : ${counts.banned} (${percent(counts.banned)}%)`,
+        '',
+        atRisk > 0
+            ? `<b>Priorite</b> : ${atRisk} compte${atRisk > 1 ? 's' : ''} a verifier`
+            : '<b>Priorite</b> : rien a traiter pour le moment'
     ];
 
-    if (recentlyChanged.length > 0) {
-        lines.push('', 'Comptes a surveiller :', ...recentlyChanged);
-    } else {
-        lines.push('', 'Aucun compte a surveiller pour le moment.');
+    if (bannedAccounts.length > 0) {
+        lines.push('', `<b>Bannis (${bannedAccounts.length})</b>`, ...formatAccountList(bannedAccounts, 8));
     }
 
+    if (shadowbanAccounts.length > 0) {
+        lines.push('', `<b>Shadowban (${shadowbanAccounts.length})</b>`, ...formatAccountList(shadowbanAccounts, 12));
+    }
+
+    lines.push('', 'Action : ouvre VA Manager pour verifier, transferer ou corriger les comptes.');
     return lines.join('\n');
 }
 

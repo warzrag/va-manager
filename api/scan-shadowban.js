@@ -77,12 +77,21 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 function buildStatusAlert({ username, oldStatus, newStatus, flags }) {
     const cleanUsername = String(username || '').replace(/^@/, '');
+    const statusAction = {
+        active: 'Le compte semble revenu normal.',
+        shadowban: 'Le compte demande une verification shadowban.',
+        banned: 'Le compte semble banni ou introuvable.'
+    };
     const lines = [
-        'Alerte VA Manager',
-        `@${escapeHtml(cleanUsername)} : ${escapeHtml(formatStatus(oldStatus))} -> ${escapeHtml(formatStatus(newStatus))}`
+        '<b>VA Manager - Changement detecte</b>',
+        `Compte : @${escapeHtml(cleanUsername)}`,
+        `Avant : ${escapeHtml(formatStatus(oldStatus))}`,
+        `Maintenant : ${escapeHtml(formatStatus(newStatus))}`,
+        '',
+        escapeHtml(statusAction[newStatus] || 'Le statut du compte a change.')
     ];
     if (flags) lines.push(`Details : ${escapeHtml(flags)}`);
-    lines.push(`Lien : https://shadowban.yuzurisa.com/${encodeURIComponent(cleanUsername)}`);
+    lines.push('', `Verifier : https://shadowban.yuzurisa.com/${encodeURIComponent(cleanUsername)}`);
     return lines.join('\n');
 }
 
