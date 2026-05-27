@@ -896,6 +896,55 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
+        .va-quick-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0 0 1rem;
+            padding: 0.5rem;
+            overflow-x: auto;
+            border: 1px solid rgba(99, 102, 241, 0.16);
+            border-radius: 0.875rem;
+            background: rgba(99, 102, 241, 0.06);
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .va-quick-nav:empty {
+            display: none;
+        }
+
+        .va-quick-btn {
+            flex: 0 0 auto;
+            border: 1px solid rgba(99, 102, 241, 0.28);
+            background: rgba(99, 102, 241, 0.12);
+            color: #4f46e5;
+            border-radius: 999px;
+            padding: 0.5rem 0.8rem;
+            min-height: 38px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        body.dark-mode .va-quick-nav {
+            background: rgba(99, 102, 241, 0.10);
+            border-color: rgba(139, 92, 246, 0.24);
+        }
+
+        body.dark-mode .va-quick-btn {
+            color: #c4b5fd;
+            border-color: rgba(139, 92, 246, 0.35);
+            background: rgba(139, 92, 246, 0.16);
+        }
+
+        .va-card.va-scroll-highlight {
+            outline: 2px solid #8b5cf6;
+            box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.18), 0 10px 30px rgba(15, 23, 42, 0.18);
+        }
+
         .va-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -2374,6 +2423,21 @@
                 border-radius: 0.875rem;
             }
 
+            .va-quick-nav {
+                position: sticky;
+                top: calc(env(safe-area-inset-top, 0px) + 0.25rem);
+                z-index: 80;
+                margin-bottom: 0.75rem;
+                padding: 0.45rem;
+                border-radius: 0.75rem;
+            }
+
+            .va-quick-btn {
+                min-height: 34px;
+                padding: 0.42rem 0.7rem;
+                font-size: 0.8rem;
+            }
+
             .creatrice-name {
                 display: flex;
                 flex-wrap: wrap;
@@ -3001,6 +3065,8 @@
                 </button>
             </div>
             
+            <div id="va-quick-nav" class="va-quick-nav" aria-label="Navigation rapide des VAs"></div>
+
             <div class="va-grid" id="va-grid">
                 <!-- VA cards will be dynamically inserted here -->
             </div>
@@ -7623,6 +7689,28 @@ Pass: email_pwd
             if (data.vas.length === 0) {
                 grid.innerHTML = '<div class="no-creator">Aucun VA ajouté. Commencez par ajouter un VA!</div>';
             }
+
+            updateVAQuickNav();
+        }
+
+        function updateVAQuickNav() {
+            const nav = document.getElementById('va-quick-nav');
+            if (!nav) return;
+            const vas = data.vas || [];
+            nav.innerHTML = vas.map(va => `
+                <button type="button" class="va-quick-btn" onclick="scrollToVACard('${va.id}')">
+                    <i class="fas fa-user"></i>
+                    <span>${va.name}</span>
+                </button>
+            `).join('');
+        }
+
+        function scrollToVACard(vaId) {
+            const card = document.querySelector(`.va-card[data-va-id="${vaId}"]`);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            card.classList.add('va-scroll-highlight');
+            setTimeout(() => card.classList.remove('va-scroll-highlight'), 1400);
         }
 
         function toggleMobileAccounts(button) {
