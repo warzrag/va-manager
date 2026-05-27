@@ -909,7 +909,29 @@
             scrollbar-width: thin;
         }
 
+        .va-quick-nav-wrap {
+            margin-bottom: 1rem;
+        }
+
+        .va-quick-nav-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0 0 0.45rem;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        body.dark-mode .va-quick-nav-hint {
+            color: #94a3b8;
+        }
+
         .va-quick-nav:empty {
+            display: none;
+        }
+
+        .va-quick-nav-wrap:has(.va-quick-nav:empty) {
             display: none;
         }
 
@@ -3089,7 +3111,13 @@
                 </button>
             </div>
             
-            <div id="va-quick-nav" class="va-quick-nav" aria-label="Navigation rapide des VAs"></div>
+            <div id="va-quick-nav-wrap" class="va-quick-nav-wrap">
+                <div class="va-quick-nav-hint">
+                    <i class="fas fa-location-arrow"></i>
+                    <span>Accès rapide : touchez un VA pour aller à sa carte</span>
+                </div>
+                <div id="va-quick-nav" class="va-quick-nav" aria-label="Navigation rapide des VAs"></div>
+            </div>
 
             <div class="va-grid" id="va-grid">
                 <!-- VA cards will be dynamically inserted here -->
