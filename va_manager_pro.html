@@ -1863,7 +1863,7 @@
             border-radius: 50%;
             font-size: 1.5rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+            z-index: 1002;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -1997,9 +1997,10 @@
                 top: auto;
                 background: white;
                 box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-                z-index: 998;
+                z-index: 1001;
                 transform: translateY(100%);
                 transition: transform 0.3s ease;
+                pointer-events: auto;
             }
             
             .nav.mobile-active {
@@ -2013,6 +2014,7 @@
                 max-height: 70vh;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                pointer-events: auto;
             }
             
             .nav-btn {
