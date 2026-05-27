@@ -1610,6 +1610,161 @@
             background: rgba(185, 28, 28, 0.86);
         }
 
+        .analytics-shell {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem 0 2rem;
+        }
+
+        .analytics-hero {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.25rem;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 0.9rem;
+            background: #111827;
+        }
+
+        .analytics-hero h1 {
+            margin: 0;
+            color: #f8fafc;
+            font-size: 1.65rem;
+            line-height: 1.15;
+        }
+
+        .analytics-hero p {
+            margin: 0.35rem 0 0;
+            color: #94a3b8;
+            font-size: 0.92rem;
+        }
+
+        .analytics-refresh-btn {
+            border: 1px solid rgba(96, 165, 250, 0.35);
+            background: rgba(37, 99, 235, 0.18);
+            color: #bfdbfe;
+            border-radius: 0.65rem;
+            padding: 0.65rem 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .analytics-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.85rem;
+        }
+
+        .analytics-kpi,
+        .analytics-panel {
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: #151a23;
+            border-radius: 0.85rem;
+            padding: 1rem;
+        }
+
+        .analytics-kpi {
+            min-height: 105px;
+        }
+
+        .analytics-kpi span {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .analytics-kpi strong {
+            display: block;
+            color: #f8fafc;
+            font-size: 1.7rem;
+            margin-top: 0.35rem;
+        }
+
+        .analytics-kpi small {
+            color: #94a3b8;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .analytics-panel h2 {
+            margin: 0 0 0.85rem;
+            color: #f8fafc;
+            font-size: 1.05rem;
+        }
+
+        .analytics-list,
+        .analytics-table {
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .analytics-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0.75rem;
+            align-items: center;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            background: rgba(15, 23, 42, 0.55);
+            border-radius: 0.65rem;
+            padding: 0.7rem;
+        }
+
+        .analytics-row-main {
+            min-width: 0;
+        }
+
+        .analytics-row-main strong {
+            display: block;
+            color: #f8fafc;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .analytics-row-main span {
+            color: #94a3b8;
+            font-size: 0.82rem;
+        }
+
+        .analytics-pill {
+            border-radius: 999px;
+            padding: 0.25rem 0.55rem;
+            font-size: 0.74rem;
+            font-weight: 900;
+            color: #f8fafc;
+            white-space: nowrap;
+        }
+
+        .analytics-empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 2rem 1rem;
+            border: 1px dashed rgba(148, 163, 184, 0.25);
+            border-radius: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-hero {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .analytics-kpi-grid,
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .bulk-preview {
             margin-top: 0.75rem;
             border: 1px solid #e2e8f0;
@@ -4412,66 +4567,62 @@ Pass: email_pwd
         
         <!-- Twitter Analytics Page -->
         <div id="twitter-analytics-page" class="page">
-            <div style="text-align: center; padding: 3rem 0 2rem;">
-                <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, #1DA1F2, #0C85D0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                    Analyse des Followers Twitter
-                </h1>
-                <p style="margin-top: 0.5rem; color: #64748b; font-size: 1.1rem;">Suivi hebdomadaire de vos comptes Twitter</p>
-            </div>
-            
-            <!-- Stats globales -->
-            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div class="stat-card" style="background: linear-gradient(135deg, #1DA1F2, #0C85D0); color: white;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Total Followers</p>
-                            <p style="margin: 0; font-size: 2rem; font-weight: 700;" id="total-followers">0</p>
-                        </div>
-                        <i class="fas fa-users" style="font-size: 2rem; opacity: 0.3;"></i>
+            <div class="analytics-shell">
+                <div class="analytics-hero">
+                    <div>
+                        <h1>Analytics Twitter</h1>
+                        <p>Vue claire des comptes a surveiller, des followers et de la performance par VA.</p>
+                    </div>
+                    <button class="analytics-refresh-btn" onclick="updateTwitterAnalytics()">
+                        <i class="fas fa-rotate"></i> Actualiser
+                    </button>
+                </div>
+
+                <div class="analytics-kpi-grid">
+                    <div class="analytics-kpi">
+                        <span>Comptes</span>
+                        <strong id="analytics-total-accounts">0</strong>
+                        <small id="analytics-status-summary">-</small>
+                    </div>
+                    <div class="analytics-kpi">
+                        <span>Followers suivis</span>
+                        <strong id="total-followers">0</strong>
+                        <small id="analytics-tracked-count">0 compte avec stats</small>
+                    </div>
+                    <div class="analytics-kpi">
+                        <span>Croissance 7 jours</span>
+                        <strong id="weekly-growth">+0</strong>
+                        <small id="analytics-growth-note">basee sur les comptes suivis</small>
+                    </div>
+                    <div class="analytics-kpi">
+                        <span>Derniere MAJ</span>
+                        <strong id="last-update">-</strong>
+                        <small id="best-account">Meilleur compte: -</small>
                     </div>
                 </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Croissance Hebdo</p>
-                            <p style="margin: 0; font-size: 2rem; font-weight: 700;" id="weekly-growth">+0</p>
-                        </div>
-                        <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.3;"></i>
+
+                <div class="analytics-grid">
+                    <div class="analytics-panel">
+                        <h2>Priorites</h2>
+                        <div id="analytics-priorities" class="analytics-list"></div>
+                    </div>
+                    <div class="analytics-panel">
+                        <h2>Top comptes</h2>
+                        <div id="analytics-top-accounts" class="analytics-list"></div>
                     </div>
                 </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Meilleur Compte</p>
-                            <p style="margin: 0; font-size: 1.25rem; font-weight: 700;" id="best-account">-</p>
-                        </div>
-                        <i class="fas fa-trophy" style="font-size: 2rem; opacity: 0.3;"></i>
-                    </div>
+
+                <div class="analytics-panel">
+                    <h2>Performance par VA</h2>
+                    <div id="twitter-analytics-by-va" class="analytics-list"></div>
                 </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Dernière MAJ</p>
-                            <p style="margin: 0; font-size: 1.25rem; font-weight: 700;" id="last-update">-</p>
-                        </div>
-                        <i class="fas fa-calendar" style="font-size: 2rem; opacity: 0.3;"></i>
-                    </div>
+
+                <div class="analytics-panel">
+                    <h2>Tous les comptes</h2>
+                    <div id="analytics-accounts-table" class="analytics-table"></div>
                 </div>
-            </div>
-            
-            <!-- Analyse par VA -->
-            <div id="twitter-analytics-by-va" style="display: grid; gap: 2rem;">
-                <!-- Le contenu sera généré dynamiquement -->
-            </div>
-            
-            <!-- Message si aucune donnée -->
-            <div id="no-twitter-data" style="display: none; text-align: center; padding: 4rem;">
-                <i class="fas fa-chart-line" style="font-size: 4rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
-                <h3 style="color: #64748b; margin-bottom: 0.5rem;">Aucune donnée de followers</h3>
-                <p style="color: #94a3b8;">Commencez à suivre vos comptes Twitter en cliquant sur le bouton <i class="fas fa-users"></i> à côté de chaque compte.</p>
             </div>
         </div>
-
         <!-- Admin Page -->
         <div id="admin-page" class="page">
             <div style="max-width:800px; margin:0 auto;">
@@ -8089,217 +8240,148 @@ Pass: email_pwd
 
         // Update Twitter Analytics
         function updateTwitterAnalytics() {
-            // Ne conserver que les stats des comptes présents dans l'org courante
-            const currentUsernames = new Set((data.twitterAccounts || []).map(a => (a.username || '').toLowerCase()));
-            data.twitterStats = (data.twitterStats || []).filter(s => currentUsernames.has((s.username || '').toLowerCase()));
+            const accounts = (data.twitterAccounts || []).map(account => ({
+                ...account,
+                cleanUsername: String(account.username || '').replace(/^@/, '').toLowerCase()
+            })).filter(account => account.cleanUsername);
 
-            if (!data.twitterStats || data.twitterStats.length === 0) {
-                // Si pas de données, afficher un message vide
-                document.getElementById('total-followers').textContent = '0';
-                document.getElementById('weekly-growth').textContent = '+0';
-                document.getElementById('best-account').textContent = '-';
-                document.getElementById('last-update').textContent = '-';
-                document.getElementById('twitter-analytics-by-va').innerHTML = `
-                    <div style="text-align: center; padding: 3rem; background: rgba(148, 163, 184, 0.1); border-radius: 0.75rem;">
-                        <i class="fas fa-chart-line" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-                        <p style="color: #64748b; font-size: 1.1rem;">Aucune donnée disponible</p>
-                        <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Commencez à suivre vos comptes Twitter pour voir les statistiques</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Calculer les stats globales
-            let totalFollowers = 0;
-            let totalGrowth = 0;
-            let bestAccount = { username: '-', followers: 0 };
-            let lastUpdateDate = null;
-            
-            // Obtenir les dernières stats pour chaque compte
+            const stats = (data.twitterStats || []).filter(stat => {
+                const username = String(stat.username || '').replace(/^@/, '').toLowerCase();
+                return accounts.some(account => account.cleanUsername === username);
+            });
+            data.twitterStats = stats;
+
             const latestStats = new Map();
-            const previousWeekStats = new Map();
-            
-            data.twitterStats.forEach(stat => {
-                const username = stat.username.toLowerCase();
+            const previousStats = new Map();
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            let lastUpdateDate = null;
+
+            stats.forEach(stat => {
+                const username = String(stat.username || '').replace(/^@/, '').toLowerCase();
                 const statDate = new Date(stat.date);
-                
-                if (!latestStats.has(username) || statDate > new Date(latestStats.get(username).date)) {
-                    latestStats.set(username, stat);
-                }
-                
-                // Chercher les stats de la semaine précédente
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                const twoWeeksAgo = new Date();
-                twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-                
-                if (statDate >= twoWeeksAgo && statDate <= weekAgo) {
-                    if (!previousWeekStats.has(username) || statDate > new Date(previousWeekStats.get(username).date)) {
-                        previousWeekStats.set(username, stat);
-                    }
-                }
-                
-                if (!lastUpdateDate || statDate > lastUpdateDate) {
-                    lastUpdateDate = statDate;
-                }
+                if (Number.isNaN(statDate.getTime())) return;
+                if (!latestStats.has(username) || statDate > new Date(latestStats.get(username).date)) latestStats.set(username, stat);
+                if (statDate <= weekAgo && (!previousStats.has(username) || statDate > new Date(previousStats.get(username).date))) previousStats.set(username, stat);
+                if (!lastUpdateDate || statDate > lastUpdateDate) lastUpdateDate = statDate;
             });
-            
-            // Calculer le total et trouver le meilleur compte
-            latestStats.forEach((stat, username) => {
-                totalFollowers += stat.followers;
-                
-                if (stat.followers > bestAccount.followers) {
-                    bestAccount = { username: stat.username, followers: stat.followers };
-                }
-                
-                // Calculer la croissance
-                if (previousWeekStats.has(username)) {
-                    const prevStat = previousWeekStats.get(username);
-                    totalGrowth += (stat.followers - prevStat.followers);
-                }
+
+            const statusCounts = accounts.reduce((acc, account) => {
+                const status = account.status || 'active';
+                acc[status] = (acc[status] || 0) + 1;
+                return acc;
+            }, { active: 0, shadowban: 0, banned: 0 });
+
+            const enriched = accounts.map(account => {
+                const latest = latestStats.get(account.cleanUsername);
+                const previous = previousStats.get(account.cleanUsername);
+                const followers = Number(latest?.followers || 0);
+                const growth = latest && previous ? followers - Number(previous.followers || 0) : 0;
+                const va = data.vas?.find(v => v.id === (account.assignedVaId || account.assigned_va_id || account.vaId || account.va_id));
+                const creator = data.creators?.find(c => c.id === (account.creatorId || account.creator_id));
+                return {
+                    username: account.cleanUsername,
+                    displayUsername: '@' + account.cleanUsername,
+                    status: account.status || 'active',
+                    followers,
+                    growth,
+                    hasStats: Boolean(latest),
+                    lastUpdate: latest?.date || null,
+                    vaName: va?.name || 'Non assigne',
+                    creatorName: creator?.name || 'Sans creatrice'
+                };
             });
-            
-            // Mettre à jour les stats globales
-            document.getElementById('total-followers').textContent = formatNumber(totalFollowers);
-            document.getElementById('weekly-growth').textContent = totalGrowth >= 0 ? `+${formatNumber(totalGrowth)}` : formatNumber(totalGrowth);
-            document.getElementById('best-account').textContent = bestAccount.username !== '-' ? `${bestAccount.username} (${formatNumber(bestAccount.followers)})` : '-';
-            document.getElementById('last-update').textContent = lastUpdateDate ? lastUpdateDate.toLocaleDateString('fr-FR') : '-';
-            
-            // Analyser par VA
-            const vaAnalytics = new Map();
-            
-            // Pour chaque compte Twitter avec des stats
-            latestStats.forEach((stat, username) => {
-                // Trouver à quel VA appartient ce compte
-                let foundVa = null;
-                
-                // Chercher dans data.creators
-                if (data.creators) {
-                    for (const creator of data.creators) {
-                        if (creator.accounts) {
-                            const account = creator.accounts.find(acc => 
-                                acc.username.toLowerCase() === username
-                            );
-                            
-                            if (account) {
-                                // Trouver le VA assigné
-                                if (account.assignedVaId) {
-                                    foundVa = data.vas.find(v => v.id === account.assignedVaId);
-                                } else if (creator.vaIds && creator.vaIds.length > 0) {
-                                    // Si pas d'assignation spécifique, prendre le premier VA
-                                    foundVa = data.vas.find(v => v.id === creator.vaIds[0]);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                // Si pas trouvé dans la nouvelle structure, chercher dans l'ancienne
-                if (!foundVa && data.twitterAccounts) {
-                    const oldAccount = data.twitterAccounts.find(ta => 
-                        ta.username && ta.username.toLowerCase() === username
-                    );
-                    if (oldAccount && oldAccount.vaId) {
-                        foundVa = data.vas.find(v => v.id === oldAccount.vaId);
-                    }
-                }
-                
-                const vaName = foundVa ? foundVa.name : 'Non assigné';
-                
-                if (!vaAnalytics.has(vaName)) {
-                    vaAnalytics.set(vaName, {
-                        accounts: [],
-                        totalFollowers: 0,
-                        totalGrowth: 0
-                    });
-                }
-                
-                const vaData = vaAnalytics.get(vaName);
-                vaData.totalFollowers += stat.followers;
-                
-                // Calculer la croissance
-                let growth = 0;
-                if (previousWeekStats.has(username)) {
-                    const prevStat = previousWeekStats.get(username);
-                    growth = stat.followers - prevStat.followers;
-                    vaData.totalGrowth += growth;
-                }
-                
-                vaData.accounts.push({
-                    username: stat.username,
-                    followers: stat.followers,
-                    growth: growth,
-                    lastUpdate: stat.date
-                });
-            });
-            
-            // Générer le HTML par VA
-            const vaAnalyticsHtml = Array.from(vaAnalytics.entries()).map(([vaName, vaData]) => {
-                // Trier les comptes par followers décroissant
-                vaData.accounts.sort((a, b) => b.followers - a.followers);
-                
-                const growthColor = vaData.totalGrowth >= 0 ? '#10b981' : '#ef4444';
-                const growthSign = vaData.totalGrowth >= 0 ? '+' : '';
-                
-                return `
-                    <div class="stat-card" style="padding: 1.5rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">${vaName}</h3>
-                            <div style="text-align: right;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #1DA1F2;">
-                                    ${formatNumber(vaData.totalFollowers)}
-                                </div>
-                                <div style="font-size: 0.875rem; color: ${growthColor}; font-weight: 600;">
-                                    ${growthSign}${formatNumber(vaData.totalGrowth)} cette semaine
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; gap: 0.75rem;">
-                            ${vaData.accounts.map(account => {
-                                const accountGrowthColor = account.growth >= 0 ? '#10b981' : '#ef4444';
-                                const accountGrowthSign = account.growth >= 0 ? '+' : '';
-                                
-                                return `
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: rgba(29, 161, 242, 0.05); border-radius: 0.5rem; border: 1px solid rgba(29, 161, 242, 0.1);">
-                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                            <a href="https://twitter.com/${account.username.replace('@', '')}" 
-                                               target="_blank" 
-                                               class="twitter-badge" 
-                                               style="padding: 0.25rem 0.75rem; font-size: 0.875rem; text-decoration: none;">
-                                                <i class="fab fa-twitter"></i> ${account.username}
-                                            </a>
-                                            <button class="btn-icon" onclick="showUpdateFollowersModal('${account.username}')" 
-                                                    style="background: #3b82f6; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                        <div style="text-align: right;">
-                                            <div style="font-weight: 600; color: #1f2937;">
-                                                ${formatNumber(account.followers)}
-                                            </div>
-                                            <div style="font-size: 0.75rem; color: ${accountGrowthColor};">
-                                                ${accountGrowthSign}${formatNumber(account.growth)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
+
+            const totalFollowers = enriched.reduce((sum, item) => sum + item.followers, 0);
+            const totalGrowth = enriched.reduce((sum, item) => sum + item.growth, 0);
+            const trackedCount = enriched.filter(item => item.hasStats).length;
+            const best = [...enriched].sort((a, b) => b.followers - a.followers)[0];
+
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+            setText('analytics-total-accounts', formatNumber(accounts.length));
+            setText('analytics-status-summary', `${statusCounts.active || 0} actifs · ${statusCounts.shadowban || 0} shadowban · ${statusCounts.banned || 0} bannis`);
+            setText('total-followers', formatNumber(totalFollowers));
+            setText('analytics-tracked-count', `${trackedCount}/${accounts.length} comptes avec stats`);
+            setText('weekly-growth', totalGrowth >= 0 ? `+${formatNumber(totalGrowth)}` : formatNumber(totalGrowth));
+            setText('analytics-growth-note', trackedCount ? 'compare aux donnees disponibles' : 'aucune donnee followers');
+            setText('last-update', lastUpdateDate ? lastUpdateDate.toLocaleDateString('fr-FR') : '-');
+            setText('best-account', best?.followers ? `Meilleur compte: ${best.displayUsername} (${formatNumber(best.followers)})` : 'Meilleur compte: -');
+
+            const statusMeta = {
+                active: { label: 'Actif', color: '#16a34a' },
+                shadowban: { label: 'Shadowban', color: '#d97706' },
+                banned: { label: 'Banni', color: '#dc2626' }
+            };
+            const pill = (status) => {
+                const meta = statusMeta[status] || statusMeta.active;
+                return `<span class="analytics-pill" style="background:${meta.color};">${meta.label}</span>`;
+            };
+            const row = ({ title, subtitle, right }) => `
+                <div class="analytics-row">
+                    <div class="analytics-row-main">
+                        <strong>${escapeHtml(title)}</strong>
+                        <span>${escapeHtml(subtitle || '')}</span>
                     </div>
-                `;
-            }).join('');
-            
-            document.getElementById('twitter-analytics-by-va').innerHTML = vaAnalyticsHtml || `
-                <div style="text-align: center; padding: 3rem; background: rgba(148, 163, 184, 0.1); border-radius: 0.75rem;">
-                    <i class="fas fa-chart-line" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-                    <p style="color: #64748b; font-size: 1.1rem;">Aucune donnée disponible</p>
-                    <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Commencez à suivre vos comptes Twitter pour voir les statistiques</p>
-                </div>
-            `;
+                    <div>${right || ''}</div>
+                </div>`;
+            const empty = (text) => `<div class="analytics-empty">${escapeHtml(text)}</div>`;
+
+            const priorityItems = enriched
+                .filter(item => item.status !== 'active' || !item.hasStats)
+                .sort((a, b) => ({ banned: 0, shadowban: 1, active: 2 }[a.status] ?? 3) - ({ banned: 0, shadowban: 1, active: 2 }[b.status] ?? 3))
+                .slice(0, 12);
+            const prioritiesEl = document.getElementById('analytics-priorities');
+            if (prioritiesEl) {
+                prioritiesEl.innerHTML = priorityItems.length ? priorityItems.map(item => row({
+                    title: item.displayUsername,
+                    subtitle: item.status === 'active' ? `Pas encore de stats followers · ${item.vaName}` : `${item.vaName} · ${item.creatorName}`,
+                    right: item.status === 'active' ? '<span class="analytics-pill" style="background:#475569;">Stats manquantes</span>' : pill(item.status)
+                })).join('') : empty('Aucune priorite pour le moment. Les comptes suivis semblent propres.');
+            }
+
+            const topEl = document.getElementById('analytics-top-accounts');
+            const topAccounts = enriched.filter(item => item.hasStats).sort((a, b) => b.followers - a.followers).slice(0, 8);
+            if (topEl) {
+                topEl.innerHTML = topAccounts.length ? topAccounts.map(item => row({
+                    title: item.displayUsername,
+                    subtitle: `${item.vaName} · ${item.creatorName}`,
+                    right: `<strong style="color:#f8fafc;">${formatNumber(item.followers)}</strong><br><span style="color:${item.growth >= 0 ? '#22c55e' : '#ef4444'}; font-size:0.78rem;">${item.growth >= 0 ? '+' : ''}${formatNumber(item.growth)}</span>`
+                })).join('') : empty('Aucune statistique followers disponible.');
+            }
+
+            const vaMap = new Map();
+            enriched.forEach(item => {
+                if (!vaMap.has(item.vaName)) vaMap.set(item.vaName, { count: 0, followers: 0, growth: 0, shadowban: 0, banned: 0 });
+                const va = vaMap.get(item.vaName);
+                va.count++;
+                va.followers += item.followers;
+                va.growth += item.growth;
+                if (item.status === 'shadowban') va.shadowban++;
+                if (item.status === 'banned') va.banned++;
+            });
+            const vaEl = document.getElementById('twitter-analytics-by-va');
+            if (vaEl) {
+                const rows = Array.from(vaMap.entries()).sort((a, b) => b[1].followers - a[1].followers);
+                vaEl.innerHTML = rows.length ? rows.map(([name, va]) => row({
+                    title: name,
+                    subtitle: `${va.count} comptes · ${va.shadowban} shadowban · ${va.banned} bannis`,
+                    right: `<strong style="color:#f8fafc;">${formatNumber(va.followers)}</strong><br><span style="color:${va.growth >= 0 ? '#22c55e' : '#ef4444'}; font-size:0.78rem;">${va.growth >= 0 ? '+' : ''}${formatNumber(va.growth)}</span>`
+                })).join('') : empty('Aucun compte assigne a un VA.');
+            }
+
+            const tableEl = document.getElementById('analytics-accounts-table');
+            if (tableEl) {
+                const sorted = enriched.sort((a, b) => ({ banned: 0, shadowban: 1, active: 2 }[a.status] ?? 3) - ({ banned: 0, shadowban: 1, active: 2 }[b.status] ?? 3) || b.followers - a.followers);
+                tableEl.innerHTML = sorted.length ? sorted.map(item => row({
+                    title: `${item.displayUsername} · ${formatNumber(item.followers)} followers`,
+                    subtitle: `${item.vaName} · ${item.creatorName} · MAJ ${item.lastUpdate ? new Date(item.lastUpdate).toLocaleDateString('fr-FR') : 'jamais'}`,
+                    right: pill(item.status)
+                })).join('') : empty('Aucun compte Twitter dans cette organisation.');
+            }
         }
-        
         // Update creators statistics
         function updateCreatorsStats() {
             const container = document.getElementById('creators-comparison');
