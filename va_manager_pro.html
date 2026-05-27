@@ -1572,6 +1572,44 @@
             gap: 0.4rem;
         }
 
+        .bulk-danger-zone {
+            margin-top: 1rem;
+            padding: 0.9rem;
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            border-radius: 0.75rem;
+            background: rgba(239, 68, 68, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .bulk-danger-zone strong {
+            color: #fecaca;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
+        .bulk-danger-zone span {
+            color: #fca5a5;
+            font-size: 0.82rem;
+        }
+
+        .bulk-danger-btn {
+            border: 1px solid rgba(248, 113, 113, 0.45);
+            background: rgba(127, 29, 29, 0.72);
+            color: #fee2e2;
+            border-radius: 0.65rem;
+            padding: 0.65rem 0.9rem;
+            cursor: pointer;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bulk-danger-btn:hover {
+            background: rgba(185, 28, 28, 0.86);
+        }
+
         .bulk-preview {
             margin-top: 0.75rem;
             border: 1px solid #e2e8f0;
@@ -4028,6 +4066,15 @@ Pass: email_pwd
                     <i class="fas fa-bolt"></i> Importer les comptes détectés
                 </button>
                 <div id="bulk-import-result" style="margin-top:1rem; font-size:0.9rem;"></div>
+                <div class="bulk-danger-zone">
+                    <div>
+                        <strong>Zone de nettoyage</strong>
+                        <span>Supprime tous les comptes Twitter de cette organisation. Les VAs et crÃ©atrices restent en place.</span>
+                    </div>
+                    <button type="button" class="bulk-danger-btn" onclick="deleteAllTwitterAccounts()">
+                        <i class="fas fa-trash-alt"></i> Supprimer tous les comptes
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -10335,6 +10382,61 @@ Pass: email_pwd
             }
             resultDiv.innerHTML = html.join('');
             if (okCount > 0) textarea.value = '';
+        }
+
+        async function deleteAllTwitterAccounts() {
+            const count = (data.twitterAccounts || []).length;
+            if (!count) {
+                showError('Aucun compte Twitter Ã  supprimer.');
+                return;
+            }
+
+            const orgTarget = currentViewOrg || ORG_ID;
+            const firstConfirm = confirm(
+                `Supprimer les ${count} compte(s) Twitter de cette organisation ?\n\n` +
+                'Les VAs, crÃ©atrices et comptes Gmail ne seront pas supprimÃ©s.\n' +
+                'Cette action est irrÃ©versible.'
+            );
+            if (!firstConfirm) return;
+
+            const typed = prompt('Pour confirmer, tapez SUPPRIMER en majuscules :');
+            if (typed !== 'SUPPRIMER') {
+                showError('Suppression annulÃ©e.');
+                return;
+            }
+
+            const resultDiv = document.getElementById('bulk-import-result');
+            if (resultDiv) {
+                resultDiv.innerHTML = '<span style="color:#64748b;">Suppression en cours...</span>';
+            }
+
+            try {
+                if (useSupabase && orgTarget) {
+                    const deleted = await dbDelete('twitter_accounts', [['organization_id', 'eq', orgTarget]]);
+                    if (deleted.error) throw new Error(getDbErrorMessage(deleted));
+                }
+
+                data.twitterAccounts = [];
+                if (data.creators) {
+                    data.creators.forEach(creator => {
+                        creator.accounts = [];
+                    });
+                }
+
+                saveData();
+                updateDisplay();
+                updateTwitterAccountsList();
+                if (resultDiv) {
+                    resultDiv.innerHTML = `<div style="color:#22c55e; font-weight:600;">${count} compte(s) Twitter supprimÃ©(s)</div>`;
+                }
+                showSuccess(`${count} compte(s) Twitter supprimÃ©(s)`);
+            } catch (error) {
+                const message = error?.message || error;
+                if (resultDiv) {
+                    resultDiv.innerHTML = `<div style="color:#ef4444; font-weight:600;">Suppression impossible : ${String(message).replace(/</g, '&lt;')}</div>`;
+                }
+                showError('Suppression impossible : ' + message);
+            }
         }
 
         // Update Gmail accounts display
