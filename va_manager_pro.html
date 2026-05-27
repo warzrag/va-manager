@@ -4069,7 +4069,7 @@ Pass: email_pwd
                 <div class="bulk-danger-zone">
                     <div>
                         <strong>Zone de nettoyage</strong>
-                        <span>Supprime tous les comptes Twitter de cette organisation. Les VAs et crÃ©atrices restent en place.</span>
+                        <span>Supprime tous les comptes Twitter de cette organisation. Les VAs et creatrices restent en place.</span>
                     </div>
                     <button type="button" class="bulk-danger-btn" onclick="deleteAllTwitterAccounts()">
                         <i class="fas fa-trash-alt"></i> Supprimer tous les comptes
@@ -10361,7 +10361,7 @@ Pass: email_pwd
                         }
                         okCount++;
                         if (gmailImportWarning) {
-                            errors.push(`Compte ${i+1} (@${cleanUsername}) : Twitter importÃ©, Gmail non liÃ© (${gmailImportWarning})`);
+                            errors.push(`Compte ${i+1} (@${cleanUsername}) : Twitter importe, Gmail non lie (${gmailImportWarning})`);
                         }
                     }
                 } catch (e) {
@@ -10387,21 +10387,21 @@ Pass: email_pwd
         async function deleteAllTwitterAccounts() {
             const count = (data.twitterAccounts || []).length;
             if (!count) {
-                showError('Aucun compte Twitter Ã  supprimer.');
+                showError('Aucun compte Twitter a supprimer.');
                 return;
             }
 
             const orgTarget = currentViewOrg || ORG_ID;
             const firstConfirm = confirm(
                 `Supprimer les ${count} compte(s) Twitter de cette organisation ?\n\n` +
-                'Les VAs, crÃ©atrices et comptes Gmail ne seront pas supprimÃ©s.\n' +
-                'Cette action est irrÃ©versible.'
+                'Les VAs, creatrices et comptes Gmail ne seront pas supprimes.\n' +
+                'Cette action est irreversible.'
             );
             if (!firstConfirm) return;
 
             const typed = prompt('Pour confirmer, tapez SUPPRIMER en majuscules :');
             if (typed !== 'SUPPRIMER') {
-                showError('Suppression annulÃ©e.');
+                showError('Suppression annulee.');
                 return;
             }
 
@@ -10427,9 +10427,9 @@ Pass: email_pwd
                 updateDisplay();
                 updateTwitterAccountsList();
                 if (resultDiv) {
-                    resultDiv.innerHTML = `<div style="color:#22c55e; font-weight:600;">${count} compte(s) Twitter supprimÃ©(s)</div>`;
+                    resultDiv.innerHTML = `<div style="color:#22c55e; font-weight:600;">${count} compte(s) Twitter supprime(s)</div>`;
                 }
-                showSuccess(`${count} compte(s) Twitter supprimÃ©(s)`);
+                showSuccess(`${count} compte(s) Twitter supprime(s)`);
             } catch (error) {
                 const message = error?.message || error;
                 if (resultDiv) {
