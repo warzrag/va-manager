@@ -1,18 +1,41 @@
-/* iPhone 14 Pro / Dynamic Island / Safe Area fixes */
+/* iPhone / PWA safe-area and touch responsiveness fixes */
+html {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body {
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
 @supports (padding: env(safe-area-inset-top)) {
   body {
-    padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
 
-  .header, .top-bar, .navbar {
-    padding-top: calc(0.5rem + env(safe-area-inset-top));
+  .header,
+  .dashboard-header {
+    padding-top: env(safe-area-inset-top);
   }
 
-  .bottom-nav, .mobile-nav {
+  .nav.mobile-active,
+  .mobile-nav,
+  .bottom-nav {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-menu-toggle {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    right: calc(20px + env(safe-area-inset-right));
   }
 }
 
@@ -25,7 +48,35 @@
 
 /* Fix iOS 100vh issue */
 @supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+
   .full-height {
     min-height: -webkit-fill-available;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .nav,
+  .nav-btn,
+  .theme-toggle,
+  .action-btn,
+  .submit-btn,
+  .cancel-btn,
+  .va-card,
+  .stat-card,
+  .form-container {
+    transition-duration: 120ms !important;
+  }
+
+  .mobile-nav-overlay {
+    touch-action: none;
   }
 }

@@ -1767,6 +1767,11 @@
             display: block;
             opacity: 1;
         }
+
+        body.mobile-menu-open {
+            overflow: hidden;
+            touch-action: none;
+        }
         
         /* Tablettes et petits écrans */
         @media (max-width: 1024px) {
@@ -1858,6 +1863,7 @@
                 padding: 1rem;
                 max-height: 70vh;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
             
             .nav-btn {
@@ -16199,7 +16205,7 @@ Pass: email_pwd
                 icon.classList.remove('fa-bars');
                 icon.classList.add('fa-times');
                 button.style.background = '#ef4444';
-                document.body.style.overflow = 'hidden';
+                document.body.classList.add('mobile-menu-open');
             }
         }
         
@@ -16214,7 +16220,7 @@ Pass: email_pwd
             icon.classList.remove('fa-times');
             icon.classList.add('fa-bars');
             button.style.background = '#667eea';
-            document.body.style.overflow = '';
+            document.body.classList.remove('mobile-menu-open');
         }
         
         // Fermer le menu mobile lors de la navigation
@@ -16248,38 +16254,11 @@ Pass: email_pwd
             // Améliorer le scroll sur mobile
             if (isMobile) {
                 document.addEventListener('touchmove', function(e) {
-                    if (document.body.style.overflow === 'hidden' && !e.target.closest('.nav')) {
+                    if (document.body.classList.contains('mobile-menu-open') && !e.target.closest('.nav')) {
                         e.preventDefault();
                     }
                 }, { passive: false });
             }
-            
-            // Pull to refresh sur mobile
-            let startY = 0;
-            let isPulling = false;
-            
-            document.addEventListener('touchstart', function(e) {
-                if (window.scrollY === 0) {
-                    startY = e.touches[0].pageY;
-                }
-            });
-            
-            document.addEventListener('touchmove', function(e) {
-                if (window.scrollY === 0 && !isPulling) {
-                    const currentY = e.touches[0].pageY;
-                    const pullDistance = currentY - startY;
-                    
-                    if (pullDistance > 100) {
-                        isPulling = true;
-                        window.location.reload();
-                    }
-                }
-            });
-            
-            document.addEventListener('touchend', function() {
-                startY = 0;
-                isPulling = false;
-            });
         });
     </script>
     </div><!-- end main-app -->
