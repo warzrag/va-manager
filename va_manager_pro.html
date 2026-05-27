@@ -1515,6 +1515,99 @@
             background: #ede9fe;
         }
 
+        .bulk-import-panel {
+            max-width: 900px;
+        }
+
+        .bulk-format-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.8rem;
+            padding: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .bulk-format-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.35rem;
+            margin-top: 0.65rem;
+        }
+
+        .bulk-format-cell {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.55rem;
+            padding: 0.45rem 0.5rem;
+            font-size: 0.72rem;
+            color: #475569;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .bulk-import-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .bulk-import-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .bulk-secondary-btn {
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            border-radius: 0.65rem;
+            padding: 0.55rem 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .bulk-preview {
+            margin-top: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .bulk-preview.show {
+            display: block;
+        }
+
+        .bulk-preview-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.4fr 1fr 0.9fr 0.9fr;
+            gap: 0.5rem;
+            padding: 0.55rem 0.7rem;
+            font-size: 0.78rem;
+            border-top: 1px solid #e2e8f0;
+            align-items: center;
+        }
+
+        .bulk-preview-row:first-child {
+            border-top: 0;
+            background: #f8fafc;
+            font-weight: 800;
+            color: #475569;
+        }
+
+        .bulk-preview-row span {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         /* Success Message */
         .success-message {
             position: fixed;
@@ -2609,6 +2702,25 @@
                 font-size: 0.875rem;
                 padding: 0.75rem 1rem;
                 border-radius: 0.875rem;
+            }
+
+            .bulk-format-grid,
+            .bulk-preview-row {
+                grid-template-columns: 1fr;
+            }
+
+            .bulk-import-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .bulk-import-actions {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .bulk-secondary-btn {
+                justify-content: center;
             }
         }
         
@@ -3845,9 +3957,30 @@
                 </div>
             </div>
 
-            <div class="form-container" style="margin-top: 2rem;">
-                <h2 class="form-title">Import rapide (Twitter + Email + 2FA + Token)</h2>
-                <p style="color:#64748b; margin-bottom:1rem;">
+            <div class="form-container bulk-import-panel" style="margin-top: 2rem;">
+                <h2 class="form-title">Import comptes reçus</h2>
+                <div class="bulk-format-card">
+                    <div style="font-weight:800; color:#1e293b; margin-bottom:0.35rem;">
+                        Collez directement les lignes comme vous les recevez.
+                    </div>
+                    <div style="color:#64748b; font-size:0.86rem;">
+                        Format attendu par ligne, séparé par tabulation ou espaces :
+                    </div>
+                    <div class="bulk-format-grid">
+                        <div class="bulk-format-cell">Twitter</div>
+                        <div class="bulk-format-cell">Mot de passe Twitter</div>
+                        <div class="bulk-format-cell">Email</div>
+                        <div class="bulk-format-cell">Mot de passe email</div>
+                        <div class="bulk-format-cell">2FA</div>
+                        <div class="bulk-format-cell">Token</div>
+                    </div>
+                    <code style="background:#0f172a; color:#e2e8f0; padding:0.7rem; display:block; border-radius:0.65rem; margin-top:0.75rem; overflow:auto; font-size:0.78rem;">
+eveertoonLuis&nbsp;&nbsp;&nbsp;&nbsp;XR2mFqIEY7l2&nbsp;&nbsp;&nbsp;&nbsp;MeeNorZiinho@hotmail.com&nbsp;&nbsp;&nbsp;&nbsp;4Z2n7tlLqqO2&nbsp;&nbsp;&nbsp;&nbsp;TLEZ6LI6MHSPN2GJ&nbsp;&nbsp;&nbsp;&nbsp;5fb7a4f39320ecd17414c9e809254ff184856536
+                    </code>
+                </div>
+                <details style="color:#64748b; margin-bottom:1rem;">
+                    <summary style="cursor:pointer; font-weight:700;">Autres formats acceptés</summary>
+                    <p style="margin-top:0.75rem;">
                     Deux formats acceptés (détection auto) :<br>
                     <strong>1) Une ligne par compte</strong> (espaces/tabs) :
                     <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;password&nbsp;email&nbsp;email_password&nbsp;2FA&nbsp;auth_token</code><br>
@@ -3857,7 +3990,8 @@ Pass: twitter_pwd
 Email: x@mail.com
 Pass: email_pwd
 2fa: ABC123</code>
-                </p>
+                    </p>
+                </details>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                     <div>
@@ -3874,12 +4008,24 @@ Pass: email_pwd
                     </div>
                 </div>
 
-                <textarea id="bulk-import-input" placeholder="konnyalejandra    Dt7BOeZiu9Gb    KonnyEspinoza1@hotmail.com    h5YoxKIig4uI    JQ27BYLXGGSFORNB    1be8e091abffe089b055f8cdda01b1cc1814f9c2"
+                <div class="bulk-import-toolbar">
+                    <div id="bulk-import-count" style="color:#64748b; font-size:0.85rem;">0 compte détecté</div>
+                    <div class="bulk-import-actions">
+                        <button type="button" class="bulk-secondary-btn" onclick="pasteBulkImportFromClipboard()">
+                            <i class="fas fa-paste"></i> Coller
+                        </button>
+                        <button type="button" class="bulk-secondary-btn" onclick="clearBulkImportInput()">
+                            <i class="fas fa-eraser"></i> Vider
+                        </button>
+                    </div>
+                </div>
+
+                <textarea id="bulk-import-input" placeholder="eveertoonLuis	XR2mFqIEY7l2	MeeNorZiinho@hotmail.com	4Z2n7tlLqqO2	TLEZ6LI6MHSPN2GJ	5fb7a4f39320ecd17414c9e809254ff184856536"
                           oninput="updateBulkImportCount()"
-                          style="width:100%; min-height:180px; font-family:monospace; font-size:0.85rem; padding:0.75rem; border:1px solid #cbd5e1; border-radius:0.5rem; resize:vertical;"></textarea>
-                <div id="bulk-import-count" style="margin-top:0.5rem; color:#64748b; font-size:0.85rem;">0 ligne(s) détectée(s)</div>
+                          style="width:100%; min-height:210px; font-family:monospace; font-size:0.85rem; padding:0.85rem; border:1px solid #cbd5e1; border-radius:0.75rem; resize:vertical;"></textarea>
+                <div id="bulk-import-preview" class="bulk-preview"></div>
                 <button onclick="bulkImportAccounts()" class="submit-btn" style="margin-top:1rem;">
-                    <i class="fas fa-bolt"></i> Importer
+                    <i class="fas fa-bolt"></i> Importer les comptes détectés
                 </button>
                 <div id="bulk-import-result" style="margin-top:1rem; font-size:0.9rem;"></div>
             </div>
@@ -9947,13 +10093,79 @@ Pass: email_pwd
             });
         }
 
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderBulkImportPreview(accounts) {
+            const preview = document.getElementById('bulk-import-preview');
+            if (!preview) return;
+            if (!accounts.length) {
+                preview.classList.remove('show');
+                preview.innerHTML = '';
+                return;
+            }
+
+            const rows = accounts.slice(0, 5).map(acc => `
+                <div class="bulk-preview-row">
+                    <span>${escapeHtml(acc.username)}</span>
+                    <span>${acc.password ? '••••••' : 'manquant'}</span>
+                    <span>${escapeHtml(acc.email)}</span>
+                    <span>${acc.emailPassword ? '••••••' : '-'}</span>
+                    <span>${escapeHtml(acc.twoFa || '-')}</span>
+                    <span>${acc.token ? 'token' : '-'}</span>
+                </div>
+            `).join('');
+
+            preview.innerHTML = `
+                <div class="bulk-preview-row">
+                    <span>Twitter</span>
+                    <span>Pass Twitter</span>
+                    <span>Email</span>
+                    <span>Pass email</span>
+                    <span>2FA</span>
+                    <span>Token</span>
+                </div>
+                ${rows}
+                ${accounts.length > 5 ? `<div style="padding:0.55rem 0.7rem; color:#64748b; font-size:0.78rem;">+ ${accounts.length - 5} autre(s) compte(s)</div>` : ''}
+            `;
+            preview.classList.add('show');
+        }
+
         // Compte les comptes détectés dans le textarea (mis à jour en direct)
         function updateBulkImportCount() {
             const ta = document.getElementById('bulk-import-input');
             const countDiv = document.getElementById('bulk-import-count');
             if (!ta || !countDiv) return;
-            const n = parseBulkImport(ta.value || '').length;
-            countDiv.textContent = n + ' compte(s) détecté(s)';
+            const accounts = parseBulkImport(ta.value || '');
+            const n = accounts.length;
+            countDiv.textContent = n + ' compte' + (n > 1 ? 's' : '') + ' détecté' + (n > 1 ? 's' : '');
+            renderBulkImportPreview(accounts);
+        }
+
+        async function pasteBulkImportFromClipboard() {
+            const ta = document.getElementById('bulk-import-input');
+            if (!ta || !navigator.clipboard?.readText) return;
+            try {
+                ta.value = await navigator.clipboard.readText();
+                updateBulkImportCount();
+            } catch (e) {
+                showError('Impossible de lire le presse-papiers');
+            }
+        }
+
+        function clearBulkImportInput() {
+            const ta = document.getElementById('bulk-import-input');
+            if (!ta) return;
+            ta.value = '';
+            updateBulkImportCount();
+            const resultDiv = document.getElementById('bulk-import-result');
+            if (resultDiv) resultDiv.innerHTML = '';
         }
 
         // Remplit les selects créatrice/VA de la zone d'import rapide
