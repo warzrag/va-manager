@@ -1105,9 +1105,11 @@
 
         .twitter-account-link .twitter-username {
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            line-height: 1.15;
         }
 
         .twitter-chip-actions {
@@ -16718,7 +16720,8 @@ Pass: email_pwd
             if (targetHasScrollableAncestor(e.target)) return;
             if (document.documentElement.scrollHeight <= window.innerHeight + 1) return;
             e.preventDefault();
-            window.scrollBy({ top: e.deltaY, left: 0, behavior: 'auto' });
+            const delta = Math.max(-90, Math.min(90, e.deltaY * 0.45));
+            window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
         }, { passive: false, capture: true });
         
         // Fermer le menu mobile lors de la navigation
