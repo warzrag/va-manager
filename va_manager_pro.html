@@ -2442,6 +2442,30 @@
                 border-radius: 0.7rem;
             }
 
+            .twitter-accounts:not(.expanded) .mobile-extra-account {
+                display: none;
+            }
+
+            .mobile-show-more-accounts {
+                width: 100%;
+                border: 1px solid rgba(99, 102, 241, 0.25);
+                background: rgba(99, 102, 241, 0.12);
+                color: #a78bfa;
+                border-radius: 0.65rem;
+                padding: 0.55rem 0.75rem;
+                font-size: 0.8rem;
+                font-weight: 700;
+                min-height: 38px;
+            }
+
+            .twitter-accounts.expanded .mobile-show-more-accounts .show-more-label {
+                display: none;
+            }
+
+            .twitter-accounts:not(.expanded) .mobile-show-more-accounts .show-less-label {
+                display: none;
+            }
+
             .twitter-account-link {
                 min-height: 34px;
                 padding: 0.4rem 0.55rem;
@@ -7601,6 +7625,12 @@ Pass: email_pwd
             }
         }
 
+        function toggleMobileAccounts(button) {
+            const list = button.closest('.twitter-accounts');
+            if (!list) return;
+            list.classList.toggle('expanded');
+        }
+
         // Create VA card
         function createVACard(va) {
             const card = document.createElement('div');
@@ -7713,7 +7743,7 @@ Pass: email_pwd
                     // Creer l'URL Twitter - enlever le @ du username
                     const twitterUrl = `https://twitter.com/${account.username.replace('@', '')}`;
 
-                    return `<div class="twitter-account-chip">
+                    return `<div class="twitter-account-chip ${index >= 5 ? 'mobile-extra-account' : ''}">
                         <button onclick="openStatusModal('${account.id || account.username}')"
                                 style="width:14px; height:14px; border-radius:50%; border:2px solid white; cursor:pointer;
                                        background:${getStatusButtonBg(account.status)}; flex-shrink:0; padding:0;
@@ -7808,6 +7838,12 @@ Pass: email_pwd
                         <div class="twitter-accounts">
                             ${accountsHtml || ''}
                             ${instagramHtml || ''}
+                            ${accountsCount > 5 ? `
+                                <button type="button" class="mobile-show-more-accounts" onclick="toggleMobileAccounts(this)">
+                                    <span class="show-more-label">Voir les ${accountsCount - 5} autres comptes</span>
+                                    <span class="show-less-label">Réduire la liste</span>
+                                </button>
+                            ` : ''}
                             ${(!accountsHtml && !instagramHtml) ? '<span style="color: #94a3b8;">Aucun compte</span>' : ''}
                         </div>
                     </div>
