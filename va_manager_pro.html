@@ -7747,6 +7747,7 @@ Pass: email_pwd
         function createVACard(va) {
             const card = document.createElement('div');
             card.className = 'va-card';
+            card.dataset.vaId = va.id;
 
             // Trouver les créatrices associées à ce VA
             const vaCreators = [];
