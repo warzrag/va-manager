@@ -4570,56 +4570,35 @@ Pass: email_pwd
             <div class="analytics-shell">
                 <div class="analytics-hero">
                     <div>
-                        <h1>Analytics Twitter</h1>
-                        <p>Controle le travail des VAs avec les gains followers par jour, par compte et par VA.</p>
+                        <h1>Performance VAs</h1>
+                        <p>Une seule question : est-ce que chaque VA gagne des followers ?</p>
                     </div>
                     <button class="analytics-refresh-btn" onclick="updateTwitterAnalytics()">
                         <i class="fas fa-rotate"></i> Actualiser
                     </button>
                 </div>
 
-                <div class="analytics-kpi-grid">
+                <div class="analytics-kpi-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
                     <div class="analytics-kpi">
-                        <span>Comptes</span>
-                        <strong id="analytics-total-accounts">0</strong>
-                        <small id="analytics-status-summary">-</small>
-                    </div>
-                    <div class="analytics-kpi">
-                        <span>Gain aujourd'hui</span>
-                        <strong id="total-followers">0</strong>
-                        <small id="analytics-tracked-count">sur les comptes suivis</small>
+                        <span>Aujourd'hui</span>
+                        <strong id="analytics-today-gain">+0</strong>
+                        <small>gain total followers</small>
                     </div>
                     <div class="analytics-kpi">
-                        <span>Gain 7 jours</span>
-                        <strong id="weekly-growth">+0</strong>
-                        <small id="analytics-growth-note">moyenne par jour calculee</small>
+                        <span>7 jours</span>
+                        <strong id="analytics-week-gain">+0</strong>
+                        <small>gain total followers</small>
                     </div>
                     <div class="analytics-kpi">
-                        <span>Derniere MAJ</span>
-                        <strong id="last-update">-</strong>
-                        <small id="best-account">Meilleur compte: -</small>
-                    </div>
-                </div>
-
-                <div class="analytics-grid">
-                    <div class="analytics-panel">
-                        <h2>Alertes travail</h2>
-                        <div id="analytics-priorities" class="analytics-list"></div>
-                    </div>
-                    <div class="analytics-panel">
-                        <h2>Meilleurs comptes</h2>
-                        <div id="analytics-top-accounts" class="analytics-list"></div>
+                        <span>A surveiller</span>
+                        <strong id="analytics-problem-count">0</strong>
+                        <small>comptes faibles ou sans stats</small>
                     </div>
                 </div>
 
                 <div class="analytics-panel">
-                    <h2>Performance par VA</h2>
+                    <h2>VAs</h2>
                     <div id="twitter-analytics-by-va" class="analytics-list"></div>
-                </div>
-
-                <div class="analytics-panel">
-                    <h2>Detail des comptes</h2>
-                    <div id="analytics-accounts-table" class="analytics-table"></div>
                 </div>
             </div>
         </div>
@@ -8245,192 +8224,128 @@ Pass: email_pwd
                 cleanUsername: String(account.username || '').replace(/^@/, '').toLowerCase()
             })).filter(account => account.cleanUsername);
 
-            const stats = (data.twitterStats || []).filter(stat => {
-                const username = String(stat.username || '').replace(/^@/, '').toLowerCase();
-                return accounts.some(account => account.cleanUsername === username);
-            });
-            data.twitterStats = stats;
-
-            const todayKey = new Date().toISOString().slice(0, 10);
-            const yesterdayDate = new Date();
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            const yesterdayKey = yesterdayDate.toISOString().slice(0, 10);
-            const weekAgoDate = new Date();
-            weekAgoDate.setDate(weekAgoDate.getDate() - 7);
-            const weekAgoKey = weekAgoDate.toISOString().slice(0, 10);
             const statsByUsername = new Map();
-            let lastUpdateDate = null;
-
-            stats.forEach(stat => {
+            (data.twitterStats || []).forEach(stat => {
                 const username = String(stat.username || '').replace(/^@/, '').toLowerCase();
+                if (!accounts.some(account => account.cleanUsername === username)) return;
                 const statDate = new Date(stat.date);
                 if (Number.isNaN(statDate.getTime())) return;
                 if (!statsByUsername.has(username)) statsByUsername.set(username, []);
                 statsByUsername.get(username).push({ ...stat, dateKey: statDate.toISOString().slice(0, 10), statDate });
-                if (!lastUpdateDate || statDate > lastUpdateDate) lastUpdateDate = statDate;
             });
             statsByUsername.forEach(list => list.sort((a, b) => a.statDate - b.statDate));
 
+            const todayKey = new Date().toISOString().slice(0, 10);
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayKey = yesterday.toISOString().slice(0, 10);
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoKey = weekAgo.toISOString().slice(0, 10);
+
             const latestAtOrBefore = (list, dateKey) => {
-                if (!list || !list.length) return null;
                 let found = null;
-                for (const stat of list) {
+                for (const stat of list || []) {
                     if (stat.dateKey <= dateKey) found = stat;
                     else break;
                 }
                 return found;
             };
 
-            const statusCounts = accounts.reduce((acc, account) => {
-                const status = account.status || 'active';
-                acc[status] = (acc[status] || 0) + 1;
-                return acc;
-            }, { active: 0, shadowban: 0, banned: 0 });
+            const labelFor = (item) => {
+                if (!item.hasStats) return { text: 'Pas de stats', color: '#64748b' };
+                if (item.status === 'banned') return { text: 'Probleme', color: '#dc2626' };
+                if (item.status === 'shadowban') return { text: 'Probleme', color: '#dc2626' };
+                if (item.weekGain <= 0) return { text: 'Stagne', color: '#d97706' };
+                return { text: 'OK', color: '#16a34a' };
+            };
 
             const enriched = accounts.map(account => {
                 const history = statsByUsername.get(account.cleanUsername) || [];
                 const latest = history[history.length - 1];
                 const today = latestAtOrBefore(history, todayKey);
-                const yesterday = latestAtOrBefore(history, yesterdayKey);
-                const weekAgo = latestAtOrBefore(history, weekAgoKey);
-                const beforeLatest = history.length > 1 ? history[history.length - 2] : null;
+                const prevDay = latestAtOrBefore(history, yesterdayKey);
+                const prevWeek = latestAtOrBefore(history, weekAgoKey);
                 const followers = Number(latest?.followers || 0);
-                const todayGain = today && yesterday ? Number(today.followers || 0) - Number(yesterday.followers || 0) : 0;
-                const yesterdayGain = yesterday && weekAgo ? Number(yesterday.followers || 0) - Number(weekAgo.followers || 0) : 0;
-                const weekGain = latest && weekAgo ? followers - Number(weekAgo.followers || 0) : 0;
-                const lastGain = latest && beforeLatest ? followers - Number(beforeLatest.followers || 0) : 0;
-                const daysCovered = latest && weekAgo ? Math.max(1, Math.round((new Date(latest.date) - new Date(weekAgo.date)) / 86400000)) : 0;
-                const avgPerDay = daysCovered ? weekGain / daysCovered : 0;
+                const todayGain = today && prevDay ? Number(today.followers || 0) - Number(prevDay.followers || 0) : 0;
+                const weekGain = latest && prevWeek ? followers - Number(prevWeek.followers || 0) : 0;
                 const va = data.vas?.find(v => v.id === (account.assignedVaId || account.assigned_va_id || account.vaId || account.va_id));
-                const creator = data.creators?.find(c => c.id === (account.creatorId || account.creator_id));
                 return {
                     username: account.cleanUsername,
                     displayUsername: '@' + account.cleanUsername,
                     status: account.status || 'active',
                     followers,
                     todayGain,
-                    yesterdayGain,
                     weekGain,
-                    lastGain,
-                    avgPerDay,
                     hasStats: Boolean(latest),
-                    lastUpdate: latest?.date || null,
-                    vaName: va?.name || 'Non assigne',
-                    creatorName: creator?.name || 'Sans creatrice'
+                    vaName: va?.name || 'Non assigne'
                 };
             });
 
-            const totalFollowers = enriched.reduce((sum, item) => sum + item.followers, 0);
-            const totalTodayGain = enriched.reduce((sum, item) => sum + item.todayGain, 0);
-            const totalWeekGain = enriched.reduce((sum, item) => sum + item.weekGain, 0);
-            const trackedCount = enriched.filter(item => item.hasStats).length;
-            const best = [...enriched].sort((a, b) => b.weekGain - a.weekGain)[0];
+            const totalToday = enriched.reduce((sum, item) => sum + item.todayGain, 0);
+            const totalWeek = enriched.reduce((sum, item) => sum + item.weekGain, 0);
+            const problemCount = enriched.filter(item => labelFor(item).text !== 'OK').length;
 
             const setText = (id, value) => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = value;
             };
-            setText('analytics-total-accounts', formatNumber(accounts.length));
-            setText('analytics-status-summary', `${statusCounts.active || 0} actifs - ${statusCounts.shadowban || 0} shadowban - ${statusCounts.banned || 0} bannis`);
-            setText('total-followers', totalTodayGain >= 0 ? `+${formatNumber(totalTodayGain)}` : formatNumber(totalTodayGain));
-            setText('analytics-tracked-count', `${trackedCount}/${accounts.length} comptes suivis - ${formatNumber(totalFollowers)} followers`);
-            setText('weekly-growth', totalWeekGain >= 0 ? `+${formatNumber(totalWeekGain)}` : formatNumber(totalWeekGain));
-            setText('analytics-growth-note', trackedCount ? `${formatNumber(Math.round((totalWeekGain / 7) * 10) / 10)} par jour en moyenne` : 'aucune donnee followers');
-            setText('last-update', lastUpdateDate ? lastUpdateDate.toLocaleDateString('fr-FR') : '-');
-            setText('best-account', best?.hasStats ? `Top 7j: ${best.displayUsername} (${best.weekGain >= 0 ? '+' : ''}${formatNumber(best.weekGain)})` : 'Top 7j: -');
-
-            const row = ({ title, subtitle, right }) => `
-                <div class="analytics-row">
-                    <div class="analytics-row-main">
-                        <strong>${escapeHtml(title)}</strong>
-                        <span>${escapeHtml(subtitle || '')}</span>
-                    </div>
-                    <div>${right || ''}</div>
-                </div>`;
-            const empty = (text) => `<div class="analytics-empty">${escapeHtml(text)}</div>`;
-            const workLabel = (item) => {
-                if (!item.hasStats) return { text: 'Pas de stats', color: '#475569' };
-                if (item.status === 'banned') return { text: 'Banni', color: '#dc2626' };
-                if (item.status === 'shadowban') return { text: 'Shadowban', color: '#d97706' };
-                if (item.weekGain < 0) return { text: 'Perte', color: '#dc2626' };
-                if (item.weekGain === 0) return { text: 'Stagne', color: '#64748b' };
-                if (item.avgPerDay < 2) return { text: 'Faible', color: '#d97706' };
-                return { text: 'Bon travail', color: '#16a34a' };
-            };
-
-            const priorityItems = enriched
-                .filter(item => item.status !== 'active' || !item.hasStats || item.weekGain <= 0 || item.avgPerDay < 2)
-                .sort((a, b) => ({ banned: 0, shadowban: 1, active: 2 }[a.status] ?? 3) - ({ banned: 0, shadowban: 1, active: 2 }[b.status] ?? 3))
-                .slice(0, 12);
-            const prioritiesEl = document.getElementById('analytics-priorities');
-            if (prioritiesEl) {
-                prioritiesEl.innerHTML = priorityItems.length ? priorityItems.map(item => row({
-                    title: item.displayUsername,
-                    subtitle: `${item.vaName} - 7j ${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)} - moy. ${Math.round(item.avgPerDay * 10) / 10}/jour`,
-                    right: `<span class="analytics-pill" style="background:${workLabel(item).color};">${workLabel(item).text}</span>`
-                })).join('') : empty('Aucune alerte. Les VAs gagnent des followers correctement.');
-            }
-
-            const topEl = document.getElementById('analytics-top-accounts');
-            const topAccounts = enriched.filter(item => item.hasStats).sort((a, b) => b.weekGain - a.weekGain).slice(0, 8);
-            if (topEl) {
-                topEl.innerHTML = topAccounts.length ? topAccounts.map(item => row({
-                    title: item.displayUsername,
-                    subtitle: `${item.vaName} - ${formatNumber(item.followers)} followers - moy. ${Math.round(item.avgPerDay * 10) / 10}/jour`,
-                    right: `<strong style="color:#f8fafc;">${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)}</strong><br><span style="color:${item.todayGain >= 0 ? '#22c55e' : '#ef4444'}; font-size:0.78rem;">auj. ${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)}</span>`
-                })).join('') : empty('Aucune statistique followers disponible.');
-            }
+            setText('analytics-today-gain', totalToday >= 0 ? `+${formatNumber(totalToday)}` : formatNumber(totalToday));
+            setText('analytics-week-gain', totalWeek >= 0 ? `+${formatNumber(totalWeek)}` : formatNumber(totalWeek));
+            setText('analytics-problem-count', String(problemCount));
 
             const vaMap = new Map();
             enriched.forEach(item => {
-                if (!vaMap.has(item.vaName)) vaMap.set(item.vaName, { count: 0, followers: 0, todayGain: 0, weekGain: 0, shadowban: 0, banned: 0, weak: 0, accounts: [] });
+                if (!vaMap.has(item.vaName)) vaMap.set(item.vaName, { todayGain: 0, weekGain: 0, problems: 0, accounts: [] });
                 const va = vaMap.get(item.vaName);
-                va.count++;
-                va.followers += item.followers;
                 va.todayGain += item.todayGain;
                 va.weekGain += item.weekGain;
-                if (item.status === 'shadowban') va.shadowban++;
-                if (item.status === 'banned') va.banned++;
-                if (!item.hasStats || item.weekGain <= 0 || item.avgPerDay < 2) va.weak++;
+                if (labelFor(item).text !== 'OK') va.problems++;
                 va.accounts.push(item);
             });
+
             const vaEl = document.getElementById('twitter-analytics-by-va');
-            if (vaEl) {
-                const rows = Array.from(vaMap.entries()).sort((a, b) => b[1].weekGain - a[1].weekGain);
-                vaEl.innerHTML = rows.length ? rows.map(([name, va]) => {
-                    const avg = va.count ? Math.round((va.weekGain / va.count / 7) * 10) / 10 : 0;
-                    const detail = va.accounts.sort((a, b) => b.weekGain - a.weekGain).map(item => `
-                        <div class="analytics-row" style="margin-top:0.45rem;">
-                            <div class="analytics-row-main">
-                                <strong>${escapeHtml(item.displayUsername)} - ${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)} aujourd'hui</strong>
-                                <span>hier ${item.yesterdayGain >= 0 ? '+' : ''}${formatNumber(item.yesterdayGain)} - 7j ${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)} - moy. ${Math.round(item.avgPerDay * 10) / 10}/j - ${formatNumber(item.followers)} followers</span>
-                            </div>
-                            <div><span class="analytics-pill" style="background:${workLabel(item).color};">${workLabel(item).text}</span></div>
-                        </div>
-                    `).join('');
-                    return `
-                        <div class="analytics-panel" style="padding:0.85rem;">
-                            <div class="analytics-row" style="background:rgba(30,41,59,0.8);">
-                                <div class="analytics-row-main">
-                                    <strong>${escapeHtml(name)} - ${va.weekGain >= 0 ? '+' : ''}${formatNumber(va.weekGain)} sur 7j</strong>
-                                    <span>${va.count} comptes - aujourd'hui ${va.todayGain >= 0 ? '+' : ''}${formatNumber(va.todayGain)} - moy. ${avg}/compte/j - ${va.weak} a surveiller</span>
-                                </div>
-                                <div><span class="analytics-pill" style="background:${va.weak ? '#d97706' : '#16a34a'};">${va.weak ? 'A surveiller' : 'Bon travail'}</span></div>
-                            </div>
-                            ${detail}
-                        </div>`;
-                }).join('') : empty('Aucun compte assigne a un VA.');
+            if (!vaEl) return;
+            const rows = Array.from(vaMap.entries()).sort((a, b) => b[1].weekGain - a[1].weekGain);
+            if (!rows.length) {
+                vaEl.innerHTML = '<div class="analytics-empty">Aucun compte Twitter dans cette organisation.</div>';
+                return;
             }
 
-            const tableEl = document.getElementById('analytics-accounts-table');
-            if (tableEl) {
-                const sorted = enriched.sort((a, b) => b.weekGain - a.weekGain);
-                tableEl.innerHTML = sorted.length ? sorted.map(item => row({
-                    title: `${item.displayUsername} - ${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)} sur 7j`,
-                    subtitle: `${item.vaName} - auj. ${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)} - hier ${item.yesterdayGain >= 0 ? '+' : ''}${formatNumber(item.yesterdayGain)} - moy. ${Math.round(item.avgPerDay * 10) / 10}/jour - MAJ ${item.lastUpdate ? new Date(item.lastUpdate).toLocaleDateString('fr-FR') : 'jamais'}`,
-                    right: `<span class="analytics-pill" style="background:${workLabel(item).color};">${workLabel(item).text}</span>`
-                })).join('') : empty('Aucun compte Twitter dans cette organisation.');
-            }
+            vaEl.innerHTML = rows.map(([name, va], index) => {
+                const vaStatus = va.problems ? { text: 'A verifier', color: '#d97706' } : { text: 'OK', color: '#16a34a' };
+                const accountsHtml = va.accounts
+                    .sort((a, b) => b.weekGain - a.weekGain)
+                    .map(item => {
+                        const label = labelFor(item);
+                        return `
+                            <div class="analytics-row" style="margin-top:0.45rem;">
+                                <div class="analytics-row-main">
+                                    <strong>${escapeHtml(item.displayUsername)}</strong>
+                                    <span>Aujourd'hui ${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)} - 7j ${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)} - ${formatNumber(item.followers)} followers</span>
+                                </div>
+                                <span class="analytics-pill" style="background:${label.color};">${label.text}</span>
+                            </div>`;
+                    }).join('');
+
+                return `
+                    <div class="analytics-panel" style="padding:0.85rem;">
+                        <button type="button" onclick="toggleAnalyticsVa(${index})" class="analytics-row" style="width:100%; text-align:left; cursor:pointer; background:rgba(30,41,59,0.85);">
+                            <div class="analytics-row-main">
+                                <strong>${escapeHtml(name)}</strong>
+                                <span>Aujourd'hui ${va.todayGain >= 0 ? '+' : ''}${formatNumber(va.todayGain)} - 7j ${va.weekGain >= 0 ? '+' : ''}${formatNumber(va.weekGain)} - ${va.problems} a surveiller</span>
+                            </div>
+                            <span class="analytics-pill" style="background:${vaStatus.color};">${vaStatus.text}</span>
+                        </button>
+                        <div id="analytics-va-detail-${index}" style="display:none; margin-top:0.45rem;">${accountsHtml}</div>
+                    </div>`;
+            }).join('');
+        }
+
+        function toggleAnalyticsVa(index) {
+            const el = document.getElementById('analytics-va-detail-' + index);
+            if (!el) return;
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
         }
         // Update creators statistics
         function updateCreatorsStats() {
