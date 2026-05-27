@@ -5267,6 +5267,13 @@ Pass: email_pwd
         const dbUpsert = (table, data, onConflict = 'id') => dbOp({ table, action: 'upsert', data, options: { onConflict } });
         const dbDelete = (table, filters) => dbOp({ table, action: 'delete', filters });
 
+        function getDbErrorMessage(result) {
+            const details = result?.details?.details || result?.details;
+            const message = details?.message || details?.hint || result?.error || 'erreur inconnue';
+            const code = details?.code ? ` (${details.code})` : '';
+            return `${message}${code}`;
+        }
+
         async function syncToSupabase() {
             if (!useSupabase || !supabaseClient) return;
             // Safety : super-admin en vue d'une autre org = read-only, pas de sync
@@ -10225,19 +10232,27 @@ Pass: email_pwd
                 try {
                     // 1) Crée le compte Gmail (si email fourni et pas déjà présent)
                     let gmailId = null;
+                    let gmailImportWarning = null;
                     if (cleanEmail) {
                         const existing = data.gmailAccounts.find(g => g.email?.toLowerCase() === cleanEmail);
                         if (existing && existing.id?.includes('-')) {
                             gmailId = existing.id;
                         } else {
+                            const selected = await dbSelect('gmail_accounts', [['email', 'eq', cleanEmail]], { limit: 1 });
+                            const found = Array.isArray(selected.data) ? selected.data[0] : selected.data;
+                            if (found?.id) {
+                                gmailId = found.id;
+                            } else {
                             const ins = await dbInsert('gmail_accounts', {
                                 email: cleanEmail,
                                 encrypted_password: storedEmailPassword,
                                 notes: '',
-                                va_id: null,
+                                va_id: vaId || null,
                                 organization_id: ORG_ID
                             });
-                            if (ins.error) throw new Error('gmail: ' + JSON.stringify(ins.error));
+                            if (ins.error) {
+                                gmailImportWarning = getDbErrorMessage(ins);
+                            } else {
                             const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
                             gmailId = created?.id;
                             if (gmailId) {
@@ -10245,6 +10260,8 @@ Pass: email_pwd
                                     id: gmailId, vaId: vaId || null, email: cleanEmail,
                                     password: storedEmailPassword, notes: '', created: created?.created_at
                                 });
+                            }
+                            }
                             }
                         }
                     }
@@ -10257,6 +10274,9 @@ Pass: email_pwd
                         const noteParts = [];
                         if (twoFa) noteParts.push('[2FA:' + twoFa + ']');
                         if (authToken) noteParts.push('[TOKEN:' + authToken + ']');
+                        if (!gmailId && cleanEmail) noteParts.push('[EMAIL:' + cleanEmail + ']');
+                        if (!gmailId && emailPwd) noteParts.push('[EMAIL_PASS:' + emailPwd + ']');
+                        if (gmailImportWarning) noteParts.push('[GMAIL_IMPORT_WARNING:' + gmailImportWarning + ']');
                         const ins = await dbInsert('twitter_accounts', {
                             username: cleanUsername,
                             encrypted_password: storedTwitterPassword,
@@ -10268,7 +10288,7 @@ Pass: email_pwd
                             notes: noteParts.join(' ') || null,
                             organization_id: ORG_ID
                         });
-                        if (ins.error) throw new Error('twitter: ' + JSON.stringify(ins.error));
+                        if (ins.error) throw new Error('twitter: ' + getDbErrorMessage(ins));
                         const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
                         if (created?.id) {
                             data.twitterAccounts.push({
@@ -10293,6 +10313,9 @@ Pass: email_pwd
                             }
                         }
                         okCount++;
+                        if (gmailImportWarning) {
+                            errors.push(`Compte ${i+1} (@${cleanUsername}) : Twitter importÃ©, Gmail non liÃ© (${gmailImportWarning})`);
+                        }
                     }
                 } catch (e) {
                     errors.push(`Compte ${i+1} (@${cleanUsername}) : ${e?.message || e}`);
