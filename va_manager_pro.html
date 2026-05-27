@@ -1616,6 +1616,128 @@
             color: #64748b;
         }
 
+        .status-modal-card {
+            max-width: 380px;
+            width: min(92vw, 380px);
+            padding: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+        }
+
+        .status-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1rem 0.75rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .status-modal-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-modal-close {
+            width: 36px;
+            height: 36px;
+            min-height: 36px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(100, 116, 139, 0.12);
+            color: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .status-modal-body {
+            padding: 0.875rem 1rem 1rem;
+        }
+
+        .status-modal-username {
+            margin: 0.25rem 0 0;
+            color: #64748b;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .status-modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .status-option-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 58px;
+            padding: 0.65rem 0.75rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.12s ease, background 0.12s ease;
+            color: inherit;
+            font-family: inherit;
+        }
+
+        .status-option-icon {
+            width: 2.1rem;
+            height: 2.1rem;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .status-option-label {
+            font-weight: 800;
+            font-size: 0.92rem;
+        }
+
+        .status-option-desc {
+            font-size: 0.76rem;
+            color: #64748b;
+            margin-top: 0.1rem;
+        }
+
+        .status-option-check {
+            margin-left: auto;
+            opacity: 0.9;
+            font-size: 0.8rem;
+        }
+
+        #status-modal .modal-content {
+            max-width: 380px !important;
+            width: min(92vw, 380px) !important;
+            padding: 1rem !important;
+            border-radius: 1rem;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+        }
+
+        #status-modal .modal-header {
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.65rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        #status-modal .modal-header h2 {
+            font-size: 1rem;
+            margin: 0;
+        }
+
         /* Actions */
         .actions {
             display: flex;
@@ -2829,6 +2951,14 @@
 
             .shadowban-browser-frame {
                 min-height: 60dvh;
+            }
+
+            #status-modal .modal-content {
+                width: min(90vw, 360px) !important;
+                max-width: 360px !important;
+                max-height: none !important;
+                padding: 0.85rem !important;
+                margin: auto;
             }
 
             #twitter-accounts-list {
@@ -13421,15 +13551,16 @@ Pass: email_pwd
                 const isActive = o.key === current;
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.style.cssText = 'display:flex; align-items:center; gap:0.875rem; padding:0.875rem 1rem; border-radius:0.75rem; cursor:pointer; ' +
-                    'background:' + o.color + (isActive ? '25' : '10') + '; border:2px solid ' + o.color + (isActive ? '' : '40') + '; ' +
-                    'text-align:left; transition:all 0.15s ease; color:inherit; font-family:inherit;';
+                btn.className = 'status-option-btn';
+                btn.style.background = o.color + (isActive ? '20' : '0f');
+                btn.style.border = '1px solid ' + o.color + (isActive ? 'cc' : '40');
                 btn.addEventListener('click', () => setAccountStatus(idOrUsername, o.key));
                 btn.addEventListener('mouseover', () => { btn.style.background = o.color + '25'; });
                 btn.addEventListener('mouseout',  () => { btn.style.background = o.color + (isActive ? '25' : '10'); });
 
                 const iconWrap = document.createElement('div');
-                iconWrap.style.cssText = 'width:2.25rem; height:2.25rem; border-radius:50%; background:' + o.color + '; display:flex; align-items:center; justify-content:center; color:white; flex-shrink:0;';
+                iconWrap.className = 'status-option-icon';
+                iconWrap.style.background = o.color;
                 const iconEl = document.createElement('i');
                 iconEl.className = 'fas ' + o.icon;
                 iconWrap.appendChild(iconEl);
@@ -13437,22 +13568,23 @@ Pass: email_pwd
                 const textWrap = document.createElement('div');
                 textWrap.style.flex = '1';
                 const labelEl = document.createElement('div');
-                labelEl.style.cssText = 'font-weight:600; font-size:0.95rem; color:' + o.color + ';';
+                labelEl.className = 'status-option-label';
+                labelEl.style.color = o.color;
                 labelEl.textContent = o.label;
-                if (isActive) {
-                    const check = document.createElement('i');
-                    check.className = 'fas fa-check';
-                    check.style.cssText = 'margin-left:0.5rem; font-size:0.75rem;';
-                    labelEl.appendChild(check);
-                }
                 const descEl = document.createElement('div');
-                descEl.style.cssText = 'font-size:0.8rem; opacity:0.7; margin-top:0.125rem;';
+                descEl.className = 'status-option-desc';
                 descEl.textContent = o.desc;
                 textWrap.appendChild(labelEl);
                 textWrap.appendChild(descEl);
 
                 btn.appendChild(iconWrap);
                 btn.appendChild(textWrap);
+                if (isActive) {
+                    const check = document.createElement('i');
+                    check.className = 'fas fa-check status-option-check';
+                    check.style.color = o.color;
+                    btn.appendChild(check);
+                }
                 container.appendChild(btn);
             });
 
