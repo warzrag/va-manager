@@ -1134,6 +1134,28 @@
             line-height: 1.15;
         }
 
+        .twitter-followers-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.18rem 0.45rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #eef2ff;
+            background: rgba(15, 23, 42, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .twitter-followers-badge i {
+            font-size: 0.68rem;
+            color: #c4b5fd;
+        }
+
         .twitter-chip-actions {
             display: flex;
             align-items: center;
@@ -2692,6 +2714,8 @@
                 padding: 0.45rem 0.58rem;
                 font-size: 0.8rem;
                 border-radius: 0.7rem;
+                flex-wrap: wrap;
+                row-gap: 0.28rem;
             }
 
             .twitter-account-link .twitter-username {
@@ -2700,6 +2724,14 @@
                 text-overflow: clip;
                 line-height: 1.15;
                 word-break: break-word;
+                flex: 1 1 auto;
+            }
+
+            .twitter-followers-badge {
+                padding: 0.22rem 0.5rem;
+                font-size: 0.72rem;
+                background: rgba(15, 23, 42, 0.34);
+                border-color: rgba(255, 255, 255, 0.28);
             }
 
             .twitter-chip-actions {
@@ -8049,10 +8081,8 @@ Pass: email_pwd
                     // Obtenir les dernières stats de followers
                     const latestStats = getLatestTwitterStats(account.username);
                     const followersDisplay = latestStats ? 
-                        `<span style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6; padding: 0.125rem 0.375rem; 
-                                     border-radius: 0.75rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.25rem;
-                                     border: 1px solid rgba(139, 92, 246, 0.2);">
-                            <i class="fas fa-users" style="font-size: 0.625rem;"></i> ${formatNumber(latestStats.followers)}
+                        `<span class="twitter-followers-badge" title="${formatNumber(latestStats.followers)} followers">
+                            <i class="fas fa-users"></i> ${formatNumber(latestStats.followers)}
                         </span>` : '';
                     
                     // Creer l'URL Twitter - enlever le @ du username
