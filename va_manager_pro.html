@@ -1871,9 +1871,31 @@
             opacity: 1;
         }
 
-        body.mobile-menu-open {
-            overflow: hidden;
-            touch-action: none;
+        @media (max-width: 768px) {
+            body.mobile-menu-open {
+                overflow: hidden;
+                touch-action: none;
+            }
+        }
+
+        @media (min-width: 769px) {
+            html,
+            body,
+            body.mobile-menu-open {
+                overflow-y: auto !important;
+                height: auto !important;
+                touch-action: auto !important;
+            }
+
+            .mobile-nav-overlay,
+            .mobile-nav-overlay.active {
+                display: none !important;
+                pointer-events: none !important;
+            }
+
+            .nav.mobile-active {
+                transform: none !important;
+            }
         }
         
         /* Tablettes et petits écrans */
@@ -16644,6 +16666,11 @@ Pass: email_pwd
     <script>
         // Mobile navigation
         function toggleMobileMenu() {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+                return;
+            }
+
             const nav = document.querySelector('.nav');
             const overlay = document.getElementById('mobile-nav-overlay');
             const icon = document.getElementById('mobile-menu-icon');
@@ -16681,6 +16708,10 @@ Pass: email_pwd
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
                 document.body.classList.add('is-mobile');
+            }
+
+            if (window.innerWidth > 768) {
+                document.body.classList.remove('mobile-menu-open');
             }
             
             document.querySelectorAll('.nav-btn').forEach(btn => {

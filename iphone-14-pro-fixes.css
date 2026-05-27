@@ -3,6 +3,7 @@ html {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
 }
@@ -11,6 +12,7 @@ body {
   width: 100%;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
