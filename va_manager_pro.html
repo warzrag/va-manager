@@ -1102,7 +1102,7 @@
         .twitter-account-chip {
             width: 100%;
             display: grid;
-            grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+            grid-template-columns: auto minmax(0, 1fr) auto auto;
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem;
@@ -1135,6 +1135,12 @@
         }
 
         .twitter-chip-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .twitter-chip-quick-actions {
             display: flex;
             align-items: center;
             gap: 0.35rem;
@@ -2637,18 +2643,21 @@
             }
 
             .twitter-account-chip {
-                grid-template-columns: auto auto auto minmax(0, 1fr);
-                align-items: start;
-                padding: 0.35rem;
-                gap: 0.3rem;
-                border-radius: 0.7rem;
+                grid-template-columns: 30px minmax(0, 1fr);
+                align-items: center;
+                padding: 0.45rem;
+                gap: 0.42rem;
+                border-radius: 0.85rem;
+                background: linear-gradient(135deg, rgba(29, 161, 242, 0.09), rgba(99, 102, 241, 0.08));
+                border-color: rgba(56, 189, 248, 0.14);
             }
 
             .twitter-status-btn {
                 width: 30px;
                 height: 30px;
                 min-height: 30px;
-                margin-top: 2px;
+                grid-column: 1;
+                grid-row: 1;
             }
 
             .twitter-accounts:not(.expanded) .mobile-extra-account {
@@ -2676,10 +2685,13 @@
             }
 
             .twitter-account-link {
+                grid-column: 2;
+                grid-row: 1;
+                width: 100%;
                 min-height: 34px;
-                padding: 0.4rem 0.55rem;
-                font-size: 0.78rem;
-                border-radius: 0.6rem;
+                padding: 0.45rem 0.58rem;
+                font-size: 0.8rem;
+                border-radius: 0.7rem;
             }
 
             .twitter-account-link .twitter-username {
@@ -2691,19 +2703,30 @@
             }
 
             .twitter-chip-actions {
-                grid-column: 4;
+                grid-column: 1 / -1;
+                grid-row: 3;
                 justify-content: flex-end;
-                padding-top: 0;
+                padding-top: 0.08rem;
                 padding-left: 0;
-                gap: 0.25rem;
+                gap: 0.28rem;
+            }
+
+            .twitter-chip-quick-actions {
+                grid-column: 2;
+                grid-row: 2;
+                justify-content: flex-start;
+                gap: 0.28rem;
+                padding-top: 0.1rem;
             }
 
             .twitter-chip-action {
-                width: 26px;
-                height: 26px;
-                min-height: 26px;
-                background: rgba(15, 23, 42, 0.08);
-                font-size: 0.65rem;
+                width: 29px;
+                height: 29px;
+                min-height: 29px;
+                background: rgba(15, 23, 42, 0.16);
+                border: 1px solid rgba(148, 163, 184, 0.12);
+                font-size: 0.68rem;
+                box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
             }
 
             .shadowban-browser-modal .modal-content {
@@ -8038,14 +8061,6 @@ Pass: email_pwd
                                 title="${getStatusLabel(account.status)} - Cliquer pour changer">
                             <i class="fas ${getStatusIcon(account.status)}"></i>
                         </button>
-                        <button onclick="event.preventDefault(); event.stopPropagation(); checkShadowban('${account.id || account.username}', this)"
-                                data-sb-check="${account.username}"
-                                class="twitter-chip-action"
-                                style="background:rgba(99,102,241,0.15); color:#6366f1;"
-                                title="Verifier shadowban (1-clic)"><i class="fas fa-shield-halved"></i></button>
-                        <button onclick="event.preventDefault(); event.stopPropagation(); openShadowbanSiteModal('${account.username}')"
-                                class="twitter-chip-action shadowban-site-action"
-                                title="Ouvrir Twitter Shadowban"><i class="fas fa-up-right-from-square"></i></button>
                         <a href="${twitterUrl}" target="_blank" class="twitter-account-link" style="${getStatusBadgeStyle(account.status)}">
                             <i class="fab fa-twitter"></i>
                             <span class="twitter-username">${account.username}</span>
@@ -8056,6 +8071,16 @@ Pass: email_pwd
                                    title="Pas de Gmail associe"></i>
                             ` : ''}
                         </a>
+                        <div class="twitter-chip-quick-actions">
+                            <button onclick="event.preventDefault(); event.stopPropagation(); checkShadowban('${account.id || account.username}', this)"
+                                    data-sb-check="${account.username}"
+                                    class="twitter-chip-action"
+                                    style="background:rgba(99,102,241,0.15); color:#6366f1;"
+                                    title="Verifier shadowban (1-clic)"><i class="fas fa-shield-halved"></i></button>
+                            <button onclick="event.preventDefault(); event.stopPropagation(); openShadowbanSiteModal('${account.username}')"
+                                    class="twitter-chip-action shadowban-site-action"
+                                    title="Ouvrir Twitter Shadowban"><i class="fas fa-up-right-from-square"></i></button>
+                        </div>
                         <div class="twitter-chip-actions">
                             <button class="twitter-chip-action" onclick="event.preventDefault(); event.stopPropagation(); unassignTwitterAccount('${creator.id}', ${realIndex})"
                                     style="background: rgba(239, 68, 68, 0.12); color:#ef4444;" title="Retirer ce compte">
