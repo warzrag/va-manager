@@ -10,3 +10,5 @@ passwords*.json
 *_passwords*.json
 *.bak
 *.backup
+
+.env*.local

@@ -24,6 +24,7 @@
   ],
   "crons": [
     { "path": "/api/keep-alive", "schedule": "0 8 */4 * *" },
-    { "path": "/api/scan-shadowban", "schedule": "0 9 * * *" }
+    { "path": "/api/scan-shadowban", "schedule": "0 9 * * *" },
+    { "path": "/api/shadowban-report", "schedule": "10 9 * * *" }
   ]
 }

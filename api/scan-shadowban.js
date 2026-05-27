@@ -1,6 +1,8 @@
 // Cron job : scanne tous les comptes Twitter via l'API shadowban
 // Détecte les changements de statut et les stocke dans status_changes
 
+import { escapeHtml, formatStatus, sendTelegramMessage } from './_telegram.js';
+
 function cleanEnv(value) {
     return String(value || '').replace(/^\uFEFF/, '').trim().replace(/^["']|["']$/g, '');
 }
@@ -73,6 +75,17 @@ async function fetchFollowers(username) {
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+function buildStatusAlert({ username, oldStatus, newStatus, flags }) {
+    const cleanUsername = String(username || '').replace(/^@/, '');
+    const lines = [
+        'Alerte VA Manager',
+        `@${escapeHtml(cleanUsername)} : ${escapeHtml(formatStatus(oldStatus))} -> ${escapeHtml(formatStatus(newStatus))}`
+    ];
+    if (flags) lines.push(`Details : ${escapeHtml(flags)}`);
+    lines.push(`Lien : https://shadowban.yuzurisa.com/${encodeURIComponent(cleanUsername)}`);
+    return lines.join('\n');
+}
+
 export default async function handler(req, res) {
     if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
     if (getCronToken(req) !== CRON_SECRET) { res.status(401).json({ error: 'unauthorized' }); return; }
@@ -138,6 +151,16 @@ export default async function handler(req, res) {
                             flags: flags
                         })
                     });
+                    try {
+                        await sendTelegramMessage(buildStatusAlert({
+                            username: acc.username,
+                            oldStatus,
+                            newStatus,
+                            flags
+                        }));
+                    } catch (telegramError) {
+                        results.telegramError = String(telegramError?.message || telegramError);
+                    }
                     results.changed++;
                     results.changes.push({ username: acc.username, from: oldStatus, to: newStatus, flags });
                 }
