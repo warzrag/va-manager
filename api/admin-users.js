@@ -2,7 +2,7 @@
 // Nécessite un utilisateur authentifié avec role=admin dans user_metadata
 
 function cleanEnv(value) {
-    return String(value || '').replace(/^\uFEFF/, '').trim().replace(/^["']|["']$/g, '');
+    return String(value || '').replace(/^\uFEFF|^ï»¿/, '').trim().replace(/^["']|["']$/g, '').replace(/^\uFEFF|^ï»¿/, '');
 }
 
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
@@ -51,6 +51,26 @@ const ADMIN_HEADERS = {
     'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
     'Content-Type': 'application/json'
 };
+
+async function ensureOrganization({ id, name, ownerId }) {
+    if (!id || !name) return;
+    const safeId = encodeURIComponent(id);
+    const existing = await fetch(`${SUPABASE_URL}/rest/v1/organizations?id=eq.${safeId}&select=id`, {
+        headers: ADMIN_HEADERS
+    });
+    const rows = await existing.json().catch(() => []);
+    if (Array.isArray(rows) && rows.length > 0) return;
+
+    await fetch(`${SUPABASE_URL}/rest/v1/organizations`, {
+        method: 'POST',
+        headers: { ...ADMIN_HEADERS, Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({
+            id,
+            name,
+            owner_id: ownerId || null
+        })
+    });
+}
 
 export default async function handler(req, res) {
     applyCors(req, res);
@@ -138,6 +158,14 @@ export default async function handler(req, res) {
         const text = await up.text();
         let json = null;
         try { json = text ? JSON.parse(text) : null; } catch { json = text; }
+
+        if (up.ok && op === 'create' && isSuperAdmin && payload?.user_metadata?.role === 'admin') {
+            await ensureOrganization({
+                id: payload.user_metadata.organization_id,
+                name: payload.user_metadata.organization_name || payload.user_metadata.name || payload.email,
+                ownerId: json?.id
+            });
+        }
 
         // Pour un admin non-super, on ne montre que les users de son org
         if (op === 'list' && !isSuperAdmin && json?.users) {
