@@ -1738,6 +1738,15 @@
             white-space: nowrap;
         }
 
+        .analytics-metric span {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 0.1rem;
+        }
+
         .analytics-muted {
             color: #94a3b8;
             font-size: 0.78rem;
@@ -8372,8 +8381,8 @@ Pass: email_pwd
                                     <strong>${escapeHtml(item.displayUsername)}</strong>
                                     <span>${formatNumber(item.followers)} followers</span>
                                 </div>
-                                <div class="analytics-metric">${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)}</div>
-                                <div class="analytics-metric">${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)}</div>
+                                <div class="analytics-metric"><span>Aujourd'hui</span>${item.todayGain >= 0 ? '+' : ''}${formatNumber(item.todayGain)}</div>
+                                <div class="analytics-metric"><span>7 jours</span>${item.weekGain >= 0 ? '+' : ''}${formatNumber(item.weekGain)}</div>
                                 <span class="analytics-pill" style="background:${label.color};">${label.text}</span>
                             </div>`;
                     }).join('');
@@ -8385,8 +8394,8 @@ Pass: email_pwd
                                 <strong>${escapeHtml(name)}</strong>
                                 <span>${va.accounts.length} comptes - ${va.problems} a surveiller</span>
                             </div>
-                            <div class="analytics-metric">${va.todayGain >= 0 ? '+' : ''}${formatNumber(va.todayGain)}</div>
-                            <div class="analytics-metric">${va.weekGain >= 0 ? '+' : ''}${formatNumber(va.weekGain)}</div>
+                            <div class="analytics-metric"><span>Aujourd'hui</span>${va.todayGain >= 0 ? '+' : ''}${formatNumber(va.todayGain)}</div>
+                            <div class="analytics-metric"><span>7 jours</span>${va.weekGain >= 0 ? '+' : ''}${formatNumber(va.weekGain)}</div>
                             <span class="analytics-pill" style="background:${vaStatus.color};">${vaStatus.text}</span>
                         </button>
                         <div id="analytics-va-detail-${index}" class="analytics-detail">${accountsHtml}</div>
