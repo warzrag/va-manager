@@ -1,4 +1,4 @@
-const CACHE_NAME = 'va-manager-pro-v46';
+const CACHE_NAME = 'va-manager-pro-v47';
 
 const STATIC_ASSETS = [
   '/',

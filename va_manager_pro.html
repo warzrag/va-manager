@@ -10875,9 +10875,10 @@ Pass: email_pwd
         // Get latest Twitter stats
         function getLatestTwitterStats(username) {
             if (!data.twitterStats) return null;
+            const cleanUsername = String(username || '').replace(/^@/, '').toLowerCase();
             
             const accountStats = data.twitterStats.filter(stat => 
-                stat.username.toLowerCase() === username.toLowerCase()
+                String(stat.username || '').replace(/^@/, '').toLowerCase() === cleanUsername
             );
             
             if (accountStats.length === 0) return null;
@@ -14505,6 +14506,41 @@ Pass: email_pwd
                 const accountId = account?.id || creatorAccount?.id;
                 if (useSupabase && supabaseClient && accountId && accountId.includes('-')) {
                     dbUpdate('twitter_accounts', { status: newStatus }, [['id', 'eq', accountId]]);
+                }
+
+                try {
+                    const fxRes = await fetch('https://api.fxtwitter.com/' + encodeURIComponent(username), {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const fxData = await fxRes.json();
+                    const followers = fxData?.code === 200 && typeof fxData?.user?.followers === 'number'
+                        ? fxData.user.followers
+                        : null;
+                    if (typeof followers === 'number') {
+                        const today = new Date().toISOString().slice(0, 10);
+                        const statId = (crypto.randomUUID && crypto.randomUUID()) || generateId();
+                        const statEntry = {
+                            id: statId,
+                            username: username,
+                            followers: followers,
+                            date: today,
+                            created: new Date().toISOString()
+                        };
+                        if (!data.twitterStats) data.twitterStats = [];
+                        data.twitterStats.push(statEntry);
+                        if (useSupabase && statId.includes('-')) {
+                            dbInsert('twitter_stats', [{
+                                id: statId,
+                                twitter_account_id: accountId || null,
+                                username: username,
+                                followers: followers,
+                                date: today,
+                                organization_id: currentViewOrg || ORG_ID
+                            }]);
+                        }
+                    }
+                } catch (followersError) {
+                    console.warn('followers fetch failed for @' + username, followersError);
                 }
 
                 saveData();
