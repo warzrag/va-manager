@@ -5469,11 +5469,27 @@ Pass: email_pwd
         async function dbOp(payload) {
             let token = await getAuthToken();
             if (!token) return { error: 'not_authenticated' };
+            const scopedPayload = { ...payload };
+            const targetOrg = currentViewOrg || null;
+            if (targetOrg) {
+                const filters = Array.isArray(scopedPayload.filters) ? scopedPayload.filters : [];
+                const hasOrgFilter = filters.some(f => Array.isArray(f) && f[0] === 'organization_id');
+                if ((scopedPayload.action === 'select' || scopedPayload.action === 'update' || scopedPayload.action === 'delete') && !hasOrgFilter) {
+                    scopedPayload.filters = [...filters, ['organization_id', 'eq', targetOrg]];
+                }
+                if (scopedPayload.action === 'insert' || scopedPayload.action === 'upsert') {
+                    if (Array.isArray(scopedPayload.data)) {
+                        scopedPayload.data = scopedPayload.data.map(row => ({ ...row, organization_id: targetOrg }));
+                    } else if (scopedPayload.data && typeof scopedPayload.data === 'object') {
+                        scopedPayload.data = { ...scopedPayload.data, organization_id: targetOrg };
+                    }
+                }
+            }
             try {
                 let res = await fetch('/api/db', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(scopedPayload)
                 });
                 if (res.status === 401 && authClient?.auth?.refreshSession) {
                     await authClient.auth.refreshSession();
@@ -5482,7 +5498,7 @@ Pass: email_pwd
                         res = await fetch('/api/db', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify(scopedPayload)
                         });
                     }
                 }
@@ -11025,7 +11041,8 @@ Pass: email_pwd
                     twitter_account_id: acc?.id || null,
                     username: username,
                     followers: followers,
-                    date: date
+                    date: date,
+                    organization_id: currentViewOrg || ORG_ID
                 }]);
             }
 
