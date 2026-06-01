@@ -3848,6 +3848,9 @@
             <button class="nav-btn" data-page="twitter-analytics">
                 <i class="fas fa-chart-line"></i> Analytics
             </button>
+            <button class="nav-btn" data-page="va-payroll">
+                <i class="fas fa-wallet"></i> Paiement VAs
+            </button>
             <!-- Dropdown for secondary pages -->
             <div style="position:relative;" id="nav-more-container">
                 <button class="nav-btn" onclick="document.getElementById('nav-dropdown').classList.toggle('show')" style="gap:0.25rem;">
@@ -4675,6 +4678,28 @@ Pass: email_pwd
             </div>
         </div>
         
+        <div id="va-payroll-page" class="page">
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                <div>
+                    <h1 style="font-size:2rem; font-weight:800; margin:0; color:#1e293b;">Paiement VAs</h1>
+                    <p style="margin:0.35rem 0 0; color:#64748b;">Dates de gestion, absences non payées, et total dû au jour près.</p>
+                </div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <select id="payroll-period" class="form-control" style="width:auto; min-width:150px;" onchange="updateVAPayrollPage()">
+                        <option value="current-month">Ce mois</option>
+                        <option value="current-week">Cette semaine</option>
+                        <option value="all">Depuis le début</option>
+                    </select>
+                    <button class="submit-btn" style="width:auto; padding:0.75rem 1rem;" onclick="openPayrollAbsenceModal()">
+                        <i class="fas fa-calendar-minus"></i> Absence
+                    </button>
+                </div>
+            </div>
+
+            <div id="va-payroll-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem;"></div>
+            <div id="va-payroll-grid" style="display:grid; gap:1rem;"></div>
+        </div>
+
         <!-- Twitter Analytics Page -->
         <div id="twitter-analytics-page" class="page">
             <div class="analytics-shell">
@@ -5140,6 +5165,16 @@ Pass: email_pwd
         </div>
     </div>
 
+    <div id="payroll-generic-modal" class="modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2 id="payroll-generic-title">Paiement VA</h2>
+                <button type="button" class="close-btn" onclick="closeModal()" style="cursor:pointer;font-size:1.5rem;background:none;border:none;color:inherit;">×</button>
+            </div>
+            <div id="payroll-generic-content"></div>
+        </div>
+    </div>
+
     <!-- Add Subs Modal -->
     <div id="add-subs-modal" class="modal">
         <div class="modal-content">
@@ -5348,7 +5383,8 @@ Pass: email_pwd
             creators: [], // Structure pour les créatrices indépendantes
             twitterAccounts: [], // Structure pour les comptes Twitter simples
             instagramAccounts: [], // Structure pour les comptes Instagram
-            twitterStats: [] // Nouveau : statistiques hebdomadaires des followers
+            twitterStats: [], // Nouveau : statistiques hebdomadaires des followers
+            vaPayroll: { accountStarts: {}, absences: [] }
         };
         
         // ============================================================================
@@ -6739,7 +6775,8 @@ Pass: email_pwd
                 creators: [],
                 twitterAccounts: [],
                 instagramAccounts: [],
-                twitterStats: []
+                twitterStats: [],
+                vaPayroll: { accountStarts: {}, absences: [] }
             };
         }
         
@@ -7039,6 +7076,13 @@ Pass: email_pwd
             data.twitterAccounts = loadedData.twitterAccounts || [];
             data.instagramAccounts = loadedData.instagramAccounts || [];
             data.twitterStats = loadedData.twitterStats || [];
+            let localPayroll = null;
+            try {
+                localPayroll = JSON.parse(localStorage.getItem(getActiveOrgStorageKey()) || '{}')?.vaPayroll || null;
+            } catch (e) {}
+            data.vaPayroll = loadedData.vaPayroll || localPayroll || { accountStarts: {}, absences: [] };
+            if (!data.vaPayroll.accountStarts) data.vaPayroll.accountStarts = {};
+            if (!data.vaPayroll.absences) data.vaPayroll.absences = [];
 
             if (await migratePasswordsToEncryption()) {
                 console.log('Password storage migrated to AES-GCM');
@@ -7404,6 +7448,10 @@ Pass: email_pwd
             // Update financial overview when navigating to that page
             if (pageName === 'financial-overview') {
                 updateFinancialOverview();
+            }
+
+            if (pageName === 'va-payroll') {
+                updateVAPayrollPage();
             }
             
             // Update existing creators list when navigating to add-creator page
@@ -8697,6 +8745,137 @@ Pass: email_pwd
 
         const VA_WEEKLY_RATE_PER_ACCOUNT_USD = 10;
 
+        function ensureVAPayrollData() {
+            if (!data.vaPayroll) data.vaPayroll = {};
+            if (!data.vaPayroll.accountStarts) data.vaPayroll.accountStarts = {};
+            if (!Array.isArray(data.vaPayroll.absences)) data.vaPayroll.absences = [];
+            return data.vaPayroll;
+        }
+
+        function getDateKey(date = new Date()) {
+            const d = date instanceof Date ? date : new Date(date);
+            if (Number.isNaN(d.getTime())) return new Date().toISOString().slice(0, 10);
+            return d.toISOString().slice(0, 10);
+        }
+
+        function parseDateKey(dateKey) {
+            const d = new Date(`${dateKey}T00:00:00`);
+            return Number.isNaN(d.getTime()) ? null : d;
+        }
+
+        function daysBetweenInclusive(startKey, endKey) {
+            const start = parseDateKey(startKey);
+            const end = parseDateKey(endKey);
+            if (!start || !end || end < start) return 0;
+            return Math.floor((end - start) / 86400000) + 1;
+        }
+
+        function getPayrollPeriodRange(period = 'current-month') {
+            const today = new Date();
+            const end = new Date(today);
+            end.setHours(0, 0, 0, 0);
+            const start = new Date(end);
+
+            if (period === 'current-week') {
+                const day = today.getDay() || 7;
+                start.setDate(start.getDate() - day + 1);
+            } else if (period === 'all') {
+                start.setFullYear(2020, 0, 1);
+            } else {
+                start.setDate(1);
+            }
+
+            return { startKey: getDateKey(start), endKey: getDateKey(end) };
+        }
+
+        function getPayrollAccountKey(vaId, account) {
+            return `${vaId}::${account.id || account.username}`;
+        }
+
+        function collectAccountsForVA(vaId) {
+            const accounts = [];
+            (data.creators || []).forEach(creator => {
+                if (!creator.vaIds || !creator.vaIds.includes(vaId)) return;
+                (creator.accounts || []).forEach(account => {
+                    if (creator.vaIds.length > 1 && account.assignedVaId !== vaId && account.vaId !== vaId) return;
+                    accounts.push({
+                        ...account,
+                        type: 'twitter',
+                        creatorName: creator.name,
+                        displayName: account.username,
+                        key: getPayrollAccountKey(vaId, account)
+                    });
+                });
+                (creator.instagramAccounts || []).forEach(account => {
+                    if (creator.vaIds.length > 1 && account.assignedVaId !== vaId && account.vaId !== vaId) return;
+                    accounts.push({
+                        ...account,
+                        type: 'instagram',
+                        creatorName: creator.name,
+                        displayName: account.username,
+                        key: getPayrollAccountKey(vaId, account)
+                    });
+                });
+            });
+            return accounts;
+        }
+
+        function countAbsenceDaysForVA(vaId, startKey, endKey) {
+            ensureVAPayrollData();
+            const absentDays = new Set();
+            data.vaPayroll.absences
+                .filter(absence => absence.vaId === vaId)
+                .forEach(absence => {
+                    const fromKey = absence.from || absence.date;
+                    const toKey = absence.to || absence.date || fromKey;
+                    const start = parseDateKey(fromKey);
+                    const end = parseDateKey(toKey);
+                    if (!start || !end) return;
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        const key = getDateKey(d);
+                        if (key >= startKey && key <= endKey) absentDays.add(key);
+                    }
+                });
+            return absentDays.size;
+        }
+
+        function calculateVAPayrollTotal(vaId, period = 'current-month') {
+            ensureVAPayrollData();
+            const { startKey, endKey } = getPayrollPeriodRange(period);
+            const accounts = collectAccountsForVA(vaId);
+            const absenceDays = countAbsenceDaysForVA(vaId, startKey, endKey);
+            const dailyRate = VA_WEEKLY_RATE_PER_ACCOUNT_USD / 7;
+            let total = 0;
+            let grossDays = 0;
+            let paidDays = 0;
+
+            const rows = accounts.map(account => {
+                const startDate = data.vaPayroll.accountStarts[account.key] || account.created || startKey;
+                const effectiveStart = getDateKey(startDate) > startKey ? getDateKey(startDate) : startKey;
+                const days = daysBetweenInclusive(effectiveStart, endKey);
+                const accountAbsenceDays = countAbsenceDaysForVA(vaId, effectiveStart, endKey);
+                const payableDays = Math.max(0, days - Math.min(days, accountAbsenceDays));
+                const amount = payableDays * dailyRate;
+                grossDays += days;
+                paidDays += payableDays;
+                total += amount;
+                return { ...account, startDate: getDateKey(startDate), days, absenceDays: accountAbsenceDays, payableDays, amount };
+            });
+
+            return {
+                vaId,
+                accounts,
+                rows,
+                total,
+                grossDays,
+                paidDays,
+                absenceDays,
+                weeklyDue: accounts.length * VA_WEEKLY_RATE_PER_ACCOUNT_USD,
+                periodStart: startKey,
+                periodEnd: endKey
+            };
+        }
+
         function getCurrentWeekProgress() {
             const today = new Date();
             const day = today.getDay() || 7;
@@ -8972,7 +9151,7 @@ Pass: email_pwd
             });
 
             const managedAccounts = totalAccounts + totalInstagramAccounts;
-            const payroll = calculateVAPayroll(managedAccounts);
+            const payroll = calculateVAPayrollTotal(va.id, 'current-week');
 
             card.innerHTML = `
                 <div class="va-header">
@@ -8995,14 +9174,14 @@ Pass: email_pwd
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; font-size:0.82rem; color:${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'};">
                         <div style="display:flex; align-items:center; gap:0.45rem; min-width:0;">
                             <i class="fas fa-wallet" style="color:${document.body.classList.contains('dark-mode') ? '#86efac' : '#16a34a'}; font-size:0.78rem;"></i>
-                            <span style="white-space:nowrap;">VA payroll</span>
-                            <span style="color:${document.body.classList.contains('dark-mode') ? '#cbd5e1' : '#334155'}; font-weight:700; white-space:nowrap;">$${payroll.dueToDate.toFixed(2)}</span>
+                            <span style="white-space:nowrap;">Paie VA</span>
+                            <span style="color:${document.body.classList.contains('dark-mode') ? '#cbd5e1' : '#334155'}; font-weight:700; white-space:nowrap;">$${payroll.total.toFixed(2)}</span>
                             <span style="white-space:nowrap;">à ce jour</span>
                         </div>
                         <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
                             <span>${managedAccounts} compte${managedAccounts > 1 ? 's' : ''}</span>
                             <span style="opacity:0.45;">·</span>
-                            <span>${payroll.elapsedDays}/7 jours</span>
+                            <span>${payroll.paidDays} jour${payroll.paidDays > 1 ? 's' : ''} payé${payroll.paidDays > 1 ? 's' : ''}</span>
                             <span style="opacity:0.45;">·</span>
                             <span>$${payroll.weeklyDue.toFixed(2)} / semaine</span>
                         </div>
@@ -9015,6 +9194,164 @@ Pass: email_pwd
 
             return card;
         }
+
+        function updateVAPayrollPage() {
+            ensureVAPayrollData();
+            const grid = document.getElementById('va-payroll-grid');
+            const summary = document.getElementById('va-payroll-summary');
+            if (!grid || !summary) return;
+
+            const period = document.getElementById('payroll-period')?.value || 'current-month';
+            const totals = (data.vas || []).map(va => ({ va, payroll: calculateVAPayrollTotal(va.id, period) }));
+            const totalDue = totals.reduce((sum, item) => sum + item.payroll.total, 0);
+            const totalAccounts = totals.reduce((sum, item) => sum + item.payroll.accounts.length, 0);
+            const totalAbsences = totals.reduce((sum, item) => sum + item.payroll.absenceDays, 0);
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const cardBg = isDarkMode ? '#1e293b' : '#ffffff';
+            const border = isDarkMode ? 'rgba(255,255,255,0.08)' : '#e5e7eb';
+            const text = isDarkMode ? '#e2e8f0' : '#1e293b';
+            const muted = isDarkMode ? '#94a3b8' : '#64748b';
+
+            summary.innerHTML = [
+                ['Total à payer', `$${totalDue.toFixed(2)}`],
+                ['Comptes suivis', String(totalAccounts)],
+                ['Jours absents', String(totalAbsences)]
+            ].map(([label, value]) => `
+                <div style="background:${cardBg}; border:1px solid ${border}; border-radius:0.75rem; padding:1rem;">
+                    <div style="font-size:0.78rem; color:${muted}; font-weight:700; text-transform:uppercase;">${label}</div>
+                    <div style="font-size:1.5rem; font-weight:800; color:${text}; margin-top:0.25rem;">${value}</div>
+                </div>
+            `).join('');
+
+            if (!totals.length) {
+                grid.innerHTML = '<div class="no-creator">Aucun VA ajouté.</div>';
+                return;
+            }
+
+            grid.innerHTML = totals.map(({ va, payroll }) => {
+                const rows = payroll.rows.map(row => `
+                    <div style="display:grid; grid-template-columns:minmax(130px,1fr) 145px 95px 105px; gap:0.75rem; align-items:center; padding:0.65rem 0; border-top:1px solid ${border};">
+                        <div style="min-width:0;">
+                            <strong style="color:${text};">${escapeHtml(row.displayName || '')}</strong>
+                            <div style="font-size:0.75rem; color:${muted};">${escapeHtml(row.creatorName || '')} · ${row.type === 'instagram' ? 'Instagram' : 'Twitter'}</div>
+                        </div>
+                        <input type="date" value="${row.startDate}" onchange="savePayrollAccountStart('${encodeURIComponent(row.key)}', this.value)" class="form-control" style="padding:0.45rem 0.55rem; font-size:0.82rem;">
+                        <div style="font-size:0.82rem; color:${muted};">${row.payableDays} j payés</div>
+                        <div style="font-weight:800; color:#16a34a; text-align:right;">$${row.amount.toFixed(2)}</div>
+                    </div>
+                `).join('');
+
+                const absenceList = (data.vaPayroll.absences || []).filter(a => a.vaId === va.id).map(absence => `
+                    <span style="display:inline-flex; align-items:center; gap:0.35rem; padding:0.25rem 0.5rem; border-radius:999px; background:${isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.08)'}; color:#ef4444; font-size:0.75rem;">
+                        ${absence.from}${absence.to && absence.to !== absence.from ? ` → ${absence.to}` : ''}
+                        <button onclick="deletePayrollAbsence('${absence.id}')" title="Supprimer" style="border:none; background:transparent; color:#ef4444; cursor:pointer; padding:0;">×</button>
+                    </span>
+                `).join('');
+
+                return `
+                    <div style="background:${cardBg}; border:1px solid ${border}; border-radius:0.875rem; padding:1rem 1.15rem;">
+                        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+                            <div>
+                                <h3 style="margin:0; color:${text}; font-size:1.1rem;">${escapeHtml(va.name)}</h3>
+                                <div style="margin-top:0.25rem; color:${muted}; font-size:0.85rem;">${payroll.accounts.length} compte${payroll.accounts.length > 1 ? 's' : ''} · ${payroll.absenceDays} jour${payroll.absenceDays > 1 ? 's' : ''} absent${payroll.absenceDays > 1 ? 's' : ''}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:1.45rem; font-weight:900; color:#16a34a;">$${payroll.total.toFixed(2)}</div>
+                                <div style="font-size:0.75rem; color:${muted};">à payer</div>
+                            </div>
+                        </div>
+                        ${absenceList ? `<div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem;">${absenceList}</div>` : ''}
+                        ${rows || `<div style="padding:1rem 0; color:${muted}; border-top:1px solid ${border};">Aucun compte assigné à ce VA.</div>`}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function savePayrollAccountStart(accountKey, dateValue) {
+            ensureVAPayrollData();
+            accountKey = decodeURIComponent(accountKey);
+            if (dateValue) data.vaPayroll.accountStarts[accountKey] = dateValue;
+            saveData();
+        }
+
+        function openPayrollAbsenceModal() {
+            ensureVAPayrollData();
+            const vaOptions = (data.vas || []).map(va => `<option value="${va.id}">${escapeHtml(va.name)}</option>`).join('');
+            const today = getDateKey();
+            const vaId = data.vas?.[0]?.id || '';
+            const html = `
+                <div style="display:grid; gap:0.85rem;">
+                    <div>
+                        <label>VA</label>
+                        <select id="payroll-absence-va" class="form-control">${vaOptions}</select>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                        <div>
+                            <label>Du</label>
+                            <input id="payroll-absence-from" type="date" class="form-control" value="${today}">
+                        </div>
+                        <div>
+                            <label>Au</label>
+                            <input id="payroll-absence-to" type="date" class="form-control" value="${today}">
+                        </div>
+                    </div>
+                    <div>
+                        <label>Raison</label>
+                        <input id="payroll-absence-reason" class="form-control" placeholder="Téléphone, imprévu, absence...">
+                    </div>
+                    <button class="submit-btn" onclick="savePayrollAbsence()">Enregistrer l'absence</button>
+                </div>
+            `;
+            showPayrollGenericModal('Absence non payée', html);
+            const select = document.getElementById('payroll-absence-va');
+            if (select && vaId) select.value = vaId;
+        }
+
+        function showPayrollGenericModal(title, html) {
+            const modal = document.getElementById('payroll-generic-modal');
+            const titleEl = document.getElementById('payroll-generic-title');
+            const contentEl = document.getElementById('payroll-generic-content');
+            if (!modal || !titleEl || !contentEl) return;
+            titleEl.textContent = title;
+            contentEl.innerHTML = html;
+            modal.classList.add('show');
+        }
+
+        function savePayrollAbsence() {
+            ensureVAPayrollData();
+            const vaId = document.getElementById('payroll-absence-va')?.value;
+            const from = document.getElementById('payroll-absence-from')?.value;
+            const to = document.getElementById('payroll-absence-to')?.value || from;
+            const reason = document.getElementById('payroll-absence-reason')?.value || '';
+            if (!vaId || !from) {
+                alert('Choisis un VA et une date de début.');
+                return;
+            }
+            data.vaPayroll.absences.push({
+                id: 'absence_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+                vaId,
+                from,
+                to,
+                reason,
+                created: new Date().toISOString()
+            });
+            closeModal();
+            saveData();
+            updateVAPayrollPage();
+        }
+
+        function deletePayrollAbsence(absenceId) {
+            ensureVAPayrollData();
+            data.vaPayroll.absences = data.vaPayroll.absences.filter(absence => absence.id !== absenceId);
+            saveData();
+            updateVAPayrollPage();
+        }
+
+        window.updateVAPayrollPage = updateVAPayrollPage;
+        window.openPayrollAbsenceModal = openPayrollAbsenceModal;
+        window.savePayrollAbsence = savePayrollAbsence;
+        window.deletePayrollAbsence = deletePayrollAbsence;
+        window.savePayrollAccountStart = savePayrollAccountStart;
 
         // Update Gmail accounts list
         function updateGmailAccountsList() {
