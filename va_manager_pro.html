@@ -5663,11 +5663,11 @@ Pass: email_pwd
         function buildTwitterNotesForSave(account) {
             const cleanNotes = String(account.notes || '')
                 .replace(/\s*\[2FA:[^\]]*\]/g, '')
-                .replace(/\s*\[STOCK:(available|shadowban|unshadow)\]/g, '')
+                .replace(/\s*\[STOCK:(available|active|shadowban|unshadow)\]/g, '')
                 .trim();
             const twoFaFromNotes = String(account.notes || '').match(/\[2FA:([^\]]+)\]/)?.[1] || '';
             const twoFa = String(account.twoFaSecret || twoFaFromNotes).trim();
-            const stock = ['available', 'shadowban', 'unshadow'].includes(account.stockCategory) ? account.stockCategory : '';
+            const stock = ['available', 'active', 'shadowban', 'unshadow'].includes(account.stockCategory) ? account.stockCategory : '';
             const tags = [twoFa ? `[2FA:${twoFa}]` : '', stock ? `[STOCK:${stock}]` : ''].filter(Boolean).join('');
             return tags ? `${tags}${cleanNotes ? ' ' + cleanNotes : ''}` : (cleanNotes || null);
         }
@@ -5818,10 +5818,10 @@ Pass: email_pwd
                         twoFaSecret = twoFaMatch[1];
                         notes = notes.replace(/\[2FA:[^\]]*\]/, '');
                     }
-                    const stockMatch = notes.match(/\[STOCK:(available|shadowban|unshadow)\]/);
+                    const stockMatch = notes.match(/\[STOCK:(available|active|shadowban|unshadow)\]/);
                     const stockCategory = stockMatch ? stockMatch[1] : '';
                     if (stockMatch) {
-                        notes = notes.replace(/\[STOCK:(available|shadowban|unshadow)\]/, '');
+                        notes = notes.replace(/\[STOCK:(available|active|shadowban|unshadow)\]/, '');
                     }
                     return {
                         id: t.id,
@@ -7849,6 +7849,7 @@ Pass: email_pwd
             if (!name) return null;
             if (name.includes('shadow') && !name.includes('unshadow')) return 'shadowban';
             if (name.includes('unshadow') || name.includes('un shadow')) return 'unshadow';
+            if (name.includes('actif') || name.includes('active')) return 'active';
             if (name.includes('dispo') || name.includes('available') || name.includes('disponible')) return 'available';
             return null;
         }
@@ -8781,6 +8782,7 @@ Pass: email_pwd
         function collectAccountStockBuckets() {
             const buckets = {
                 available: { title: 'Comptes disponibles', icon: 'fa-box-open', color: '#14b8a6', accounts: [] },
+                active: { title: 'Comptes actifs', icon: 'fa-signal', color: '#3b82f6', accounts: [] },
                 shadowban: { title: 'Comptes shadowban', icon: 'fa-eye-slash', color: '#f59e0b', accounts: [] },
                 unshadow: { title: 'Comptes unshadow', icon: 'fa-rotate', color: '#22c55e', accounts: [] }
             };
@@ -8841,6 +8843,15 @@ Pass: email_pwd
                     soft: isDarkMode ? 'rgba(20,184,166,0.14)' : '#ecfeff',
                     line: isDarkMode ? 'rgba(20,184,166,0.36)' : 'rgba(20,184,166,0.28)',
                     bg: isDarkMode ? 'linear-gradient(145deg,#10201f,#171b20 58%,#111827)' : 'linear-gradient(145deg,#f0fdfa,#ffffff 62%,#ecfeff)'
+                },
+                active: {
+                    subtitle: 'Comptes utilisés sur Twitter',
+                    signal: 'ACTIF',
+                    icon: 'fa-signal',
+                    accent: '#3b82f6',
+                    soft: isDarkMode ? 'rgba(59,130,246,0.14)' : '#eff6ff',
+                    line: isDarkMode ? 'rgba(59,130,246,0.36)' : 'rgba(59,130,246,0.28)',
+                    bg: isDarkMode ? 'linear-gradient(145deg,#101b2e,#171b20 58%,#111827)' : 'linear-gradient(145deg,#eff6ff,#ffffff 62%,#dbeafe)'
                 },
                 shadowban: {
                     subtitle: 'Comptes bloqués à traiter',
@@ -8927,6 +8938,7 @@ Pass: email_pwd
                         ${followersDisplay}
                         <select onchange="moveAccountToStockCategory('${encodeURIComponent(account.key)}', this.value)" title="Changer de carte" style="border:1px solid ${visual.line}; border-radius:999px; background:${visual.soft}; color:${visual.accent}; font-size:0.7rem; font-weight:800; max-width:82px; padding:0.16rem 0.28rem;">
                             <option value="available" ${key === 'available' ? 'selected' : ''}>Dispo</option>
+                            <option value="active" ${key === 'active' ? 'selected' : ''}>Actif</option>
                             <option value="shadowban" ${key === 'shadowban' ? 'selected' : ''}>Shadow</option>
                             <option value="unshadow" ${key === 'unshadow' ? 'selected' : ''}>Unshadow</option>
                             <option value="">Retirer</option>
@@ -9009,7 +9021,7 @@ Pass: email_pwd
         }
 
         function markAccountStockStatus(accountRef, username, stockCategory, source = 'scan') {
-            if (!['shadowban', 'unshadow'].includes(stockCategory)) return false;
+            if (!['active', 'shadowban', 'unshadow'].includes(stockCategory)) return false;
             const normalizedUsername = String(username || accountRef?.username || '').replace(/^@/, '');
             if (!normalizedUsername) return false;
             const status = stockCategory === 'shadowban' ? 'shadowban' : 'active';
@@ -9067,7 +9079,7 @@ Pass: email_pwd
 
         function updateAccountStockCategory(accountKey, category) {
             const decodedKey = decodeURIComponent(accountKey);
-            const normalized = ['available', 'shadowban', 'unshadow'].includes(category) ? category : '';
+            const normalized = ['available', 'active', 'shadowban', 'unshadow'].includes(category) ? category : '';
             let changed = false;
             const apply = (account) => {
                 if (!account) return;
@@ -9104,6 +9116,7 @@ Pass: email_pwd
                         <label>Carte</label>
                         <select id="stock-add-category" class="form-control">
                             <option value="available" ${defaultCategory === 'available' ? 'selected' : ''}>Comptes disponibles</option>
+                            <option value="active" ${defaultCategory === 'active' ? 'selected' : ''}>Comptes actifs</option>
                             <option value="shadowban" ${defaultCategory === 'shadowban' ? 'selected' : ''}>Comptes shadowban</option>
                             <option value="unshadow" ${defaultCategory === 'unshadow' ? 'selected' : ''}>Comptes unshadow</option>
                         </select>
