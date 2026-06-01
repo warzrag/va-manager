@@ -8883,24 +8883,26 @@ Pass: email_pwd
                 });
                 const visibleAccounts = isExpanded ? sortedAccounts : sortedAccounts.slice(0, 8);
                 const hiddenCount = Math.max(0, bucket.accounts.length - 8);
-                const pendingUnshadow = key === 'unshadow' ? getPendingUnshadowNotices().filter(notice => {
+                const pendingNotices = ['shadowban', 'unshadow'].includes(key) ? getPendingStockNotices(key).filter(notice => {
                     return bucket.accounts.some(account => {
                         const noticeUsername = String(notice.username || '').replace(/^@/, '').toLowerCase();
                         const accountUsername = String(account.username || '').replace(/^@/, '').toLowerCase();
                         return notice.accountKey === getAccountStockKey(account) || noticeUsername === accountUsername;
                     });
                 }) : [];
-                const noticeHtml = pendingUnshadow.length ? `
+                const noticeAccent = key === 'shadowban' ? '#f97316' : '#22c55e';
+                const noticeText = key === 'shadowban' ? 'est passé shadowban' : 'est unshadow';
+                const noticeHtml = pendingNotices.length ? `
                     <div style="display:grid; gap:0.45rem; margin-bottom:0.85rem;">
-                        ${pendingUnshadow.slice(0, 4).map(notice => `
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.62rem 0.72rem; border-radius:0.8rem; background:rgba(34,197,94,0.16); border:1px solid rgba(34,197,94,0.36);">
+                        ${pendingNotices.slice(0, 4).map(notice => `
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.62rem 0.72rem; border-radius:0.8rem; background:${noticeAccent}24; border:1px solid ${noticeAccent}5c;">
                                 <span style="display:inline-flex; align-items:center; gap:0.45rem; color:${text}; font-size:0.78rem; font-weight:900;">
-                                    <i class="fas fa-bell" style="color:#22c55e;"></i>${notice.username} est unshadow
+                                    <i class="fas fa-bell" style="color:${noticeAccent};"></i>${notice.username} ${noticeText}
                                 </span>
-                                <button onclick="acknowledgeUnshadowNotice('${notice.id}')" title="Confirmer que c'est vu" style="border:none; border-radius:999px; background:#22c55e; color:white; cursor:pointer; font-size:0.72rem; font-weight:900; padding:0.38rem 0.58rem;">Vu</button>
+                                <button onclick="acknowledgeStockNotice('${notice.id}')" title="Confirmer que c'est vu" style="border:none; border-radius:999px; background:${noticeAccent}; color:white; cursor:pointer; font-size:0.72rem; font-weight:900; padding:0.38rem 0.58rem;">Vu</button>
                             </div>
                         `).join('')}
-                        ${pendingUnshadow.length > 4 ? `<div style="color:${muted}; font-size:0.76rem; font-weight:800;">+${pendingUnshadow.length - 4} notification${pendingUnshadow.length - 4 > 1 ? 's' : ''}</div>` : ''}
+                        ${pendingNotices.length > 4 ? `<div style="color:${muted}; font-size:0.76rem; font-weight:800;">+${pendingNotices.length - 4} notification${pendingNotices.length - 4 > 1 ? 's' : ''}</div>` : ''}
                     </div>
                 ` : '';
                 const preview = visibleAccounts.map(account => {
@@ -8994,11 +8996,11 @@ Pass: email_pwd
             return String(account?.id || account?.username || '').toLowerCase();
         }
 
-        function getPendingUnshadowNotices() {
-            return ensureAccountStockNotices().filter(notice => notice.type === 'unshadow' && !notice.acknowledgedAt);
+        function getPendingStockNotices(type) {
+            return ensureAccountStockNotices().filter(notice => notice.type === type && !notice.acknowledgedAt);
         }
 
-        function acknowledgeUnshadowNotice(noticeId) {
+        function acknowledgeStockNotice(noticeId) {
             const notice = ensureAccountStockNotices().find(item => item.id === noticeId);
             if (!notice) return;
             notice.acknowledgedAt = new Date().toISOString();
@@ -9006,9 +9008,11 @@ Pass: email_pwd
             updateAccountStockCards();
         }
 
-        function markAccountAsUnshadowed(accountRef, username, source = 'scan') {
+        function markAccountStockStatus(accountRef, username, stockCategory, source = 'scan') {
+            if (!['shadowban', 'unshadow'].includes(stockCategory)) return false;
             const normalizedUsername = String(username || accountRef?.username || '').replace(/^@/, '');
             if (!normalizedUsername) return false;
+            const status = stockCategory === 'shadowban' ? 'shadowban' : 'active';
             const matchAccount = (account) => {
                 if (!account) return false;
                 const accountUsername = String(account.username || '').replace(/^@/, '').toLowerCase();
@@ -9019,8 +9023,8 @@ Pass: email_pwd
             let changed = false;
             const apply = (account) => {
                 if (!matchAccount(account)) return;
-                account.status = 'active';
-                account.stockCategory = 'unshadow';
+                account.status = status;
+                account.stockCategory = stockCategory;
                 changed = true;
             };
             (data.creators || []).forEach(creator => (creator.accounts || []).forEach(apply));
@@ -9028,11 +9032,11 @@ Pass: email_pwd
 
             const notices = ensureAccountStockNotices();
             const key = getAccountStockKey(accountRef) || normalizedUsername.toLowerCase();
-            const existing = notices.find(notice => notice.type === 'unshadow' && !notice.acknowledgedAt && (notice.accountKey === key || String(notice.username || '').replace(/^@/, '').toLowerCase() === normalizedUsername.toLowerCase()));
+            const existing = notices.find(notice => notice.type === stockCategory && !notice.acknowledgedAt && (notice.accountKey === key || String(notice.username || '').replace(/^@/, '').toLowerCase() === normalizedUsername.toLowerCase()));
             if (!existing) {
                 notices.unshift({
                     id: generateUuid(),
-                    type: 'unshadow',
+                    type: stockCategory,
                     accountKey: key,
                     username: normalizedUsername.startsWith('@') ? normalizedUsername : '@' + normalizedUsername,
                     source,
@@ -9123,7 +9127,7 @@ Pass: email_pwd
         window.moveAccountToStockCategory = moveAccountToStockCategory;
         window.openStockAddModal = openStockAddModal;
         window.saveStockAddModal = saveStockAddModal;
-        window.acknowledgeUnshadowNotice = acknowledgeUnshadowNotice;
+        window.acknowledgeStockNotice = acknowledgeStockNotice;
 
         const accountSortModes = {};
 
@@ -15545,9 +15549,12 @@ Pass: email_pwd
                 const banned   = changes.filter(c => c.new_status === 'banned');
                 const shadow   = changes.filter(c => c.new_status === 'shadowban');
                 unshadow.forEach(change => {
-                    markAccountAsUnshadowed({ id: change.account_id || change.twitter_account_id, username: change.username }, change.username, 'auto-scan');
+                    markAccountStockStatus({ id: change.account_id || change.twitter_account_id, username: change.username }, change.username, 'unshadow', 'auto-scan');
                 });
-                if (unshadow.length > 0) {
+                shadow.forEach(change => {
+                    markAccountStockStatus({ id: change.account_id || change.twitter_account_id, username: change.username }, change.username, 'shadowban', 'auto-scan');
+                });
+                if (unshadow.length > 0 || shadow.length > 0) {
                     saveData();
                     updateAccountStockCards();
                 }
@@ -15783,7 +15790,9 @@ Pass: email_pwd
                 if (account) account.status = newStatus;
                 if (creatorAccount) creatorAccount.status = newStatus;
                 if (newStatus === 'active' && previousStatus === 'shadowban') {
-                    markAccountAsUnshadowed(account || creatorAccount, username, 'manual-check');
+                    markAccountStockStatus(account || creatorAccount, username, 'unshadow', 'manual-check');
+                } else if (newStatus === 'shadowban' && previousStatus !== 'shadowban') {
+                    markAccountStockStatus(account || creatorAccount, username, 'shadowban', 'manual-check');
                 }
 
                 const accountId = account?.id || creatorAccount?.id;
