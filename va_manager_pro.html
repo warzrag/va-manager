@@ -8942,6 +8942,9 @@ Pass: email_pwd
                             <span style="max-width:122px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${account.username}</span>
                         </a>
                         ${followersDisplay}
+                        <button onclick="event.preventDefault(); event.stopPropagation(); checkShadowban('${account.id || account.key}', this)" draggable="false" ondragstart="event.preventDefault()" title="Vérifier shadowban" style="display:inline-flex; align-items:center; justify-content:center; width:1.65rem; height:1.65rem; border:1px solid ${visual.line}; border-radius:999px; background:${visual.soft}; color:${visual.accent}; cursor:pointer; font-size:0.76rem;">
+                            <i class="fas fa-shield-halved"></i>
+                        </button>
                         <select draggable="false" ondragstart="event.preventDefault()" onchange="moveAccountToStockCategory('${encodedKey}', this.value)" title="Changer de carte" style="border:1px solid ${visual.line}; border-radius:999px; background:${visual.soft}; color:${visual.accent}; font-size:0.7rem; font-weight:800; max-width:82px; padding:0.16rem 0.28rem;">
                             <option value="available" ${key === 'available' ? 'selected' : ''}>Dispo</option>
                             <option value="active" ${key === 'active' ? 'selected' : ''}>Actif</option>
