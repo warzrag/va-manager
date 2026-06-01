@@ -8776,7 +8776,10 @@ Pass: email_pwd
                 if (!key || seen.has(`${bucketKey}:${key}`)) return;
                 seen.add(`${bucketKey}:${key}`);
                 buckets[bucketKey].accounts.push({
+                    id: account.id || '',
+                    key,
                     username: account.username || account.displayName || '',
+                    stockCategory: account.stockCategory || '',
                     status: account.status || 'active',
                     creatorName: creator?.name || 'Sans créatrice',
                     vaName: va?.name || ''
@@ -8787,10 +8790,10 @@ Pass: email_pwd
                 (creator.accounts || []).forEach(account => {
                     const va = (data.vas || []).find(v => v.id === (account.assignedVaId || account.vaId));
                     const stockBucket = getVAStockBucket(va);
-                    if (stockBucket) add(stockBucket, account, creator, va);
-                    if (!account.assignedVaId && !account.vaId) add('available', account, creator, va);
-                    if (account.status === 'shadowban') add('shadowban', account, creator, va);
-                    if (account.status === 'active' && stockBucket === 'unshadow') add('unshadow', account, creator, va);
+                    if (account.stockCategory) add(account.stockCategory, account, creator, va);
+                    else if (stockBucket) add(stockBucket, account, creator, va);
+                    else if (!account.assignedVaId && !account.vaId) add('available', account, creator, va);
+                    else if (account.status === 'shadowban') add('shadowban', account, creator, va);
                 });
             });
 
@@ -8799,9 +8802,10 @@ Pass: email_pwd
                 if (alreadyLinked) return;
                 const va = (data.vas || []).find(v => v.id === (account.assignedVaId || account.vaId));
                 const stockBucket = getVAStockBucket(va);
-                if (stockBucket) add(stockBucket, account, null, va);
-                if (!account.assignedVaId && !account.vaId) add('available', account, null, va);
-                if (account.status === 'shadowban') add('shadowban', account, null, va);
+                if (account.stockCategory) add(account.stockCategory, account, null, va);
+                else if (stockBucket) add(stockBucket, account, null, va);
+                else if (!account.assignedVaId && !account.vaId) add('available', account, null, va);
+                else if (account.status === 'shadowban') add('shadowban', account, null, va);
             });
 
             return buckets;
@@ -8822,8 +8826,14 @@ Pass: email_pwd
 
             target.innerHTML = Object.entries(buckets).map(([key, bucket]) => {
                 const preview = bucket.accounts.slice(0, 8).map(account => `
-                    <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.28rem 0.55rem; border-radius:999px; background:${bucket.color}18; color:${bucket.color}; border:1px solid ${bucket.color}30; font-size:0.76rem; font-weight:700;">
+                    <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.28rem 0.45rem 0.28rem 0.55rem; border-radius:999px; background:${bucket.color}18; color:${bucket.color}; border:1px solid ${bucket.color}30; font-size:0.76rem; font-weight:700;">
                         <i class="fab fa-twitter"></i>${account.username}
+                        <select onchange="moveAccountToStockCategory('${encodeURIComponent(account.key)}', this.value)" title="Changer de carte" style="border:none; background:transparent; color:inherit; font-size:0.72rem; font-weight:700; max-width:78px;">
+                            <option value="available" ${key === 'available' ? 'selected' : ''}>Dispo</option>
+                            <option value="shadowban" ${key === 'shadowban' ? 'selected' : ''}>Shadow</option>
+                            <option value="unshadow" ${key === 'unshadow' ? 'selected' : ''}>Unshadow</option>
+                            <option value="">Retirer</option>
+                        </select>
                     </span>
                 `).join('');
                 return `
@@ -8838,7 +8848,10 @@ Pass: email_pwd
                                     <div style="font-size:0.78rem; color:${muted};">Carte métier, pas un VA</div>
                                 </div>
                             </div>
-                            <div style="font-size:1.55rem; font-weight:900; color:${bucket.color};">${bucket.accounts.length}</div>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <button onclick="openStockAddModal('${key}')" title="Ajouter un compte à cette carte" style="width:32px; height:32px; border:none; border-radius:50%; background:${bucket.color}20; color:${bucket.color}; cursor:pointer; font-weight:900;">+</button>
+                                <div style="font-size:1.55rem; font-weight:900; color:${bucket.color};">${bucket.accounts.length}</div>
+                            </div>
                         </div>
                         <div style="display:flex; flex-wrap:wrap; gap:0.45rem; min-height:34px;">
                             ${preview || `<span style="color:${muted}; font-size:0.85rem;">Aucun compte</span>`}
@@ -8853,6 +8866,88 @@ Pass: email_pwd
             renderAccountStockCards('account-stock-grid', 'account-stock-count');
             renderAccountStockCards('account-stock-list-display', 'account-stock-list-count');
         }
+
+        function getAllManageableTwitterAccounts() {
+            const map = new Map();
+            const add = (account, creatorName = 'Sans créatrice') => {
+                if (!account?.username) return;
+                const key = account.id || account.username;
+                if (!map.has(key)) {
+                    map.set(key, {
+                        key,
+                        username: account.username,
+                        creatorName,
+                        stockCategory: account.stockCategory || ''
+                    });
+                }
+            };
+            (data.creators || []).forEach(creator => (creator.accounts || []).forEach(account => add(account, creator.name)));
+            (data.twitterAccounts || []).forEach(account => add(account));
+            return Array.from(map.values()).sort((a, b) => String(a.username).localeCompare(String(b.username)));
+        }
+
+        function updateAccountStockCategory(accountKey, category) {
+            const decodedKey = decodeURIComponent(accountKey);
+            const normalized = ['available', 'shadowban', 'unshadow'].includes(category) ? category : '';
+            let changed = false;
+            const apply = (account) => {
+                if (!account) return;
+                const key = account.id || account.username;
+                if (key !== decodedKey) return;
+                if (normalized) account.stockCategory = normalized;
+                else delete account.stockCategory;
+                changed = true;
+            };
+
+            (data.creators || []).forEach(creator => (creator.accounts || []).forEach(apply));
+            (data.twitterAccounts || []).forEach(apply);
+            return changed;
+        }
+
+        function moveAccountToStockCategory(accountKey, category) {
+            if (!updateAccountStockCategory(accountKey, category)) return;
+            saveData();
+            updateAccountStockCards();
+        }
+
+        function openStockAddModal(defaultCategory = 'available') {
+            const accounts = getAllManageableTwitterAccounts();
+            const options = accounts.map(account => `
+                <option value="${encodeURIComponent(account.key)}">${escapeHtml(account.username)} · ${escapeHtml(account.creatorName)}</option>
+            `).join('');
+            const html = `
+                <div style="display:grid; gap:0.85rem;">
+                    <div>
+                        <label>Compte</label>
+                        <select id="stock-add-account" class="form-control">${options}</select>
+                    </div>
+                    <div>
+                        <label>Carte</label>
+                        <select id="stock-add-category" class="form-control">
+                            <option value="available" ${defaultCategory === 'available' ? 'selected' : ''}>Comptes disponibles</option>
+                            <option value="shadowban" ${defaultCategory === 'shadowban' ? 'selected' : ''}>Comptes shadowban</option>
+                            <option value="unshadow" ${defaultCategory === 'unshadow' ? 'selected' : ''}>Comptes unshadow</option>
+                        </select>
+                    </div>
+                    <button class="submit-btn" onclick="saveStockAddModal()">Ajouter à la carte</button>
+                </div>
+            `;
+            showPayrollGenericModal('Ranger un compte', html);
+        }
+
+        function saveStockAddModal() {
+            const accountKey = document.getElementById('stock-add-account')?.value;
+            const category = document.getElementById('stock-add-category')?.value;
+            if (!accountKey || !category) return;
+            updateAccountStockCategory(accountKey, category);
+            closeModal();
+            saveData();
+            updateAccountStockCards();
+        }
+
+        window.moveAccountToStockCategory = moveAccountToStockCategory;
+        window.openStockAddModal = openStockAddModal;
+        window.saveStockAddModal = saveStockAddModal;
 
         const accountSortModes = {};
 
