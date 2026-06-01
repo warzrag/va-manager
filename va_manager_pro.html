@@ -3964,6 +3964,17 @@
             <div class="va-grid" id="va-grid">
                 <!-- VA cards will be dynamically inserted here -->
             </div>
+
+            <div style="margin-top:2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="margin:0; font-size:1.35rem; font-weight:700; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fas fa-layer-group" style="color:#14b8a6;"></i>
+                        Cartes comptes
+                    </h3>
+                    <span id="account-stock-count" style="background:rgba(20,184,166,0.12); color:#0f766e; padding:0.45rem 0.85rem; border-radius:999px; font-weight:700; font-size:0.82rem;">0 compte</span>
+                </div>
+                <div id="account-stock-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem;"></div>
+            </div>
         </div>
 
         <!-- Add VA Page -->
@@ -3995,6 +4006,19 @@
                 <div id="va-list-display" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
                     <!-- VAs will be dynamically inserted here -->
                 </div>
+            </div>
+
+            <div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+                <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-color);">
+                        <i class="fas fa-layer-group" style="color: #14b8a6; margin-right: 0.5rem;"></i>
+                        Cartes comptes
+                    </h2>
+                    <span id="account-stock-list-count" style="background: rgba(20,184,166,0.14); color: #0f766e; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 700; font-size: 0.875rem;">
+                        0 compte
+                    </span>
+                </div>
+                <div id="account-stock-list-display" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;"></div>
             </div>
         </div>
 
@@ -7800,6 +7824,27 @@ Pass: email_pwd
         }
         
         // Render VA entity
+        function normalizeVAName(name) {
+            return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+        }
+
+        function getVAStockBucket(va) {
+            const name = normalizeVAName(va?.name);
+            if (!name) return null;
+            if (name.includes('shadow') && !name.includes('unshadow')) return 'shadowban';
+            if (name.includes('unshadow') || name.includes('un shadow')) return 'unshadow';
+            if (name.includes('dispo') || name.includes('available') || name.includes('disponible')) return 'available';
+            return null;
+        }
+
+        function isStockVA(va) {
+            return Boolean(getVAStockBucket(va));
+        }
+
+        function getHumanVAs() {
+            return (data.vas || []).filter(va => !isStockVA(va));
+        }
+
         function renderVAEntity(va, viewMode, options) {
             const creators = data.creators.filter(c => c.vaIds && c.vaIds.includes(va.id));
             const totalAccounts = creators.reduce((sum, c) => sum + (c.accounts ? c.accounts.length : 0), 0);
@@ -7860,7 +7905,7 @@ Pass: email_pwd
         function calculateGlobalStatistics() {
             console.log('    ?? CalculateGlobalStatistics - Début...');
             const stats = {
-                vas: data.vas.length,
+                vas: getHumanVAs().length,
                 creators: data.creators ? data.creators.length : 0,
                 twitterTotal: 0,
                 gmailTotal: data.gmailAccounts.length,
@@ -7915,6 +7960,7 @@ Pass: email_pwd
             updateCreatorsStats();
             console.log('    - Mise à jour grille VAs...');
             updateVAGrid();
+            updateAccountStockCards();
             console.log('    - Mise à jour liste VAs (page Add VA)...');
             updateVAListDisplay();
             console.log('    - Mise à jour selects VAs...');
@@ -7951,9 +7997,10 @@ Pass: email_pwd
             const isDarkMode = document.body.classList.contains('dark-mode');
 
             // Update count
-            countEl.textContent = `${data.vas.length} VA${data.vas.length > 1 ? 's' : ''}`;
+            const humanVAs = getHumanVAs();
+            countEl.textContent = `${humanVAs.length} VA${humanVAs.length > 1 ? 's' : ''}`;
 
-            if (data.vas.length === 0) {
+            if (humanVAs.length === 0) {
                 container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">
                         <i class="fas fa-user-slash" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
@@ -7965,7 +8012,7 @@ Pass: email_pwd
             }
 
             // Generate VA cards
-            container.innerHTML = data.vas.map(va => {
+            container.innerHTML = humanVAs.map(va => {
                 // Count creators and accounts for this VA
                 let creatorsCount = 0;
                 let twitterCount = 0;
@@ -8676,12 +8723,13 @@ Pass: email_pwd
             const grid = document.getElementById('va-grid');
             grid.innerHTML = '';
 
-            data.vas.forEach(va => {
+            const humanVAs = getHumanVAs();
+            humanVAs.forEach(va => {
                 const card = createVACard(va);
                 grid.appendChild(card);
             });
 
-            if (data.vas.length === 0) {
+            if (humanVAs.length === 0) {
                 grid.innerHTML = '<div class="no-creator">Aucun VA ajouté. Commencez par ajouter un VA!</div>';
             }
 
@@ -8691,7 +8739,7 @@ Pass: email_pwd
         function updateVAQuickNav() {
             const nav = document.getElementById('va-quick-nav');
             if (!nav) return;
-            const vas = data.vas || [];
+            const vas = getHumanVAs();
             nav.innerHTML = vas.map(va => `
                 <button type="button" class="va-quick-btn" onclick="scrollToVACard('${va.id}')">
                     <i class="fas fa-user"></i>
@@ -8712,6 +8760,97 @@ Pass: email_pwd
             const list = button.closest('.twitter-accounts');
             if (!list) return;
             list.classList.toggle('expanded');
+        }
+
+        function collectAccountStockBuckets() {
+            const buckets = {
+                available: { title: 'Comptes disponibles', icon: 'fa-box-open', color: '#14b8a6', accounts: [] },
+                shadowban: { title: 'Comptes shadowban', icon: 'fa-eye-slash', color: '#f59e0b', accounts: [] },
+                unshadow: { title: 'Comptes unshadow', icon: 'fa-rotate', color: '#22c55e', accounts: [] }
+            };
+            const seen = new Set();
+            const add = (bucketKey, account, creator, va) => {
+                if (!buckets[bucketKey] || !account) return;
+                const key = account.id || account.username;
+                if (!key || seen.has(`${bucketKey}:${key}`)) return;
+                seen.add(`${bucketKey}:${key}`);
+                buckets[bucketKey].accounts.push({
+                    username: account.username || account.displayName || '',
+                    status: account.status || 'active',
+                    creatorName: creator?.name || 'Sans créatrice',
+                    vaName: va?.name || ''
+                });
+            };
+
+            (data.creators || []).forEach(creator => {
+                (creator.accounts || []).forEach(account => {
+                    const va = (data.vas || []).find(v => v.id === (account.assignedVaId || account.vaId));
+                    const stockBucket = getVAStockBucket(va);
+                    if (stockBucket) add(stockBucket, account, creator, va);
+                    if (!account.assignedVaId && !account.vaId) add('available', account, creator, va);
+                    if (account.status === 'shadowban') add('shadowban', account, creator, va);
+                    if (account.status === 'active' && stockBucket === 'unshadow') add('unshadow', account, creator, va);
+                });
+            });
+
+            (data.twitterAccounts || []).forEach(account => {
+                const alreadyLinked = (data.creators || []).some(c => (c.accounts || []).some(a => (a.id && a.id === account.id) || a.username === account.username));
+                if (alreadyLinked) return;
+                const va = (data.vas || []).find(v => v.id === (account.assignedVaId || account.vaId));
+                const stockBucket = getVAStockBucket(va);
+                if (stockBucket) add(stockBucket, account, null, va);
+                if (!account.assignedVaId && !account.vaId) add('available', account, null, va);
+                if (account.status === 'shadowban') add('shadowban', account, null, va);
+            });
+
+            return buckets;
+        }
+
+        function renderAccountStockCards(targetId, countId) {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+            const buckets = collectAccountStockBuckets();
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const cardBg = isDarkMode ? 'linear-gradient(135deg,#16181d,#1a1d23)' : '#ffffff';
+            const border = isDarkMode ? 'rgba(255,255,255,0.08)' : '#e5e7eb';
+            const text = isDarkMode ? '#e2e8f0' : '#1f2937';
+            const muted = isDarkMode ? '#94a3b8' : '#64748b';
+            const total = Object.values(buckets).reduce((sum, bucket) => sum + bucket.accounts.length, 0);
+            const count = document.getElementById(countId);
+            if (count) count.textContent = `${total} compte${total > 1 ? 's' : ''}`;
+
+            target.innerHTML = Object.entries(buckets).map(([key, bucket]) => {
+                const preview = bucket.accounts.slice(0, 8).map(account => `
+                    <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.28rem 0.55rem; border-radius:999px; background:${bucket.color}18; color:${bucket.color}; border:1px solid ${bucket.color}30; font-size:0.76rem; font-weight:700;">
+                        <i class="fab fa-twitter"></i>${account.username}
+                    </span>
+                `).join('');
+                return `
+                    <div style="background:${cardBg}; border:1px solid ${border}; border-radius:1rem; padding:1.25rem; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem;">
+                            <div style="display:flex; align-items:center; gap:0.75rem;">
+                                <div style="width:44px; height:44px; border-radius:50%; background:${bucket.color}22; color:${bucket.color}; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                                    <i class="fas ${bucket.icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin:0; color:${text}; font-size:1.05rem;">${bucket.title}</h3>
+                                    <div style="font-size:0.78rem; color:${muted};">Carte métier, pas un VA</div>
+                                </div>
+                            </div>
+                            <div style="font-size:1.55rem; font-weight:900; color:${bucket.color};">${bucket.accounts.length}</div>
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:0.45rem; min-height:34px;">
+                            ${preview || `<span style="color:${muted}; font-size:0.85rem;">Aucun compte</span>`}
+                            ${bucket.accounts.length > 8 ? `<span style="color:${muted}; font-size:0.8rem; padding:0.28rem 0;">+${bucket.accounts.length - 8} autres</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAccountStockCards() {
+            renderAccountStockCards('account-stock-grid', 'account-stock-count');
+            renderAccountStockCards('account-stock-list-display', 'account-stock-list-count');
         }
 
         const accountSortModes = {};
@@ -9202,7 +9341,7 @@ Pass: email_pwd
             if (!grid || !summary) return;
 
             const period = document.getElementById('payroll-period')?.value || 'current-month';
-            const totals = (data.vas || []).map(va => ({ va, payroll: calculateVAPayrollTotal(va.id, period) }));
+            const totals = getHumanVAs().map(va => ({ va, payroll: calculateVAPayrollTotal(va.id, period) }));
             const totalDue = totals.reduce((sum, item) => sum + item.payroll.total, 0);
             const totalAccounts = totals.reduce((sum, item) => sum + item.payroll.accounts.length, 0);
             const totalAbsences = totals.reduce((sum, item) => sum + item.payroll.absenceDays, 0);
@@ -9265,6 +9404,8 @@ Pass: email_pwd
                     </div>
                 `;
             }).join('');
+
+            updateAccountStockCards();
         }
 
         function savePayrollAccountStart(accountKey, dateValue) {
@@ -9276,9 +9417,9 @@ Pass: email_pwd
 
         function openPayrollAbsenceModal() {
             ensureVAPayrollData();
-            const vaOptions = (data.vas || []).map(va => `<option value="${va.id}">${escapeHtml(va.name)}</option>`).join('');
+            const vaOptions = getHumanVAs().map(va => `<option value="${va.id}">${escapeHtml(va.name)}</option>`).join('');
             const today = getDateKey();
-            const vaId = data.vas?.[0]?.id || '';
+            const vaId = getHumanVAs()[0]?.id || '';
             const html = `
                 <div style="display:grid; gap:0.85rem;">
                     <div>
@@ -10034,7 +10175,7 @@ Pass: email_pwd
 
         // Update VA selects
         function updateVASelects() {
-            const vaOptions = data.vas.map(va => 
+            const vaOptions = getHumanVAs().map(va => 
                 `<option value="${va.id}">${va.name}</option>`
             ).join('');
 
