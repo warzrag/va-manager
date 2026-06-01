@@ -10704,73 +10704,76 @@ Pass: email_pwd
         }
         
         // Delete VA
-        function deleteVA(vaId) {
+        async function deleteVA(vaId) {
             const va = data.vas.find(v => v.id === vaId);
             if (!va) return;
             
             const totalCreators = va.creators.length;
             const totalAccounts = va.creators.reduce((sum, creator) => sum + creator.accounts.length, 0);
-            
-            // Count associated data
-            const associatedSubs = data.subs ? data.subs.filter(s => s.vaId === vaId).length : 0;
-            const associatedRevenues = data.revenues ? data.revenues.filter(r => r.vaId === vaId).length : 0;
-            const associatedPayments = data.vaPayments ? data.vaPayments.filter(p => p.vaId === vaId).length : 0;
-            
-            let confirmMessage = `ATTENTION : Supprimer le VA "${va.name}" ?\n\n`;
-            confirmMessage += `Cela supprimera DÉFINITIVEMENT :\n`;
-            confirmMessage += `• ${totalCreators} créatrice(s)\n`;
-            confirmMessage += `• ${totalAccounts} compte(s) Twitter\n`;
-            
-            if (associatedSubs > 0) {
-                confirmMessage += `• ${associatedSubs} entrée(s) de subs\n`;
-            }
-            if (associatedRevenues > 0) {
-                confirmMessage += `• ${associatedRevenues} revenus enregistré(s)\n`;
-            }
-            if (associatedPayments > 0) {
-                confirmMessage += `• ${associatedPayments} paiement(s)\n`;
-            }
-            
-            confirmMessage += `\n? Cette action est IRRÉVERSIBLE !`;
-            
+
+            let confirmMessage = `Supprimer uniquement le VA "${va.name}" ?\n\n`;
+            confirmMessage += `Les données seront conservées :\n`;
+            confirmMessage += `• ${totalCreators} créatrice(s) resteront dans l'organisation\n`;
+            confirmMessage += `• ${totalAccounts} compte(s) Twitter resteront dans l'organisation\n`;
+            confirmMessage += `• les mots de passe, 2FA, mails et historiques ne seront pas supprimés\n\n`;
+            confirmMessage += `Le VA sera simplement retiré des éléments associés.`;
+
             if (!confirm(confirmMessage)) {
                 return;
             }
-            
-            // Double confirmation for safety
-            if (!confirm(`Dernière confirmation :\nSupprimer définitivement "${va.name}" et toutes ses données ?`)) {
-                return;
-            }
-            
+
             try {
-                // Remove the VA (mémoire)
+                // Retire uniquement la fiche VA et désassigne les éléments liés.
                 data.vas = data.vas.filter(v => v.id !== vaId);
-                if (data.subs) data.subs = data.subs.filter(s => s.vaId !== vaId);
-                if (data.revenues) data.revenues = data.revenues.filter(r => r.vaId !== vaId);
-                if (data.vaPayments) data.vaPayments = data.vaPayments.filter(p => p.vaId !== vaId);
-                if (data.payments) data.payments = data.payments.filter(p => p.vaId !== vaId);
+
+                (data.creators || []).forEach(creator => {
+                    if (Array.isArray(creator.vaIds)) {
+                        creator.vaIds = creator.vaIds.filter(id => id !== vaId);
+                    }
+                });
+
+                (data.twitterAccounts || []).forEach(account => {
+                    if (account.vaId === vaId) account.vaId = null;
+                    if (account.assignedVaId === vaId) account.assignedVaId = null;
+                    if (Array.isArray(account.vaIds)) {
+                        account.vaIds = account.vaIds.filter(id => id !== vaId);
+                    }
+                });
+
+                (data.instagramAccounts || []).forEach(account => {
+                    if (account.vaId === vaId) account.vaId = null;
+                    if (account.assignedVaId === vaId) account.assignedVaId = null;
+                    if (Array.isArray(account.vaIds)) {
+                        account.vaIds = account.vaIds.filter(id => id !== vaId);
+                    }
+                });
+
+                (data.gmailAccounts || []).forEach(account => {
+                    if (account.vaId === vaId) account.vaId = null;
+                    if (account.assignedVaId === vaId) account.assignedVaId = null;
+                    if (Array.isArray(account.vaIds)) {
+                        account.vaIds = account.vaIds.filter(id => id !== vaId);
+                    }
+                });
 
                 // Supprimer côté Supabase (seulement si UUID valide)
                 if (useSupabase && vaId && vaId.includes('-')) {
-                    // Détache les comptes twitter/instagram de ce VA (ne pas les supprimer, juste désassigner)
-                    dbUpdate('twitter_accounts', { va_id: null, assigned_va_id: null }, [['va_id', 'eq', vaId]]);
-                    dbUpdate('instagram_accounts', { va_id: null }, [['va_id', 'eq', vaId]]);
-                    // Supprime subs, revenues, puis le VA lui-même
-                    dbDelete('subscriptions', [['va_id', 'eq', vaId]]);
-                    dbDelete('revenues', [['va_id', 'eq', vaId]]);
-                    dbDelete('vas', [['id', 'eq', vaId]]);
+                    await dbUpdate('twitter_accounts', { va_id: null, assigned_va_id: null }, [['va_id', 'eq', vaId]]);
+                    await dbUpdate('twitter_accounts', { assigned_va_id: null }, [['assigned_va_id', 'eq', vaId]]);
+                    await dbUpdate('instagram_accounts', { va_id: null }, [['va_id', 'eq', vaId]]);
+                    await dbDelete('vas', [['id', 'eq', vaId]]);
                 }
 
-                saveData();
+                await saveData();
 
-                showSuccess(`VA "${va.name}" et toutes ses données ont été supprimés.`);
+                showSuccess(`VA "${va.name}" supprimé. Les créatrices et comptes ont été conservés.`);
                 
                 // Update all displays that might show VA data
                 updateVAGrid();
                 updateDisplay();
                 
             } catch (error) {
-                alert(`? Erreur lors de la suppression : ${error.message}`);
+                alert(`Erreur lors de la suppression du VA : ${error.message}`);
                 console.error('Erreur suppression VA:', error);
             }
         }
