@@ -1109,7 +1109,7 @@
         .twitter-account-chip {
             width: 100%;
             display: grid;
-            grid-template-columns: 28px minmax(130px, 1fr) auto;
+            grid-template-columns: 28px minmax(190px, 1fr) auto;
             align-items: center;
             gap: 0.45rem;
             padding: 0.38rem 0.45rem;
@@ -1137,9 +1137,9 @@
 
         .twitter-account-link .twitter-username {
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
             overflow-wrap: anywhere;
             line-height: 1.15;
         }
