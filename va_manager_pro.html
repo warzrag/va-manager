@@ -8865,12 +8865,23 @@ Pass: email_pwd
                 const preview = visibleAccounts.map(account => {
                     const cleanUsername = String(account.username || '').replace(/^@/, '');
                     const twitterUrl = `https://twitter.com/${encodeURIComponent(cleanUsername)}`;
+                    const latestStats = getLatestTwitterStats(account.username);
+                    const followersDisplay = latestStats ? `
+                        <span title="${formatNumber(latestStats.followers)} followers" style="display:inline-flex; align-items:center; gap:0.25rem; color:${muted}; background:${emptyBg}; border:1px solid ${visual.line}; border-radius:999px; padding:0.12rem 0.36rem; font-size:0.68rem; font-weight:900;">
+                            <i class="fas fa-users" style="color:${visual.accent};"></i>${formatNumber(latestStats.followers)}
+                        </span>
+                    ` : `
+                        <span title="Followers non renseignés" style="display:inline-flex; align-items:center; gap:0.25rem; color:${muted}; background:${emptyBg}; border:1px solid ${visual.line}; border-radius:999px; padding:0.12rem 0.36rem; font-size:0.68rem; font-weight:900;">
+                            <i class="fas fa-users" style="color:${muted};"></i>--
+                        </span>
+                    `;
                     return `
                     <span style="display:inline-flex; align-items:center; gap:0.45rem; padding:0.42rem 0.48rem 0.42rem 0.62rem; border-radius:0.7rem; background:${chipBg}; color:${text}; border:1px solid ${visual.line}; font-size:0.76rem; font-weight:800; box-shadow:0 6px 16px rgba(15,23,42,0.06);">
                         <a href="${twitterUrl}" target="_blank" rel="noopener noreferrer" title="Ouvrir ${account.username} sur Twitter" style="display:inline-flex; align-items:center; gap:0.45rem; color:${text}; text-decoration:none; min-width:0;">
                             <i class="fab fa-twitter" style="color:${visual.accent};"></i>
                             <span style="max-width:122px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${account.username}</span>
                         </a>
+                        ${followersDisplay}
                         <select onchange="moveAccountToStockCategory('${encodeURIComponent(account.key)}', this.value)" title="Changer de carte" style="border:1px solid ${visual.line}; border-radius:999px; background:${visual.soft}; color:${visual.accent}; font-size:0.7rem; font-weight:800; max-width:82px; padding:0.16rem 0.28rem;">
                             <option value="available" ${key === 'available' ? 'selected' : ''}>Dispo</option>
                             <option value="shadowban" ${key === 'shadowban' ? 'selected' : ''}>Shadow</option>
