@@ -5409,6 +5409,7 @@ Pass: email_pwd
             twitterAccounts: [], // Structure pour les comptes Twitter simples
             instagramAccounts: [], // Structure pour les comptes Instagram
             twitterStats: [], // Nouveau : statistiques hebdomadaires des followers
+            accountStockNotices: [],
             vaPayroll: { accountStarts: {}, absences: [] }
         };
         
@@ -5660,10 +5661,15 @@ Pass: email_pwd
         }
 
         function buildTwitterNotesForSave(account) {
-            const cleanNotes = String(account.notes || '').replace(/\s*\[2FA:[^\]]*\]/g, '').trim();
+            const cleanNotes = String(account.notes || '')
+                .replace(/\s*\[2FA:[^\]]*\]/g, '')
+                .replace(/\s*\[STOCK:(available|shadowban|unshadow)\]/g, '')
+                .trim();
             const twoFaFromNotes = String(account.notes || '').match(/\[2FA:([^\]]+)\]/)?.[1] || '';
             const twoFa = String(account.twoFaSecret || twoFaFromNotes).trim();
-            return twoFa ? `[2FA:${twoFa}]${cleanNotes ? ' ' + cleanNotes : ''}` : (cleanNotes || null);
+            const stock = ['available', 'shadowban', 'unshadow'].includes(account.stockCategory) ? account.stockCategory : '';
+            const tags = [twoFa ? `[2FA:${twoFa}]` : '', stock ? `[STOCK:${stock}]` : ''].filter(Boolean).join('');
+            return tags ? `${tags}${cleanNotes ? ' ' + cleanNotes : ''}` : (cleanNotes || null);
         }
 
         async function syncToSupabase() {
@@ -5812,6 +5818,11 @@ Pass: email_pwd
                         twoFaSecret = twoFaMatch[1];
                         notes = notes.replace(/\[2FA:[^\]]*\]/, '');
                     }
+                    const stockMatch = notes.match(/\[STOCK:(available|shadowban|unshadow)\]/);
+                    const stockCategory = stockMatch ? stockMatch[1] : '';
+                    if (stockMatch) {
+                        notes = notes.replace(/\[STOCK:(available|shadowban|unshadow)\]/, '');
+                    }
                     return {
                         id: t.id,
                         username: t.username,
@@ -5822,7 +5833,8 @@ Pass: email_pwd
                         assignedVaId: t.assigned_va_id,
                         gmailId: t.gmail_id,
                         status: t.status,
-                        notes: notes,
+                        notes: notes.trim(),
+                        stockCategory: stockCategory,
                         twoFaSecret: twoFaSecret,
                         created: t.created_at
                     };
@@ -6801,6 +6813,7 @@ Pass: email_pwd
                 twitterAccounts: [],
                 instagramAccounts: [],
                 twitterStats: [],
+                accountStockNotices: [],
                 vaPayroll: { accountStarts: {}, absences: [] }
             };
         }
@@ -6954,7 +6967,8 @@ Pass: email_pwd
                     creators: [],
                     twitterAccounts: [],
                     instagramAccounts: [],
-                    twitterStats: []
+                    twitterStats: [],
+                    accountStockNotices: []
                 };
             }
         }
@@ -7101,6 +7115,7 @@ Pass: email_pwd
             data.twitterAccounts = loadedData.twitterAccounts || [];
             data.instagramAccounts = loadedData.instagramAccounts || [];
             data.twitterStats = loadedData.twitterStats || [];
+            data.accountStockNotices = Array.isArray(loadedData.accountStockNotices) ? loadedData.accountStockNotices : [];
             let localPayroll = null;
             try {
                 localPayroll = JSON.parse(localStorage.getItem(getActiveOrgStorageKey()) || '{}')?.vaPayroll || null;
@@ -8868,6 +8883,26 @@ Pass: email_pwd
                 });
                 const visibleAccounts = isExpanded ? sortedAccounts : sortedAccounts.slice(0, 8);
                 const hiddenCount = Math.max(0, bucket.accounts.length - 8);
+                const pendingUnshadow = key === 'unshadow' ? getPendingUnshadowNotices().filter(notice => {
+                    return bucket.accounts.some(account => {
+                        const noticeUsername = String(notice.username || '').replace(/^@/, '').toLowerCase();
+                        const accountUsername = String(account.username || '').replace(/^@/, '').toLowerCase();
+                        return notice.accountKey === getAccountStockKey(account) || noticeUsername === accountUsername;
+                    });
+                }) : [];
+                const noticeHtml = pendingUnshadow.length ? `
+                    <div style="display:grid; gap:0.45rem; margin-bottom:0.85rem;">
+                        ${pendingUnshadow.slice(0, 4).map(notice => `
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.62rem 0.72rem; border-radius:0.8rem; background:rgba(34,197,94,0.16); border:1px solid rgba(34,197,94,0.36);">
+                                <span style="display:inline-flex; align-items:center; gap:0.45rem; color:${text}; font-size:0.78rem; font-weight:900;">
+                                    <i class="fas fa-bell" style="color:#22c55e;"></i>${notice.username} est unshadow
+                                </span>
+                                <button onclick="acknowledgeUnshadowNotice('${notice.id}')" title="Confirmer que c'est vu" style="border:none; border-radius:999px; background:#22c55e; color:white; cursor:pointer; font-size:0.72rem; font-weight:900; padding:0.38rem 0.58rem;">Vu</button>
+                            </div>
+                        `).join('')}
+                        ${pendingUnshadow.length > 4 ? `<div style="color:${muted}; font-size:0.76rem; font-weight:800;">+${pendingUnshadow.length - 4} notification${pendingUnshadow.length - 4 > 1 ? 's' : ''}</div>` : ''}
+                    </div>
+                ` : '';
                 const preview = visibleAccounts.map(account => {
                     const cleanUsername = String(account.username || '').replace(/^@/, '');
                     const twitterUrl = `https://twitter.com/${encodeURIComponent(cleanUsername)}`;
@@ -8924,6 +8959,7 @@ Pass: email_pwd
                                 <i class="fas fa-plus"></i> Ajouter
                             </button>
                         </div>
+                        ${noticeHtml}
                         <div style="display:flex; flex-wrap:wrap; gap:0.45rem; min-height:34px;">
                             ${preview || `<span style="display:flex; align-items:center; gap:0.45rem; width:100%; color:${muted}; font-size:0.84rem; padding:0.55rem 0; font-weight:700;"><i class="fas fa-inbox" style="color:${visual.accent};"></i>Aucun compte dans cette carte</span>`}
                             ${hiddenCount > 0 ? `
@@ -8947,6 +8983,63 @@ Pass: email_pwd
         function updateAccountStockCards() {
             renderAccountStockCards('account-stock-grid', 'account-stock-count');
             renderAccountStockCards('account-stock-list-display', 'account-stock-list-count');
+        }
+
+        function ensureAccountStockNotices() {
+            if (!Array.isArray(data.accountStockNotices)) data.accountStockNotices = [];
+            return data.accountStockNotices;
+        }
+
+        function getAccountStockKey(account) {
+            return String(account?.id || account?.username || '').toLowerCase();
+        }
+
+        function getPendingUnshadowNotices() {
+            return ensureAccountStockNotices().filter(notice => notice.type === 'unshadow' && !notice.acknowledgedAt);
+        }
+
+        function acknowledgeUnshadowNotice(noticeId) {
+            const notice = ensureAccountStockNotices().find(item => item.id === noticeId);
+            if (!notice) return;
+            notice.acknowledgedAt = new Date().toISOString();
+            saveData();
+            updateAccountStockCards();
+        }
+
+        function markAccountAsUnshadowed(accountRef, username, source = 'scan') {
+            const normalizedUsername = String(username || accountRef?.username || '').replace(/^@/, '');
+            if (!normalizedUsername) return false;
+            const matchAccount = (account) => {
+                if (!account) return false;
+                const accountUsername = String(account.username || '').replace(/^@/, '').toLowerCase();
+                const refKey = getAccountStockKey(accountRef);
+                const accountKey = getAccountStockKey(account);
+                return accountUsername === normalizedUsername.toLowerCase() || (refKey && accountKey === refKey);
+            };
+            let changed = false;
+            const apply = (account) => {
+                if (!matchAccount(account)) return;
+                account.status = 'active';
+                account.stockCategory = 'unshadow';
+                changed = true;
+            };
+            (data.creators || []).forEach(creator => (creator.accounts || []).forEach(apply));
+            (data.twitterAccounts || []).forEach(apply);
+
+            const notices = ensureAccountStockNotices();
+            const key = getAccountStockKey(accountRef) || normalizedUsername.toLowerCase();
+            const existing = notices.find(notice => notice.type === 'unshadow' && !notice.acknowledgedAt && (notice.accountKey === key || String(notice.username || '').replace(/^@/, '').toLowerCase() === normalizedUsername.toLowerCase()));
+            if (!existing) {
+                notices.unshift({
+                    id: generateUuid(),
+                    type: 'unshadow',
+                    accountKey: key,
+                    username: normalizedUsername.startsWith('@') ? normalizedUsername : '@' + normalizedUsername,
+                    source,
+                    createdAt: new Date().toISOString()
+                });
+            }
+            return changed;
         }
 
         function getAllManageableTwitterAccounts() {
@@ -9030,6 +9123,7 @@ Pass: email_pwd
         window.moveAccountToStockCategory = moveAccountToStockCategory;
         window.openStockAddModal = openStockAddModal;
         window.saveStockAddModal = saveStockAddModal;
+        window.acknowledgeUnshadowNotice = acknowledgeUnshadowNotice;
 
         const accountSortModes = {};
 
@@ -15450,6 +15544,13 @@ Pass: email_pwd
                 const unshadow = changes.filter(c => c.new_status === 'active');
                 const banned   = changes.filter(c => c.new_status === 'banned');
                 const shadow   = changes.filter(c => c.new_status === 'shadowban');
+                unshadow.forEach(change => {
+                    markAccountAsUnshadowed({ id: change.account_id || change.twitter_account_id, username: change.username }, change.username, 'auto-scan');
+                });
+                if (unshadow.length > 0) {
+                    saveData();
+                    updateAccountStockCards();
+                }
 
                 while (banner.firstChild) banner.removeChild(banner.firstChild);
 
@@ -15678,8 +15779,12 @@ Pass: email_pwd
                     label = 'Shadowban (' + flags.join(', ') + ')';
                 }
 
+                const previousStatus = account?.status || creatorAccount?.status || '';
                 if (account) account.status = newStatus;
                 if (creatorAccount) creatorAccount.status = newStatus;
+                if (newStatus === 'active' && previousStatus === 'shadowban') {
+                    markAccountAsUnshadowed(account || creatorAccount, username, 'manual-check');
+                }
 
                 const accountId = account?.id || creatorAccount?.id;
                 if (useSupabase && supabaseClient && accountId && accountId.includes('-')) {
