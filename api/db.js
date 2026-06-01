@@ -78,6 +78,103 @@ function buildFilterQuery(filters) {
     return parts.join('&');
 }
 
+function extractTwoFa(notes) {
+    const match = String(notes || '').match(/\[2FA:([^\]]+)\]/);
+    return match ? match[1] : '';
+}
+
+function mergeTwoFaIntoNotes(incomingNotes, existingNotes) {
+    const existingTwoFa = extractTwoFa(existingNotes);
+    if (extractTwoFa(incomingNotes) || !existingTwoFa) return incomingNotes;
+    const cleanIncoming = String(incomingNotes || '').replace(/\s*\[2FA:[^\]]*\]/g, '').trim();
+    return `[2FA:${existingTwoFa}]${cleanIncoming ? ' ' + cleanIncoming : ''}`;
+}
+
+function getEqFilterValue(filters, column) {
+    const filter = (Array.isArray(filters) ? filters : []).find(f => Array.isArray(f) && f[0] === column && f[1] === 'eq');
+    return filter ? filter[2] : null;
+}
+
+async function userCanAccessOrg(userId, primaryOrgId, targetOrgId, isSuperAdmin) {
+    if (!targetOrgId) return false;
+    if (isSuperAdmin || targetOrgId === primaryOrgId) return true;
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/organization_members?select=id&user_id=eq.${encodeURIComponent(userId)}&organization_id=eq.${encodeURIComponent(targetOrgId)}&limit=1`,
+        {
+            headers: {
+                apikey: SUPABASE_SERVICE_KEY,
+                Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+            }
+        }
+    );
+    if (!response.ok) return false;
+    const rows = await response.json().catch(() => []);
+    return Array.isArray(rows) && rows.length > 0;
+}
+
+async function preserveTwitterTwoFa(payload, filters = []) {
+    const rows = Array.isArray(payload) ? payload : [payload];
+    let ids = rows
+        .filter(row => row && typeof row === 'object' && row.id && Object.prototype.hasOwnProperty.call(row, 'notes'))
+        .map(row => row.id);
+    const filteredId = getEqFilterValue(filters, 'id');
+    if (!ids.length && filteredId && rows.some(row => row && typeof row === 'object' && Object.prototype.hasOwnProperty.call(row, 'notes'))) {
+        ids = [filteredId];
+    }
+    if (!ids.length) return payload;
+
+    const query = ids.map(id => encodeURIComponent(id)).join(',');
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?select=id,notes&id=in.(${query})`, {
+        headers: {
+            apikey: SUPABASE_SERVICE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+        }
+    });
+    if (!response.ok) return payload;
+
+    const existingRows = await response.json().catch(() => []);
+    const existingById = new Map((Array.isArray(existingRows) ? existingRows : []).map(row => [row.id, row.notes]));
+    const mergeRow = (row) => {
+        if (!row || typeof row !== 'object' || !Object.prototype.hasOwnProperty.call(row, 'notes')) return row;
+        const rowId = row.id || filteredId;
+        if (!rowId) return row;
+        return { ...row, notes: mergeTwoFaIntoNotes(row.notes, existingById.get(rowId)) };
+    };
+
+    return Array.isArray(payload) ? payload.map(mergeRow) : mergeRow(payload);
+}
+
+async function removeCrossOrgUpserts(table, payload, targetOrg) {
+    const rows = Array.isArray(payload) ? payload : [payload];
+    const ids = rows
+        .filter(row => row && typeof row === 'object' && row.id)
+        .map(row => row.id);
+    if (!targetOrg || ids.length === 0) return payload;
+
+    const query = ids.map(id => encodeURIComponent(id)).join(',');
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id,organization_id&id=in.(${query})`, {
+        headers: {
+            apikey: SUPABASE_SERVICE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+        }
+    });
+    if (!response.ok) return payload;
+
+    const existingRows = await response.json().catch(() => []);
+    const existingOrgById = new Map((Array.isArray(existingRows) ? existingRows : []).map(row => [row.id, row.organization_id]));
+    const filtered = rows.filter(row => {
+        if (!row || typeof row !== 'object' || !row.id) return true;
+        const existingOrg = existingOrgById.get(row.id);
+        return !existingOrg || existingOrg === targetOrg;
+    });
+
+    return Array.isArray(payload) ? filtered : (filtered[0] || null);
+}
+
+function isEmptyPayload(payload) {
+    return !payload || (Array.isArray(payload) && payload.length === 0);
+}
+
 export default async function handler(req, res) {
     applyCors(req, res);
     if (req.method === 'OPTIONS') { res.status(204).end(); return; }
@@ -92,6 +189,7 @@ export default async function handler(req, res) {
 
     const role = normalizeRole(user?.user_metadata?.role);
     const orgId = user?.user_metadata?.organization_id;
+    const userId = user?.id;
     const isSuperAdmin = role === 'super_admin';
 
     // Tous les comptes non super-admin doivent avoir un organization_id
@@ -120,6 +218,9 @@ export default async function handler(req, res) {
     const clientFilters = (Array.isArray(filters) ? filters : [])
         .filter(f => !(Array.isArray(f) && f[0] === 'organization_id' && (f[2] === null || f[2] === undefined || f[2] === '')));
     const hasOrgFilter = clientFilters.some(f => Array.isArray(f) && f[0] === 'organization_id');
+    const requestedOrg = hasOrgFilter ? clientFilters.find(f => Array.isArray(f) && f[0] === 'organization_id')?.[2] : null;
+    const targetOrg = requestedOrg && await userCanAccessOrg(userId, orgId, requestedOrg, isSuperAdmin) ? requestedOrg : orgId;
+
     let scopedFilters;
     if (isSuperAdmin) {
         scopedFilters = hasOrgFilter || orgId
@@ -127,21 +228,35 @@ export default async function handler(req, res) {
             : clientFilters;
     } else {
         const stripped = clientFilters.filter(f => !(Array.isArray(f) && f[0] === 'organization_id'));
-        scopedFilters = [...stripped, ['organization_id', 'eq', orgId]];
+        scopedFilters = [...stripped, ['organization_id', 'eq', targetOrg]];
     }
 
     // Pour INSERT/UPSERT : force org_id dans les données (sauf super_admin)
     const applyOrgToData = (payload) => {
         if (isSuperAdmin) return payload;
-        if (Array.isArray(payload)) return payload.map(r => ({ ...r, organization_id: orgId }));
-        if (payload && typeof payload === 'object') return { ...payload, organization_id: orgId };
+        if (Array.isArray(payload)) return payload.map(r => ({ ...r, organization_id: targetOrg }));
+        if (payload && typeof payload === 'object') return { ...payload, organization_id: targetOrg };
         return payload;
     };
-    const scopedData = (action === 'insert' || action === 'upsert') ? applyOrgToData(data) : data;
+    let scopedData = (action === 'insert' || action === 'upsert') ? applyOrgToData(data) : data;
     // Pour UPDATE : empêcher le client de changer organization_id
-    const safeUpdateData = (action === 'update' && data && typeof data === 'object' && !isSuperAdmin)
+    let safeUpdateData = (action === 'update' && data && typeof data === 'object' && !isSuperAdmin)
         ? Object.fromEntries(Object.entries(data).filter(([k]) => k !== 'organization_id'))
         : data;
+
+    if (table === 'twitter_accounts' && action === 'upsert') {
+        scopedData = await preserveTwitterTwoFa(scopedData);
+    }
+    if (action === 'upsert' && ['twitter_accounts', 'gmail_accounts', 'instagram_accounts', 'creators', 'vas'].includes(table)) {
+        scopedData = await removeCrossOrgUpserts(table, scopedData, targetOrg);
+        if (isEmptyPayload(scopedData)) {
+            res.status(200).json({ ok: true, data: [], skipped: 'cross_org_upsert' });
+            return;
+        }
+    }
+    if (table === 'twitter_accounts' && action === 'update') {
+        safeUpdateData = await preserveTwitterTwoFa(safeUpdateData, scopedFilters);
+    }
 
     const filterQs = buildFilterQuery(scopedFilters);
     let url = `${SUPABASE_URL}/rest/v1/${table}`;

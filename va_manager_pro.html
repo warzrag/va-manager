@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1041,12 +1041,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
             margin-bottom: 0.5rem;
         }
 
         .creatrice-name {
             font-weight: 600;
             color: #1a1a1a;
+            min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.35rem;
         }
 
         .twitter-accounts {
@@ -1198,8 +1204,55 @@
             transition: all 0.15s ease;
         }
 
-        .mobile-show-more-accounts {
+        .twitter-accounts:not(.expanded) .desktop-extra-account {
             display: none;
+        }
+
+        .mobile-show-more-accounts {
+            display: block;
+            width: 100%;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            background: rgba(99, 102, 241, 0.12);
+            color: #6366f1;
+            border-radius: 0.65rem;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-height: 38px;
+            cursor: pointer;
+        }
+
+        .twitter-accounts.expanded .mobile-show-more-accounts .show-more-label {
+            display: none;
+        }
+
+        .twitter-accounts:not(.expanded) .mobile-show-more-accounts .show-less-label {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .mobile-show-more-accounts:not(.desktop-needed) {
+                display: none;
+            }
+        }
+
+        .account-sort-control {
+            border: 1px solid rgba(99, 102, 241, 0.22);
+            background: rgba(99, 102, 241, 0.08);
+            color: #4f46e5;
+            border-radius: 999px;
+            padding: 0.35rem 1.35rem 0.35rem 0.55rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            width: 78px;
+            min-height: 32px;
+            cursor: pointer;
+        }
+
+        body.dark-mode .account-sort-control {
+            background: rgba(99, 102, 241, 0.14);
+            color: #c4b5fd;
+            border-color: rgba(167, 139, 250, 0.28);
         }
 
         .twitter-chip-action.shadowban-site-action {
@@ -4302,7 +4355,7 @@ Pass: email_pwd
         <div id="subs-tracking-page" class="page">
             <!-- Competition Header -->
             <div class="competition-header">
-                <h1 class="competition-title">🏆 Compétition des VAs</h1>
+                <h1 class="competition-title">Compétition des VAs</h1>
                 <div class="competition-stats">
                     <div class="stat-box">
                         <span class="stat-value" id="total-subs-today">0</span>
@@ -4403,7 +4456,7 @@ Pass: email_pwd
         <div id="revenue-tracking-page" class="page">
             <!-- Revenue Competition Header -->
             <div class="competition-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <h1 class="competition-title">💰 Battle des Revenus</h1>
+                <h1 class="competition-title">Battle des Revenus</h1>
                 <div class="competition-stats">
                     <div class="stat-box">
                         <span class="stat-value" id="total-revenue-generated">0€</span>
@@ -4570,7 +4623,7 @@ Pass: email_pwd
 
             <!-- VA Performance Overview -->
             <div class="stats-section" style="border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem;">
-                <h2 style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700;">💎 Performance Financière par VA</h2>
+                <h2 style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700;">Performance Financière par VA</h2>
                 <div id="va-financial-grid" style="display: grid; gap: 1.5rem;">
                     <!-- VA financial cards will be inserted here -->
                 </div>
@@ -4599,12 +4652,12 @@ Pass: email_pwd
 
             <!-- Financial Summary -->
             <div class="charts-section" style="border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
-                <h3 style="margin-bottom: 1.5rem;">📊 Résumé Détaillé</h3>
+                <h3 style="margin-bottom: 1.5rem;">Résumé Détaillé</h3>
                 <div id="financial-summary-table">
                     <!-- Summary table will be inserted here -->
                 </div>
                 
-                <h3 style="margin: 2rem 0 1.5rem;">💳 Historique des Paiements</h3>
+                <h3 style="margin: 2rem 0 1.5rem;">Historique des Paiements</h3>
                 <div id="payment-history-table">
                     <!-- Payment history will be inserted here -->
                 </div>
@@ -4678,6 +4731,18 @@ Pass: email_pwd
                     </button>
                 </div>
 
+                <div id="super-admin-org-access" class="form-container" style="display:none; margin-bottom:1.5rem; border:2px solid rgba(34,197,94,0.25);">
+                    <h2 class="form-title"><i class="fas fa-user-shield"></i> Accès organisations <span style="font-size:0.7rem; background:#22c55e; color:white; padding:0.2rem 0.5rem; border-radius:1rem; margin-left:0.5rem;">SUPER-ADMIN</span></h2>
+                    <div class="form-group">
+                        <label>Utilisateur</label>
+                        <select id="org-access-user" class="form-control" onchange="renderOrgAccessEditor()"></select>
+                    </div>
+                    <div id="org-access-list" style="display:flex; flex-direction:column; gap:0.5rem; margin:1rem 0;"></div>
+                    <button type="button" onclick="saveOrgAccess()" class="submit-btn" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+                        <i class="fas fa-save"></i> Enregistrer les accès
+                    </button>
+                </div>
+
                 <!-- User list -->
                 <div class="form-container" style="margin-bottom:1.5rem;">
                     <h2 class="form-title"><i class="fas fa-users"></i> Utilisateurs <span id="admin-users-scope" style="font-size:0.75rem; opacity:0.7; font-weight:400; margin-left:0.5rem;"></span></h2>
@@ -4728,6 +4793,8 @@ Pass: email_pwd
                 <input type="hidden" id="edit-account-va-id">
                 <input type="hidden" id="edit-account-creator-id">
                 <input type="hidden" id="edit-account-index">
+                <input type="hidden" id="edit-account-id">
+                <input type="hidden" id="edit-account-old-username">
                 
                 <div class="form-group">
                     <label for="edit-gmail-select">Compte Gmail associé (optionnel)</label>
@@ -5187,7 +5254,7 @@ Pass: email_pwd
     <script>
         // Global error handler
         window.addEventListener('error', function(e) {
-            console.error('❌ JavaScript Error:', e.error);
+            console.error('? JavaScript Error:', e.error);
             console.error('At:', e.filename, 'Line:', e.lineno, 'Column:', e.colno);
         });
         
@@ -5233,22 +5300,22 @@ Pass: email_pwd
         
         // Test navigation function
         window.testNav = function(page) {
-            console.log(`🧪 Testing navigation to: ${page}`);
+            console.log(`?? Testing navigation to: ${page}`);
             try {
                 if (typeof navigateToPage === 'function') {
                     navigateToPage(page);
-                    console.log('✅ Navigation successful');
+                    console.log('? Navigation successful');
                 } else {
-                    console.error('❌ navigateToPage function not found');
+                    console.error('? navigateToPage function not found');
                 }
             } catch (error) {
-                console.error('❌ Navigation error:', error);
+                console.error('? Navigation error:', error);
             }
         };
         
         // Fix navigation function
         window.fixNav = function() {
-            console.log('🔧 Fixing navigation...');
+            console.log('?? Fixing navigation...');
             
             // Remove all existing click handlers
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -5268,7 +5335,7 @@ Pass: email_pwd
                 });
             });
             
-            console.log('✅ Navigation fixed!');
+            console.log('? Navigation fixed!');
         };
         
         // Data structure
@@ -5430,10 +5497,10 @@ Pass: email_pwd
             if (window.supabase && SUPABASE_URL && SUPABASE_KEY) {
                 supabaseClient = authClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 useSupabase = true;
-                console.log('✅ Supabase client initialized for VA Manager Pro');
+                console.log('? Supabase client initialized for VA Manager Pro');
             }
         } catch (e) {
-            console.warn('⚠️ Supabase init failed, using localStorage fallback:', e);
+            console.warn('?? Supabase init failed, using localStorage fallback:', e);
         }
 
         // Debounce for Supabase saves (avoid overloading)
@@ -5441,7 +5508,7 @@ Pass: email_pwd
         function debouncedSupabaseSave() {
             // Mode read-only : super-admin visualisant une autre org
             if (currentViewOrg) {
-                console.log('⛔ sync bloqué (mode read-only : vue sur org ' + currentViewOrg.slice(0,8) + ')');
+                console.log('? sync bloqué (mode read-only : vue sur org ' + currentViewOrg.slice(0,8) + ')');
                 return;
             }
             if (saveTimeout) clearTimeout(saveTimeout);
@@ -5524,95 +5591,110 @@ Pass: email_pwd
             return `${message}${code}`;
         }
 
+        function ensureDbSuccess(result, label) {
+            if (result?.error) {
+                throw new Error(`${label}: ${getDbErrorMessage(result)}`);
+            }
+            return result;
+        }
+
+        function buildTwitterNotesForSave(account) {
+            const cleanNotes = String(account.notes || '').replace(/\s*\[2FA:[^\]]*\]/g, '').trim();
+            const twoFaFromNotes = String(account.notes || '').match(/\[2FA:([^\]]+)\]/)?.[1] || '';
+            const twoFa = String(account.twoFaSecret || twoFaFromNotes).trim();
+            return twoFa ? `[2FA:${twoFa}]${cleanNotes ? ' ' + cleanNotes : ''}` : (cleanNotes || null);
+        }
+
         async function syncToSupabase() {
             if (!useSupabase || !supabaseClient) return;
-            // Safety : super-admin en vue d'une autre org = read-only, pas de sync
-            if (currentViewOrg) {
-                console.warn('⛔ syncToSupabase annulé : vue sur org ' + currentViewOrg.slice(0,8));
-                return;
-            }
+            const syncOrgId = currentViewOrg || ORG_ID;
+            if (!syncOrgId) throw new Error('Organisation introuvable pour la sauvegarde');
             try {
                 // Sync VAs (only UUID ids)
-                const vasToSync = data.vas.filter(va => va.id && va.id.includes('-')).map(va => ({
+                const vasToSync = data.vas.filter(va => isUuid(va.id)).map(va => ({
                     id: va.id,
                     name: va.name,
                     email: va.email || null,
                     password: va.password || null,
-                    organization_id: ORG_ID,
+                    organization_id: syncOrgId,
                     updated_at: new Date().toISOString()
                 }));
                 if (vasToSync.length > 0) {
-                    await dbUpsert('vas', vasToSync, 'id');
+                    ensureDbSuccess(await dbUpsert('vas', vasToSync, 'id'), 'Sauvegarde VAs');
                 }
 
                 // Sync Creators (only UUID ids)
-                const creatorsToSync = data.creators.filter(c => c.id && c.id.includes('-')).map(c => ({
+                const creatorsToSync = data.creators.filter(c => isUuid(c.id)).map(c => ({
                     id: c.id,
                     name: c.name,
-                    organization_id: ORG_ID,
+                    organization_id: syncOrgId,
                     va_ids: c.vaIds || [],
                     updated_at: new Date().toISOString()
                 }));
                 if (creatorsToSync.length > 0) {
-                    await dbUpsert('creators', creatorsToSync, 'id');
+                    ensureDbSuccess(await dbUpsert('creators', creatorsToSync, 'id'), 'Sauvegarde créatrices');
                 }
 
                 // Sync Twitter Accounts (only sync accounts that have valid UUID ids from Supabase)
-                const twitterToSync = data.twitterAccounts.filter(t => t.id && t.id.includes('-')).map(t => ({
+                const twitterToSync = data.twitterAccounts.filter(t => isUuid(t.id)).map(t => ({
                     id: t.id,
                     username: t.username,
-                    encrypted_password: t.password || t.encryptedPassword || null,
+                    encrypted_password: t.password || t.encryptedPassword || '',
                     creator_id: t.creatorId || null,
                     va_id: t.vaId || null,
                     assigned_va_id: t.assignedVaId || null,
                     gmail_id: t.gmailId || null,
-                    organization_id: ORG_ID,
+                    organization_id: syncOrgId,
                     status: t.status || null,
-                    notes: t.notes || null,
+                    notes: buildTwitterNotesForSave(t),
                     updated_at: new Date().toISOString()
                 }));
                 if (twitterToSync.length > 0) {
-                    await dbUpsert('twitter_accounts', twitterToSync, 'id');
+                    ensureDbSuccess(await dbUpsert('twitter_accounts', twitterToSync, 'id'), 'Sauvegarde comptes Twitter');
                 }
 
                 // Sync Instagram Accounts (only UUID ids)
-                const igToSync = data.instagramAccounts.filter(ig => ig.id && ig.id.includes('-')).map(ig => ({
+                const igToSync = data.instagramAccounts.filter(ig => isUuid(ig.id)).map(ig => ({
                     id: ig.id,
                     username: ig.username,
                     encrypted_password: ig.password || ig.encryptedPassword || null,
                     creator_id: ig.creatorId || null,
                     va_id: ig.vaId || null,
                     gmail_id: ig.gmailId || null,
-                    organization_id: ORG_ID,
+                    organization_id: syncOrgId,
                     updated_at: new Date().toISOString()
                 }));
                 if (igToSync.length > 0) {
-                    await dbUpsert('instagram_accounts', igToSync, 'id');
+                    ensureDbSuccess(await dbUpsert('instagram_accounts', igToSync, 'id'), 'Sauvegarde comptes Instagram');
                 }
 
                 // Sync Gmail Accounts (only UUID ids)
-                const gmailToSync = data.gmailAccounts.filter(g => g.id && g.id.includes('-')).map(g => ({
+                const gmailToSync = data.gmailAccounts.filter(g => isUuid(g.id)).map(g => ({
                     id: g.id,
                     email: g.email,
                     encrypted_password: g.password || null,
                     va_id: g.vaId || null,
                     notes: g.notes || null,
-                    organization_id: ORG_ID
+                    organization_id: syncOrgId
                 }));
                 if (gmailToSync.length > 0) {
-                    await dbUpsert('gmail_accounts', gmailToSync, 'id');
+                    ensureDbSuccess(await dbUpsert('gmail_accounts', gmailToSync, 'id'), 'Sauvegarde Gmail');
                 }
 
-                console.log('☁️ Synced to Supabase');
+                console.log('?? Synced to Supabase');
             } catch (error) {
-                console.warn('⚠️ Supabase sync error (localStorage still saved):', error);
+                console.warn('Supabase sync error (localStorage still saved):', error);
+                updateSaveStatus('error');
+                if (typeof showError === 'function') {
+                    showError('Sauvegarde Supabase impossible : ' + String(error?.message || error));
+                }
             }
         }
 
         async function loadFromSupabase() {
             if (!useSupabase || !supabaseClient) return null;
             try {
-                console.log('☁️ Loading data from Supabase...');
+                console.log('?? Loading data from Supabase...');
                 // Filtre org : super_admin peut cibler une autre org via currentViewOrg
                 // Sinon le proxy /api/db applique automatiquement l'org du user authentifié
                 const _sel = (table) => currentViewOrg
@@ -5732,7 +5814,7 @@ Pass: email_pwd
                     });
                 });
 
-                console.log('☁️ Supabase data loaded:', {
+                console.log('?? Supabase data loaded:', {
                     vas: vas.length,
                     creators: creators.length,
                     twitterAccounts: twitterAccounts.length,
@@ -5785,14 +5867,35 @@ Pass: email_pwd
                     }))
                 };
             } catch (error) {
-                console.error('❌ Supabase load failed:', error);
+                console.error('? Supabase load failed:', error);
                 return null;
             }
         }
 
+        function generateUuid() {
+            if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                return crypto.randomUUID();
+            }
+
+            const bytes = new Uint8Array(16);
+            if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+                crypto.getRandomValues(bytes);
+            } else {
+                for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+            }
+            bytes[6] = (bytes[6] & 0x0f) | 0x40;
+            bytes[8] = (bytes[8] & 0x3f) | 0x80;
+            const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+            return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+        }
+
+        function isUuid(value) {
+            return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
+        }
+
         // Utility function to generate unique IDs
         function generateId() {
-            return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            return generateUuid();
         }
         
         const PASSWORD_ENCRYPTION_PREFIX = 'vmp1:';
@@ -6004,7 +6107,7 @@ Pass: email_pwd
                     return;
                 }
                 
-                console.log('⏰ Sauvegarde automatique...');
+                console.log('? Sauvegarde automatique...');
                 await saveData();
                 lastSaveTime = Date.now();
             }, 5 * 60 * 1000); // 5 minutes
@@ -6028,12 +6131,12 @@ Pass: email_pwd
                 const history = localStorage.getItem('vaManagerProBackupHistory');
                 
                 if (!mainData && backupData) {
-                    console.log('🔧 Récupération depuis la sauvegarde...');
+                    console.log('?? Récupération depuis la sauvegarde...');
                     const backup = JSON.parse(backupData);
                     localStorage.setItem('vaManagerProData', JSON.stringify(backup.data));
                     showSuccess('Données récupérées depuis la sauvegarde automatique');
                 } else if (!mainData && !backupData && history) {
-                    console.log('🔧 Récupération depuis l\'historique...');
+                    console.log('?? Récupération depuis l\'historique...');
                     const historyData = JSON.parse(history);
                     if (historyData.length > 0) {
                         localStorage.setItem('vaManagerProData', JSON.stringify(historyData[0].data));
@@ -6047,7 +6150,7 @@ Pass: email_pwd
                         JSON.parse(mainData);
                     }
                 } catch (e) {
-                    console.error('❌ Données corrompues détectées');
+                    console.error('? Données corrompues détectées');
                     if (backupData) {
                         const backup = JSON.parse(backupData);
                         localStorage.setItem('vaManagerProData', JSON.stringify(backup.data));
@@ -6078,7 +6181,7 @@ Pass: email_pwd
         
         // Initialize
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Initializing VA Manager...');
+            console.log('?? Initializing VA Manager...');
             
             loadDarkModePreference();
             
@@ -6094,18 +6197,18 @@ Pass: email_pwd
                 return;
             }
             
-            console.log('📋 Setting up event listeners...');
+            console.log('?? Setting up event listeners...');
             setupEventListeners();
             
             // Vérifier que les boutons de navigation sont bien configurés
             const navButtons = document.querySelectorAll('.nav-btn');
-            console.log(`✅ Found ${navButtons.length} navigation buttons`);
+            console.log(`? Found ${navButtons.length} navigation buttons`);
             navButtons.forEach(btn => {
                 const page = btn.dataset.page;
                 if (page) {
-                    console.log(`  ➡️ Button "${btn.textContent.trim()}" -> page: ${page}`);
+                    console.log(`  ?? Button "${btn.textContent.trim()}" -> page: ${page}`);
                 } else {
-                    console.log(`  ⚠️ Button "${btn.textContent.trim()}" has no data-page attribute`);
+                    console.log(`  ?? Button "${btn.textContent.trim()}" has no data-page attribute`);
                 }
             });
             
@@ -6125,14 +6228,14 @@ Pass: email_pwd
             if (revenueDate) revenueDate.value = new Date().toISOString().split('T')[0];
             if (paymentDate) paymentDate.value = new Date().toISOString().split('T')[0];
             
-            console.log('✅ Initialization complete');
+            console.log('? Initialization complete');
 
             // Charger bannière des changements de statut
             setTimeout(() => { loadStatusChangesBanner(); }, 800);
 
             // Fonction pour corriger les comptes sans assignedVaId
             window.fixMissingAssignedVaId = function() {
-                console.log('🔧 Correction des comptes sans assignedVaId...');
+                console.log('?? Correction des comptes sans assignedVaId...');
                 let fixed = 0;
                 
                 if (data.creators) {
@@ -6144,7 +6247,7 @@ Pass: email_pwd
                                 if (!account.assignedVaId) {
                                     account.assignedVaId = vaId;
                                     fixed++;
-                                    console.log(`✅ Assigné ${account.username} au VA ${vaId}`);
+                                    console.log(`? Assigné ${account.username} au VA ${vaId}`);
                                 }
                             });
                         }
@@ -6154,9 +6257,9 @@ Pass: email_pwd
                 if (fixed > 0) {
                     saveData();
                     updateDisplay();
-                    console.log(`✅ ${fixed} compte(s) corrigé(s) !`);
+                    console.log(`? ${fixed} compte(s) corrigé(s) !`);
                 } else {
-                    console.log('✅ Tous les comptes ont déjà un assignedVaId');
+                    console.log('? Tous les comptes ont déjà un assignedVaId');
                 }
             };
             
@@ -6165,14 +6268,14 @@ Pass: email_pwd
             
             // Fonction de diagnostic pour comprendre le problème des comptes multi-VA
             window.diagnoseLauraBptss = function() {
-                console.log('\n🔍 DIAGNOSTIC COMPLET POUR LAURABPTSS');
+                console.log('\n?? DIAGNOSTIC COMPLET POUR LAURABPTSS');
                 console.log('=====================================\n');
                 
                 // 1. Chercher toutes les créatrices avec "laura" dans le nom
-                console.log('1️⃣ TOUTES LES CRÉATRICES "LAURA":');
+                console.log('1?? TOUTES LES CRÉATRICES "LAURA":');
                 data.creators.forEach(creator => {
                     if (creator.name.toLowerCase().includes('laura')) {
-                        console.log(`\n👤 Créatrice: ${creator.name} (ID: ${creator.id})`);
+                        console.log(`\n?? Créatrice: ${creator.name} (ID: ${creator.id})`);
                         console.log(`   - vaIds: ${JSON.stringify(creator.vaIds)}`);
                         
                         // Afficher les noms des VAs
@@ -6200,7 +6303,7 @@ Pass: email_pwd
                 });
                 
                 // 2. Chercher spécifiquement laurabptss
-                console.log('\n2️⃣ RECHERCHE SPÉCIFIQUE DE @laurabptss:');
+                console.log('\n2?? RECHERCHE SPÉCIFIQUE DE @laurabptss:');
                 let foundLaurabptss = false;
                 
                 data.creators.forEach(creator => {
@@ -6208,13 +6311,13 @@ Pass: email_pwd
                         creator.accounts.forEach(account => {
                             if (account.username.toLowerCase().includes('laurabptss')) {
                                 foundLaurabptss = true;
-                                console.log(`\n✅ TROUVÉ dans créatrice: ${creator.name}`);
+                                console.log(`\n? TROUVÉ dans créatrice: ${creator.name}`);
                                 console.log(`   - Username exact: "${account.username}"`);
                                 console.log(`   - assignedVaId: ${account.assignedVaId || 'NON DÉFINI'}`);
                                 console.log(`   - Créatrice vaIds: ${JSON.stringify(creator.vaIds)}`);
                                 
                                 if (creator.vaIds && creator.vaIds.length > 1) {
-                                    console.log(`   ⚠️ PROBLÈME: Cette créatrice est sur ${creator.vaIds.length} VAs !`);
+                                    console.log(`   ?? PROBLÈME: Cette créatrice est sur ${creator.vaIds.length} VAs !`);
                                 }
                             }
                         });
@@ -6222,17 +6325,17 @@ Pass: email_pwd
                 });
                 
                 if (!foundLaurabptss) {
-                    console.log('❌ @laurabptss non trouvé dans les comptes');
+                    console.log('? @laurabptss non trouvé dans les comptes');
                 }
                 
                 // 3. Vérifier aussi dans data.twitterAccounts
-                console.log('\n3️⃣ VÉRIFICATION DANS data.twitterAccounts:');
+                console.log('\n3?? VÉRIFICATION DANS data.twitterAccounts:');
                 if (data.twitterAccounts) {
                     const twitterAccount = data.twitterAccounts.find(ta => 
                         ta.username && ta.username.toLowerCase().includes('laurabptss')
                     );
                     if (twitterAccount) {
-                        console.log('✅ Trouvé dans twitterAccounts:');
+                        console.log('? Trouvé dans twitterAccounts:');
                         console.log(`   - Username: ${twitterAccount.username}`);
                         console.log(`   - vaId: ${twitterAccount.vaId || 'NON DÉFINI'}`);
                         console.log(`   - creatorId: ${twitterAccount.creatorId || 'NON DÉFINI'}`);
@@ -6240,7 +6343,7 @@ Pass: email_pwd
                 }
                 
                 // 4. Afficher tous les VAs
-                console.log('\n4️⃣ LISTE DES VAs:');
+                console.log('\n4?? LISTE DES VAs:');
                 data.vas.forEach(va => {
                     console.log(`   - ${va.name} (ID: ${va.id})`);
                 });
@@ -6251,7 +6354,7 @@ Pass: email_pwd
             
             // Fonction de nettoyage pour supprimer les doublons avec "s"
             window.removeDuplicatesWithS = function() {
-                console.log('🧹 Recherche de comptes dupliqués avec "s"...');
+                console.log('?? Recherche de comptes dupliqués avec "s"...');
                 let removed = 0;
                 
                 data.creators.forEach(creator => {
@@ -6268,7 +6371,7 @@ Pass: email_pwd
                             );
                             
                             if (baseExists && account.username.endsWith('s') && account.username !== baseUsername) {
-                                console.log(`🗑️ Suppression du doublon: ${account.username} (base: ${baseUsername})`);
+                                console.log(`??? Suppression du doublon: ${account.username} (base: ${baseUsername})`);
                                 toRemove.push(index);
                                 removed++;
                             }
@@ -6286,7 +6389,7 @@ Pass: email_pwd
                     updateDisplay();
                     showSuccess(`${removed} doublon(s) supprimé(s)!`);
                 } else {
-                    console.log('✅ Aucun doublon trouvé');
+                    console.log('? Aucun doublon trouvé');
                 }
             };
             
@@ -6298,7 +6401,7 @@ Pass: email_pwd
                     return;
                 }
                 
-                console.log(`🔄 Séparation de ${creatorName} en ${creator.vaIds.length} créatrices distinctes...`);
+                console.log(`?? Séparation de ${creatorName} en ${creator.vaIds.length} créatrices distinctes...`);
                 
                 // Pour chaque VA, créer une nouvelle créatrice avec ses comptes
                 const newCreators = [];
@@ -6313,7 +6416,7 @@ Pass: email_pwd
                         };
                         
                         // Demander quels comptes assigner à ce VA
-                        console.log(`\n🏢 Pour ${va.name}, quels comptes assigner ?`);
+                        console.log(`\n?? Pour ${va.name}, quels comptes assigner ?`);
                         if (creator.accounts) {
                             creator.accounts.forEach((acc, i) => {
                                 console.log(`   ${i}: ${acc.username}`);
@@ -6330,7 +6433,7 @@ Pass: email_pwd
                     newCreators: newCreators
                 };
                 
-                console.log('\n📌 Utilisez assignAccountsToSplit() pour assigner les comptes:');
+                console.log('\n?? Utilisez assignAccountsToSplit() pour assigner les comptes:');
                 console.log('Exemple: assignAccountsToSplit("hugo", [0]) pour assigner le compte 0 à Hugo');
                 console.log('         assignAccountsToSplit("fifi", [1]) pour assigner le compte 1 à Fifi');
                 
@@ -6357,7 +6460,7 @@ Pass: email_pwd
                 accountIndices.forEach(index => {
                     if (window.tempSplit.original.accounts[index]) {
                         targetCreator.creator.accounts.push(window.tempSplit.original.accounts[index]);
-                        console.log(`✅ ${window.tempSplit.original.accounts[index].username} assigné à ${vaName}`);
+                        console.log(`? ${window.tempSplit.original.accounts[index].username} assigné à ${vaName}`);
                     }
                 });
             };
@@ -6380,7 +6483,7 @@ Pass: email_pwd
                         data.creators.push(nc.creator);
                     });
                     
-                    console.log('✅ Séparation terminée !');
+                    console.log('? Séparation terminée !');
                     saveData();
                     updateDisplay();
                     updateAllCreatorsTable();
@@ -6393,11 +6496,11 @@ Pass: email_pwd
             
             // Fonction de diagnostic pour analyser les créatrices et leurs comptes
             window.analyzeCreators = function() {
-                console.log('📊 Analyse des créatrices et leurs comptes:');
+                console.log('?? Analyse des créatrices et leurs comptes:');
                 console.log('='.repeat(50));
                 
                 data.creators.forEach(creator => {
-                    console.log(`\n👤 Créatrice: ${creator.name}`);
+                    console.log(`\n?? Créatrice: ${creator.name}`);
                     console.log(`   ID: ${creator.id}`);
                     console.log(`   VAs associés: ${creator.vaIds ? creator.vaIds.map(id => data.vas.find(v => v.id === id)?.name).join(', ') : 'Aucun'}`);
                     console.log(`   Nombre de comptes: ${creator.accounts ? creator.accounts.length : 0}`);
@@ -6409,15 +6512,15 @@ Pass: email_pwd
                     }
                 });
                 
-                console.log('\n📍 Vue par VA:');
+                console.log('\n?? Vue par VA:');
                 console.log('='.repeat(50));
                 
                 data.vas.forEach(va => {
-                    console.log(`\n🏢 VA: ${va.name}`);
+                    console.log(`\n?? VA: ${va.name}`);
                     const vaCreators = data.creators.filter(c => c.vaIds && c.vaIds.includes(va.id));
                     
                     vaCreators.forEach(creator => {
-                        console.log(`   👤 ${creator.name}: ${creator.accounts ? creator.accounts.length : 0} comptes`);
+                        console.log(`   ?? ${creator.name}: ${creator.accounts ? creator.accounts.length : 0} comptes`);
                         if (creator.accounts) {
                             creator.accounts.forEach(acc => {
                                 console.log(`      - ${acc.username}`);
@@ -6429,7 +6532,7 @@ Pass: email_pwd
             
             // Exposer la fonction de récupération dans la console
             window.recoverTwitterAccounts = function() {
-                console.log('🔧 Récupération manuelle des comptes Twitter...');
+                console.log('?? Récupération manuelle des comptes Twitter...');
                 const result = recoverLostTwitterAccounts();
                 if (result) {
                     updateDisplay();
@@ -6442,14 +6545,14 @@ Pass: email_pwd
             
             // Fonction pour transférer un compte Twitter d'un VA à un autre
             window.transferTwitterAccount = function(username, fromVAName, toVAName) {
-                console.log(`🔄 Transfert de ${username} de ${fromVAName} vers ${toVAName}...`);
+                console.log(`?? Transfert de ${username} de ${fromVAName} vers ${toVAName}...`);
                 
                 // Trouver les VAs
                 const fromVA = data.vas.find(v => v.name.toLowerCase() === fromVAName.toLowerCase());
                 const toVA = data.vas.find(v => v.name.toLowerCase() === toVAName.toLowerCase());
                 
                 if (!fromVA || !toVA) {
-                    console.error('❌ VA source ou destination non trouvé');
+                    console.error('? VA source ou destination non trouvé');
                     return false;
                 }
                 
@@ -6471,12 +6574,12 @@ Pass: email_pwd
                 });
                 
                 if (!targetCreator || !targetAccount) {
-                    console.error(`❌ Compte ${username} non trouvé pour ${fromVAName}`);
+                    console.error(`? Compte ${username} non trouvé pour ${fromVAName}`);
                     return false;
                 }
                 
                 // Transférer le VA
-                console.log(`✅ Compte trouvé: ${targetAccount.username} (créatrice: ${targetCreator.name})`);
+                console.log(`? Compte trouvé: ${targetAccount.username} (créatrice: ${targetCreator.name})`);
                 
                 // Retirer l'ancien VA
                 const fromIndex = targetCreator.vaIds.indexOf(fromVA.id);
@@ -6489,7 +6592,7 @@ Pass: email_pwd
                     targetCreator.vaIds.push(toVA.id);
                 }
                 
-                console.log(`✅ Transfert effectué !`);
+                console.log(`? Transfert effectué !`);
                 console.log(`   Créatrice ${targetCreator.name} est maintenant associée à: ${targetCreator.vaIds.map(id => data.vas.find(v => v.id === id)?.name).join(', ')}`);
                 
                 // Sauvegarder et mettre à jour
@@ -6502,7 +6605,7 @@ Pass: email_pwd
             
             // Fonction pour fusionner les créatrices dupliquées
             window.mergeDuplicateCreators = function() {
-                console.log('🔄 Recherche de créatrices dupliquées...');
+                console.log('?? Recherche de créatrices dupliquées...');
                 
                 const creatorsByName = {};
                 const toRemove = [];
@@ -6518,7 +6621,7 @@ Pass: email_pwd
                 // Fusionner les doublons
                 Object.keys(creatorsByName).forEach(name => {
                     if (creatorsByName[name].length > 1) {
-                        console.log(`📌 Trouvé ${creatorsByName[name].length} instances de "${name}"`);
+                        console.log(`?? Trouvé ${creatorsByName[name].length} instances de "${name}"`);
                         
                         // Garder la première et fusionner les autres
                         const main = creatorsByName[name][0].creator;
@@ -6552,7 +6655,7 @@ Pass: email_pwd
                             toRemove.push(creatorsByName[name][i].index);
                         }
                         
-                        console.log(`✅ Fusionné dans une seule instance avec VAs: [${main.vaIds.join(', ')}]`);
+                        console.log(`? Fusionné dans une seule instance avec VAs: [${main.vaIds.join(', ')}]`);
                     }
                 });
                 
@@ -6562,12 +6665,12 @@ Pass: email_pwd
                 });
                 
                 if (toRemove.length > 0) {
-                    console.log(`🎉 ${toRemove.length} doublons supprimés`);
+                    console.log(`?? ${toRemove.length} doublons supprimés`);
                     saveData();
                     updateDisplay();
                     updateAllCreatorsTable();
                 } else {
-                    console.log('✅ Aucun doublon trouvé');
+                    console.log('? Aucun doublon trouvé');
                 }
                 
                 return toRemove.length;
@@ -6575,14 +6678,14 @@ Pass: email_pwd
             
             // Fonction de diagnostic pour voir ce qu'il y a dans localStorage
             window.debugStorage = function() {
-                console.log('🔍 Contenu de localStorage:');
+                console.log('?? Contenu de localStorage:');
                 const keys = Object.keys(localStorage);
                 console.log(`Total: ${keys.length} clés`);
                 
                 keys.forEach(key => {
                     if (key.includes('vaManager')) {
                         const value = localStorage.getItem(key);
-                        console.log(`\n📦 ${key}:`);
+                        console.log(`\n?? ${key}:`);
                         try {
                             const data = JSON.parse(value);
                             let twitterCount = 0;
@@ -6609,7 +6712,7 @@ Pass: email_pwd
             
             // Auto-fix navigation après le chargement
             setTimeout(() => {
-                console.log('🔧 Auto-fixing navigation...');
+                console.log('?? Auto-fixing navigation...');
                 window.fixNav();
             }, 500);
             
@@ -6620,6 +6723,25 @@ Pass: email_pwd
         });
 
         // ========== DATABASE SYSTEM ==========
+        function getActiveOrgStorageKey(suffix = '') {
+            const org = currentViewOrg || ORG_ID || 'anonymous';
+            return `vaManagerProData:${org}${suffix}`;
+        }
+
+        function createEmptyDataSet() {
+            return {
+                vas: [],
+                subs: [],
+                revenues: [],
+                payments: [],
+                vaPayments: [],
+                gmailAccounts: [],
+                creators: [],
+                twitterAccounts: [],
+                instagramAccounts: [],
+                twitterStats: []
+            };
+        }
         
         class FileSystemDB {
             constructor() {
@@ -6634,7 +6756,7 @@ Pass: email_pwd
                 
                 try {
                     // File System API désactivé - utiliser uniquement localStorage
-                    console.log('📌 Système de fichiers désactivé - utilisation de localStorage uniquement');
+                    console.log('?? Système de fichiers désactivé - utilisation de localStorage uniquement');
                     this.fallbackToLocalStorage();
                     this.isInitialized = true;
                 } catch (error) {
@@ -6644,16 +6766,16 @@ Pass: email_pwd
             }
             
             async migrateFromLocalStorage() {
-                const savedData = localStorage.getItem('vaManagerProData');
+                const savedData = localStorage.getItem(getActiveOrgStorageKey());
                 
                 // Only migrate if user hasn't already migrated (check for migration flag)
                 const migrationDone = localStorage.getItem('migrationToFileSystemDone');
                 if (savedData && !migrationDone) {
-                    console.log('🔄 Migration disponible mais pas automatique - utilisez le bouton "Migrer vers Fichiers"');
+                    console.log('?? Migration disponible mais pas automatique - utilisez le bouton "Migrer vers Fichiers"');
                 } else if (migrationDone) {
-                    console.log('✅ Migration déjà effectuée');
+                    console.log('? Migration déjà effectuée');
                 } else {
-                    console.log('ℹ️ Aucune donnée à migrer');
+                    console.log('?? Aucune donnée à migrer');
                 }
             }
             
@@ -6666,33 +6788,33 @@ Pass: email_pwd
                 // For normal saves, always use localStorage only
                 const currentData = this.loadFromLocalStorage();
                 currentData.vas = vasData;
-                localStorage.setItem('vaManagerProData', JSON.stringify(currentData));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(currentData));
             }
             
             async saveSubs(subsData) {
                 // For normal saves, always use localStorage only
                 const currentData = this.loadFromLocalStorage();
                 currentData.subs = subsData;
-                localStorage.setItem('vaManagerProData', JSON.stringify(currentData));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(currentData));
             }
             
             async saveRevenues(revenuesData) {
                 // For normal saves, always use localStorage only
                 const currentData = this.loadFromLocalStorage();
                 currentData.revenues = revenuesData;
-                localStorage.setItem('vaManagerProData', JSON.stringify(currentData));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(currentData));
             }
             
             async savePayments(paymentsData) {
                 // For normal saves, always use localStorage only
                 const currentData = this.loadFromLocalStorage();
                 currentData.vaPayments = paymentsData;
-                localStorage.setItem('vaManagerProData', JSON.stringify(currentData));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(currentData));
             }
             
             async saveAllData() {
                 // Always use localStorage for normal saves
-                localStorage.setItem('vaManagerProData', JSON.stringify(data));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(data));
                 
                 // File system downloads only on manual migration
                 return Promise.resolve();
@@ -6700,7 +6822,7 @@ Pass: email_pwd
             
             downloadJSON(filename, jsonData) {
                 // DÉSACTIVÉ - Ne pas télécharger automatiquement
-                console.log(`📌 Téléchargement désactivé pour: ${filename}`);
+                console.log(`?? Téléchargement désactivé pour: ${filename}`);
                 return Promise.resolve();
             }
             
@@ -6759,7 +6881,7 @@ Pass: email_pwd
             }
             
             loadFromLocalStorage() {
-                const savedData = localStorage.getItem('vaManagerProData');
+                const savedData = localStorage.getItem(getActiveOrgStorageKey());
                 return savedData ? JSON.parse(savedData) : {
                     vas: [],
                     subs: [],
@@ -6803,17 +6925,17 @@ Pass: email_pwd
                 
                 // Si pas de données, essayer les backups
                 if (!rawData) {
-                    console.log('💾 Recherche dans les sauvegardes...');
+                    console.log('?? Recherche dans les sauvegardes...');
                     const backupKeys = Object.keys(localStorage).filter(key => key.startsWith('vaManager_backup_'));
                     
                     if (backupKeys.length > 0) {
                         // Trier par date (le plus récent en premier)
                         backupKeys.sort().reverse();
-                        console.log(`📦 ${backupKeys.length} sauvegardes trouvées`);
+                        console.log(`?? ${backupKeys.length} sauvegardes trouvées`);
                         
                         // Essayer avec la sauvegarde la plus récente
                         rawData = localStorage.getItem(backupKeys[0]);
-                        console.log(`📂 Utilisation de la sauvegarde: ${backupKeys[0]}`);
+                        console.log(`?? Utilisation de la sauvegarde: ${backupKeys[0]}`);
                     }
                 }
                 
@@ -6843,7 +6965,7 @@ Pass: email_pwd
                                         accounts: []
                                     };
                                     data.creators.push(creator);
-                                    console.log(`✅ Créatrice "${creator.name}" recréée`);
+                                    console.log(`? Créatrice "${creator.name}" recréée`);
                                 }
                                 
                                 // Récupérer les comptes
@@ -6855,7 +6977,7 @@ Pass: email_pwd
                                     if (!exists) {
                                         creator.accounts.push(account);
                                         recoveredAccounts++;
-                                        console.log(`  ✅ Compte récupéré: ${account.username}`);
+                                        console.log(`  ? Compte récupéré: ${account.username}`);
                                     }
                                 });
                                 
@@ -6870,15 +6992,15 @@ Pass: email_pwd
                 });
                 
                 if (recoveredAccounts > 0) {
-                    console.log(`🎉 ${recoveredAccounts} comptes Twitter récupérés !`);
+                    console.log(`?? ${recoveredAccounts} comptes Twitter récupérés !`);
                     return true;
                 } else {
-                    console.log('❌ Aucun compte Twitter trouvé à récupérer');
+                    console.log('? Aucun compte Twitter trouvé à récupérer');
                     return false;
                 }
                 
             } catch (error) {
-                console.error('❌ Erreur lors de la récupération:', error);
+                console.error('? Erreur lors de la récupération:', error);
                 return false;
             }
         }
@@ -6902,9 +7024,9 @@ Pass: email_pwd
             }
 
             if (supabaseData) {
-                console.log('✅ Data loaded from Supabase');
+                console.log('? Data loaded from Supabase');
             } else {
-                console.log('📦 Data loaded from localStorage (fallback)');
+                console.log('?? Data loaded from localStorage (fallback)');
             }
             
             data.vas = loadedData.vas || [];
@@ -6926,7 +7048,7 @@ Pass: email_pwd
             
             // Migration complète des créatrices vers la nouvelle structure
             if (!loadedData.creators || loadedData.creators.length === 0) {
-                console.log('🔄 Migration des créatrices vers la nouvelle structure...');
+                console.log('?? Migration des créatrices vers la nouvelle structure...');
                 data.creators = [];
                 const creatorMapping = {}; // Pour garder la correspondance des IDs
                 
@@ -6973,7 +7095,7 @@ Pass: email_pwd
                     }
                 });
                 
-                console.log(`✅ Migration terminée: ${data.creators.length} créatrices migrées`);
+                console.log(`? Migration terminée: ${data.creators.length} créatrices migrées`);
                 saveData(); // Sauvegarder immédiatement après migration
             }
             
@@ -6986,19 +7108,19 @@ Pass: email_pwd
             const directTwitterAccounts = (data.twitterAccounts || []).length;
             const totalAccounts = Math.max(linkedTwitterAccounts, directTwitterAccounts);
 
-            console.log(`✅ Données: ${data.vas.length} VAs · ${totalCreators} créatrices · ${totalAccounts} comptes Twitter · ${data.gmailAccounts.length} Gmails`);
+            console.log(`? Données: ${data.vas.length} VAs · ${totalCreators} créatrices · ${totalAccounts} comptes Twitter · ${data.gmailAccounts.length} Gmails`);
         }
 
         // Save data with new system
         async function saveData() {
-            console.log('💾 SAVE DATA - Début de la sauvegarde...');
+            console.log('?? SAVE DATA - Début de la sauvegarde...');
             try {
                 // Reconstruire les creators des VAs avant de sauvegarder
-                console.log('  🔧 Reconstruction des creators des VAs...');
+                console.log('  ?? Reconstruction des creators des VAs...');
                 rebuildVACreators();
                 
                 // Marquer que les données ont été modifiées
-                console.log('  📝 Marquage des données comme modifiées...');
+                console.log('  ?? Marquage des données comme modifiées...');
                 markDataModified();
                 
                 // Animation de sauvegarde
@@ -7013,20 +7135,20 @@ Pass: email_pwd
                     timestamp: new Date().toISOString(),
                     data: data
                 };
-                localStorage.setItem('vaManagerProData', JSON.stringify(data));
-                localStorage.setItem('vaManagerProData_backup', JSON.stringify(backupData));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(data));
+                localStorage.setItem(getActiveOrgStorageKey('_backup'), JSON.stringify(backupData));
                 
                 // Historique des sauvegardes (garder les 10 dernières)
                 updateBackupHistory(backupData);
                 
-                // Sync to Supabase (debounced)
-                debouncedSupabaseSave();
+                // Sync to Supabase before confirming the save, so refresh cannot lose new data.
+                await syncToSupabase();
 
-                console.log('  ✅ Sauvegarde complétée');
-                console.log('  🔄 Mise à jour de l\'affichage...');
+                console.log('  ? Sauvegarde complétée');
+                console.log('  ?? Mise à jour de l\'affichage...');
                 updateDisplay();
                 updateSaveStatus('saved');
-                console.log('💾 SAVE DATA - Terminé');
+                console.log('?? SAVE DATA - Terminé');
                 
                 // Auto backup toutes les heures
                 const lastBackup = localStorage.getItem('lastAutoBackup');
@@ -7040,9 +7162,13 @@ Pass: email_pwd
             } catch (error) {
                 console.error('Erreur sauvegarde:', error);
                 updateSaveStatus('error');
+                if (typeof showError === 'function') {
+                    showError('Sauvegarde impossible : ' + String(error?.message || error));
+                }
                 // Fallback to localStorage only
-                localStorage.setItem('vaManagerProData', JSON.stringify(data));
+                localStorage.setItem(getActiveOrgStorageKey(), JSON.stringify(data));
                 updateDisplay();
+                throw error;
             }
         }
         
@@ -7141,7 +7267,7 @@ Pass: email_pwd
             try {
                 // Sauvegarder dans localStorage au lieu de télécharger
                 localStorage.setItem(`vaManagerProBackup_${timestamp}`, JSON.stringify(backupData));
-                console.log('✅ Sauvegarde automatique créée dans localStorage');
+                console.log('? Sauvegarde automatique créée dans localStorage');
                 
                 // Nettoyer les vieilles sauvegardes (garder seulement les 5 dernières)
                 const backupKeys = Object.keys(localStorage).filter(k => k.startsWith('vaManagerProBackup_')).sort();
@@ -7150,7 +7276,7 @@ Pass: email_pwd
                     toRemove.forEach(key => localStorage.removeItem(key));
                 }
             } catch (error) {
-                console.warn('❌ Échec sauvegarde auto:', error);
+                console.warn('? Échec sauvegarde auto:', error);
             }
         }
         
@@ -7218,10 +7344,10 @@ Pass: email_pwd
                 localStorage.setItem('migrationToFileSystemDone', 'true');
                 
                 // Show success message
-                alert('✅ Migration terminée !\n\nTous vos fichiers ont été téléchargés.\nDéplacez-les dans : D:\\claude\\va_manager\\database\\');
+                alert('? Migration terminée !\n\nTous vos fichiers ont été téléchargés.\nDéplacez-les dans : D:\\claude\\va_manager\\database\\');
                 
             } catch (error) {
-                alert('❌ Erreur lors de la migration : ' + error.message);
+                alert('? Erreur lors de la migration : ' + error.message);
             }
         }
 
@@ -7573,7 +7699,7 @@ Pass: email_pwd
             }
             
             if (totalOrphans === 0) {
-                reportHtml += '<p style="color: #10b981;">✅ Aucune donnée orpheline détectée!</p>';
+                reportHtml += '<p style="color: #10b981;">? Aucune donnée orpheline détectée!</p>';
             } else {
                 reportHtml += `<hr><p><strong>Total:</strong> ${totalOrphans} données orphelines`;
                 reportHtml += ` <button onclick="cleanAllOrphanData()" class="btn-danger">Tout nettoyer</button></p>`;
@@ -7684,7 +7810,7 @@ Pass: email_pwd
         
         // Calculate all statistics in one pass
         function calculateGlobalStatistics() {
-            console.log('    📈 CalculateGlobalStatistics - Début...');
+            console.log('    ?? CalculateGlobalStatistics - Début...');
             const stats = {
                 vas: data.vas.length,
                 creators: data.creators ? data.creators.length : 0,
@@ -7716,7 +7842,7 @@ Pass: email_pwd
         
         // Update display with unified system
         function updateDisplay() {
-            console.log('🎨 UPDATE DISPLAY - Début...');
+            console.log('?? UPDATE DISPLAY - Début...');
             const stats = calculateGlobalStatistics();
 
             // Update global stats
@@ -7725,7 +7851,7 @@ Pass: email_pwd
             document.getElementById('total-accounts').textContent = stats.twitterTotal;
 
             // Debug pour vérifier les VAs
-            console.log('  📊 Statistiques globales:', {
+            console.log('  ?? Statistiques globales:', {
                 totalVAs: stats.vas,
                 totalCreators: stats.creators,
                 totalTwitter: stats.twitterTotal,
@@ -7736,7 +7862,7 @@ Pass: email_pwd
             document.getElementById('month-revenue').textContent = stats.monthlyRevenue.toFixed(2) + '€';
             
             // Update other displays
-            console.log('  🔄 Mise à jour des composants...');
+            console.log('  ?? Mise à jour des composants...');
             console.log('    - Mise à jour stats créatrices...');
             updateCreatorsStats();
             console.log('    - Mise à jour grille VAs...');
@@ -7756,7 +7882,7 @@ Pass: email_pwd
             console.log('    - Mise à jour analyse Twitter...');
             updateTwitterAnalytics();
             try { renderShadowbanStats(); } catch(e) { console.warn('renderShadowbanStats', e); }
-            console.log('🎨 UPDATE DISPLAY - Terminé');
+            console.log('?? UPDATE DISPLAY - Terminé');
         }
 
         // Update monthly revenue on dashboard
@@ -8540,6 +8666,71 @@ Pass: email_pwd
             list.classList.toggle('expanded');
         }
 
+        const accountSortModes = {};
+
+        function getAccountSortKey(vaId, creatorId) {
+            return `${vaId}::${creatorId}`;
+        }
+
+        function getAccountFollowersValue(account) {
+            const stats = getLatestTwitterStats(account.username);
+            return typeof stats?.followers === 'number' ? stats.followers : -1;
+        }
+
+        function sortAccountsForCard(accounts, sortMode) {
+            const statusOrder = { active: 0, shadowban: 1, banned: 2 };
+            return [...accounts].sort((a, b) => {
+                if (sortMode === 'followers-desc') {
+                    return getAccountFollowersValue(b) - getAccountFollowersValue(a);
+                }
+                if (sortMode === 'followers-asc') {
+                    return getAccountFollowersValue(a) - getAccountFollowersValue(b);
+                }
+                return (statusOrder[a.status || 'active'] ?? 2) - (statusOrder[b.status || 'active'] ?? 2);
+            });
+        }
+
+        function setAccountSortMode(vaId, creatorId, mode) {
+            accountSortModes[getAccountSortKey(vaId, creatorId)] = mode || 'status';
+            updateVAGrid();
+        }
+
+        const VA_WEEKLY_RATE_PER_ACCOUNT_USD = 10;
+
+        function getCurrentWeekProgress() {
+            const today = new Date();
+            const day = today.getDay() || 7;
+            const start = new Date(today);
+            start.setHours(0, 0, 0, 0);
+            start.setDate(start.getDate() - day + 1);
+            const end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            const elapsedDays = Math.min(7, Math.max(1, Math.floor((today - start) / 86400000) + 1));
+
+            return {
+                start,
+                end,
+                elapsedDays,
+                label: `${start.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} - ${end.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}`
+            };
+        }
+
+        function calculateVAPayroll(accountsCount) {
+            const week = getCurrentWeekProgress();
+            const weeklyDue = accountsCount * VA_WEEKLY_RATE_PER_ACCOUNT_USD;
+            const dailyRate = weeklyDue / 7;
+            const dueToDate = dailyRate * week.elapsedDays;
+
+            return {
+                accountsCount,
+                weeklyDue,
+                dailyRate,
+                dueToDate,
+                elapsedDays: week.elapsedDays,
+                periodLabel: week.label
+            };
+        }
+
         // Create VA card
         function createVACard(va) {
             const card = document.createElement('div');
@@ -8619,11 +8810,11 @@ Pass: email_pwd
                 else if (totalCount >= 10) badgeColor = '#dc2626'; // Rouge foncé si 10+
                 else if (totalCount >= 5) badgeColor = '#f59e0b'; // Orange si 5+
                 
-                // Sort accounts by status: active first, shadowban, then banned
-                const statusOrder = { active: 0, shadowban: 1, banned: 2 };
-                filteredAccounts.sort((a, b) => (statusOrder[a.status || 'active'] ?? 2) - (statusOrder[b.status || 'active'] ?? 2));
+                const sortKey = getAccountSortKey(va.id, creator.id);
+                const sortMode = accountSortModes[sortKey] || 'status';
+                const sortedAccounts = sortAccountsForCard(filteredAccounts, sortMode);
 
-                const accountsHtml = filteredAccounts.length > 0 ? filteredAccounts.map((account, index) => {
+                const accountsHtml = sortedAccounts.length > 0 ? sortedAccounts.map((account, index) => {
                     // Trouver l'index réel dans la liste complète des comptes
                     const realIndex = creator.accounts.findIndex(acc => acc.id === account.id);
                     
@@ -8651,7 +8842,7 @@ Pass: email_pwd
                     // Creer l'URL Twitter - enlever le @ du username
                     const twitterUrl = `https://twitter.com/${account.username.replace('@', '')}`;
 
-                    return `<div class="twitter-account-chip ${index >= 5 ? 'mobile-extra-account' : ''}">
+                    return `<div class="twitter-account-chip ${index >= 5 ? 'mobile-extra-account' : ''} ${index >= 8 ? 'desktop-extra-account' : ''}">
                         <button onclick="openStatusModal('${account.id || account.username}')"
                                 class="twitter-status-btn"
                                 style="--status-color:${getStatusButtonBg(account.status)};"
@@ -8671,6 +8862,14 @@ Pass: email_pwd
                         </a>
                         <div class="twitter-chip-action-row">
                             <div class="twitter-chip-quick-actions">
+                                <button onclick="event.preventDefault(); event.stopPropagation(); copyTwitterCredentialsForVA('${account.id || account.username}')"
+                                        class="twitter-chip-action"
+                                        style="background:rgba(34,197,94,0.14); color:#22c55e;"
+                                        title="Copier @ + mot de passe pour le VA"><i class="fas fa-copy"></i></button>
+                                <button onclick="event.preventDefault(); event.stopPropagation(); copyTwitter2FA('${account.id || account.username}')"
+                                        class="twitter-chip-action"
+                                        style="background:rgba(245,158,11,0.14); color:#f59e0b;"
+                                        title="Copier le code 2FA"><i class="fas fa-key"></i></button>
                                 <button onclick="event.preventDefault(); event.stopPropagation(); checkShadowban('${account.id || account.username}', this)"
                                         data-sb-check="${account.username}"
                                         class="twitter-chip-action"
@@ -8729,7 +8928,7 @@ Pass: email_pwd
                     <div class="creatrice-item">
                         <div class="creatrice-header">
                             <span class="creatrice-name">
-                                ⭐ ${creator.name} 
+                                ? ${creator.name} 
                                 <span style="background: ${badgeColor}; 
                                             color: white; 
                                             padding: 2px 8px; 
@@ -8744,6 +8943,11 @@ Pass: email_pwd
                                 </span>
                             </span>
                             <div class="actions">
+                                <select class="account-sort-control" onchange="setAccountSortMode('${va.id}', '${creator.id}', this.value)" title="Trier les comptes Twitter">
+                                    <option value="status" ${sortMode === 'status' ? 'selected' : ''}>Statut</option>
+                                    <option value="followers-desc" ${sortMode === 'followers-desc' ? 'selected' : ''}>Top</option>
+                                    <option value="followers-asc" ${sortMode === 'followers-asc' ? 'selected' : ''}>Bas</option>
+                                </select>
                                 <button class="action-btn view-btn" onclick="viewCreator('${va.id}', '${creator.id}')">
                                     <i class="fas fa-eye"></i> Voir
                                 </button>
@@ -8756,7 +8960,7 @@ Pass: email_pwd
                             ${accountsHtml || ''}
                             ${instagramHtml || ''}
                             ${accountsCount > 5 ? `
-                                <button type="button" class="mobile-show-more-accounts" onclick="toggleMobileAccounts(this)">
+                                <button type="button" class="mobile-show-more-accounts ${accountsCount > 8 ? 'desktop-needed' : ''}" onclick="toggleMobileAccounts(this)">
                                     <span class="show-more-label">Voir les ${accountsCount - 5} autres comptes</span>
                                     <span class="show-less-label">Réduire la liste</span>
                                 </button>
@@ -8767,10 +8971,13 @@ Pass: email_pwd
                 `;
             });
 
+            const managedAccounts = totalAccounts + totalInstagramAccounts;
+            const payroll = calculateVAPayroll(managedAccounts);
+
             card.innerHTML = `
                 <div class="va-header">
                     <div>
-                        <h3 class="va-name">👤 ${va.name}</h3>
+                        <h3 class="va-name">${va.name}</h3>
                         <div class="va-stats">
                             <span>${vaCreators.length} créatrice(s)</span>
                             <span>${totalAccounts + totalInstagramAccounts} compte(s)</span>
@@ -8782,6 +8989,24 @@ Pass: email_pwd
                         <button class="action-btn delete-btn" onclick="deleteVA('${va.id}')" title="Supprimer ce VA">
                             <i class="fas fa-trash"></i>
                         </button>
+                    </div>
+                </div>
+                <div style="padding: 1rem 1.5rem; border-bottom: 1px solid ${document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.08)' : '#e5e7eb'}; background: ${document.body.classList.contains('dark-mode') ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.06)'};">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.75rem; align-items: stretch;">
+                        <div style="padding: 0.75rem; border-radius: 0.65rem; background: ${document.body.classList.contains('dark-mode') ? 'rgba(15,23,42,0.45)' : '#ffffff'}; border: 1px solid ${document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.08)' : 'rgba(34,197,94,0.16)'};">
+                            <div style="font-size: 0.72rem; color: ${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'}; font-weight: 700; text-transform: uppercase;">Comptes gérés</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: ${document.body.classList.contains('dark-mode') ? '#dcfce7' : '#166534'};">${managedAccounts}</div>
+                        </div>
+                        <div style="padding: 0.75rem; border-radius: 0.65rem; background: ${document.body.classList.contains('dark-mode') ? 'rgba(15,23,42,0.45)' : '#ffffff'}; border: 1px solid ${document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.08)' : 'rgba(34,197,94,0.16)'};">
+                            <div style="font-size: 0.72rem; color: ${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'}; font-weight: 700; text-transform: uppercase;">À payer au jour</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #16a34a;">$${payroll.dueToDate.toFixed(2)}</div>
+                            <div style="font-size: 0.75rem; color: ${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'};">${payroll.elapsedDays}/7 jours · ${payroll.periodLabel}</div>
+                        </div>
+                        <div style="padding: 0.75rem; border-radius: 0.65rem; background: ${document.body.classList.contains('dark-mode') ? 'rgba(15,23,42,0.45)' : '#ffffff'}; border: 1px solid ${document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.08)' : 'rgba(34,197,94,0.16)'};">
+                            <div style="font-size: 0.72rem; color: ${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'}; font-weight: 700; text-transform: uppercase;">Semaine complète</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: ${document.body.classList.contains('dark-mode') ? '#f8fafc' : '#0f172a'};">$${payroll.weeklyDue.toFixed(2)}</div>
+                            <div style="font-size: 0.75rem; color: ${document.body.classList.contains('dark-mode') ? '#94a3b8' : '#64748b'};">$10 / compte / semaine</div>
+                        </div>
                     </div>
                 </div>
                 <div class="creatrice-section">
@@ -9060,7 +9285,7 @@ Pass: email_pwd
 
                     if (hasTwitter && hasInstagram) {
                         // Gmail complet - ne peut plus être utilisé
-                        statusText = ' ❌ COMPLET (Twitter + Instagram)';
+                        statusText = ' ? COMPLET (Twitter + Instagram)';
                         if (platform === 'twitter') {
                             option.disabled = gmail.assignedTwitterUsername !== null;
                         } else {
@@ -9069,22 +9294,22 @@ Pass: email_pwd
                     } else if (hasTwitter && !hasInstagram) {
                         // Gmail a Twitter mais Instagram disponible
                         if (platform === 'twitter') {
-                            statusText = ` ⚠️ (Déjà Twitter: ${gmail.assignedTwitterUsername})`;
+                            statusText = ` (Déjà Twitter: ${gmail.assignedTwitterUsername})`;
                             option.disabled = true;
                         } else {
-                            statusText = ' ✅ Instagram disponible';
+                            statusText = ' ? Instagram disponible';
                         }
                     } else if (!hasTwitter && hasInstagram) {
                         // Gmail a Instagram mais Twitter disponible
                         if (platform === 'instagram') {
-                            statusText = ` ⚠️ (Déjà Instagram: ${gmail.assignedInstagramUsername})`;
+                            statusText = ` (Déjà Instagram: ${gmail.assignedInstagramUsername})`;
                             option.disabled = true;
                         } else {
-                            statusText = ' ✅ Twitter disponible';
+                            statusText = ' ? Twitter disponible';
                         }
                     } else {
                         // Gmail complètement libre
-                        statusText = ' ✅ Disponible';
+                        statusText = ' ? Disponible';
                     }
 
                     option.textContent = gmail.email + statusText;
@@ -9333,6 +9558,10 @@ Pass: email_pwd
                                 </button>
                             ` : ''}
                             ${isAdmin() ? `
+                            <button class="action-btn" onclick="openEditTwitterAccount('${account.id || account.username}')"
+                                    style="background: #6366f1;" title="Modifier le @">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <button class="action-btn" onclick="showPasswordForAccount('${account.id || account.username}')"
                                     style="background: #1da1f2;" title="Mot de passe & 2FA">
                                 <i class="fas fa-key"></i>${account.twoFaSecret ? '<i class="fas fa-shield-alt" style="margin-left:2px;font-size:0.6rem;color:#22c55e;"></i>' : ''}
@@ -9564,7 +9793,7 @@ Pass: email_pwd
             }
             
             const options = availableGmailAccounts.map(acc => {
-                const label = acc.vaId ? acc.email : `${acc.email} 🔴 (non assigné)`;
+                const label = acc.vaId ? acc.email : `${acc.email} (non assigné)`;
                 return `<option value="${acc.id}">${label}</option>`;
             }).join('');
             
@@ -9573,15 +9802,13 @@ Pass: email_pwd
         }
 
         // Add VA - VERSION SIMPLE
-        function addVA(e) {
+        async function addVA(e) {
             e.preventDefault();
 
             const name = document.getElementById('va-name').value.trim();
 
             // UUID requis pour que la sync Supabase passe (la table vas exige un UUID)
-            const newId = (typeof crypto !== 'undefined' && crypto.randomUUID)
-                ? crypto.randomUUID()
-                : 'va_' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            const newId = generateUuid();
 
             const newVA = {
                 id: newId,
@@ -9589,7 +9816,7 @@ Pass: email_pwd
             };
 
             data.vas.push(newVA);
-            saveData();
+            await saveData();
             
             e.target.reset();
             showSuccess(`VA "${name}" ajouté avec succès!`);
@@ -9614,9 +9841,7 @@ Pass: email_pwd
             }
 
             // UUID requis pour que la sync Supabase passe (la table creators exige un UUID)
-            const newCreatorId = (typeof crypto !== 'undefined' && crypto.randomUUID)
-                ? crypto.randomUUID()
-                : 'creator_' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            const newCreatorId = generateUuid();
 
             const newCreator = {
                 id: newCreatorId,
@@ -9646,7 +9871,7 @@ Pass: email_pwd
             const associatedRevenues = data.revenues ? data.revenues.filter(r => r.vaId === vaId).length : 0;
             const associatedPayments = data.vaPayments ? data.vaPayments.filter(p => p.vaId === vaId).length : 0;
             
-            let confirmMessage = `⚠️ ATTENTION : Supprimer le VA "${va.name}" ?\n\n`;
+            let confirmMessage = `ATTENTION : Supprimer le VA "${va.name}" ?\n\n`;
             confirmMessage += `Cela supprimera DÉFINITIVEMENT :\n`;
             confirmMessage += `• ${totalCreators} créatrice(s)\n`;
             confirmMessage += `• ${totalAccounts} compte(s) Twitter\n`;
@@ -9661,7 +9886,7 @@ Pass: email_pwd
                 confirmMessage += `• ${associatedPayments} paiement(s)\n`;
             }
             
-            confirmMessage += `\n❌ Cette action est IRRÉVERSIBLE !`;
+            confirmMessage += `\n? Cette action est IRRÉVERSIBLE !`;
             
             if (!confirm(confirmMessage)) {
                 return;
@@ -9700,7 +9925,7 @@ Pass: email_pwd
                 updateDisplay();
                 
             } catch (error) {
-                alert(`❌ Erreur lors de la suppression : ${error.message}`);
+                alert(`? Erreur lors de la suppression : ${error.message}`);
                 console.error('Erreur suppression VA:', error);
             }
         }
@@ -9717,7 +9942,7 @@ Pass: email_pwd
             const associatedSubs = data.subs ? data.subs.filter(s => s.creatorId === creatorId).length : 0;
             const associatedRevenues = data.revenues ? data.revenues.filter(r => r.creatorId === creatorId).length : 0;
             
-            let confirmMessage = `⚠️ ATTENTION : Supprimer la créatrice "${creator.name}" ?\n\n`;
+            let confirmMessage = `ATTENTION : Supprimer la créatrice "${creator.name}" ?\n\n`;
             confirmMessage += `Cela supprimera DÉFINITIVEMENT :\n`;
             confirmMessage += `• ${totalAccounts} compte(s) Twitter\n`;
             
@@ -9728,7 +9953,7 @@ Pass: email_pwd
                 confirmMessage += `• ${associatedRevenues} revenus enregistré(s)\n`;
             }
             
-            confirmMessage += `\n❌ Cette action est IRRÉVERSIBLE !`;
+            confirmMessage += `\n? Cette action est IRRÉVERSIBLE !`;
             
             if (!confirm(confirmMessage)) {
                 return;
@@ -9765,7 +9990,7 @@ Pass: email_pwd
                 updateDisplay();
                 
             } catch (error) {
-                alert(`❌ Erreur lors de la suppression : ${error.message}`);
+                alert(`? Erreur lors de la suppression : ${error.message}`);
                 console.error('Erreur suppression créatrice:', error);
             }
         }
@@ -9800,7 +10025,7 @@ Pass: email_pwd
 
                 // Indiquer si c'est un VA déjà associé à cette créatrice
                 if (creator && creator.vaIds && creator.vaIds.includes(va.id)) {
-                    option.textContent = `${va.name} ⭐ (Déjà associé)`;
+                    option.textContent = `${va.name} ? (Déjà associé)`;
                     option.style.fontWeight = 'bold';
                 } else {
                     option.textContent = va.name;
@@ -9852,7 +10077,7 @@ Pass: email_pwd
             // VALIDATION ULTRATHINK : Vérifier qu'un VA est sélectionné pour les créatrices multi-VA
             const creator = data.creators.find(c => c.id === creatorId);
             if (creator && creator.vaIds && creator.vaIds.length > 1 && !vaId) {
-                showError('⚠️ ATTENTION : Cette créatrice est sur plusieurs VAs. Vous DEVEZ choisir le VA pour ce compte !');
+                showError('ATTENTION : Cette créatrice est sur plusieurs VAs. Vous DEVEZ choisir le VA pour ce compte !');
                 document.getElementById('account-va').focus();
                 document.getElementById('account-va').style.borderColor = '#ef4444';
                 return;
@@ -9914,7 +10139,7 @@ Pass: email_pwd
                 }
 
                 // Créer le nouveau compte Twitter - insert into Supabase for proper UUID
-                let newAccountId = 'tw_' + Date.now();
+                let newAccountId = generateUuid();
                 if (useSupabase && supabaseClient) {
                     try {
                         const { data: inserted, error } = await supabaseClient
@@ -9926,7 +10151,7 @@ Pass: email_pwd
                                 gmail_id: gmailId || null,
                                 va_id: vaId || null,
                                 assigned_va_id: vaId || null,
-                                organization_id: ORG_ID,
+                                organization_id: currentViewOrg || ORG_ID,
                                 notes: twoFaSecret ? '[2FA:' + twoFaSecret + ']' : null
                             })
                             .select()
@@ -10026,7 +10251,7 @@ Pass: email_pwd
 
                 // Créer le nouveau compte Instagram (version simple pour la liste)
                 const newAccount = {
-                    id: 'ig_' + Date.now(),
+                    id: generateUuid(),
                     username: finalUsername,
                     password: storedPassword,
                     creatorId: creatorId || null,
@@ -10049,10 +10274,10 @@ Pass: email_pwd
         // Confirm add Twitter account
         async function confirmAddTwitterAccount(vaId, username, password) {
             // IMPORTANT: Ne jamais modifier le username passé en paramètre
-            console.log(`📌 Ajout du compte Twitter: ${username}`);
+            console.log(`?? Ajout du compte Twitter: ${username}`);
             
             // DEBUG: Afficher l'état avant ajout
-            console.log('🔍 État AVANT ajout:');
+            console.log('?? État AVANT ajout:');
             console.log('Toutes les créatrices "Laura":');
             data.creators.forEach(creator => {
                 if (creator.name.toLowerCase().includes('laura')) {
@@ -10079,11 +10304,11 @@ Pass: email_pwd
             if (existingCreatorId) {
                 // Utiliser créatrice existante
                 selectedCreator = data.creators.find(c => c.id === existingCreatorId);
-                console.log(`📎 Sélection de la créatrice existante: "${selectedCreator?.name}" (ID: ${existingCreatorId})`);
+                console.log(`?? Sélection de la créatrice existante: "${selectedCreator?.name}" (ID: ${existingCreatorId})`);
             } else {
                 // Créer nouvelle créatrice
                 selectedCreator = {
-                    id: 'creator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    id: generateUuid(),
                     name: newCreatorName,
                     vaIds: [vaId],
                     accounts: []
@@ -10118,7 +10343,7 @@ Pass: email_pwd
             }
             
             const newAccount = {
-                id: 'tw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                id: generateUuid(),
                 username: finalUsername, // Utiliser le username exact
                 password: await encryptStoredPassword(password),
                 gmailId: null,
@@ -10129,12 +10354,33 @@ Pass: email_pwd
             if (!selectedCreator.accounts) selectedCreator.accounts = [];
             selectedCreator.accounts.push(newAccount);
             
-            saveData();
+            if (useSupabase && supabaseClient && account.id && isUuid(account.id)) {
+                const updatePayload = {
+                    username,
+                    gmail_id: gmailId || null,
+                    updated_at: new Date().toISOString()
+                };
+                if (password) {
+                    updatePayload.encrypted_password = account.password || account.encryptedPassword || '';
+                }
+                const updateResult = await dbUpdate('twitter_accounts', updatePayload, [['id', 'eq', account.id]]);
+                if (updateResult?.error) {
+                    showError('Modification impossible : ' + getDbErrorMessage(updateResult));
+                    return;
+                }
+
+                if (oldUsername && oldUsername.toLowerCase() !== username.toLowerCase()) {
+                    dbUpdate('gmail_accounts', { assigned_twitter_username: username }, [['assigned_twitter_username', 'eq', oldUsername]]);
+                    dbUpdate('twitter_stats', { username }, [['username', 'eq', oldUsername]]);
+                }
+            }
+            
+            await saveData();
             closeModal();
             document.getElementById('add-account-form').reset();
             
             // DEBUG: Afficher l'état après ajout
-            console.log('🔍 État APRÈS ajout:');
+            console.log('?? État APRÈS ajout:');
             console.log('Toutes les créatrices "Laura" après ajout:');
             data.creators.forEach(creator => {
                 if (creator.name.toLowerCase().includes('laura')) {
@@ -10152,7 +10398,7 @@ Pass: email_pwd
             updateDisplay();
             
             showSuccess(`Compte Twitter "${newAccount.username}" ajouté à "${selectedCreator.name}"!`);
-            console.log(`✅ Compte ajouté avec succès: ${newAccount.username} pour ${selectedCreator.name}`);
+            console.log(`? Compte ajouté avec succès: ${newAccount.username} pour ${selectedCreator.name}`);
         }
         
         // Add Gmail account
@@ -10183,7 +10429,7 @@ Pass: email_pwd
                         encrypted_password: storedPassword,
                         notes: '',
                         va_id: null,
-                        organization_id: ORG_ID
+                        organization_id: currentViewOrg || ORG_ID
                     })
                     .select()
                     .single();
@@ -10212,15 +10458,36 @@ Pass: email_pwd
                     created: new Date().toISOString()
                 });
             }
+            
+            if (useSupabase && supabaseClient && account.id && isUuid(account.id)) {
+                const updatePayload = {
+                    username,
+                    gmail_id: gmailId || null,
+                    updated_at: new Date().toISOString()
+                };
+                if (password) {
+                    updatePayload.encrypted_password = account.password || account.encryptedPassword || '';
+                }
+                const updateResult = await dbUpdate('twitter_accounts', updatePayload, [['id', 'eq', account.id]]);
+                if (updateResult?.error) {
+                    showError('Modification impossible : ' + getDbErrorMessage(updateResult));
+                    return;
+                }
 
-            saveData();
+                if (oldUsername && oldUsername.toLowerCase() !== username.toLowerCase()) {
+                    dbUpdate('gmail_accounts', { assigned_twitter_username: username }, [['assigned_twitter_username', 'eq', oldUsername]]);
+                    dbUpdate('twitter_stats', { username }, [['username', 'eq', oldUsername]]);
+                }
+            }
+            
+            await saveData();
             e.target.reset();
             showSuccess(`Compte Gmail "${email}" ajouté!`);
             updateGmailAccountsList();
         }
 
         // Parse l'input du bulk import. Détecte automatiquement 2 formats :
-        // 1) Une ligne par compte (espaces/tabs): username password email email_pwd 2fa token
+        // 1) Une ligne par compte (espaces/tabs ou ":"): username password email email_pwd 2fa token
         // 2) Multi-ligne clé/valeur:
         //    User: name
         //    Pass: twitter_password
@@ -10263,7 +10530,8 @@ Pass: email_pwd
             }
             // Format ligne par ligne
             return trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
-                const f = l.split(/\s+/).filter(Boolean);
+                const separator = l.includes(':') ? /\s*:\s*/ : /\s+/;
+                const f = l.split(separator).map(part => part.trim()).filter(Boolean);
                 return {
                     username: f[0], password: f[1], email: f[2],
                     emailPassword: f[3], twoFa: f[4], token: f[5]
@@ -10419,7 +10687,7 @@ Pass: email_pwd
                                 encrypted_password: storedEmailPassword,
                                 notes: '',
                                 va_id: vaId || null,
-                                organization_id: ORG_ID
+                                organization_id: currentViewOrg || ORG_ID
                             });
                             if (ins.error) {
                                 gmailImportWarning = getDbErrorMessage(ins);
@@ -10440,7 +10708,19 @@ Pass: email_pwd
                     // 2) Crée le compte Twitter (skip si username déjà existant)
                     const twDup = data.twitterAccounts.find(t => t.username?.toLowerCase() === cleanUsername);
                     if (twDup) {
-                        errors.push(`Compte ${i+1} (@${cleanUsername}) : déjà existant, ignoré`);
+                        if (twoFa) {
+                            twDup.twoFaSecret = twoFa;
+                            const withoutOld2Fa = String(twDup.notes || '').replace(/\s*\[2FA:[^\]]*\]/g, '').trim();
+                            twDup.notes = `[2FA:${twoFa}]${withoutOld2Fa ? ' ' + withoutOld2Fa : ''}`;
+                            if (twDup.id && isUuid(twDup.id)) {
+                                const upd = await dbUpdate('twitter_accounts', { notes: twDup.notes }, [['id', 'eq', twDup.id]]);
+                                if (upd.error) throw new Error('twitter duplicate update: ' + getDbErrorMessage(upd));
+                            }
+                            okCount++;
+                            errors.push(`Compte ${i+1} (@${cleanUsername}) : deja existant, 2FA mis a jour`);
+                        } else {
+                            errors.push(`Compte ${i+1} (@${cleanUsername}) : deja existant, ignore`);
+                        }
                     } else {
                         const noteParts = [];
                         if (twoFa) noteParts.push('[2FA:' + twoFa + ']');
@@ -10457,7 +10737,7 @@ Pass: email_pwd
                             gmail_id: gmailId,
                             status: 'active',
                             notes: noteParts.join(' ') || null,
-                            organization_id: ORG_ID
+                            organization_id: currentViewOrg || ORG_ID
                         });
                         if (ins.error) throw new Error('twitter: ' + getDbErrorMessage(ins));
                         const created = Array.isArray(ins.data) ? ins.data[0] : ins.data;
@@ -10498,9 +10778,9 @@ Pass: email_pwd
             updateDisplay();
 
             const html = [];
-            html.push(`<div style="color:#22c55e; font-weight:600;">✅ ${okCount} compte(s) importé(s)</div>`);
+            html.push(`<div style="color:#22c55e; font-weight:600;">? ${okCount} compte(s) importé(s)</div>`);
             if (errors.length) {
-                html.push(`<div style="color:#ef4444; margin-top:0.5rem;">⚠️ ${errors.length} erreur(s) :</div>`);
+                html.push(`<div style="color:#ef4444; margin-top:0.5rem;">${errors.length} erreur(s) :</div>`);
                 html.push('<ul style="margin-top:0.25rem; padding-left:1.25rem; color:#ef4444; font-size:0.8rem;">'
                     + errors.map(e => '<li>' + e.replace(/</g,'&lt;') + '</li>').join('') + '</ul>');
             }
@@ -10858,7 +11138,7 @@ Pass: email_pwd
             gmail.password = await encryptStoredPassword(newPassword);
             
             // Log la modification
-            console.log(`📧 Modification du compte Gmail:`);
+            console.log(`?? Modification du compte Gmail:`);
             console.log(`  - Ancien email: ${oldEmail}`);
             console.log(`  - Nouvel email: ${newEmail}`);
             if (gmail.assignedTwitterUsername) {
@@ -11024,7 +11304,7 @@ Pass: email_pwd
             
             if (!data.twitterStats) data.twitterStats = [];
 
-            const newId = (crypto.randomUUID && crypto.randomUUID()) || generateId();
+            const newId = generateUuid();
             const entry = {
                 id: newId,
                 username: username,
@@ -11035,7 +11315,7 @@ Pass: email_pwd
             data.twitterStats.push(entry);
 
             // Insert dans Supabase (nouvelle rangée à chaque point d'historique)
-            if (useSupabase && newId.includes('-')) {
+            if (useSupabase && isUuid(newId)) {
                 const acc = data.twitterAccounts?.find(a => a.username?.toLowerCase() === username.toLowerCase());
                 dbInsert('twitter_stats', [{
                     id: newId,
@@ -11123,6 +11403,55 @@ Pass: email_pwd
             });
         }
         
+        async function copyTextToClipboard(text, successMessage) {
+            try {
+                if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    textarea.remove();
+                }
+                showSuccess(successMessage || 'Copié dans le presse-papiers');
+            } catch (error) {
+                showError('Impossible de copier dans le presse-papiers');
+            }
+        }
+
+        async function copyTwitterCredentialsForVA(idOrUsername) {
+            const account = findAccountByIdOrUsername(idOrUsername);
+            if (!account) {
+                showError('Compte Twitter introuvable');
+                return;
+            }
+
+            const password = await decryptStoredPassword(account.password || account.encryptedPassword || '');
+            const cleanUsername = normalizeTwitterUsername(account.username);
+            const text = `${cleanUsername}\n${password || ''}`;
+            await copyTextToClipboard(text, `${cleanUsername} copié pour le VA`);
+        }
+
+        async function copyTwitter2FA(idOrUsername) {
+            const account = findAccountByIdOrUsername(idOrUsername);
+            if (!account) {
+                showError('Compte Twitter introuvable');
+                return;
+            }
+
+            const twoFa = String(account.twoFaSecret || '').trim();
+            if (!twoFa) {
+                showError('Aucun code 2FA enregistré pour ce compte');
+                return;
+            }
+
+            await copyTextToClipboard(twoFa, `2FA copié pour ${normalizeTwitterUsername(account.username)}`);
+        }
+
         // Show all Twitter passwords
         async function showAllTwitterPasswords() {
             const allAccounts = [];
@@ -11607,7 +11936,7 @@ Pass: email_pwd
                 dbDelete('gmail_accounts', [['id', 'eq', accountId]])
                     .then(res => {
                         if (res.error) console.error('Supabase delete gmail error:', res.error);
-                        else console.log('☁️ Gmail deleted from Supabase');
+                        else console.log('?? Gmail deleted from Supabase');
                     });
             }
 
@@ -11862,7 +12191,7 @@ Pass: email_pwd
                     availableGmails.map(gmail => {
                         const label = gmail.vaId ? 
                             `${gmail.email} (VA: ${data.vas.find(v => v.id === gmail.vaId)?.name || 'Inconnu'})` : 
-                            `${gmail.email} 🔴 (Non assigné)`;
+                            `${gmail.email} (Non assigné)`;
                         return `<option value="${gmail.id}">${label}</option>`;
                     }).join('');
                 gmailSelect.disabled = false;
@@ -11932,21 +12261,113 @@ Pass: email_pwd
             document.getElementById('assign-gmail-twitter-modal').classList.remove('show');
         }
         
+        function normalizeTwitterUsername(username) {
+            const clean = String(username || '').trim().replace(/^@+/, '');
+            return clean ? '@' + clean : '';
+        }
+
+        function twitterUsernameKey(username) {
+            return String(username || '').trim().replace(/^@+/, '').toLowerCase();
+        }
+
+        function findTwitterAccountLocation(idOrUsername) {
+            const needle = String(idOrUsername || '').toLowerCase();
+            const usernameNeedle = twitterUsernameKey(idOrUsername);
+            let account = data.twitterAccounts?.find(a =>
+                String(a.id || '') === idOrUsername ||
+                String(a.username || '').toLowerCase() === needle ||
+                twitterUsernameKey(a.username) === usernameNeedle
+            );
+            let creator = account?.creatorId ? data.creators?.find(c => c.id === account.creatorId) : null;
+            let va = account?.vaId || account?.assignedVaId
+                ? data.vas?.find(v => v.id === account.vaId || v.id === account.assignedVaId)
+                : null;
+            let accountIndex = -1;
+
+            for (const c of (data.creators || [])) {
+                const idx = (c.accounts || []).findIndex(a =>
+                    String(a.id || '') === idOrUsername ||
+                    String(a.username || '').toLowerCase() === needle ||
+                    twitterUsernameKey(a.username) === usernameNeedle
+                );
+                if (idx !== -1) {
+                    creator = c;
+                    accountIndex = idx;
+                    account = c.accounts[idx];
+                    va = data.vas?.find(v =>
+                        v.id === account.vaId ||
+                        v.id === account.assignedVaId ||
+                        (c.vaIds || []).includes(v.id)
+                    ) || va;
+                    break;
+                }
+            }
+
+            return { va, creator, account, accountIndex };
+        }
+
+        function openEditTwitterAccount(idOrUsername) {
+            const location = findTwitterAccountLocation(idOrUsername);
+            if (!location.account) {
+                showError('Compte Twitter introuvable');
+                return;
+            }
+            editAccount(location.va?.id || '', location.creator?.id || '', location.accountIndex, location.account.id || idOrUsername);
+        }
+
+        function syncRenamedTwitterUsername(accountId, oldUsername, newUsername) {
+            const oldLower = String(oldUsername || '').toLowerCase();
+            const oldKey = twitterUsernameKey(oldUsername);
+
+            (data.twitterAccounts || []).forEach(acc => {
+                if ((accountId && acc.id === accountId) || String(acc.username || '').toLowerCase() === oldLower || twitterUsernameKey(acc.username) === oldKey) {
+                    acc.username = newUsername;
+                }
+            });
+
+            (data.creators || []).forEach(creator => {
+                (creator.accounts || []).forEach(acc => {
+                    if ((accountId && acc.id === accountId) || String(acc.username || '').toLowerCase() === oldLower || twitterUsernameKey(acc.username) === oldKey) {
+                        acc.username = newUsername;
+                    }
+                });
+            });
+
+            (data.gmailAccounts || []).forEach(gmail => {
+                if (String(gmail.assignedTwitterUsername || '').toLowerCase() === oldLower || twitterUsernameKey(gmail.assignedTwitterUsername) === oldKey) {
+                    gmail.assignedTwitterUsername = newUsername;
+                }
+            });
+
+            (data.twitterStats || []).forEach(stat => {
+                if (String(stat.username || '').toLowerCase() === oldLower || twitterUsernameKey(stat.username) === oldKey) {
+                    stat.username = newUsername;
+                }
+            });
+        }
+
         // Edit Twitter account
-        function editAccount(vaId, creatorId, accountIndex) {
-            const va = data.vas.find(v => v.id === vaId);
-            if (!va) return;
-            
-            const creator = va.creators.find(c => c.id === creatorId);
-            if (!creator) return;
-            
-            const account = creator.accounts[accountIndex];
+        function editAccount(vaId, creatorId, accountIndex, accountId = '') {
+            let va = data.vas.find(v => v.id === vaId) || null;
+            let creator = data.creators?.find(c => c.id === creatorId) || null;
+            let account = creator?.accounts?.[accountIndex] || null;
+
+            if (!account && accountId) {
+                const location = findTwitterAccountLocation(accountId);
+                va = location.va;
+                creator = location.creator;
+                account = location.account;
+                accountIndex = location.accountIndex;
+            }
+
             if (!account) return;
             
             // Store the IDs for update
             document.getElementById('edit-account-va-id').value = vaId;
             document.getElementById('edit-account-creator-id').value = creatorId;
             document.getElementById('edit-account-index').value = accountIndex;
+            document.getElementById('edit-account-id').value = account.id || accountId || '';
+            document.getElementById('edit-account-old-username').value = account.username || '';
             
             // Fill the form
             document.getElementById('edit-username').value = account.username;
@@ -11965,14 +12386,17 @@ Pass: email_pwd
             }
             
             // Load Gmail accounts for this VA
-            const vaGmailAccounts = data.gmailAccounts?.filter(acc => acc.vaId === vaId) || [];
+            const effectiveVaId = va?.id || account.vaId || account.assignedVaId || '';
+            const vaGmailAccounts = effectiveVaId
+                ? (data.gmailAccounts?.filter(acc => acc.vaId === effectiveVaId) || [])
+                : (data.gmailAccounts || []);
             const usedGmailIds = [];
             
             // Get all used Gmail IDs except the current one
             data.vas.forEach(v => {
                 v.creators.forEach(c => {
                     c.accounts.forEach((a, idx) => {
-                        if (a.gmailId && !(v.id === vaId && c.id === creatorId && idx === accountIndex)) {
+                        if (a.gmailId && a.id !== account.id) {
                             usedGmailIds.push(a.gmailId);
                         }
                     });
@@ -12014,28 +12438,46 @@ Pass: email_pwd
         }
         
         // Update Twitter account
-        function updateAccount(e) {
+        async function updateAccount(e) {
             e.preventDefault();
             
             const vaId = document.getElementById('edit-account-va-id').value;
             const creatorId = document.getElementById('edit-account-creator-id').value;
             const accountIndex = parseInt(document.getElementById('edit-account-index').value);
+            const accountId = document.getElementById('edit-account-id').value;
+            const oldUsername = document.getElementById('edit-account-old-username').value;
             const gmailId = document.getElementById('edit-gmail-select').value;
-            const username = document.getElementById('edit-username').value.trim();
+            const username = normalizeTwitterUsername(document.getElementById('edit-username').value);
             const password = document.getElementById('edit-password').value.trim();
             const manualEmail = document.getElementById('edit-email').value.trim();
+
+            if (!username) {
+                showError('Username Twitter obligatoire');
+                return;
+            }
+
+            const duplicate = (data.twitterAccounts || []).find(acc =>
+                acc.id !== accountId &&
+                twitterUsernameKey(acc.username) === twitterUsernameKey(username)
+            );
+            if (duplicate) {
+                showError('Ce @ existe déjà dans cette organisation');
+                return;
+            }
             
-            const va = data.vas.find(v => v.id === vaId);
-            if (!va) return;
-            
-            const creator = va.creators.find(c => c.id === creatorId);
-            if (!creator) return;
-            
-            const account = creator.accounts[accountIndex];
+            let va = data.vas.find(v => v.id === vaId) || null;
+            let creator = data.creators?.find(c => c.id === creatorId) || null;
+            let account = creator?.accounts?.[accountIndex] || null;
+            if (!account) {
+                const location = findTwitterAccountLocation(accountId || oldUsername);
+                va = location.va;
+                creator = location.creator;
+                account = location.account;
+            }
             if (!account) return;
             
             // Update account
-            account.username = username.startsWith('@') ? username : '@' + username;
+            syncRenamedTwitterUsername(account.id || accountId, oldUsername || account.username, username);
             account.gmailId = gmailId || null;
             
             // Update email based on Gmail selection or manual input
@@ -12050,14 +12492,15 @@ Pass: email_pwd
             
             // Only update password if provided
             if (password) {
-                account.password = password;
+                const storedPassword = await encryptStoredPassword(password);
+                account.password = storedPassword;
+                account.encryptedPassword = storedPassword;
             }
             
             saveData();
             closeEditModal();
             showSuccess('Compte Twitter mis à jour');
-            updateVAGrid();
-            updateGmailAccountsDisplay();
+            updateDisplay();
         }
         
         // Close edit modal
@@ -12119,8 +12562,8 @@ Pass: email_pwd
             }) : [];
             
             let content = `
-                <h4>👤 VA: ${vaName}</h4>
-                <h4>⭐ Créatrice: ${creator.name}</h4>
+                <h4>VA: ${vaName}</h4>
+                <h4>? Créatrice: ${creator.name}</h4>
                 <h4 style="margin-top: 1rem;">Comptes Twitter (${filteredAccounts.length}):</h4>
             `;
 
@@ -12175,6 +12618,9 @@ Pass: email_pwd
         // ============================================================================
         // ADMIN FUNCTIONS
         // ============================================================================
+        let adminUsersCache = [];
+        let adminOrgAccessCache = { organizations: [], memberships: [] };
+
         function renderUserCard(u, opts = {}) {
             const dk = document.body.classList.contains('dark-mode');
             const role = u.user_metadata?.role || 'viewer';
@@ -12249,6 +12695,8 @@ Pass: email_pwd
             // Toggle bloc super-admin orgs
             const orgsSection = document.getElementById('super-admin-orgs');
             if (orgsSection) orgsSection.style.display = isSuperAdmin() ? 'block' : 'none';
+            const accessSection = document.getElementById('super-admin-org-access');
+            if (accessSection) accessSection.style.display = isSuperAdmin() ? 'block' : 'none';
             if (scopeBadge) scopeBadge.textContent = isSuperAdmin() ? '(toutes organisations)' : '(votre organisation)';
 
             try {
@@ -12257,6 +12705,7 @@ Pass: email_pwd
                     const r = u.user_metadata?.role;
                     return r === 'admin' || r === 'viewer' || r === 'super_admin';
                 });
+                adminUsersCache = users;
 
                 while (container.firstChild) container.removeChild(container.firstChild);
 
@@ -12285,6 +12734,7 @@ Pass: email_pwd
                         list.forEach(u => container.appendChild(renderUserCard(u, { showOrg: false })));
                     });
                     loadOrgsList(users);
+                    await loadOrgAccessManager(users);
                 } else {
                     users.forEach(u => container.appendChild(renderUserCard(u)));
                 }
@@ -12295,6 +12745,84 @@ Pass: email_pwd
                 p.textContent = 'Erreur: ' + err.message;
                 container.appendChild(p);
             }
+        }
+
+        async function loadOrgAccessManager(users = adminUsersCache) {
+            if (!isSuperAdmin()) return;
+            const data = await adminApi('list-orgs', {});
+            adminOrgAccessCache = {
+                organizations: data.organizations || [],
+                memberships: data.memberships || []
+            };
+
+            const userSelect = document.getElementById('org-access-user');
+            if (!userSelect) return;
+            const currentValue = userSelect.value;
+            userSelect.innerHTML = '';
+            users
+                .filter(u => normalizeRole(u.user_metadata?.role) !== 'super_admin')
+                .sort((a, b) => String(a.email || '').localeCompare(String(b.email || '')))
+                .forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = `${u.user_metadata?.name || u.email} · ${u.email}`;
+                    userSelect.appendChild(opt);
+                });
+            if (currentValue && [...userSelect.options].some(o => o.value === currentValue)) {
+                userSelect.value = currentValue;
+            }
+            renderOrgAccessEditor();
+        }
+
+        function getOrgLabel(org) {
+            return org?.name || (org?.id ? org.id.slice(0, 8) : 'Organisation');
+        }
+
+        function renderOrgAccessEditor() {
+            const userId = document.getElementById('org-access-user')?.value;
+            const list = document.getElementById('org-access-list');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!userId) {
+                list.innerHTML = '<p style="color:#94a3b8; text-align:center;">Sélectionnez un utilisateur</p>';
+                return;
+            }
+
+            const user = adminUsersCache.find(u => u.id === userId);
+            const primaryOrg = user?.user_metadata?.organization_id;
+            const selected = new Set(
+                (adminOrgAccessCache.memberships || [])
+                    .filter(m => m.user_id === userId)
+                    .map(m => m.organization_id)
+            );
+            if (primaryOrg) selected.add(primaryOrg);
+
+            (adminOrgAccessCache.organizations || []).forEach(org => {
+                const row = document.createElement('label');
+                const disabled = org.id === primaryOrg;
+                row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.75rem 1rem; border:1px solid rgba(148,163,184,0.25); border-radius:0.65rem; cursor:pointer;';
+                row.innerHTML = `
+                    <span>
+                        <strong>${escapeHtml(getOrgLabel(org))}</strong>
+                        <span style="display:block; font-size:0.72rem; opacity:0.65; font-family:monospace;">${escapeHtml(org.id)}</span>
+                    </span>
+                    <input type="checkbox" class="org-access-checkbox" value="${escapeHtml(org.id)}" ${selected.has(org.id) ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        async function saveOrgAccess() {
+            if (!isSuperAdmin()) return;
+            const userId = document.getElementById('org-access-user')?.value;
+            if (!userId) return;
+            const user = adminUsersCache.find(u => u.id === userId);
+            const primaryOrg = user?.user_metadata?.organization_id;
+            const ids = [...document.querySelectorAll('.org-access-checkbox:checked')].map(el => el.value);
+            if (primaryOrg && !ids.includes(primaryOrg)) ids.push(primaryOrg);
+            await adminApi('set-org-access', { userId, organizationIds: ids, role: normalizeRole(user?.user_metadata?.role) || 'admin' });
+            showSuccess('Accès organisations mis à jour');
+            await loadOrgAccessManager(adminUsersCache);
         }
 
         function loadOrgsList(users) {
@@ -12345,42 +12873,30 @@ Pass: email_pwd
         async function populateOrgSwitcher() {
             const sel = document.getElementById('org-switcher');
             if (!sel) return;
-            if (!isSuperAdmin()) { sel.style.display = 'none'; return; }
-            sel.style.display = 'inline-block';
+            if (!isAdmin()) { sel.style.display = 'none'; return; }
 
             try {
-                const data = await adminApi('list', { page: 1, perPage: 100 });
-                const users = data?.users || [];
-                const orgs = new Map();
-                users.forEach(u => {
-                    const id = u.user_metadata?.organization_id;
-                    const name = u.user_metadata?.organization_name || u.user_metadata?.name || '';
-                    if (!id) return;
-                    if (!orgs.has(id)) orgs.set(id, { id, label: null, userCount: 0 });
-                    orgs.get(id).userCount++;
-                    // Prend le nom de l'org si fourni, sinon le premier admin rencontré
-                    if (!orgs.get(id).label && u.user_metadata?.role === 'admin') {
-                        orgs.get(id).label = u.user_metadata?.name || '';
-                    }
-                });
+                const data = await adminApi('list-orgs', {});
+                const orgs = data?.organizations || [];
 
                 while (sel.firstChild) sel.removeChild(sel.firstChild);
                 orgs.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.id;
                     const isMine = o.id === ORG_ID;
-                    opt.textContent = '🏢 ' + (o.label || o.id.slice(0, 8)) + (isMine ? ' (moi)' : '');
+                    opt.textContent = (o.name || o.id.slice(0, 8)) + (isMine ? ' (moi)' : '');
                     if ((currentViewOrg || ORG_ID) === o.id) opt.selected = true;
                     sel.appendChild(opt);
                 });
+                sel.style.display = orgs.length > 1 || isSuperAdmin() ? 'inline-block' : 'none';
             } catch (e) { console.warn('populateOrgSwitcher', e); }
         }
 
         async function switchViewOrg(orgId) {
-            if (!isSuperAdmin()) return;
+            if (!isAdmin()) return;
             currentViewOrg = (orgId === ORG_ID) ? null : orgId;
-            localStorage.removeItem('vaManagerProData');
-            localStorage.removeItem('vaManagerProData_backup');
+            localStorage.removeItem(getActiveOrgStorageKey());
+            localStorage.removeItem(getActiveOrgStorageKey('_backup'));
             // Vide l'état en mémoire
             data.vas = []; data.creators = []; data.twitterAccounts = [];
             data.instagramAccounts = []; data.gmailAccounts = [];
@@ -12392,16 +12908,16 @@ Pass: email_pwd
             const badge = document.getElementById('user-badge');
             if (badge) {
                 if (currentViewOrg) {
-                    badge.textContent = currentUserName + ' (vue ' + currentViewOrg.slice(0,8) + ' • READ-ONLY)';
+                    badge.textContent = currentUserName + ' (org ' + currentViewOrg.slice(0,8) + ')';
                     badge.style.background = 'rgba(245,158,11,0.3)';
                 } else {
-                    badge.textContent = currentUserName + ' (super-admin)';
-                    badge.style.background = 'rgba(236,72,153,0.3)';
+                    badge.textContent = currentUserName + (isSuperAdmin() ? ' (super-admin)' : ' (admin)');
+                    badge.style.background = isSuperAdmin() ? 'rgba(236,72,153,0.3)' : 'rgba(99,102,241,0.3)';
                 }
             }
             if (typeof showSuccess === 'function') {
-                const label = currentViewOrg ? 'org ' + currentViewOrg.slice(0, 8) + ' (lecture seule)' : 'votre org';
-                showSuccess('Vue changée → ' + label);
+                const label = currentViewOrg ? 'org ' + currentViewOrg.slice(0, 8) : 'votre org';
+                showSuccess('Vue changée ? ' + label);
             }
         }
 
@@ -12413,7 +12929,7 @@ Pass: email_pwd
             const password = document.getElementById('new-org-admin-password').value;
             const adminName = document.getElementById('new-org-admin-name').value.trim();
 
-            const newOrgId = (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random().toString(36).slice(2));
+            const newOrgId = generateUuid();
 
             try {
                 await adminApi('create', {
@@ -12652,7 +13168,7 @@ Pass: email_pwd
                 
                 // Créer une nouvelle créatrice pour le compte à désassigner
                 const newCreatorForUnassigned = {
-                    id: 'creator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    id: generateUuid(),
                     name: creator.name,
                     vaIds: [], // Pas de VA assigné
                     accounts: [accountToMakeUnassigned]
@@ -12913,8 +13429,8 @@ Pass: email_pwd
                 if (useSupabase && supabaseClient && accountId.includes('-')) {
                     dbDelete('twitter_accounts', [['id', 'eq', accountId]])
                         .then(res => {
-                            if (res.error) console.warn('⚠️ Supabase delete error:', res.error);
-                            else console.log('☁️ Deleted from Supabase:', account.username);
+                            if (res.error) console.warn('?? Supabase delete error:', res.error);
+                            else console.log('?? Deleted from Supabase:', account.username);
                         });
                 }
 
@@ -12926,7 +13442,7 @@ Pass: email_pwd
         
         // Analyze Twitter accounts before migration
         function analyzeTwitterAccounts() {
-            console.log('🔍 ANALYSE DES COMPTES TWITTER');
+            console.log('?? ANALYSE DES COMPTES TWITTER');
             console.log('================================');
             
             const accountsInCreators = [];
@@ -12962,7 +13478,7 @@ Pass: email_pwd
                 });
             }
             
-            console.log(`\n📁 Comptes dans les CRÉATRICES: ${accountsInCreators.length}`);
+            console.log(`\n?? Comptes dans les CRÉATRICES: ${accountsInCreators.length}`);
             accountsInCreators.forEach(acc => {
                 const gmail = data.gmailAccounts.find(g => 
                     g.assignedTwitterUsername && g.assignedTwitterUsername.toLowerCase() === acc.username.toLowerCase()
@@ -12970,7 +13486,7 @@ Pass: email_pwd
                 console.log(`  - ${acc.username} (Créatrice: ${acc.creator}, Gmail: ${gmail ? gmail.email : 'Aucun'})`);
             });
             
-            console.log(`\n📱 Comptes SIMPLES: ${accountsInSimple.length}`);
+            console.log(`\n?? Comptes SIMPLES: ${accountsInSimple.length}`);
             accountsInSimple.forEach(acc => {
                 const creator = acc.creatorId ? data.creators.find(c => c.id === acc.creatorId) : null;
                 const gmail = acc.gmailId ? data.gmailAccounts.find(g => g.id === acc.gmailId) : null;
@@ -12989,7 +13505,7 @@ Pass: email_pwd
             });
             
             if (duplicates.length > 0) {
-                console.log(`\n⚠️ DOUBLONS trouvés: ${duplicates.length}`);
+                console.log(`\n?? DOUBLONS trouvés: ${duplicates.length}`);
                 duplicates.forEach(dup => console.log(`  - ${dup}`));
             }
             
@@ -12998,10 +13514,10 @@ Pass: email_pwd
                 !accountsInSimple.some(sa => sa.username.toLowerCase() === acc.username.toLowerCase())
             );
             
-            console.log(`\n✨ Comptes UNIQUES dans les créatrices (à migrer): ${uniqueInCreators.length}`);
+            console.log(`\n? Comptes UNIQUES dans les créatrices (à migrer): ${uniqueInCreators.length}`);
             uniqueInCreators.forEach(acc => console.log(`  - ${acc.username}`));
             
-            console.log('\n📊 RÉSUMÉ:');
+            console.log('\n?? RÉSUMÉ:');
             console.log(`  - Total unique: ${accountsInSimple.length + uniqueInCreators.length}`);
             console.log(`  - À migrer: ${uniqueInCreators.length}`);
             console.log(`  - Doublons: ${duplicates.length}`);
@@ -13019,11 +13535,11 @@ Pass: email_pwd
             const analysis = analyzeTwitterAccounts();
             
             if (analysis.toMigrate.length === 0) {
-                console.log('✅ Aucun compte à migrer !');
+                console.log('? Aucun compte à migrer !');
                 return;
             }
             
-            console.log('\n🚀 DÉBUT DE LA MIGRATION...');
+            console.log('\n?? DÉBUT DE LA MIGRATION...');
             let migrated = 0;
             
             analysis.toMigrate.forEach(account => {
@@ -13046,18 +13562,18 @@ Pass: email_pwd
                 
                 data.twitterAccounts.push(newAccount);
                 migrated++;
-                console.log(`  ✅ Migré: ${account.username}`);
+                console.log(`  ? Migré: ${account.username}`);
             });
             
-            console.log(`\n✅ MIGRATION TERMINÉE: ${migrated} comptes migrés`);
-            console.log('\n🧹 Nettoyage des comptes dans les créatrices...');
+            console.log(`\n? MIGRATION TERMINÉE: ${migrated} comptes migrés`);
+            console.log('\n?? Nettoyage des comptes dans les créatrices...');
             
             // Supprimer les comptes des créatrices
             if (data.creators) {
                 data.creators.forEach(creator => {
                     if (creator.accounts) {
                         creator.accounts = [];
-                        console.log(`  🗑️ Comptes supprimés de: ${creator.name}`);
+                        console.log(`  ??? Comptes supprimés de: ${creator.name}`);
                     }
                 });
             }
@@ -13067,10 +13583,10 @@ Pass: email_pwd
             updateDisplay();
             updateTwitterAccountsList();
             
-            console.log('\n🎉 TERMINÉ ! Tous les comptes sont maintenant dans le système simple.');
+            console.log('\n?? TERMINÉ ! Tous les comptes sont maintenant dans le système simple.');
             
             // Nouvelle analyse pour vérifier
-            console.log('\n📊 VÉRIFICATION APRÈS MIGRATION:');
+            console.log('\n?? VÉRIFICATION APRÈS MIGRATION:');
             const afterAnalysis = analyzeTwitterAccounts();
             
             return {
@@ -13082,17 +13598,17 @@ Pass: email_pwd
         
         // Analyze specific Gmail account
         function analyzeGmailAccount(email) {
-            console.log(`\n🔍 ANALYSE DU COMPTE GMAIL: ${email}`);
+            console.log(`\n?? ANALYSE DU COMPTE GMAIL: ${email}`);
             console.log('================================');
             
             const gmail = data.gmailAccounts.find(g => g.email.toLowerCase() === email.toLowerCase());
             
             if (!gmail) {
-                console.log('❌ Compte Gmail non trouvé !');
+                console.log('? Compte Gmail non trouvé !');
                 return;
             }
             
-            console.log('\n📧 Informations du compte Gmail:');
+            console.log('\n?? Informations du compte Gmail:');
             console.log(`  - ID: ${gmail.id}`);
             console.log(`  - Email: ${gmail.email}`);
             console.log(`  - Mot de passe: ${gmail.password ? '[masqué]' : 'Aucun'}`);
@@ -13106,7 +13622,7 @@ Pass: email_pwd
             
             // Vérifier si le compte Twitter existe
             if (gmail.assignedTwitterUsername) {
-                console.log(`\n🐦 Recherche du compte Twitter "${gmail.assignedTwitterUsername}"...`);
+                console.log(`\n?? Recherche du compte Twitter "${gmail.assignedTwitterUsername}"...`);
                 
                 // Dans les comptes simples
                 const simpleTwitter = data.twitterAccounts.find(t => 
@@ -13114,11 +13630,11 @@ Pass: email_pwd
                 );
                 
                 if (simpleTwitter) {
-                    console.log('  ✅ Trouvé dans les comptes simples');
+                    console.log('  ? Trouvé dans les comptes simples');
                     console.log(`     - ID: ${simpleTwitter.id}`);
                     console.log(`     - Créatrice ID: ${simpleTwitter.creatorId || 'Aucune'}`);
                 } else {
-                    console.log('  ❌ PAS trouvé dans les comptes simples !');
+                    console.log('  ? PAS trouvé dans les comptes simples !');
                 }
                 
                 // Dans les créatrices (ancien système)
@@ -13130,24 +13646,24 @@ Pass: email_pwd
                         );
                         if (account) {
                             foundInCreator = true;
-                            console.log(`  ⚠️ Trouvé dans la créatrice "${creator.name}" (ancien système)`);
+                            console.log(`  ?? Trouvé dans la créatrice "${creator.name}" (ancien système)`);
                         }
                     }
                 });
                 
                 if (!simpleTwitter && !foundInCreator) {
-                    console.log('\n⚡ PROBLÈME: Ce compte Twitter est assigné au Gmail mais n\'existe nulle part !');
-                    console.log('  → C\'est une référence fantôme qui doit être nettoyée');
+                    console.log('\n? PROBLÈME: Ce compte Twitter est assigné au Gmail mais n\'existe nulle part !');
+                    console.log('  ? C\'est une référence fantôme qui doit être nettoyée');
                 }
             }
             
-            console.log('\n📊 Résumé:');
+            console.log('\n?? Résumé:');
             if (gmail.assignedTwitterUsername && !data.twitterAccounts.find(t => t.username.toLowerCase() === gmail.assignedTwitterUsername.toLowerCase())) {
-                console.log('  ⚠️ RÉFÉRENCE FANTÔME détectée !');
-                console.log('  → Le Gmail référence un compte Twitter qui n\'existe pas');
-                console.log('  → Solution: Désassigner ce compte fantôme');
+                console.log('  ?? RÉFÉRENCE FANTÔME détectée !');
+                console.log('  ? Le Gmail référence un compte Twitter qui n\'existe pas');
+                console.log('  ? Solution: Désassigner ce compte fantôme');
             } else {
-                console.log('  ✅ Associations correctes');
+                console.log('  ? Associations correctes');
             }
             
             return gmail;
@@ -13155,22 +13671,22 @@ Pass: email_pwd
         
         // Clean ghost reference for Gmail account
         function cleanGhostReference(email) {
-            console.log(`\n🧹 NETTOYAGE DE LA RÉFÉRENCE FANTÔME POUR: ${email}`);
+            console.log(`\n?? NETTOYAGE DE LA RÉFÉRENCE FANTÔME POUR: ${email}`);
             console.log('==========================================');
             
             const gmail = data.gmailAccounts.find(g => g.email.toLowerCase() === email.toLowerCase());
             
             if (!gmail) {
-                console.log('❌ Compte Gmail non trouvé !');
+                console.log('? Compte Gmail non trouvé !');
                 return false;
             }
             
             if (!gmail.assignedTwitterUsername) {
-                console.log('ℹ️ Ce compte Gmail n\'a pas de Twitter assigné');
+                console.log('?? Ce compte Gmail n\'a pas de Twitter assigné');
                 return false;
             }
             
-            console.log(`\n📧 Compte trouvé:`);
+            console.log(`\n?? Compte trouvé:`);
             console.log(`  - Email: ${gmail.email}`);
             console.log(`  - Twitter assigné (fantôme): ${gmail.assignedTwitterUsername}`);
             console.log(`  - VA: ${gmail.vaId || 'Aucun'}`);
@@ -13181,32 +13697,32 @@ Pass: email_pwd
             );
             
             if (twitterExists) {
-                console.log('\n⚠️ Le compte Twitter existe ! Pas une référence fantôme.');
+                console.log('\n?? Le compte Twitter existe ! Pas une référence fantôme.');
                 return false;
             }
             
             // Nettoyer la référence fantôme
-            console.log('\n🗑️ Suppression de la référence fantôme...');
+            console.log('\n??? Suppression de la référence fantôme...');
             gmail.assignedTwitterUsername = null;
             
             // Si le Gmail n'a plus de Twitter assigné et pas de VA, on peut le considérer comme non assigné
             if (!gmail.vaId) {
-                console.log('  → Gmail maintenant complètement non assigné');
+                console.log('  ? Gmail maintenant complètement non assigné');
             }
             
             saveData();
             updateDisplay();
             updateGmailAccountsList();
             
-            console.log('\n✅ Référence fantôme nettoyée !');
-            console.log('  → Le compte Gmail n\'est plus lié au Twitter inexistant');
+            console.log('\n? Référence fantôme nettoyée !');
+            console.log('  ? Le compte Gmail n\'est plus lié au Twitter inexistant');
             
             return true;
         }
         
         // Clean all ghost references
         function cleanAllGhostReferences() {
-            console.log('\n🧹 NETTOYAGE DE TOUTES LES RÉFÉRENCES FANTÔMES');
+            console.log('\n?? NETTOYAGE DE TOUTES LES RÉFÉRENCES FANTÔMES');
             console.log('==============================================');
             
             let cleaned = 0;
@@ -13219,7 +13735,7 @@ Pass: email_pwd
                     );
                     
                     if (!twitterExists) {
-                        console.log(`\n❌ Référence fantôme trouvée:`);
+                        console.log(`\n? Référence fantôme trouvée:`);
                         console.log(`  - Gmail: ${gmail.email}`);
                         console.log(`  - Twitter fantôme: ${gmail.assignedTwitterUsername}`);
                         
@@ -13227,7 +13743,7 @@ Pass: email_pwd
                         gmail.assignedTwitterUsername = null;
                         cleaned++;
                         
-                        console.log(`  ✅ Nettoyé !`);
+                        console.log(`  ? Nettoyé !`);
                     }
                 }
             });
@@ -13236,9 +13752,9 @@ Pass: email_pwd
                 saveData();
                 updateDisplay();
                 updateGmailAccountsList();
-                console.log(`\n🎉 TERMINÉ ! ${cleaned} référence(s) fantôme(s) nettoyée(s)`);
+                console.log(`\n?? TERMINÉ ! ${cleaned} référence(s) fantôme(s) nettoyée(s)`);
             } else {
-                console.log('\n✅ Aucune référence fantôme trouvée');
+                console.log('\n? Aucune référence fantôme trouvée');
             }
             
             return cleaned;
@@ -13246,7 +13762,7 @@ Pass: email_pwd
         
         // Check for shared references between creators
         function checkSharedReferences() {
-            console.log('\n🔍 Vérification des références partagées entre créatrices');
+            console.log('\n?? Vérification des références partagées entre créatrices');
             console.log('================================================');
             
             const accountRefs = new Map();
@@ -13266,7 +13782,7 @@ Pass: email_pwd
             accountRefs.forEach((creators, account) => {
                 if (creators.length > 1) {
                     sharedFound = true;
-                    console.log(`\n⚠️ RÉFÉRENCE PARTAGÉE DÉTECTÉE!`);
+                    console.log(`\n?? RÉFÉRENCE PARTAGÉE DÉTECTÉE!`);
                     console.log(`  Compte: ${account.username} (ID: ${account.id})`);
                     console.log(`  Partagé entre:`);
                     creators.forEach(creator => {
@@ -13276,7 +13792,7 @@ Pass: email_pwd
             });
             
             if (!sharedFound) {
-                console.log('✅ Aucune référence partagée trouvée');
+                console.log('? Aucune référence partagée trouvée');
             }
             
             return sharedFound;
@@ -13284,7 +13800,7 @@ Pass: email_pwd
         
         // Fix shared references by creating copies
         function fixSharedReferences() {
-            console.log('\n🔧 Correction des références partagées...');
+            console.log('\n?? Correction des références partagées...');
             
             const accountRefs = new Map();
             
@@ -13303,16 +13819,16 @@ Pass: email_pwd
             let fixed = 0;
             accountRefs.forEach((refs, account) => {
                 if (refs.length > 1) {
-                    console.log(`\n📌 Correction pour ${account.username}...`);
+                    console.log(`\n?? Correction pour ${account.username}...`);
                     
                     // Garder la première référence, copier pour les autres
                     refs.slice(1).forEach(ref => {
                         const copy = {
                             ...account,
-                            id: 'tw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_copy'
+                            id: generateUuid()
                         };
                         ref.creator.accounts[ref.index] = copy;
-                        console.log(`  ✅ Copie créée pour ${ref.creator.name}`);
+                        console.log(`  ? Copie créée pour ${ref.creator.name}`);
                         fixed++;
                     });
                 }
@@ -13320,7 +13836,7 @@ Pass: email_pwd
             
             if (fixed > 0) {
                 saveData();
-                console.log(`\n✅ ${fixed} référence(s) corrigée(s)`);
+                console.log(`\n? ${fixed} référence(s) corrigée(s)`);
             }
             
             return fixed;
@@ -13337,7 +13853,7 @@ Pass: email_pwd
         
         // Synchroniser les gmailId entre data.twitterAccounts et creator.accounts
         function syncGmailIds() {
-            console.log('\n🔄 SYNCHRONISATION DES GMAIL IDs');
+            console.log('\n?? SYNCHRONISATION DES GMAIL IDs');
             console.log('=====================================');
             
             let synced = 0;
@@ -13362,7 +13878,7 @@ Pass: email_pwd
                         });
                         
                         if (foundGmailId) {
-                            console.log(`\n✅ Synchronisation de ${twitterAccount.username}:`);
+                            console.log(`\n? Synchronisation de ${twitterAccount.username}:`);
                             console.log(`  - Ancien gmailId: ${twitterAccount.gmailId || 'null'}`);
                             console.log(`  - Nouveau gmailId: ${foundGmailId}`);
                             
@@ -13387,7 +13903,7 @@ Pass: email_pwd
                                 ta.username.toLowerCase() === account.username.toLowerCase()
                             );
                             if (twitterAccount && twitterAccount.gmailId) {
-                                console.log(`\n✅ Synchronisation inverse de ${account.username}:`);
+                                console.log(`\n? Synchronisation inverse de ${account.username}:`);
                                 console.log(`  - Ajout du gmailId: ${twitterAccount.gmailId}`);
                                 account.gmailId = twitterAccount.gmailId;
                                 synced++;
@@ -13401,9 +13917,9 @@ Pass: email_pwd
                 saveData();
                 updateDisplay();
                 updateTwitterAccountsList();
-                console.log(`\n🎉 ${synced} gmailId(s) synchronisé(s) avec succès!`);
+                console.log(`\n?? ${synced} gmailId(s) synchronisé(s) avec succès!`);
             } else {
-                console.log('\n✅ Tous les gmailId sont déjà synchronisés');
+                console.log('\n? Tous les gmailId sont déjà synchronisés');
             }
             
             return synced;
@@ -13421,7 +13937,7 @@ Pass: email_pwd
             window.checkSharedReferences = checkSharedReferences;
             window.fixSharedReferences = fixSharedReferences;
             window.syncGmailIds = syncGmailIds;
-            console.log('✅ Fonctions d\'analyse disponibles dans la console:');
+            console.log('? Fonctions d\'analyse disponibles dans la console:');
             console.log('  - analyzeTwitterAccounts() : analyser tous les comptes Twitter');
             console.log('  - migrateTwitterAccounts() : migrer vers le nouveau système');
             console.log('  - analyzeGmailAccount("email@gmail.com") : analyser un compte Gmail');
@@ -13580,7 +14096,12 @@ Pass: email_pwd
                         </button>
                     </div>
                 </div>
-                <button onclick="closeModal()" class="cancel-btn">Fermer</button>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <button onclick="closeModal(); openEditTwitterAccount('${account.id || account.username}')" class="submit-btn" style="flex:1; min-width:150px;">
+                        <i class="fas fa-edit"></i> Modifier le @
+                    </button>
+                    <button onclick="closeModal()" class="cancel-btn" style="flex:1; min-width:120px;">Fermer</button>
+                </div>
             `;
 
             document.getElementById('modal-content').innerHTML = modalContent;
@@ -13639,7 +14160,9 @@ Pass: email_pwd
 
             // Save to Supabase notes field (structured: prepend 2FA)
             if (useSupabase && supabaseClient && account && account.id && account.id.includes('-')) {
-                const notes = secret ? `[2FA:${secret}]${account.notes || ''}` : (account.notes || '').replace(/\[2FA:[^\]]*\]/, '');
+                const cleanNotes = String(account.notes || '').replace(/\s*\[2FA:[^\]]*\]/g, '').trim();
+                const notes = secret ? `[2FA:${secret}]${cleanNotes ? ' ' + cleanNotes : ''}` : cleanNotes;
+                account.notes = notes;
                 dbUpdate('twitter_accounts', { notes }, [['id', 'eq', account.id]]);
             }
 
@@ -13843,7 +14366,7 @@ Pass: email_pwd
                 if (!targetCreator) {
                     // Créer une nouvelle instance de la créatrice pour le VA de destination
                     targetCreator = {
-                        id: 'creator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        id: generateUuid(),
                         name: sourceCreator.name,
                         vaIds: [toVaId],
                         accounts: []
@@ -14282,9 +14805,9 @@ Pass: email_pwd
                 header.style.cssText = 'display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;';
                 const title = document.createElement('div');
                 title.style.cssText = 'font-size:1.05rem; font-weight:600;';
-                title.textContent = '🔔 ' + changes.length + ' changement(s) de statut depuis ta dernière visite';
+                title.textContent = changes.length + ' changement(s) de statut depuis ta dernière visite';
                 const dismiss = document.createElement('button');
-                dismiss.textContent = '✓ Marquer comme vu';
+                dismiss.textContent = '? Marquer comme vu';
                 dismiss.style.cssText = 'background:rgba(255,255,255,0.2); color:white; border:none; padding:0.5rem 0.875rem; border-radius:0.5rem; cursor:pointer; font-weight:600; font-size:0.85rem;';
                 dismiss.onclick = () => acknowledgeStatusChanges();
                 header.appendChild(title);
@@ -14306,9 +14829,9 @@ Pass: email_pwd
                     wrap.appendChild(sec);
                 };
 
-                addSection('✅', 'Redevenus actifs (dispo)', unshadow, '#22c55e');
-                addSection('⚠️', 'Nouveaux shadowbans', shadow, '#f59e0b');
-                addSection('🚫', 'Comptes bannis', banned, '#ef4444');
+                addSection('?', 'Redevenus actifs (dispo)', unshadow, '#22c55e');
+                addSection('', 'Nouveaux shadowbans', shadow, '#f59e0b');
+                addSection('', 'Comptes bannis', banned, '#ef4444');
 
                 banner.appendChild(wrap);
                 banner.style.display = 'block';
@@ -14379,9 +14902,9 @@ Pass: email_pwd
 
             // Group changes
             const groups = {
-                active:    { title: '✅ Redevenus actifs (dispo)',  list: [], color: '#22c55e' },
-                shadowban: { title: '⚠️ Passés en shadowban',        list: [], color: '#f59e0b' },
-                banned:    { title: '🚫 Bannis / disparus',           list: [], color: '#ef4444' }
+                active:    { title: '? Redevenus actifs (dispo)',  list: [], color: '#22c55e' },
+                shadowban: { title: 'Passés en shadowban',        list: [], color: '#f59e0b' },
+                banned:    { title: 'Bannis / disparus',           list: [], color: '#ef4444' }
             };
             changes.forEach(c => {
                 if (groups[c.to]) groups[c.to].list.push(c);
@@ -14407,7 +14930,7 @@ Pass: email_pwd
                     right.style.cssText = 'font-size:0.75rem; opacity:0.75;';
                     const fromLabel = c.from === 'active' ? 'Actif' : c.from === 'shadowban' ? 'Shadowban' : c.from === 'banned' ? 'Banni' : c.from;
                     const toLabel = c.to === 'active' ? 'Actif' : c.to === 'shadowban' ? 'Shadowban' : c.to === 'banned' ? 'Banni' : c.to;
-                    right.textContent = fromLabel + ' → ' + toLabel + (c.flags && c.to === 'shadowban' ? ' [' + c.flags + ']' : '');
+                    right.textContent = fromLabel + ' ? ' + toLabel + (c.flags && c.to === 'shadowban' ? ' [' + c.flags + ']' : '');
                     row.appendChild(left); row.appendChild(right);
                     section.appendChild(row);
                 });
@@ -14518,7 +15041,7 @@ Pass: email_pwd
                         : null;
                     if (typeof followers === 'number') {
                         const today = new Date().toISOString().slice(0, 10);
-                        const statId = (crypto.randomUUID && crypto.randomUUID()) || generateId();
+                        const statId = generateUuid();
                         const statEntry = {
                             id: statId,
                             username: username,
@@ -14528,7 +15051,7 @@ Pass: email_pwd
                         };
                         if (!data.twitterStats) data.twitterStats = [];
                         data.twitterStats.push(statEntry);
-                        if (useSupabase && statId.includes('-')) {
+                        if (useSupabase && isUuid(statId)) {
                             dbInsert('twitter_stats', [{
                                 id: statId,
                                 twitter_account_id: accountId || null,
@@ -14546,7 +15069,7 @@ Pass: email_pwd
                 saveData();
                 updateTwitterAccountsList();
                 updateVAGrid();
-                if (typeof showSuccess === 'function') showSuccess('@' + username + ' → ' + label);
+                if (typeof showSuccess === 'function') showSuccess('@' + username + ' ? ' + label);
             } catch (err) {
                 console.error('shadowban check failed', err);
                 const isInconclusive = String(err?.message || err).includes('inconclusive');
@@ -14744,7 +15267,7 @@ Pass: email_pwd
                 }, 4000);
             } else {
                 // Fallback si le div n'existe pas
-                alert('❌ ' + message);
+                alert('? ' + message);
             }
         }
         
@@ -14820,7 +15343,7 @@ Pass: email_pwd
                     // Create VA structure
                     if (!dataMap[vaName]) {
                         dataMap[vaName] = {
-                            id: 'va_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                            id: generateUuid(),
                             name: vaName,
                             creators: {}
                         };
@@ -14829,7 +15352,7 @@ Pass: email_pwd
                     // Create creator structure
                     if (!dataMap[vaName].creators[creatorName]) {
                         dataMap[vaName].creators[creatorName] = {
-                            id: 'creator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                            id: generateUuid(),
                             name: creatorName,
                             accounts: []
                         };
@@ -15114,7 +15637,7 @@ Pass: email_pwd
                 if (!va) return;
                 
                 const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other';
-                const trend = stats.trend > 0 ? '↑' : stats.trend < 0 ? '↓' : '→';
+                const trend = stats.trend > 0 ? '?' : stats.trend < 0 ? '?' : '?';
                 const trendColor = stats.trend > 0 ? '#10b981' : stats.trend < 0 ? '#ef4444' : '#64748b';
                 
                 const item = document.createElement('div');
@@ -15636,9 +16159,9 @@ Pass: email_pwd
                     <div class="va-info">
                         <div class="va-name">${va.name}</div>
                         <div class="va-stats-mini">
-                            <span style="color: #10b981;">📈 ${stats.totalRevenue.toFixed(2)}€ générés</span>
-                            <span style="color: #3b82f6;">💰 ${stats.totalCommission.toFixed(2)}€ commission</span>
-                            <span style="color: #64748b;">⚖️ ${stats.balance.toFixed(2)}€ à payer</span>
+                            <span style="color: #10b981;">${stats.totalRevenue.toFixed(2)}€ générés</span>
+                            <span style="color: #3b82f6;">${stats.totalCommission.toFixed(2)}€ commission</span>
+                            <span style="color: #64748b;">${stats.balance.toFixed(2)}€ à payer</span>
                             <span>
                                 <button onclick="viewVARevenues('${vaId}')" class="action-btn view-btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
                                     <i class="fas fa-edit"></i> Gérer
@@ -15711,7 +16234,7 @@ Pass: email_pwd
                 .sort((a, b) => b[1].balance - a[1].balance);
             
             if (vasWithBalance.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #94a3b8;">Toutes les commissions sont à jour! 🎉</p>';
+                container.innerHTML = '<p style="text-align: center; color: #94a3b8;">Toutes les commissions sont à jour!</p>';
                 return;
             }
             
@@ -17165,14 +17688,14 @@ Pass: email_pwd
             
             URL.revokeObjectURL(url);
             
-            alert('✅ Sauvegarde téléchargée avec succès!');
+            alert('? Sauvegarde téléchargée avec succès!');
         }
         
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
             
-            if (!confirm('⚠️ Cela remplacera TOUTES vos données actuelles. Continuer?')) {
+            if (!confirm('Cela remplacera TOUTES vos données actuelles. Continuer?')) {
                 event.target.value = '';
                 return;
             }
@@ -17209,13 +17732,13 @@ Pass: email_pwd
                         }
                     }
                     
-                    alert('✅ Données importées avec succès!');
+                    alert('? Données importées avec succès!');
                     
                     // Refresh page to apply all changes
                     location.reload();
                     
                 } catch (error) {
-                    alert('❌ Erreur lors de l\'import: ' + error.message);
+                    alert('? Erreur lors de l\'import: ' + error.message);
                 }
             };
             
@@ -17534,7 +18057,7 @@ Pass: email_pwd
     <!-- Payment Modal -->
     <div id="payment-modal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
-            <h2>💸 Enregistrer un Paiement</h2>
+            <h2>Enregistrer un Paiement</h2>
             <form id="payment-form" onsubmit="handlePaymentSubmit(event)">
                 <div class="form-group">
                     <label for="payment-va">Créatrice VA *</label>
@@ -17587,7 +18110,7 @@ Pass: email_pwd
     <!-- Backup Modal -->
     <div id="backup-modal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
-            <h2>🛡️ Centre de Sécurité des Données</h2>
+            <h2>Centre de Sécurité des Données</h2>
             
             <div style="display: grid; gap: 1.5rem;">
                 <!-- Status Section -->
@@ -17632,7 +18155,7 @@ Pass: email_pwd
                             Charger un fichier
                         </button>
                         <small style="display: block; margin-top: 0.5rem; color: #ef4444;">
-                            ⚠️ Remplace toutes les données
+                            Remplace toutes les données
                         </small>
                     </div>
                 </div>

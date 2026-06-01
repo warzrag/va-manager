@@ -72,6 +72,40 @@ async function ensureOrganization({ id, name, ownerId }) {
     });
 }
 
+async function listOrganizations() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/organizations?select=id,name,owner_id,created_at&order=name.asc`, {
+        headers: ADMIN_HEADERS
+    });
+    if (!res.ok) return [];
+    return await res.json().catch(() => []);
+}
+
+async function listMemberships() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/organization_members?select=id,user_id,organization_id,role`, {
+        headers: ADMIN_HEADERS
+    });
+    if (!res.ok) return [];
+    return await res.json().catch(() => []);
+}
+
+async function replaceUserOrgAccess({ userId, organizationIds, role = 'admin' }) {
+    const ids = Array.isArray(organizationIds) ? [...new Set(organizationIds.filter(Boolean))] : [];
+    await fetch(`${SUPABASE_URL}/rest/v1/organization_members?user_id=eq.${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+        headers: ADMIN_HEADERS
+    });
+    if (!ids.length) return;
+    await fetch(`${SUPABASE_URL}/rest/v1/organization_members`, {
+        method: 'POST',
+        headers: { ...ADMIN_HEADERS, Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(ids.map(organization_id => ({
+            user_id: userId,
+            organization_id,
+            role
+        })))
+    });
+}
+
 export default async function handler(req, res) {
     applyCors(req, res);
     if (req.method === 'OPTIONS') { res.status(204).end(); return; }
@@ -120,6 +154,32 @@ export default async function handler(req, res) {
         }
     }
 
+    if (op === 'list-orgs') {
+        const [orgs, memberships] = await Promise.all([listOrganizations(), listMemberships()]);
+        if (isSuperAdmin) {
+            return res.status(200).json({ organizations: orgs, memberships });
+        }
+        const allowedIds = new Set([
+            orgId,
+            ...memberships.filter(m => m.user_id === user.id).map(m => m.organization_id)
+        ].filter(Boolean));
+        return res.status(200).json({
+            organizations: orgs.filter(org => allowedIds.has(org.id)),
+            memberships: memberships.filter(m => m.user_id === user.id)
+        });
+    }
+
+    if (op === 'set-org-access') {
+        if (!isSuperAdmin) return res.status(403).json({ error: 'super_admin_required' });
+        if (!userId) return res.status(400).json({ error: 'missing_userId' });
+        await replaceUserOrgAccess({
+            userId,
+            organizationIds: req.body.organizationIds || [],
+            role: req.body.role || 'admin'
+        });
+        return res.status(200).json({ ok: true });
+    }
+
     let url, method;
     let body;
 
@@ -164,6 +224,11 @@ export default async function handler(req, res) {
                 id: payload.user_metadata.organization_id,
                 name: payload.user_metadata.organization_name || payload.user_metadata.name || payload.email,
                 ownerId: json?.id
+            });
+            await replaceUserOrgAccess({
+                userId: json?.id,
+                organizationIds: [payload.user_metadata.organization_id],
+                role: payload.user_metadata.role || 'admin'
             });
         }
 

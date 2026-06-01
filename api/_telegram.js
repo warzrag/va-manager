@@ -4,9 +4,10 @@ function cleanEnv(value) {
 
 const TELEGRAM_BOT_TOKEN = cleanEnv(process.env.TELEGRAM_BOT_TOKEN);
 const TELEGRAM_CHAT_ID = cleanEnv(process.env.TELEGRAM_CHAT_ID);
+const TELEGRAM_DISABLED = true;
 
 export function hasTelegramConfig() {
-    return Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
+    return !TELEGRAM_DISABLED && Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
 }
 
 export function escapeHtml(value) {
@@ -26,6 +27,10 @@ export function formatStatus(status) {
 }
 
 export async function sendTelegramMessage(text) {
+    if (TELEGRAM_DISABLED) {
+        return { skipped: true, reason: 'telegram_disabled' };
+    }
+
     if (!hasTelegramConfig()) {
         return { skipped: true, reason: 'telegram_not_configured' };
     }
