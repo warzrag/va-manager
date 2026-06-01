@@ -8860,7 +8860,13 @@ Pass: email_pwd
                 const visual = visuals[key] || visuals.available;
                 const expandedKey = `${targetId}:${key}`;
                 const isExpanded = !!window.accountStockExpanded[expandedKey];
-                const visibleAccounts = isExpanded ? bucket.accounts : bucket.accounts.slice(0, 8);
+                const sortedAccounts = [...bucket.accounts].sort((a, b) => {
+                    const followersA = Number(getLatestTwitterStats(a.username)?.followers || 0);
+                    const followersB = Number(getLatestTwitterStats(b.username)?.followers || 0);
+                    if (followersB !== followersA) return followersB - followersA;
+                    return String(a.username || '').localeCompare(String(b.username || ''));
+                });
+                const visibleAccounts = isExpanded ? sortedAccounts : sortedAccounts.slice(0, 8);
                 const hiddenCount = Math.max(0, bucket.accounts.length - 8);
                 const preview = visibleAccounts.map(account => {
                     const cleanUsername = String(account.username || '').replace(/^@/, '');
