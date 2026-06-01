@@ -8931,7 +8931,12 @@ Pass: email_pwd
                         </span>
                     `;
                     return `
-                    <span draggable="true" ondragstart="handleStockDragStart(event, '${encodedKey}')" ondragend="handleStockDragEnd(event)" title="Glisser vers une autre carte" style="display:inline-flex; align-items:center; gap:0.45rem; padding:0.42rem 0.48rem 0.42rem 0.62rem; border-radius:0.7rem; background:${chipBg}; color:${text}; border:1px solid ${visual.line}; font-size:0.76rem; font-weight:800; box-shadow:0 6px 16px rgba(15,23,42,0.06); cursor:grab;">
+                    <span draggable="true" ondragstart="handleStockDragStart(event, '${encodedKey}')" ondragend="handleStockDragEnd(event)" title="Glisser vers une autre carte" style="display:inline-flex; align-items:center; gap:0.45rem; padding:0.42rem 0.48rem 0.42rem 0.5rem; border-radius:0.7rem; background:${chipBg}; color:${text}; border:1px solid ${visual.line}; font-size:0.76rem; font-weight:800; box-shadow:0 6px 16px rgba(15,23,42,0.06); cursor:grab; transition:opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;">
+                        <span aria-hidden="true" style="display:inline-grid; grid-template-columns:repeat(2,3px); gap:2px; padding:0.12rem 0.08rem; opacity:0.55; color:${visual.accent};">
+                            <span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span><span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span>
+                            <span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span><span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span>
+                            <span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span><span style="width:3px; height:3px; border-radius:50%; background:currentColor;"></span>
+                        </span>
                         <a href="${twitterUrl}" target="_blank" rel="noopener noreferrer" title="Ouvrir ${account.username} sur Twitter" style="display:inline-flex; align-items:center; gap:0.45rem; color:${text}; text-decoration:none; min-width:0;">
                             <i class="fab fa-twitter" style="color:${visual.accent};"></i>
                             <span style="max-width:122px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${account.username}</span>
@@ -8950,6 +8955,11 @@ Pass: email_pwd
                 return `
                     <div data-stock-drop="${key}" ondragover="handleStockDragOver(event)" ondragleave="handleStockDragLeave(event)" ondrop="handleStockDrop(event, '${key}')" style="position:relative; overflow:hidden; background:${visual.bg}; border:1px solid ${border}; border-radius:1rem; padding:1.1rem; box-shadow:${cardShadow}; transition:border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;">
                         <div style="position:absolute; inset:auto 0 0 0; height:4px; background:${visual.accent}; opacity:0.9;"></div>
+                        <div data-drop-hint style="pointer-events:none; position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:${visual.accent}18; border:2px dashed ${visual.accent}; z-index:3;">
+                            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:${isDarkMode ? '#111827' : '#ffffff'}; color:${visual.accent}; border:1px solid ${visual.line}; border-radius:999px; padding:0.62rem 0.9rem; font-size:0.82rem; font-weight:900; box-shadow:0 12px 28px rgba(15,23,42,0.18);">
+                                <i class="fas fa-arrow-down"></i> Déposer ici
+                            </div>
+                        </div>
                         <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1rem;">
                             <div style="display:flex; align-items:flex-start; gap:0.85rem; min-width:0;">
                                 <div style="width:52px; height:52px; border-radius:0.9rem; background:${visual.soft}; color:${visual.accent}; display:flex; align-items:center; justify-content:center; font-size:1.25rem; border:1px solid ${visual.line}; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18); flex:0 0 auto;">
@@ -8969,7 +8979,9 @@ Pass: email_pwd
                             </div>
                         </div>
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem; padding:0.7rem 0.78rem; border-radius:0.85rem; background:${emptyBg}; border:1px solid ${visual.line};">
-                            <span style="color:${muted}; font-size:0.78rem; font-weight:800;">Carte stock, séparée des VAs</span>
+                            <span style="display:inline-flex; align-items:center; gap:0.42rem; color:${muted}; font-size:0.78rem; font-weight:800;">
+                                <i class="fas fa-grip-vertical" style="color:${visual.accent};"></i> Glisser-déposer un compte ici
+                            </span>
                             <button onclick="openStockAddModal('${key}')" title="Ajouter un compte à cette carte" style="display:inline-flex; align-items:center; gap:0.35rem; border:none; border-radius:999px; background:${visual.accent}; color:white; cursor:pointer; font-weight:900; font-size:0.76rem; padding:0.48rem 0.72rem; box-shadow:0 8px 18px ${visual.accent}35;">
                                 <i class="fas fa-plus"></i> Ajouter
                             </button>
@@ -9005,6 +9017,8 @@ Pass: email_pwd
                 card.style.transform = '';
                 card.style.boxShadow = card.dataset.originalShadow || card.style.boxShadow;
                 card.style.borderColor = card.dataset.originalBorder || card.style.borderColor;
+                const hint = card.querySelector('[data-drop-hint]');
+                if (hint) hint.style.display = 'none';
                 delete card.dataset.originalShadow;
                 delete card.dataset.originalBorder;
             });
@@ -9014,11 +9028,15 @@ Pass: email_pwd
             event.dataTransfer.effectAllowed = 'move';
             event.dataTransfer.setData('text/plain', accountKey);
             event.currentTarget.style.opacity = '0.55';
+            event.currentTarget.style.transform = 'scale(0.98)';
+            event.currentTarget.style.boxShadow = '0 14px 30px rgba(15,23,42,0.22)';
             event.currentTarget.style.cursor = 'grabbing';
         }
 
         function handleStockDragEnd(event) {
             event.currentTarget.style.opacity = '';
+            event.currentTarget.style.transform = '';
+            event.currentTarget.style.boxShadow = '';
             event.currentTarget.style.cursor = 'grab';
             clearStockDropHighlights();
         }
@@ -9031,6 +9049,8 @@ Pass: email_pwd
             card.style.transform = 'translateY(-2px)';
             card.style.boxShadow = '0 20px 46px rgba(59,130,246,0.22)';
             card.style.borderColor = 'rgba(59,130,246,0.72)';
+            const hint = card.querySelector('[data-drop-hint]');
+            if (hint) hint.style.display = 'flex';
             event.dataTransfer.dropEffect = 'move';
         }
 
