@@ -6046,7 +6046,7 @@
                 <div class="import-area" id="import-area">
                     <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
                     <p>Glissez votre fichier CSV ici ou</p>
-                    <input type="file" id="csv-file" accept=".csv" style="display: none;" onchange="handleFileSelect(event)">
+                    <input type="file" id="csv-file" accept=".csv,.txt" style="display: none;" onchange="handleFileSelect(event)">
                     <button onclick="document.getElementById('csv-file').click()" class="submit-btn" style="width: auto; padding: 0.75rem 2rem;">
                         <i class="fas fa-folder-open"></i> Choisir un fichier
                     </button>
@@ -23883,7 +23883,7 @@ Tapez "SUPPRIMER" pour confirmer :`;
                 area.classList.remove('dragover');
                 
                 const file = e.dataTransfer.files[0];
-                if (file && file.type === 'text/csv') {
+                if (file && (file.type === 'text/csv' || file.type === 'text/plain' || /\.(csv|txt)$/i.test(file.name))) {
                     handleFile(file);
                 }
             });
@@ -23904,8 +23904,100 @@ Tapez "SUPPRIMER" pour confirmer :`;
             reader.readAsText(file, 'UTF-8');
         }
 
+        function parsePipedTwitterAccount(line) {
+            const parts = line.split('|').map(p => p.trim());
+            if (parts.length < 6 || !parts[2] || !parts[2].includes('@')) {
+                return null;
+            }
+
+            const tokenPart = parts[4] || '';
+            return {
+                username: parts[0].startsWith('@') ? parts[0] : '@' + parts[0],
+                password: parts[1],
+                email: parts[2].toLowerCase(),
+                emailPassword: parts[3],
+                token: tokenPart.startsWith('auth_token=') ? tokenPart.substring('auth_token='.length) : tokenPart,
+                twofa: parts[5]
+            };
+        }
+
+        function importPipedTwitterAccounts(lines) {
+            if (!data.twitterAccounts) data.twitterAccounts = [];
+            if (!data.gmailAccounts) data.gmailAccounts = [];
+
+            let imported = 0;
+            let skipped = 0;
+
+            lines.forEach(line => {
+                const parsed = parsePipedTwitterAccount(line);
+                if (!parsed) {
+                    skipped++;
+                    return;
+                }
+
+                const accountExists = data.twitterAccounts.some(acc =>
+                    acc.username && acc.username.toLowerCase() === parsed.username.toLowerCase()
+                );
+
+                if (accountExists) {
+                    skipped++;
+                    return;
+                }
+
+                let gmail = data.gmailAccounts.find(g =>
+                    g.email && g.email.toLowerCase() === parsed.email.toLowerCase()
+                );
+
+                if (!gmail) {
+                    gmail = {
+                        id: 'gmail_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        vaId: null,
+                        email: parsed.email,
+                        password: parsed.emailPassword,
+                        notes: '',
+                        created: new Date().toISOString()
+                    };
+                    data.gmailAccounts.push(gmail);
+                } else if (!gmail.password && parsed.emailPassword) {
+                    gmail.password = parsed.emailPassword;
+                }
+
+                gmail.assignedTwitterUsername = parsed.username;
+
+                data.twitterAccounts.push({
+                    id: 'tw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    username: parsed.username,
+                    password: parsed.password,
+                    email: parsed.email,
+                    emailPassword: parsed.emailPassword,
+                    gmailId: gmail.id,
+                    token: parsed.token,
+                    twofa: parsed.twofa,
+                    creatorId: null,
+                    vaId: null,
+                    created: new Date().toISOString()
+                });
+
+                imported++;
+            });
+
+            saveData();
+            updateTwitterAccountsList();
+            updateGmailAccountsList();
+            updateDisplay();
+            showSuccess(`Import reussi! ${imported} comptes Twitter importes.${skipped ? ` ${skipped} ligne(s) ignoree(s).` : ''}`);
+            navigateToPage('dashboard');
+        }
+
         function parseCSV(csvText) {
-            const lines = csvText.trim().split('\n');
+            const lines = csvText.trim().split('\n').map(line => line.trim()).filter(Boolean);
+            const hasPipedAccounts = lines.some(line => parsePipedTwitterAccount(line));
+
+            if (hasPipedAccounts) {
+                importPipedTwitterAccounts(lines);
+                return;
+            }
+
             const dataMap = {};
 
             for (let i = 1; i < lines.length; i++) {
