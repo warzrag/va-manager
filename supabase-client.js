@@ -3778,12 +3778,11 @@ async function getUserOrganization() {
  * @returns {Promise<string>}
  */
 async function getOrganizationId() {
-  // Lire directement depuis localStorage (plus rapide, pas de requête)
-  const storedOrgId = localStorage.getItem('active_organization_id');
-  if (storedOrgId) {
-    return storedOrgId;
+  const activeOrgId = await getActiveOrganizationId();
+  if (activeOrgId) {
+    return activeOrgId;
   }
-  // Fallback sur l'organisation par défaut
+
   const org = await getUserOrganization();
   return org?.id;
 }
@@ -4091,7 +4090,9 @@ async function updateOrganization(updates) {
 // ============================================================================
 
 /**
- * Get all organizations where user is owner (via owner_id OR organization_members with role owner)
+ * Get all organizations available to the current admin user.
+ * Founder accounts can manage every visible organization; regular users are
+ * limited to organizations they own or administer through memberships/managers.
  * @returns {Promise<Array>}
  */
 async function getUserOwnedOrganizations() {
@@ -4104,9 +4105,11 @@ async function getUserOwnedOrganizations() {
     }
 
     const userId = await getUserId();
+    const { data: { user } } = await supabase.auth.getUser();
+    const isFounder = user?.email === 'florent.media2@gmail.com';
 
-    // OPTIMIZED: Run both queries in parallel
-    const [ownedResult, memberResult] = await Promise.all([
+    // OPTIMIZED: Run access queries in parallel
+    const [ownedResult, memberResult, managerResult, allOrganizationsResult] = await Promise.all([
       supabase
         .from('organizations')
         .select('*')
@@ -4115,20 +4118,60 @@ async function getUserOwnedOrganizations() {
         .from('organization_members')
         .select('organization_id, organizations(*)')
         .eq('user_id', userId)
-        .eq('role', 'owner')
+        .in('role', ['owner', 'admin', 'manager']),
+      supabase
+        .from('managers')
+        .select('organization_id')
+        .eq('user_id', userId),
+      isFounder
+        ? supabase
+            .from('organizations')
+            .select('*')
+        : Promise.resolve({ data: [], error: null })
     ]);
 
     if (ownedResult.error) throw ownedResult.error;
     if (memberResult.error) throw memberResult.error;
+    if (managerResult.error) throw managerResult.error;
+    if (allOrganizationsResult.error) throw allOrganizationsResult.error;
+
+    const managerOrganizationIds = [...new Set((managerResult.data || [])
+      .map(m => m.organization_id)
+      .filter(Boolean))];
+
+    let managerOrganizations = [];
+    if (managerOrganizationIds.length > 0) {
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .in('id', managerOrganizationIds);
+
+      if (error) throw error;
+      managerOrganizations = data || [];
+    }
 
     // Combine and deduplicate
     const allOrgs = [...(ownedResult.data || [])];
     const existingIds = new Set(allOrgs.map(o => o.id));
 
+    (allOrganizationsResult.data || []).forEach(org => {
+      if (org && !existingIds.has(org.id)) {
+        allOrgs.push(org);
+        existingIds.add(org.id);
+      }
+    });
+
     (memberResult.data || []).forEach(m => {
       if (m.organizations && !existingIds.has(m.organizations.id)) {
         allOrgs.push(m.organizations);
         existingIds.add(m.organizations.id);
+      }
+    });
+
+    managerOrganizations.forEach(org => {
+      if (org && !existingIds.has(org.id)) {
+        allOrgs.push(org);
+        existingIds.add(org.id);
       }
     });
 
