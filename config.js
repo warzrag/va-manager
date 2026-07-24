@@ -6,7 +6,7 @@ const SUPABASE_CONFIG = {
     url: 'https://vjsovnhmjgehqawjmqxn.supabase.co',
 
     // Votre clé publique (anon key)
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqc292bmhtamdlaHFhd2ptcXhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjQ4OTgsImV4cCI6MjA3NjAwMDg5OH0.uLqNP1Xb6uhrVBH_ESW7eemMdJ08cTrYZ9C0QHvAsDk'
+    anonKey: 'sb_publishable_kIgnmS0tIhEty9LiAhtkhA_luo1XGXG'
 };
 
 // Fonction pour vérifier la configuration
