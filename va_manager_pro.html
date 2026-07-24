@@ -4428,6 +4428,8 @@ eveertoonLuis&nbsp;&nbsp;&nbsp;&nbsp;XR2mFqIEY7l2&nbsp;&nbsp;&nbsp;&nbsp;MeeNorZ
                     Deux formats acceptés (détection auto) :<br>
                     <strong>1) Une ligne par compte</strong> (espaces/tabs) :
                     <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username&nbsp;password&nbsp;email&nbsp;email_password&nbsp;2FA&nbsp;auth_token</code><br>
+                    <strong>3) Format pipe</strong> :
+                    <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem;">username|password|email|email_password|auth_token=...|2FA</code><br>
                     <strong>2) Clé:Valeur</strong> (multi-ligne, un bloc par compte, démarre par <code>User:</code>) :
                     <code style="background:#f1f5f9; padding:0.25rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-top:0.25rem; white-space:pre;">User: name
 Pass: twitter_pwd
@@ -11918,6 +11920,7 @@ Pass: email_pwd
         //    Pass: email_password
         //    2fa: ...
         //    Token: ... (optionnel)
+        // 3) Pipe: username|password|email|email_pwd|auth_token=...|2fa
         function parseBulkImport(raw) {
             const trimmed = (raw || '').trim();
             if (!trimmed) return [];
@@ -11953,6 +11956,18 @@ Pass: email_pwd
             }
             // Format ligne par ligne
             return trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+                if (l.includes('|')) {
+                    const f = l.split('|').map(part => part.trim());
+                    const tokenPart = f[4] || '';
+                    return {
+                        username: f[0],
+                        password: f[1],
+                        email: f[2],
+                        emailPassword: f[3],
+                        twoFa: f[5],
+                        token: tokenPart.replace(/^auth_token=/i, '')
+                    };
+                }
                 const separator = l.includes(':') ? /\s*:\s*/ : /\s+/;
                 const f = l.split(separator).map(part => part.trim()).filter(Boolean);
                 return {
