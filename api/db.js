@@ -171,6 +171,39 @@ async function removeCrossOrgUpserts(table, payload, targetOrg) {
     return Array.isArray(payload) ? filtered : (filtered[0] || null);
 }
 
+async function protectExistingTwitterUpserts(payload) {
+    const rows = Array.isArray(payload) ? payload : [payload];
+    const ids = rows
+        .filter(row => row && typeof row === 'object' && row.id)
+        .map(row => row.id);
+    if (!ids.length) return payload;
+
+    const query = ids.map(id => encodeURIComponent(id)).join(',');
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?select=id&id=in.(${query})`, {
+        headers: {
+            apikey: SUPABASE_SERVICE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+        }
+    });
+    if (!response.ok) return payload;
+
+    const existingRows = await response.json().catch(() => []);
+    const existingIds = new Set((Array.isArray(existingRows) ? existingRows : []).map(row => row.id));
+    const protectedFields = new Set([
+        'creator_id', 'va_id', 'assigned_va_id', 'gmail_id',
+        'status', 'notes', 'organization_id'
+    ]);
+
+    const protectRow = (row) => {
+        if (!row || typeof row !== 'object' || !existingIds.has(row.id)) return row;
+        return Object.fromEntries(
+            Object.entries(row).filter(([key]) => !protectedFields.has(key))
+        );
+    };
+
+    return Array.isArray(payload) ? rows.map(protectRow) : protectRow(payload);
+}
+
 function isEmptyPayload(payload) {
     return !payload || (Array.isArray(payload) && payload.length === 0);
 }
@@ -244,15 +277,16 @@ export default async function handler(req, res) {
         ? Object.fromEntries(Object.entries(data).filter(([k]) => k !== 'organization_id'))
         : data;
 
-    if (table === 'twitter_accounts' && action === 'upsert') {
-        scopedData = await preserveTwitterTwoFa(scopedData);
-    }
     if (action === 'upsert' && ['twitter_accounts', 'gmail_accounts', 'instagram_accounts', 'creators', 'vas'].includes(table)) {
         scopedData = await removeCrossOrgUpserts(table, scopedData, targetOrg);
         if (isEmptyPayload(scopedData)) {
             res.status(200).json({ ok: true, data: [], skipped: 'cross_org_upsert' });
             return;
         }
+    }
+    if (table === 'twitter_accounts' && action === 'upsert') {
+        scopedData = await protectExistingTwitterUpserts(scopedData);
+        scopedData = await preserveTwitterTwoFa(scopedData);
     }
     if (table === 'twitter_accounts' && action === 'update') {
         safeUpdateData = await preserveTwitterTwoFa(safeUpdateData, scopedFilters);

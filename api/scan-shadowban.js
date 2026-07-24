@@ -1,5 +1,4 @@
-// Cron job : scanne tous les comptes Twitter via l'API shadowban
-// Détecte les changements de statut et les stocke dans status_changes
+// Cron job: scan the queue gently. Use limit=1 for one account per minute.
 
 import { escapeHtml, formatStatus, sendTelegramMessage } from './_telegram.js';
 
@@ -10,6 +9,8 @@ function cleanEnv(value) {
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
 const CRON_SECRET = cleanEnv(process.env.CRON_SECRET);
+const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '1', 10), 2000));
+const DAILY_RESCAN_AFTER_HOURS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_RESCAN_AFTER_HOURS) || '20', 10), 24));
 
 function hasSupabaseConfig() {
     return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY && CRON_SECRET);
@@ -22,11 +23,28 @@ function getCronToken(req) {
 }
 
 const sbHeaders = {
-    'apikey': SUPABASE_SERVICE_KEY,
-    'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+    apikey: SUPABASE_SERVICE_KEY,
+    Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     'Content-Type': 'application/json',
-    'Prefer': 'return=minimal'
+    Prefer: 'return=minimal'
 };
+
+const readHeaders = {
+    apikey: SUPABASE_SERVICE_KEY,
+    Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+};
+
+async function rest(path, options = {}) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        ...options,
+        headers: { ...(options.method ? sbHeaders : readHeaders), ...(options.headers || {}) }
+    });
+    const text = await response.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (!response.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+    return data;
+}
 
 function interpretShadowban(data) {
     const p = data.profile || {};
@@ -45,13 +63,12 @@ function interpretShadowban(data) {
 }
 
 async function fetchShadowban(username) {
-    const url = `https://shadowban-api.yuzurisa.com:444/${encodeURIComponent(username)}`;
-    const res = await fetch(url, {
+    const res = await fetch(`https://shadowban-api.yuzurisa.com:444/${encodeURIComponent(username)}`, {
         headers: {
-            'Origin': 'https://shadowban.yuzurisa.com',
-            'Referer': 'https://shadowban.yuzurisa.com/',
+            Origin: 'https://shadowban.yuzurisa.com',
+            Referer: 'https://shadowban.yuzurisa.com/',
             'User-Agent': 'Mozilla/5.0 (compatible; va-manager-pro/1.0)',
-            'Accept': 'application/json'
+            Accept: 'application/json'
         },
         signal: AbortSignal.timeout(12000)
     });
@@ -66,14 +83,69 @@ async function fetchFollowers(username) {
             signal: AbortSignal.timeout(8000)
         });
         const data = await res.json();
-        if (data?.code === 200 && typeof data?.user?.followers === 'number') {
-            return data.user.followers;
-        }
+        if (data?.code === 200 && typeof data?.user?.followers === 'number') return data.user.followers;
     } catch {}
     return null;
 }
 
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+function normalizeName(name) {
+    return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function getStockBucketFromName(name) {
+    const normalized = normalizeName(name);
+    if (!normalized) return null;
+    if (normalized.includes('shadow') && !normalized.includes('unshadow')) return 'shadowban';
+    if (normalized.includes('unshadow') || normalized.includes('un shadow')) return 'unshadow';
+    if (normalized.includes('vider')) return 'active';
+    if (normalized.includes('actif') || normalized.includes('active')) return 'active';
+    if (normalized.includes('dispo') || normalized.includes('available') || normalized.includes('disponible')) return 'available';
+    return null;
+}
+
+function mergeStockTag(notes, stockCategory) {
+    const cleanNotes = String(notes || '')
+        .replace(/\s*\[STOCK:(available|active|shadowban|unshadow)\]/g, '')
+        .trim();
+    if (!stockCategory) return cleanNotes || null;
+    return `[STOCK:${stockCategory}]${cleanNotes ? ' ' + cleanNotes : ''}`;
+}
+
+async function loadStockVAsByOrg() {
+    const rows = await rest('vas?select=id,name,organization_id');
+    const map = new Map();
+    (Array.isArray(rows) ? rows : []).forEach(va => {
+        const bucket = getStockBucketFromName(va.name);
+        if (!bucket || !va.organization_id) return;
+        if (!map.has(va.organization_id)) map.set(va.organization_id, {});
+        const orgBuckets = map.get(va.organization_id);
+        if (!orgBuckets[bucket]) orgBuckets[bucket] = va.id;
+    });
+    return map;
+}
+
+function getStockVaIds(orgBuckets = {}) {
+    return new Set(Object.values(orgBuckets).filter(Boolean));
+}
+
+function getAutoStockCategory(oldStatus, newStatus) {
+    if (newStatus === 'shadowban') return 'shadowban';
+    if (newStatus === 'active' && oldStatus === 'shadowban') return 'unshadow';
+    return null;
+}
+
+function getRetryDelayMinutes(errorCount) {
+    if (errorCount <= 0) return 5;
+    if (errorCount === 1) return 15;
+    if (errorCount === 2) return 60;
+    return 180;
+}
+
+function getNextRetryAt(errorCount) {
+    return new Date(Date.now() + getRetryDelayMinutes(errorCount) * 60 * 1000).toISOString();
+}
 
 function buildStatusAlert({ username, oldStatus, newStatus, flags }) {
     const cleanUsername = String(username || '').replace(/^@/, '');
@@ -95,92 +167,187 @@ function buildStatusAlert({ username, oldStatus, newStatus, flags }) {
     return lines.join('\n');
 }
 
+async function createScanRun(scanLimit) {
+    try {
+        const rows = await rest('scan_runs', {
+            method: 'POST',
+            headers: { Prefer: 'return=representation' },
+            body: JSON.stringify({ batch_limit: scanLimit, status: 'running' })
+        });
+        return Array.isArray(rows) ? rows[0] : null;
+    } catch {
+        return null;
+    }
+}
+
+async function finishScanRun(runId, payload) {
+    if (!runId) return;
+    try {
+        await rest(`scan_runs?id=eq.${encodeURIComponent(runId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                ...payload,
+                finished_at: new Date().toISOString()
+            })
+        });
+    } catch {}
+}
+
+async function updateRunOrganization(runId, organizationId) {
+    if (!runId || !organizationId) return;
+    try {
+        await rest(`scan_runs?id=eq.${encodeURIComponent(runId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ organization_id: organizationId })
+        });
+    } catch {}
+}
+
 export default async function handler(req, res) {
     if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
     if (getCronToken(req) !== CRON_SECRET) { res.status(401).json({ error: 'unauthorized' }); return; }
 
     const startedAt = Date.now();
-    const results = { checked: 0, changed: 0, errors: 0, changes: [] };
+    const scanLimit = Math.max(1, Math.min(parseInt(req.query?.limit || DEFAULT_SCAN_LIMIT, 10), 2000));
+    const dueBefore = new Date(Date.now() - DAILY_RESCAN_AFTER_HOURS * 60 * 60 * 1000).toISOString();
+    const nowIso = new Date().toISOString();
+    const run = await createScanRun(scanLimit);
+    const results = { checked: 0, changed: 0, errors: 0, skipped: 0, changes: [] };
 
     try {
-        const listRes = await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?select=id,username,status,organization_id`, { headers: sbHeaders });
-        const accounts = await listRes.json();
-        if (!Array.isArray(accounts)) {
-            res.status(500).json({ error: 'supabase_list_failed', data: accounts });
-            return;
-        }
+        const allAccounts = await rest(
+            'twitter_accounts?select=id,username,status,organization_id,notes,va_id,assigned_va_id,last_scanned_at,scan_error_count,next_retry_at,last_scan_error,created_at&order=next_retry_at.asc.nullsfirst,last_scanned_at.asc.nullsfirst,created_at.asc&limit=2000'
+        );
+        if (!Array.isArray(allAccounts)) throw new Error('supabase_list_failed');
+        const accounts = allAccounts.filter(acc => {
+            if (acc.next_retry_at) return new Date(acc.next_retry_at).getTime() <= Date.now();
+            if (!acc.last_scanned_at) return true;
+            return new Date(acc.last_scanned_at).getTime() <= new Date(dueBefore).getTime();
+        }).slice(0, scanLimit);
+        const stockVAsByOrg = await loadStockVAsByOrg();
+        if (accounts[0]?.organization_id) await updateRunOrganization(run?.id, accounts[0].organization_id);
 
         for (const acc of accounts) {
-            if (Date.now() - startedAt > 270000) break; // laisse 30s de marge avant le timeout
-            const username = (acc.username || '').replace(/^@/, '');
-            if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) continue;
+            if (Date.now() - startedAt > 270000) break;
+            const username = String(acc.username || '').replace(/^@/, '');
+            const scannedAt = new Date().toISOString();
+            if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) {
+                results.skipped++;
+                await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ last_scanned_at: scannedAt })
+                });
+                continue;
+            }
 
             try {
-                const [data, followers] = await Promise.all([
+                const [shadowData, followers] = await Promise.all([
                     fetchShadowban(username),
                     fetchFollowers(username)
                 ]);
-                if (!data) { results.errors++; await sleep(400); continue; }
-                const { status: newStatus, flags } = interpretShadowban(data);
+                if (!shadowData) throw new Error('shadowban_empty_response');
+                const { status: newStatus, flags } = interpretShadowban(shadowData);
                 const oldStatus = acc.status || 'active';
                 results.checked++;
 
-                // Enregistre le count followers s'il a été récupéré (1 point par scan)
                 if (typeof followers === 'number') {
                     const today = new Date().toISOString().slice(0, 10);
-                    await fetch(`${SUPABASE_URL}/rest/v1/twitter_stats`, {
+                    await rest('twitter_stats', {
                         method: 'POST',
-                        headers: sbHeaders,
                         body: JSON.stringify({
                             twitter_account_id: acc.id,
                             username: acc.username,
-                            followers: followers,
+                            followers,
                             date: today,
                             organization_id: acc.organization_id
                         })
                     });
                 }
 
+                const accountPatch = {
+                    status: newStatus,
+                    last_scanned_at: scannedAt,
+                    scan_error_count: 0,
+                    next_retry_at: null,
+                    last_scan_error: null
+                };
+                const autoStockCategory = getAutoStockCategory(oldStatus, newStatus);
+                const orgStockBuckets = stockVAsByOrg.get(acc.organization_id) || {};
+                const stockVaId = autoStockCategory ? orgStockBuckets[autoStockCategory] : null;
+                const currentVaId = acc.assigned_va_id || acc.va_id || null;
+                const currentIsStock = currentVaId ? getStockVaIds(orgStockBuckets).has(currentVaId) : true;
+                if (autoStockCategory) {
+                    accountPatch.notes = mergeStockTag(acc.notes, autoStockCategory);
+                }
+                if (stockVaId && currentIsStock) {
+                    accountPatch.va_id = stockVaId;
+                    accountPatch.assigned_va_id = stockVaId;
+                }
+                await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(accountPatch)
+                });
+
                 if (newStatus !== oldStatus) {
-                    // Update account
-                    await fetch(`${SUPABASE_URL}/rest/v1/twitter_accounts?id=eq.${acc.id}`, {
-                        method: 'PATCH',
-                        headers: sbHeaders,
-                        body: JSON.stringify({ status: newStatus })
-                    });
-                    // Log change
-                    await fetch(`${SUPABASE_URL}/rest/v1/status_changes`, {
-                        method: 'POST',
-                        headers: sbHeaders,
-                        body: JSON.stringify({
-                            account_id: acc.id,
-                            username: acc.username,
-                            old_status: oldStatus,
-                            new_status: newStatus,
-                            flags: flags
-                        })
-                    });
                     try {
-                        await sendTelegramMessage(buildStatusAlert({
-                            username: acc.username,
-                            oldStatus,
-                            newStatus,
-                            flags
-                        }));
+                        await rest('status_changes', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                account_id: acc.id,
+                                username: acc.username,
+                                old_status: oldStatus,
+                                new_status: newStatus,
+                                flags
+                            })
+                        });
+                    } catch {}
+                    try {
+                        await sendTelegramMessage(buildStatusAlert({ username: acc.username, oldStatus, newStatus, flags }));
                     } catch (telegramError) {
                         results.telegramError = String(telegramError?.message || telegramError);
                     }
                     results.changed++;
-                    results.changes.push({ username: acc.username, from: oldStatus, to: newStatus, flags });
+                    results.changes.push({
+                        username: acc.username,
+                        from: oldStatus,
+                        to: newStatus,
+                        flags,
+                        movedTo: autoStockCategory || null
+                    });
                 }
-            } catch (e) {
+            } catch (error) {
                 results.errors++;
+                const nextErrorCount = Number(acc.scan_error_count || 0) + 1;
+                await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        scan_error_count: nextErrorCount,
+                        next_retry_at: getNextRetryAt(nextErrorCount),
+                        last_scan_error: String(error?.message || error).slice(0, 240)
+                    })
+                }).catch(() => {});
             }
-            await sleep(150); // throttle anti rate-limit
+            await sleep(80);
         }
 
-        res.status(200).json({ ok: true, durationMs: Date.now() - startedAt, ...results });
+        await finishScanRun(run?.id, {
+            status: 'completed',
+            checked: results.checked,
+            changed: results.changed,
+            errors: results.errors,
+            skipped: results.skipped,
+            details: { durationMs: Date.now() - startedAt, changes: results.changes.slice(0, 50) }
+        });
+        res.status(200).json({ ok: true, runId: run?.id || null, durationMs: Date.now() - startedAt, batchLimit: scanLimit, ...results });
     } catch (err) {
-        res.status(500).json({ error: String(err?.message || err) });
+        await finishScanRun(run?.id, {
+            status: 'failed',
+            checked: results.checked,
+            changed: results.changed,
+            errors: results.errors + 1,
+            skipped: results.skipped,
+            details: { error: String(err?.message || err), durationMs: Date.now() - startedAt }
+        });
+        res.status(500).json({ error: String(err?.message || err), ...results });
     }
 }

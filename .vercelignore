@@ -1,0 +1,9 @@
+.git
+.vercel
+node_modules
+.env
+.env.*
+*.log
+credentials-update-backup-*.json
+repair-gmail-org-backup-*.json
+CONTEXTE_CODEX_VA_MANAGER.md
