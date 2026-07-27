@@ -5,8 +5,8 @@ function cleanEnv(value) {
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
 const SUPABASE_ANON_KEY = cleanEnv(process.env.SUPABASE_ANON_KEY);
-const SCAN_BATCH_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '25', 10), 2000));
-const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '2000', 10), 30000));
+const SCAN_BATCH_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '10', 10), 2000));
+const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '10000', 10), 30000));
 
 function applyCors(req, res) {
     const allowedOrigins = new Set([
