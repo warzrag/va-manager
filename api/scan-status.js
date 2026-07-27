@@ -119,7 +119,7 @@ export default async function handler(req, res) {
         const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const recentRows = await rest(`twitter_accounts?select=id&${orgFilter}&last_scanned_at=gte.${encodeURIComponent(since)}`);
         const queueRows = await rest(`twitter_accounts?select=id,next_retry_at,last_scan_error&${orgFilter}&next_retry_at=not.is.null&order=next_retry_at.asc&limit=2000`);
-        const runRows = await rest(`scan_runs?select=started_at,finished_at,checked,changed,errors,skipped,batch_limit,status,details&order=started_at.desc&limit=1`);
+        const runRows = await rest(`scan_runs?select=started_at,finished_at,checked,changed,errors,skipped,batch_limit,status,details&${orgFilter}&order=started_at.desc&limit=1`);
         const now = Date.now();
         const retryRows = Array.isArray(queueRows) ? queueRows : [];
         const retryDueRows = retryRows.filter(row => row.next_retry_at && new Date(row.next_retry_at).getTime() <= now);

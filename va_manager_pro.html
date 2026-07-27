@@ -16385,6 +16385,7 @@ Pass: email_pwd
             const scannedAccounts = Array.isArray(details.scannedAccounts) ? details.scannedAccounts : [];
             const lastScannedAccount = scannedAccounts.length ? scannedAccounts[scannedAccounts.length - 1] : null;
             const recentScannedList = scannedAccounts.slice(-5).reverse().map(item => {
+                const safeUsername = escapeHtml(item.username || '--');
                 const statusLabel = item.status === 'active' ? 'Actif'
                     : item.status === 'shadowban' ? 'Shadowban'
                     : item.status === 'banned' ? 'Banni'
@@ -16393,10 +16394,12 @@ Pass: email_pwd
                     : item.status || '--';
                 const followersLabel = typeof item.followers === 'number' ? ` · ${item.followers.toLocaleString('fr-FR')} abonnés` : '';
                 return `<div style="display:flex; justify-content:space-between; gap:0.7rem; padding:0.22rem 0; border-top:1px solid rgba(148,163,184,0.10);">
-                    <span style="color:#e2e8f0; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@${item.username || '--'}</span>
+                    <span style="color:#e2e8f0; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@${safeUsername}</span>
                     <span style="color:${item.status === 'error' ? '#f87171' : item.status === 'shadowban' ? '#f59e0b' : '#94a3b8'}; font-weight:800; flex:0 0 auto;">${statusLabel}${followersLabel}</span>
                 </div>`;
             }).join('');
+            const shadowbanCount = scannedAccounts.filter(item => item.status === 'shadowban').length;
+            const followersUpdatedCount = scannedAccounts.filter(item => typeof item.followers === 'number').length;
             const checked = latestRun.checked ?? 0;
             const changed = latestRun.changed ?? 0;
             const errors = latestRun.errors ?? 0;
@@ -16420,34 +16423,35 @@ Pass: email_pwd
                             <i class="fas fa-shield-halved"></i>
                         </div>
                         <div style="min-width:0;">
-                            <div style="color:#f8fafc; font-weight:900; font-size:0.96rem;">Scan shadowban auto</div>
-                            <div style="color:#94a3b8; font-size:0.78rem; font-weight:700;">${scheduleLabel} · ${batch} comptes max · ${delaySec || '?'}s entre comptes</div>
+                            <div style="color:#f8fafc; font-weight:900; font-size:0.96rem;">Scan automatique</div>
+                            <div style="color:#94a3b8; font-size:0.78rem; font-weight:700;">Toutes les 10 min, il vérifie jusqu'à ${batch} comptes · pause ${delaySec || '?'}s</div>
                         </div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier passage</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier lancement réel</div>
                         <div style="color:#f8fafc; font-weight:900;">${formatScanDate(lastRunDate)}</div>
                         <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">Statut : ${runStatusLabel}</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Prochain passage estimé</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Prochain lancement</div>
                         <div style="color:#f8fafc; font-weight:900;" data-scan-countdown>${formatScanCountdown(payload.nextScanAt)}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">Déclenché par GitHub</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier lot</div>
-                        <div style="color:#f8fafc; font-weight:900;">${checked} compte${checked > 1 ? 's' : ''}</div>
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${changed} changement${changed > 1 ? 's' : ''} · ${errors} erreur${errors > 1 ? 's' : ''}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Résultat du dernier lot</div>
+                        <div style="color:#f8fafc; font-weight:900;">${checked} vérifié${checked > 1 ? 's' : ''} · ${shadowbanCount} shadowban</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${followersUpdatedCount} abonnés MAJ · ${errors} erreur${errors > 1 ? 's' : ''}</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04); border:1px solid ${statusColor}33;">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Progression 24h</div>
-                        <div style="color:${statusColor}; font-weight:900;">${retryDueCount} pret${retryDueCount > 1 ? 's' : ''} · ${retryCount} en pause</div>
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${recent}/${total} comptes scannés</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Organisation affichée</div>
+                        <div style="color:${statusColor}; font-weight:900;">${recent}/${total} scannés en 24h</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">Retry : ${retryDueCount} prêt${retryDueCount > 1 ? 's' : ''} · ${retryCount} en pause</div>
                     </div>
                 </div>
                 <div style="padding:0.75rem 0.85rem; border-radius:0 0 1rem 1rem; background:rgba(15,23,42,0.82); border:1px solid rgba(148,163,184,0.18); border-top:1px solid rgba(148,163,184,0.10);">
                     <div style="display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:${recentScannedList ? '0.45rem' : '0'};">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Derniers comptes scannés</div>
-                        <div style="color:#e2e8f0; font-size:0.8rem; font-weight:900;">${lastScannedAccount ? '@' + lastScannedAccount.username : 'Aucun compte dans le dernier lot'}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Comptes vérifiés dans le dernier lot</div>
+                        <div style="color:#e2e8f0; font-size:0.8rem; font-weight:900;">${lastScannedAccount ? 'Dernier : @' + escapeHtml(lastScannedAccount.username || '--') : 'Aucun compte scanné pour cette organisation'}</div>
                     </div>
                     ${recentScannedList || ''}
                 </div>
