@@ -13,6 +13,10 @@ const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SC
 const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '10000', 10), 30000));
 const MAX_CONSECUTIVE_SCAN_ERRORS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_MAX_CONSECUTIVE_ERRORS) || '10', 10), 100));
 const DAILY_RESCAN_AFTER_HOURS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_RESCAN_AFTER_HOURS) || '20', 10), 24));
+const MIN_RUN_INTERVAL_MS = Math.max(
+    5 * 60 * 1000,
+    Math.min(parseInt(cleanEnv(process.env.SCAN_MIN_RUN_INTERVAL_MS) || String(8 * 60 * 1000), 10), 30 * 60 * 1000)
+);
 
 function hasSupabaseConfig() {
     return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY && CRON_SECRET);
@@ -220,6 +224,15 @@ async function updateRunOrganization(runId, organizationId) {
     } catch {}
 }
 
+async function getLatestScanRun() {
+    try {
+        const rows = await rest('scan_runs?select=id,started_at,finished_at,status&order=started_at.desc&limit=1');
+        return Array.isArray(rows) ? rows[0] || null : null;
+    } catch {
+        return null;
+    }
+}
+
 async function updateRunProgress(runId, details) {
     if (!runId) return;
     try {
@@ -265,6 +278,28 @@ export default async function handler(req, res) {
     const scanLimit = Math.max(1, Math.min(parseInt(req.query?.limit || DEFAULT_SCAN_LIMIT, 10), 2000));
     const dueBefore = new Date(Date.now() - DAILY_RESCAN_AFTER_HOURS * 60 * 60 * 1000).toISOString();
     const nowIso = new Date().toISOString();
+    const latestRun = await getLatestScanRun();
+    const latestRunStartedAt = latestRun?.started_at ? new Date(latestRun.started_at).getTime() : 0;
+    const sinceLatestRunMs = latestRunStartedAt ? startedAt - latestRunStartedAt : Number.POSITIVE_INFINITY;
+    if (latestRun?.status === 'running' && sinceLatestRunMs < 5 * 60 * 1000) {
+        res.status(200).json({
+            ok: true,
+            skipped: 'scan_already_running',
+            latestRunId: latestRun.id,
+            latestRunStartedAt: latestRun.started_at
+        });
+        return;
+    }
+    if (sinceLatestRunMs < MIN_RUN_INTERVAL_MS) {
+        res.status(200).json({
+            ok: true,
+            skipped: 'scan_cooldown',
+            retryAfterMs: MIN_RUN_INTERVAL_MS - sinceLatestRunMs,
+            latestRunId: latestRun.id,
+            latestRunStartedAt: latestRun.started_at
+        });
+        return;
+    }
     const run = await createScanRun(scanLimit);
     const results = { checked: 0, changed: 0, errors: 0, skipped: 0, changes: [], scannedAccounts: [] };
     let consecutiveErrors = 0;

@@ -77,12 +77,14 @@ async function rest(path) {
     return data;
 }
 
-function nextScheduledScan() {
-    const next = new Date();
+function nextScheduledScan(lastRunAt) {
+    const lastRunTime = lastRunAt ? new Date(lastRunAt).getTime() : 0;
+    const notBefore = Math.max(Date.now(), lastRunTime ? lastRunTime + 8 * 60 * 1000 : 0);
+    const next = new Date(notBefore);
     const currentMinute = next.getUTCMinutes();
-    next.setUTCMinutes(Math.floor(currentMinute / 10) * 10 + 3, 0, 0);
-    if (next.getTime() <= Date.now()) {
-        next.setUTCMinutes(next.getUTCMinutes() + 10);
+    next.setUTCMinutes(Math.floor(currentMinute / 5) * 5 + 2, 0, 0);
+    if (next.getTime() <= notBefore) {
+        next.setUTCMinutes(next.getUTCMinutes() + 5);
     }
     return next.toISOString();
 }
@@ -149,7 +151,7 @@ export default async function handler(req, res) {
                 followers: typeof latestFollowers?.followers === 'number' ? latestFollowers.followers : null,
                 followersDate: latestFollowers?.date || null
             } : null,
-            nextScanAt: schedulerHealthy ? nextScheduledScan() : null,
+            nextScanAt: schedulerHealthy ? nextScheduledScan(schedulerLastRunAt) : null,
             schedulerHealthy,
             schedulerLastRunAt,
             schedulerStatus: schedulerHealthy ? 'active' : 'inactive',
