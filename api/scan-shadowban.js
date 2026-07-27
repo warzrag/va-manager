@@ -1,4 +1,4 @@
-// Cron job: scan the queue gently. Use limit=1 for one account per minute.
+// Cron job: scan the queue gently. Defaults target ~50 accounts/hour.
 
 import { escapeHtml, formatStatus, sendTelegramMessage } from './_telegram.js';
 
@@ -9,7 +9,9 @@ function cleanEnv(value) {
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
 const CRON_SECRET = cleanEnv(process.env.CRON_SECRET);
-const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '1', 10), 2000));
+const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '50', 10), 2000));
+const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '5000', 10), 30000));
+const MAX_CONSECUTIVE_SCAN_ERRORS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_MAX_CONSECUTIVE_ERRORS) || '10', 10), 100));
 const DAILY_RESCAN_AFTER_HOURS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_RESCAN_AFTER_HOURS) || '20', 10), 24));
 
 function hasSupabaseConfig() {
@@ -213,6 +215,8 @@ export default async function handler(req, res) {
     const nowIso = new Date().toISOString();
     const run = await createScanRun(scanLimit);
     const results = { checked: 0, changed: 0, errors: 0, skipped: 0, changes: [] };
+    let consecutiveErrors = 0;
+    let stoppedReason = null;
 
     try {
         const allAccounts = await rest(
@@ -228,7 +232,14 @@ export default async function handler(req, res) {
         if (accounts[0]?.organization_id) await updateRunOrganization(run?.id, accounts[0].organization_id);
 
         for (const acc of accounts) {
-            if (Date.now() - startedAt > 270000) break;
+            if (Date.now() - startedAt > 270000) {
+                stoppedReason = 'time_limit_safety';
+                break;
+            }
+            if (consecutiveErrors >= MAX_CONSECUTIVE_SCAN_ERRORS) {
+                stoppedReason = 'too_many_consecutive_errors';
+                break;
+            }
             const username = String(acc.username || '').replace(/^@/, '');
             const scannedAt = new Date().toISOString();
             if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) {
@@ -249,6 +260,7 @@ export default async function handler(req, res) {
                 const { status: newStatus, flags } = interpretShadowban(shadowData);
                 const oldStatus = acc.status || 'active';
                 results.checked++;
+                consecutiveErrors = 0;
 
                 if (typeof followers === 'number') {
                     const today = new Date().toISOString().slice(0, 10);
@@ -317,6 +329,7 @@ export default async function handler(req, res) {
                 }
             } catch (error) {
                 results.errors++;
+                consecutiveErrors++;
                 const nextErrorCount = Number(acc.scan_error_count || 0) + 1;
                 await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
                     method: 'PATCH',
@@ -327,18 +340,32 @@ export default async function handler(req, res) {
                     })
                 }).catch(() => {});
             }
-            await sleep(80);
+            await sleep(SCAN_DELAY_MS);
         }
 
         await finishScanRun(run?.id, {
-            status: 'completed',
+            status: stoppedReason ? 'partial' : 'completed',
             checked: results.checked,
             changed: results.changed,
             errors: results.errors,
             skipped: results.skipped,
-            details: { durationMs: Date.now() - startedAt, changes: results.changes.slice(0, 50) }
+            details: {
+                durationMs: Date.now() - startedAt,
+                changes: results.changes.slice(0, 50),
+                stoppedReason,
+                scanDelayMs: SCAN_DELAY_MS,
+                maxConsecutiveErrors: MAX_CONSECUTIVE_SCAN_ERRORS
+            }
         });
-        res.status(200).json({ ok: true, runId: run?.id || null, durationMs: Date.now() - startedAt, batchLimit: scanLimit, ...results });
+        res.status(200).json({
+            ok: true,
+            runId: run?.id || null,
+            durationMs: Date.now() - startedAt,
+            batchLimit: scanLimit,
+            scanDelayMs: SCAN_DELAY_MS,
+            stoppedReason,
+            ...results
+        });
     } catch (err) {
         await finishScanRun(run?.id, {
             status: 'failed',

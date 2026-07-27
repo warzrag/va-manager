@@ -5,7 +5,8 @@ function cleanEnv(value) {
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
 const SUPABASE_ANON_KEY = cleanEnv(process.env.SUPABASE_ANON_KEY);
-const SCAN_BATCH_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '1', 10), 2000));
+const SCAN_BATCH_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '50', 10), 2000));
+const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '5000', 10), 30000));
 
 function applyCors(req, res) {
     const allowedOrigins = new Set([
@@ -76,12 +77,12 @@ async function rest(path) {
     return data;
 }
 
-function nextMinuteScan() {
+function nextHourlyScan() {
     const next = new Date();
-    next.setUTCSeconds(0, 0);
-    next.setUTCMinutes(next.getUTCMinutes() + 1);
+    next.setUTCMinutes(0, 0, 0);
+    next.setUTCHours(next.getUTCHours() + 1);
     if (next.getTime() <= Date.now()) {
-        next.setUTCMinutes(next.getUTCMinutes() + 1);
+        next.setUTCHours(next.getUTCHours() + 1);
     }
     return next.toISOString();
 }
@@ -125,8 +126,10 @@ export default async function handler(req, res) {
             totalAccounts: Array.isArray(totalRows) ? totalRows.length : 0,
             scannedRecently: Array.isArray(recentRows) ? recentRows.length : 0,
             lastScannedAt: latestRows?.[0]?.last_scanned_at || null,
-            nextScanAt: nextMinuteScan(),
+            nextScanAt: nextHourlyScan(),
             batchLimit: SCAN_BATCH_LIMIT,
+            scanDelayMs: SCAN_DELAY_MS,
+            scheduleLabel: 'Toutes les heures',
             retryCount: retryRows.length,
             retryDueCount: retryDueRows.length,
             nextRetryAt: retryRows?.[0]?.next_retry_at || null,
