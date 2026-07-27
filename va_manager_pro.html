@@ -16356,7 +16356,7 @@ Pass: email_pwd
         function formatScanCountdown(iso) {
             if (!iso) return '--';
             const diff = new Date(iso).getTime() - Date.now();
-            if (!Number.isFinite(diff) || diff <= 0) return 'bientôt';
+            if (!Number.isFinite(diff) || diff <= 0) return 'en attente Vercel';
             const minutes = Math.floor(diff / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
             if (minutes >= 60) {
@@ -16384,6 +16384,11 @@ Pass: email_pwd
             const checked = latestRun.checked ?? 0;
             const changed = latestRun.changed ?? 0;
             const errors = latestRun.errors ?? 0;
+            const lastRunDate = latestRun.finished_at || latestRun.started_at || null;
+            const runStatusLabel = latestRun.status === 'running' ? 'en cours'
+                : latestRun.status === 'partial' ? 'partiel'
+                : latestRun.status === 'failed' ? 'erreur'
+                : latestRun.status ? 'terminé' : 'aucun passage';
             const total = payload.totalAccounts ?? 0;
             const recent = payload.scannedRecently ?? 0;
             const batch = payload.batchLimit ?? 1;
@@ -16404,21 +16409,23 @@ Pass: email_pwd
                         </div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier scan</div>
-                        <div style="color:#f8fafc; font-weight:900;">${formatScanDate(payload.lastScannedAt)}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier passage</div>
+                        <div style="color:#f8fafc; font-weight:900;">${formatScanDate(lastRunDate)}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">Statut : ${runStatusLabel}</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Prochain</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Prochain passage estimé</div>
                         <div style="color:#f8fafc; font-weight:900;" data-scan-countdown>${formatScanCountdown(payload.nextScanAt)}</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
                         <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Dernier lot</div>
-                        <div style="color:#f8fafc; font-weight:900;">${checked} scan / ${changed} modif.</div>
+                        <div style="color:#f8fafc; font-weight:900;">${checked} compte${checked > 1 ? 's' : ''}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${changed} changement${changed > 1 ? 's' : ''} · ${errors} erreur${errors > 1 ? 's' : ''}</div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04); border:1px solid ${statusColor}33;">
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">File retry</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Progression 24h</div>
                         <div style="color:${statusColor}; font-weight:900;">${retryDueCount} pret${retryDueCount > 1 ? 's' : ''} · ${retryCount} en pause</div>
-                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${recent}/${total} scannes 24h · ${errors} erreur${errors > 1 ? 's' : ''}</div>
+                        <div style="color:#94a3b8; font-size:0.72rem; font-weight:800; margin-top:0.1rem;">${recent}/${total} comptes scannés</div>
                     </div>
                 </div>
             `;
