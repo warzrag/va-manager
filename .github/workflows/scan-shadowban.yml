@@ -2,8 +2,15 @@ name: Scan shadowban
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "3,13,23,33,43,53 * * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: va-manager-shadowban-scan
+  cancel-in-progress: false
 
 jobs:
   scan:

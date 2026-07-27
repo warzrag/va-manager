@@ -77,14 +77,10 @@ async function rest(path) {
     return data;
 }
 
-function nextTenMinuteScan() {
+function nextScheduledScan() {
     const next = new Date();
-    next.setUTCSeconds(0, 0);
-    next.setUTCMinutes(Math.ceil((next.getUTCMinutes() + 1) / 10) * 10);
-    if (next.getUTCMinutes() === 60) {
-        next.setUTCMinutes(0, 0, 0);
-        next.setUTCHours(next.getUTCHours() + 1);
-    }
+    const currentMinute = next.getUTCMinutes();
+    next.setUTCMinutes(Math.floor(currentMinute / 10) * 10 + 3, 0, 0);
     if (next.getTime() <= Date.now()) {
         next.setUTCMinutes(next.getUTCMinutes() + 10);
     }
@@ -120,6 +116,7 @@ export default async function handler(req, res) {
         const recentRows = await rest(`twitter_accounts?select=id&${orgFilter}&last_scanned_at=gte.${encodeURIComponent(since)}`);
         const queueRows = await rest(`twitter_accounts?select=id,next_retry_at,last_scan_error&${orgFilter}&next_retry_at=not.is.null&order=next_retry_at.asc&limit=2000`);
         const runRows = await rest(`scan_runs?select=started_at,finished_at,checked,changed,errors,skipped,batch_limit,status,details&${orgFilter}&order=started_at.desc&limit=1`);
+        const globalRunRows = await rest('scan_runs?select=started_at,finished_at,status&order=started_at.desc&limit=1');
         const latestAccount = latestRows?.[0] || null;
         let latestFollowers = null;
         if (latestAccount?.id) {
@@ -131,6 +128,12 @@ export default async function handler(req, res) {
         const now = Date.now();
         const retryRows = Array.isArray(queueRows) ? queueRows : [];
         const retryDueRows = retryRows.filter(row => row.next_retry_at && new Date(row.next_retry_at).getTime() <= now);
+        const schedulerLastRun = globalRunRows?.[0] || null;
+        const schedulerLastRunAt = schedulerLastRun?.started_at || null;
+        const schedulerHealthy = Boolean(
+            schedulerLastRunAt
+            && now - new Date(schedulerLastRunAt).getTime() <= 25 * 60 * 1000
+        );
 
         res.status(200).json({
             ok: true,
@@ -146,7 +149,10 @@ export default async function handler(req, res) {
                 followers: typeof latestFollowers?.followers === 'number' ? latestFollowers.followers : null,
                 followersDate: latestFollowers?.date || null
             } : null,
-            nextScanAt: nextTenMinuteScan(),
+            nextScanAt: schedulerHealthy ? nextScheduledScan() : null,
+            schedulerHealthy,
+            schedulerLastRunAt,
+            schedulerStatus: schedulerHealthy ? 'active' : 'inactive',
             batchLimit: SCAN_BATCH_LIMIT,
             scanDelayMs: SCAN_DELAY_MS,
             scheduleLabel: 'Toutes les 10 min',

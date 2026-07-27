@@ -65,17 +65,32 @@ function interpretShadowban(data) {
 }
 
 async function fetchShadowban(username) {
-    const res = await fetch(`https://shadowban-api.yuzurisa.com:444/${encodeURIComponent(username)}`, {
-        headers: {
-            Origin: 'https://shadowban.yuzurisa.com',
-            Referer: 'https://shadowban.yuzurisa.com/',
-            'User-Agent': 'Mozilla/5.0 (compatible; va-manager-pro/1.0)',
-            Accept: 'application/json'
-        },
-        signal: AbortSignal.timeout(12000)
-    });
-    const text = await res.text();
-    try { return JSON.parse(text); } catch { return null; }
+    let lastError = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            const res = await fetch(`https://shadowban-api.yuzurisa.com:444/${encodeURIComponent(username)}`, {
+                headers: {
+                    Origin: 'https://shadowban.yuzurisa.com',
+                    Referer: 'https://shadowban.yuzurisa.com/',
+                    'User-Agent': 'Mozilla/5.0 (compatible; va-manager-pro/1.0)',
+                    Accept: 'application/json'
+                },
+                signal: AbortSignal.timeout(12000)
+            });
+            if (!res.ok) throw new Error(`shadowban_http_${res.status}`);
+            const text = await res.text();
+            let data = null;
+            try { data = JSON.parse(text); } catch { throw new Error('shadowban_invalid_json'); }
+            if (!data || data.detail === 'Internal error' || !data.profile || !data.tests) {
+                throw new Error('shadowban_inconclusive');
+            }
+            return data;
+        } catch (error) {
+            lastError = error;
+            if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 1200 * (attempt + 1)));
+        }
+    }
+    throw lastError || new Error('shadowban_failed');
 }
 
 async function fetchFollowers(username) {
@@ -215,6 +230,33 @@ async function updateRunProgress(runId, details) {
     } catch {}
 }
 
+async function saveFollowersStat(account, followers) {
+    if (!account?.id || typeof followers !== 'number') return;
+    const today = new Date().toISOString().slice(0, 10);
+    const existing = await rest(
+        `twitter_stats?select=id&twitter_account_id=eq.${encodeURIComponent(account.id)}&date=eq.${encodeURIComponent(today)}&limit=1`
+    );
+    const existingId = Array.isArray(existing) ? existing[0]?.id : null;
+    const payload = {
+        twitter_account_id: account.id,
+        username: account.username,
+        followers,
+        date: today,
+        organization_id: account.organization_id
+    };
+    if (existingId) {
+        await rest(`twitter_stats?id=eq.${encodeURIComponent(existingId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload)
+        });
+        return;
+    }
+    await rest('twitter_stats', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
 export default async function handler(req, res) {
     if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
     if (getCronToken(req) !== CRON_SECRET) { res.status(401).json({ error: 'unauthorized' }); return; }
@@ -233,13 +275,19 @@ export default async function handler(req, res) {
             'twitter_accounts?select=id,username,status,organization_id,notes,va_id,assigned_va_id,last_scanned_at,scan_error_count,next_retry_at,last_scan_error,created_at&order=next_retry_at.asc.nullsfirst,last_scanned_at.asc.nullsfirst,created_at.asc&limit=2000'
         );
         if (!Array.isArray(allAccounts)) throw new Error('supabase_list_failed');
-        const accounts = allAccounts.filter(acc => {
+        const eligibleAccounts = allAccounts.filter(acc => {
             if (acc.next_retry_at) return new Date(acc.next_retry_at).getTime() <= Date.now();
             if (!acc.last_scanned_at) return true;
             return new Date(acc.last_scanned_at).getTime() <= new Date(dueBefore).getTime();
-        }).slice(0, scanLimit);
+        });
+        // Un lot reste dans une seule organisation. Le statut affiché et les
+        // comptes listés correspondent ainsi toujours au client sélectionné.
+        const batchOrganizationId = eligibleAccounts[0]?.organization_id || null;
+        const accounts = eligibleAccounts
+            .filter(acc => (acc.organization_id || null) === batchOrganizationId)
+            .slice(0, scanLimit);
         const stockVAsByOrg = await loadStockVAsByOrg();
-        if (accounts[0]?.organization_id) await updateRunOrganization(run?.id, accounts[0].organization_id);
+        if (batchOrganizationId) await updateRunOrganization(run?.id, batchOrganizationId);
 
         for (const acc of accounts) {
             if (Date.now() - startedAt > 270000) {
@@ -283,24 +331,13 @@ export default async function handler(req, res) {
                     fetchShadowban(username),
                     fetchFollowers(username)
                 ]);
-                if (!shadowData) throw new Error('shadowban_empty_response');
                 const { status: newStatus, flags } = interpretShadowban(shadowData);
                 const oldStatus = acc.status || 'active';
                 results.checked++;
                 consecutiveErrors = 0;
 
                 if (typeof followers === 'number') {
-                    const today = new Date().toISOString().slice(0, 10);
-                    await rest('twitter_stats', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            twitter_account_id: acc.id,
-                            username: acc.username,
-                            followers,
-                            date: today,
-                            organization_id: acc.organization_id
-                        })
-                    });
+                    await saveFollowersStat(acc, followers);
                 }
                 results.scannedAccounts.push({
                     username: acc.username,
