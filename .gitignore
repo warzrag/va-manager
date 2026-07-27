@@ -12,3 +12,4 @@ passwords*.json
 *.backup
 
 .env*.local
+.env*
