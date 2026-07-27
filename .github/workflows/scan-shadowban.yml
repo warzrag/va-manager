@@ -2,7 +2,7 @@ name: Scan shadowban
 
 on:
   schedule:
-    - cron: "2,7,12,17,22,27,32,37,42,47,52,57 * * * *"
+    - cron: "11 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 68
     steps:
       - name: Trigger VA Manager shadowban scan
         env:
@@ -26,9 +26,25 @@ jobs:
             exit 1
           fi
 
-          curl --fail --show-error --silent \
-            --max-time 290 \
-            --retry 1 \
-            --retry-delay 20 \
-            -H "Authorization: Bearer $CRON_SECRET" \
-            "https://va-manager-pro.vercel.app/api/scan-shadowban"
+          failures=0
+          for cycle in 1 2 3 4 5 6; do
+            echo "Starting scan cycle $cycle/6"
+            if ! curl --fail --show-error --silent \
+              --max-time 290 \
+              --retry 2 \
+              --retry-delay 20 \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              "https://va-manager-pro.vercel.app/api/scan-shadowban"; then
+              failures=$((failures + 1))
+              echo "Scan cycle $cycle failed; the next cycle will still run."
+            fi
+            echo
+            if [ "$cycle" -lt 6 ]; then
+              sleep 480
+            fi
+          done
+
+          if [ "$failures" -eq 6 ]; then
+            echo "All scan cycles failed."
+            exit 1
+          fi

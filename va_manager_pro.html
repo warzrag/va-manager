@@ -16356,7 +16356,8 @@ Pass: email_pwd
         function formatScanCountdown(iso) {
             if (!iso) return '--';
             const diff = new Date(iso).getTime() - Date.now();
-            if (!Number.isFinite(diff) || diff <= 0) return 'en attente Vercel';
+            if (!Number.isFinite(diff)) return '--';
+            if (diff <= 0) return 'démarrage attendu';
             const minutes = Math.floor(diff / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
             if (minutes >= 60) {

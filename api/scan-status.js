@@ -79,14 +79,7 @@ async function rest(path) {
 
 function nextScheduledScan(lastRunAt) {
     const lastRunTime = lastRunAt ? new Date(lastRunAt).getTime() : 0;
-    const notBefore = Math.max(Date.now(), lastRunTime ? lastRunTime + 8 * 60 * 1000 : 0);
-    const next = new Date(notBefore);
-    const currentMinute = next.getUTCMinutes();
-    next.setUTCMinutes(Math.floor(currentMinute / 5) * 5 + 2, 0, 0);
-    if (next.getTime() <= notBefore) {
-        next.setUTCMinutes(next.getUTCMinutes() + 5);
-    }
-    return next.toISOString();
+    return lastRunTime ? new Date(lastRunTime + 10 * 60 * 1000).toISOString() : null;
 }
 
 export default async function handler(req, res) {
