@@ -23,7 +23,6 @@
     { "source": "/", "destination": "/va_manager_pro.html" }
   ],
   "crons": [
-    { "path": "/api/keep-alive", "schedule": "0 8 */4 * *" },
-    { "path": "/api/scan-shadowban", "schedule": "*/10 * * * *" }
+    { "path": "/api/keep-alive", "schedule": "0 8 */4 * *" }
   ]
 }

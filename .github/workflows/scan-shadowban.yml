@@ -1,0 +1,27 @@
+name: Scan shadowban
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger VA Manager shadowban scan
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Missing GitHub secret CRON_SECRET"
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            --max-time 290 \
+            --retry 1 \
+            --retry-delay 20 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://va-manager-pro.vercel.app/api/scan-shadowban"
