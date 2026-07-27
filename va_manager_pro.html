@@ -16383,6 +16383,7 @@ Pass: email_pwd
             const latestRun = payload.latestRun || {};
             const details = latestRun.details || {};
             const scannedAccounts = Array.isArray(details.scannedAccounts) ? details.scannedAccounts : [];
+            const currentAccount = details.currentAccount || null;
             const lastScannedAccount = scannedAccounts.length ? scannedAccounts[scannedAccounts.length - 1] : null;
             const recentScannedList = scannedAccounts.slice(-5).reverse().map(item => {
                 const safeUsername = escapeHtml(item.username || '--');
@@ -16408,6 +16409,9 @@ Pass: email_pwd
                 : latestRun.status === 'partial' ? 'partiel'
                 : latestRun.status === 'failed' ? 'erreur'
                 : latestRun.status ? 'terminé' : 'aucun passage';
+            const liveAccountLabel = currentAccount?.username && latestRun.status === 'running'
+                ? `En train de scanner @${escapeHtml(currentAccount.username)} (${currentAccount.position || '?'} / ${currentAccount.total || '?'})`
+                : lastScannedAccount ? `Dernier scanné : @${escapeHtml(lastScannedAccount.username || '--')}` : 'En attente du prochain scan';
             const total = payload.totalAccounts ?? 0;
             const recent = payload.scannedRecently ?? 0;
             const batch = payload.batchLimit ?? 1;
@@ -16425,6 +16429,7 @@ Pass: email_pwd
                         <div style="min-width:0;">
                             <div style="color:#f8fafc; font-weight:900; font-size:0.96rem;">Scan automatique</div>
                             <div style="color:#94a3b8; font-size:0.78rem; font-weight:700;">Toutes les 10 min, il vérifie jusqu'à ${batch} comptes · pause ${delaySec || '?'}s</div>
+                            <div style="color:${latestRun.status === 'running' ? '#22c55e' : '#c4b5fd'}; font-size:0.82rem; font-weight:900; margin-top:0.3rem;">${liveAccountLabel}</div>
                         </div>
                     </div>
                     <div style="padding:0.55rem 0.7rem; border-radius:0.75rem; background:rgba(255,255,255,0.04);">
@@ -16462,7 +16467,7 @@ Pass: email_pwd
             const target = document.getElementById('auto-scan-status');
             if (!target) return;
             const now = Date.now();
-            if (!force && now - autoScanStatusLastFetch < 60000) {
+            if (!force && now - autoScanStatusLastFetch < 5000) {
                 renderAutoScanStatus();
                 return;
             }

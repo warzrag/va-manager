@@ -205,6 +205,16 @@ async function updateRunOrganization(runId, organizationId) {
     } catch {}
 }
 
+async function updateRunProgress(runId, details) {
+    if (!runId) return;
+    try {
+        await rest(`scan_runs?id=eq.${encodeURIComponent(runId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ details })
+        });
+    } catch {}
+}
+
 export default async function handler(req, res) {
     if (!hasSupabaseConfig()) { res.status(500).json({ error: 'server_misconfigured' }); return; }
     if (getCronToken(req) !== CRON_SECRET) { res.status(401).json({ error: 'unauthorized' }); return; }
@@ -242,6 +252,16 @@ export default async function handler(req, res) {
             }
             const username = String(acc.username || '').replace(/^@/, '');
             const scannedAt = new Date().toISOString();
+            await updateRunProgress(run?.id, {
+                currentAccount: {
+                    username: acc.username || username,
+                    startedAt: scannedAt,
+                    position: results.checked + results.errors + results.skipped + 1,
+                    total: accounts.length
+                },
+                scannedAccounts: results.scannedAccounts.slice(-20),
+                scanDelayMs: SCAN_DELAY_MS
+            });
             if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) {
                 results.skipped++;
                 results.scannedAccounts.push({
