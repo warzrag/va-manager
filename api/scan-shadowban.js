@@ -214,7 +214,7 @@ export default async function handler(req, res) {
     const dueBefore = new Date(Date.now() - DAILY_RESCAN_AFTER_HOURS * 60 * 60 * 1000).toISOString();
     const nowIso = new Date().toISOString();
     const run = await createScanRun(scanLimit);
-    const results = { checked: 0, changed: 0, errors: 0, skipped: 0, changes: [] };
+    const results = { checked: 0, changed: 0, errors: 0, skipped: 0, changes: [], scannedAccounts: [] };
     let consecutiveErrors = 0;
     let stoppedReason = null;
 
@@ -244,6 +244,13 @@ export default async function handler(req, res) {
             const scannedAt = new Date().toISOString();
             if (!username || !/^[A-Za-z0-9_]{1,20}$/.test(username)) {
                 results.skipped++;
+                results.scannedAccounts.push({
+                    username: acc.username || username || '(invalide)',
+                    status: 'skipped',
+                    followers: null,
+                    error: 'invalid_username',
+                    scannedAt
+                });
                 await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ last_scanned_at: scannedAt })
@@ -275,6 +282,15 @@ export default async function handler(req, res) {
                         })
                     });
                 }
+                results.scannedAccounts.push({
+                    username: acc.username,
+                    status: newStatus,
+                    previousStatus: oldStatus,
+                    followers: typeof followers === 'number' ? followers : null,
+                    flags,
+                    changed: newStatus !== oldStatus,
+                    scannedAt
+                });
 
                 const accountPatch = {
                     status: newStatus,
@@ -330,6 +346,13 @@ export default async function handler(req, res) {
             } catch (error) {
                 results.errors++;
                 consecutiveErrors++;
+                results.scannedAccounts.push({
+                    username: acc.username || username,
+                    status: 'error',
+                    followers: null,
+                    error: String(error?.message || error).slice(0, 160),
+                    scannedAt
+                });
                 const nextErrorCount = Number(acc.scan_error_count || 0) + 1;
                 await rest(`twitter_accounts?id=eq.${encodeURIComponent(acc.id)}`, {
                     method: 'PATCH',
@@ -352,6 +375,7 @@ export default async function handler(req, res) {
             details: {
                 durationMs: Date.now() - startedAt,
                 changes: results.changes.slice(0, 50),
+                scannedAccounts: results.scannedAccounts.slice(-50),
                 stoppedReason,
                 scanDelayMs: SCAN_DELAY_MS,
                 maxConsecutiveErrors: MAX_CONSECUTIVE_SCAN_ERRORS
