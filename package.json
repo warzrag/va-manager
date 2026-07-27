@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "probe:yuzurisa": "node scripts/probe-yuzurisa-limit.js"
+  },
   "dependencies": {
     "@playwright/test": "^1.58.2",
     "@supabase/supabase-js": "^2.86.0"
