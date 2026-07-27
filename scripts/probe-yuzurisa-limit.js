@@ -10,7 +10,10 @@
  * Usage examples:
  *   node scripts/probe-yuzurisa-limit.js
  *   node scripts/probe-yuzurisa-limit.js --handles elonmusk,github,vercel --delays 10000,5000,3000 --rounds 2
+ *   node scripts/probe-yuzurisa-limit.js --handles-file ./handles.txt --count 200 --delays 10000,5000,3000
  */
+
+const fs = require('node:fs');
 
 const DEFAULT_HANDLES = [
     'elonmusk',
@@ -58,6 +61,27 @@ function toHandleList(value) {
         .map(v => v.trim().replace(/^@/, ''))
         .filter(v => /^[A-Za-z0-9_]{1,20}$/.test(v));
     return list.length ? list : DEFAULT_HANDLES;
+}
+
+function readHandlesFile(filePath) {
+    if (!filePath) return [];
+    const content = fs.readFileSync(filePath, 'utf8');
+    return content
+        .split(/\r?\n|,|;|\t/)
+        .map(v => v.trim().replace(/^@/, ''))
+        .filter(v => /^[A-Za-z0-9_]{1,20}$/.test(v));
+}
+
+function uniqueHandles(handles) {
+    const seen = new Set();
+    const unique = [];
+    for (const handle of handles) {
+        const key = handle.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        unique.push(handle);
+    }
+    return unique;
 }
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -153,7 +177,10 @@ async function runTier({ handles, delayMs, rounds, timeoutMs, stopErrorRate }) {
 
 async function main() {
     const args = parseArgs(process.argv);
-    const handles = toHandleList(args.handles);
+    const fileHandles = readHandlesFile(args['handles-file']);
+    const inlineHandles = args.handles ? toHandleList(args.handles) : [];
+    const requestedCount = Math.max(1, Math.min(parseInt(args.count || '100000', 10), 100000));
+    const handles = uniqueHandles(fileHandles.length ? fileHandles : (inlineHandles.length ? inlineHandles : DEFAULT_HANDLES)).slice(0, requestedCount);
     const delays = toIntList(args.delays, [10000, 5000, 3000, 2000, 1000]);
     const rounds = Math.max(1, Math.min(parseInt(args.rounds || '2', 10), 10));
     const timeoutMs = Math.max(3000, Math.min(parseInt(args.timeout || '15000', 10), 30000));
@@ -161,7 +188,8 @@ async function main() {
     const stopErrorRate = Math.max(0.05, Math.min(parseFloat(args.stopErrorRate || '0.2'), 1));
 
     console.log('Yuzurisa limit probe');
-    console.log(`Handles: ${handles.join(', ')}`);
+    console.log(`Handles: ${handles.length}${args['handles-file'] ? ` from ${args['handles-file']}` : ''}`);
+    if (handles.length <= 25) console.log(`Handle list: ${handles.join(', ')}`);
     console.log(`Delays: ${delays.join(', ')} ms`);
     console.log(`Rounds: ${rounds}`);
     console.log(`Timeout: ${timeoutMs} ms`);
