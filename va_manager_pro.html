@@ -16411,7 +16411,9 @@ Pass: email_pwd
                 : latestRun.status ? 'terminé' : 'aucun passage';
             const liveAccountLabel = currentAccount?.username && latestRun.status === 'running'
                 ? `En train de scanner @${escapeHtml(currentAccount.username)} (${currentAccount.position || '?'} / ${currentAccount.total || '?'})`
-                : lastScannedAccount ? `Dernier scanné : @${escapeHtml(lastScannedAccount.username || '--')}` : 'En attente du prochain scan';
+                : lastScannedAccount ? `Dernier scanné : @${escapeHtml(lastScannedAccount.username || '--')}`
+                : checked > 0 ? 'Détail des comptes disponible au prochain lot'
+                : 'En attente du prochain scan';
             const total = payload.totalAccounts ?? 0;
             const recent = payload.scannedRecently ?? 0;
             const batch = payload.batchLimit ?? 1;
@@ -16456,7 +16458,7 @@ Pass: email_pwd
                 <div style="padding:0.75rem 0.85rem; border-radius:0 0 1rem 1rem; background:rgba(15,23,42,0.82); border:1px solid rgba(148,163,184,0.18); border-top:1px solid rgba(148,163,184,0.10);">
                     <div style="display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:${recentScannedList ? '0.45rem' : '0'};">
                         <div style="color:#94a3b8; font-size:0.72rem; font-weight:900; text-transform:uppercase;">Comptes vérifiés dans le dernier lot</div>
-                        <div style="color:#e2e8f0; font-size:0.8rem; font-weight:900;">${lastScannedAccount ? 'Dernier : @' + escapeHtml(lastScannedAccount.username || '--') : 'Aucun compte scanné pour cette organisation'}</div>
+                        <div style="color:#e2e8f0; font-size:0.8rem; font-weight:900;">${lastScannedAccount ? 'Dernier : @' + escapeHtml(lastScannedAccount.username || '--') : checked > 0 ? 'Liste détaillée au prochain lot' : 'Aucun compte scanné pour cette organisation'}</div>
                     </div>
                     ${recentScannedList || ''}
                 </div>
