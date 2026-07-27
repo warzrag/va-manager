@@ -1,4 +1,4 @@
-// Cron job: scan the queue gently. Defaults target ~50 accounts/hour.
+// Cron job: scan the queue gently. Defaults target ~150 accounts/hour.
 
 import { escapeHtml, formatStatus, sendTelegramMessage } from './_telegram.js';
 
@@ -9,8 +9,8 @@ function cleanEnv(value) {
 const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL);
 const SUPABASE_SERVICE_KEY = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
 const CRON_SECRET = cleanEnv(process.env.CRON_SECRET);
-const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '50', 10), 2000));
-const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '5000', 10), 30000));
+const DEFAULT_SCAN_LIMIT = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_BATCH_LIMIT) || '25', 10), 2000));
+const SCAN_DELAY_MS = Math.max(1000, Math.min(parseInt(cleanEnv(process.env.SCAN_DELAY_MS) || '2000', 10), 30000));
 const MAX_CONSECUTIVE_SCAN_ERRORS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_MAX_CONSECUTIVE_ERRORS) || '10', 10), 100));
 const DAILY_RESCAN_AFTER_HOURS = Math.max(1, Math.min(parseInt(cleanEnv(process.env.SCAN_RESCAN_AFTER_HOURS) || '20', 10), 24));
 
