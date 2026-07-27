@@ -115,11 +115,19 @@ export default async function handler(req, res) {
     try {
         const orgFilter = `organization_id=eq.${encodeURIComponent(targetOrg)}`;
         const totalRows = await rest(`twitter_accounts?select=id&${orgFilter}`);
-        const latestRows = await rest(`twitter_accounts?select=last_scanned_at&${orgFilter}&last_scanned_at=not.is.null&order=last_scanned_at.desc&limit=1`);
+        const latestRows = await rest(`twitter_accounts?select=id,username,status,last_scanned_at,last_scan_error&${orgFilter}&last_scanned_at=not.is.null&order=last_scanned_at.desc&limit=1`);
         const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const recentRows = await rest(`twitter_accounts?select=id&${orgFilter}&last_scanned_at=gte.${encodeURIComponent(since)}`);
         const queueRows = await rest(`twitter_accounts?select=id,next_retry_at,last_scan_error&${orgFilter}&next_retry_at=not.is.null&order=next_retry_at.asc&limit=2000`);
         const runRows = await rest(`scan_runs?select=started_at,finished_at,checked,changed,errors,skipped,batch_limit,status,details&${orgFilter}&order=started_at.desc&limit=1`);
+        const latestAccount = latestRows?.[0] || null;
+        let latestFollowers = null;
+        if (latestAccount?.id) {
+            const statsRows = await rest(
+                `twitter_stats?select=followers,date&twitter_account_id=eq.${encodeURIComponent(latestAccount.id)}&order=date.desc&limit=1`
+            );
+            latestFollowers = statsRows?.[0] || null;
+        }
         const now = Date.now();
         const retryRows = Array.isArray(queueRows) ? queueRows : [];
         const retryDueRows = retryRows.filter(row => row.next_retry_at && new Date(row.next_retry_at).getTime() <= now);
@@ -129,7 +137,15 @@ export default async function handler(req, res) {
             organizationId: targetOrg,
             totalAccounts: Array.isArray(totalRows) ? totalRows.length : 0,
             scannedRecently: Array.isArray(recentRows) ? recentRows.length : 0,
-            lastScannedAt: latestRows?.[0]?.last_scanned_at || null,
+            lastScannedAt: latestAccount?.last_scanned_at || null,
+            latestScannedAccount: latestAccount ? {
+                username: latestAccount.username,
+                status: latestAccount.status,
+                lastScannedAt: latestAccount.last_scanned_at,
+                lastScanError: latestAccount.last_scan_error || null,
+                followers: typeof latestFollowers?.followers === 'number' ? latestFollowers.followers : null,
+                followersDate: latestFollowers?.date || null
+            } : null,
             nextScanAt: nextTenMinuteScan(),
             batchLimit: SCAN_BATCH_LIMIT,
             scanDelayMs: SCAN_DELAY_MS,
