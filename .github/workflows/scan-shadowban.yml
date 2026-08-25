@@ -34,7 +34,7 @@ jobs:
               --retry 2 \
               --retry-delay 20 \
               -H "Authorization: Bearer $CRON_SECRET" \
-              "https://va-manager-pro.vercel.app/api/scan-shadowban"; then
+              "https://va.taplinkr.com/api/scan-shadowban"; then
               failures=$((failures + 1))
               echo "Scan cycle $cycle failed; the next cycle will still run."
             fi
